@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:form_app/pages/identitas_page.dart';
+import 'package:form_app/pages/page_one.dart';
 
 void main() {
   runApp(const FormApp());
@@ -14,7 +14,8 @@ class FormApp extends StatelessWidget {
     return MaterialApp(
       title: 'Form App',
       theme: ThemeData(),
-      home: Placeholder(),
+      debugShowCheckedModeBanner: false,
+      home: PageOne(),
     );
   }
 }
