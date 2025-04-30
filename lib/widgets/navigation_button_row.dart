@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:form_app/statics/app_styles.dart';
 
 class NavigationButtonRow extends StatelessWidget {
   final VoidCallback? onBackPressed; // Null if disabled (like on page 1)
@@ -8,17 +8,6 @@ class NavigationButtonRow extends StatelessWidget {
   final bool isBackButtonEnabled;
   // Optional: Add isLoading state for the next button later if needed for submission
   // final bool isLoading;
-
-  // --- Define constants within the widget ---
-  static const Color buttonColor = Color(0xFFFF7D43);
-  static const Color disabledButtonColor = Colors.grey;
-  static const Color buttonTextColor = Colors.white;
-
-  static final TextStyle buttonTextStyle = GoogleFonts.rubik(
-    fontSize: 18.0,
-    fontWeight: FontWeight.bold,
-    color: buttonTextColor,
-  );
 
   static final ButtonStyle _baseButtonStyle = ElevatedButton.styleFrom(
     padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 32.0),

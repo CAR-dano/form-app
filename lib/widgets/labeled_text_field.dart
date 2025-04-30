@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:form_app/statics/app_styles.dart';
 
 class LabeledTextField extends StatelessWidget {
   final String label;
@@ -10,29 +10,6 @@ class LabeledTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged; // Callback for changes
   final FormFieldValidator<String>? validator; // For form validation
   final int? maxLines;
-
-  // Define styles and colors centrally or pass them in if needed
-  static const Color borderColor = Color(0xFFC28CFF);
-  static const Color labelTextColor = Colors.black87;
-  static const Color hintTextColor = Color(0xFFCBCBCB);
-
-  static final TextStyle labelStyle = GoogleFonts.rubik(
-    fontSize: 20.0,
-    fontWeight: FontWeight.w300,
-    color: labelTextColor,
-  );
-
-  static final TextStyle inputTextStyling = GoogleFonts.rubik(
-    fontSize: 16.0,
-    color: Colors.black,
-    fontWeight: FontWeight.w400,
-  );
-
-   static final TextStyle hintTextStyling = GoogleFonts.rubik(
-    fontSize: 16.0,
-    color: hintTextColor,
-    fontWeight: FontWeight.w400,
-  );
 
   const LabeledTextField({
     super.key,

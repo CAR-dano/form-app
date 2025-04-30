@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 
 class CommonLayout extends StatelessWidget {
   final Widget child;
-  final String? title; // Optional title for the AppBar
+
 
   const CommonLayout({
     super.key,
     required this.child,
-    this.title,
   });
 
   // Define standard padding
