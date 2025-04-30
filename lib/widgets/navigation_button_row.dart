@@ -45,13 +45,14 @@ class NavigationButtonRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        // --- Back Button ---
-        ElevatedButton(
-          // Use the provided callback if enabled, otherwise null to disable
-          onPressed: isBackButtonEnabled ? onBackPressed : null,
-          style: _baseButtonStyle.copyWith(
-            // Override specific properties for enabled/disabled state
-            backgroundColor: WidgetStateProperty.resolveWith<Color>(
+        // --- Back Button (Conditionally Rendered) ---
+        if (isBackButtonEnabled) // Only render if enabled
+          ElevatedButton(
+            // Use the provided callback
+            onPressed: onBackPressed, // No need for ternary here as it won't render if disabled
+            style: _baseButtonStyle.copyWith(
+              // Override specific properties for enabled/disabled state
+              backgroundColor: WidgetStateProperty.resolveWith<Color>(
               (Set<WidgetState> states) {
                 if (states.contains(WidgetState.disabled)) {
                   return disabledButtonColor; // Disabled color
@@ -78,10 +79,14 @@ class NavigationButtonRow extends StatelessWidget {
           child: Text('Back', style: buttonTextStyle),
         ),
 
-        SizedBox(width: 10,),
+        // --- Spacer (Conditionally Rendered with Back Button) ---
+        if (isBackButtonEnabled) // Only render spacer if back button is rendered
+          const SizedBox(width: 10),
 
         // --- Next/Submit Button ---
-        ElevatedButton(
+        // Use Expanded to make the Next button take remaining space if Back is hidden
+        Expanded(
+          child: ElevatedButton(
           onPressed: onNextPressed, // Always use the provided callback
           // Apply base style and override background/foreground explicitly for clarity
           style: _baseButtonStyle.copyWith(
@@ -99,7 +104,8 @@ class NavigationButtonRow extends StatelessWidget {
           //         ),
           //       )
           //     : Text(nextButtonText, style: buttonTextStyle),
-           child: Text(nextButtonText, style: buttonTextStyle),
+            child: Text(nextButtonText, style: buttonTextStyle),
+          ),
         ),
       ],
     );

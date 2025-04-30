@@ -11,12 +11,12 @@ class LabeledDateField extends StatefulWidget {
   // --- Define Styles and Colors here for consistency ---
   static const Color borderColor = Color(0xFFC28CFF); // Purple from LabeledTextField
   static const Color labelTextColor = Colors.black87;
-  static const Color hintTextColor = Colors.grey;
+  static const Color hintTextColor = Color(0xFFCBCBCB);
   static const Color selectedDateColor = Color(0xFF4C1C82); // Specific selected date color
   static const Color iconColor = Colors.grey; // Color for the dropdown icon
 
   static final TextStyle labelStyle = GoogleFonts.rubik(
-    fontSize: 16.0,
+    fontSize:20.0,
     fontWeight: FontWeight.w500,
     color: labelTextColor,
   );
@@ -24,11 +24,13 @@ class LabeledDateField extends StatefulWidget {
   static final TextStyle hintTextStyle = GoogleFonts.rubik(
     fontSize: 16.0,
     color: hintTextColor,
+    fontWeight: FontWeight.w400,
   );
 
   static final TextStyle selectedDateTextStyle = GoogleFonts.rubik(
     fontSize: 16.0,
     color: selectedDateColor, // Use the specific purple
+    fontWeight: FontWeight.w400,
   );
   // --- End Styles ---
 
@@ -58,7 +60,7 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
   InputDecoration _buildInputDecoration() {
     return InputDecoration(
       // No hintText here, handled by the Text widget logic
-      contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+      contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8.0),
         borderSide: const BorderSide(color: LabeledDateField.borderColor, width: 1.5),
@@ -88,8 +90,17 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
       // Add theme customization here if needed
     );
 
+    // Check if the widget is still mounted before interacting with context or state
+    if (!mounted) return; // Exit if the widget was removed during the await
+
+    // Unfocus again after the picker is closed to prevent keyboard reappearing
+    // on the previously focused text field.
+    FocusScope.of(context).unfocus();
+
     // Check if a date was actually picked and it's different
     if (picked != null && picked != _selectedDate) {
+      // No need for another mounted check here as setState does it internally,
+      // but it's good practice to be aware.
       setState(() {
         _selectedDate = picked; // Update local state to refresh UI
       });

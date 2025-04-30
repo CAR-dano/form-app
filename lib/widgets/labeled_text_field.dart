@@ -17,7 +17,7 @@ class LabeledTextField extends StatelessWidget {
   static const Color hintTextColor = Color(0xFFCBCBCB);
 
   static final TextStyle labelStyle = GoogleFonts.rubik(
-    fontSize: 16.0,
+    fontSize: 20.0,
     fontWeight: FontWeight.w300,
     color: labelTextColor,
   );
@@ -25,11 +25,13 @@ class LabeledTextField extends StatelessWidget {
   static final TextStyle inputTextStyling = GoogleFonts.rubik(
     fontSize: 16.0,
     color: Colors.black,
+    fontWeight: FontWeight.w400,
   );
 
    static final TextStyle hintTextStyling = GoogleFonts.rubik(
     fontSize: 16.0,
     color: hintTextColor,
+    fontWeight: FontWeight.w400,
   );
 
   const LabeledTextField({

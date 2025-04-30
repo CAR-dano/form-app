@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:form_app/pages/page_one.dart';
+import 'package:form_app/widgets/common_layout.dart'; // Import the new layout
 
 
 void main() {
@@ -17,7 +18,9 @@ class FormApp extends StatelessWidget {
       theme: ThemeData(),
 
       debugShowCheckedModeBanner: false,
-      home: PageOne(),
+      // Wrap PageOne with CommonLayout
+      // You can optionally pass a title here if needed for PageOne's AppBar
+      home: const CommonLayout(child: PageOne()),
     );
   }
 }
