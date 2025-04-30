@@ -84,9 +84,8 @@ class NavigationButtonRow extends StatelessWidget {
           const SizedBox(width: 10),
 
         // --- Next/Submit Button ---
-        // Use Expanded to make the Next button take remaining space if Back is hidden
-        Expanded(
-          child: ElevatedButton(
+        // Removed Expanded wrapper to keep button's natural width
+        ElevatedButton(
           onPressed: onNextPressed, // Always use the provided callback
           // Apply base style and override background/foreground explicitly for clarity
           style: _baseButtonStyle.copyWith(
@@ -105,7 +104,6 @@ class NavigationButtonRow extends StatelessWidget {
           //       )
           //     : Text(nextButtonText, style: buttonTextStyle),
             child: Text(nextButtonText, style: buttonTextStyle),
-          ),
         ),
       ],
     );
