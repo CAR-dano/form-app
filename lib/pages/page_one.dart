@@ -67,9 +67,6 @@ class _PageOneState extends State<PageOne> {
     if (_formKey.currentState!.validate()) {
       // If the form is valid, display a snackbar. In a real app,
       // you would save the data and navigate to the next page.
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Processing Data')),
-      );
       moveToNextPage(); // Move to the next page if validation passes
     }
   }
@@ -96,59 +93,93 @@ class _PageOneState extends State<PageOne> {
                     const SizedBox(height: 8.0),
                     PageTitle(data: 'Identitas'),
                     const SizedBox(height: 24.0), // Keep internal spacing
-                    LabeledTextField(
-                      label: 'Nama Inspektor',
-                      hintText: 'Masukkan nama inspektor',
-                      focusNode: _namaInspektorFocusNode,
-                      validator: (value) {
-                        if (_formSubmitted && (value == null || value.isEmpty)) {
-                          return 'Nama Inspektor belum terisi'; // Validation message
-                        }
-                        return null; // Return null if valid
+                    Builder( // Wrap with Builder to get context for FormField.of
+                      builder: (BuildContext context) {
+                        return LabeledTextField(
+                          label: 'Nama Inspektor',
+                          hintText: 'Masukkan nama inspektor',
+                          focusNode: _namaInspektorFocusNode,
+                          onChanged: (value) {
+                            if (_formSubmitted) { // Only validate on change after first submission
+                              context.findAncestorStateOfType<FormFieldState>()?.validate();
+                            }
+                          },
+                          validator: (value) {
+                            if (_formSubmitted && (value == null || value.isEmpty)) {
+                              return 'Nama Inspektor belum terisi'; // Validation message
+                            }
+                            return null; // Return null if valid
+                          },
+                        );
                       },
                     ),
                     const SizedBox(height: 16.0), // Keep internal spacing
-                    LabeledTextField(
-                      label: 'Nama Customer',
-                      hintText: 'Masukkan nama customer',
-                      focusNode: _namaCustomerFocusNode,
-                       validator: (value) {
-                        if (_formSubmitted && (value == null || value.isEmpty)) {
-                          return 'Nama Customer belum terisi'; // Validation message
-                        }
-                        return null; // Return null if valid
+                    Builder( // Wrap with Builder to get context for FormField.of
+                      builder: (BuildContext context) {
+                        return LabeledTextField(
+                          label: 'Nama Customer',
+                          hintText: 'Masukkan nama customer',
+                          focusNode: _namaCustomerFocusNode,
+                          onChanged: (value) {
+                            if (_formSubmitted) { // Only validate on change after first submission
+                              context.findAncestorStateOfType<FormFieldState>()?.validate();
+                            }
+                          },
+                           validator: (value) {
+                            if (_formSubmitted && (value == null || value.isEmpty)) {
+                              return 'Nama Customer belum terisi'; // Validation message
+                            }
+                            return null; // Return null if valid
+                          },
+                        );
                       },
                     ),
                     const SizedBox(height: 16.0), // Keep internal spacing
-                    LabeledTextField(
-                      label: 'Cabang Inspeksi',
-                      hintText: 'Contoh: Yogyakarta / Semarang',
-                      focusNode: _cabangInspeksiFocusNode,
-                       validator: (value) {
-                        if (_formSubmitted && (value == null || value.isEmpty)) {
-                          return 'Cabang Inspeksi belum terisi'; // Validation message
-                        }
-                        return null; // Return null if valid
+                    Builder( // Wrap with Builder to get context for FormField.of
+                      builder: (BuildContext context) {
+                        return LabeledTextField(
+                          label: 'Cabang Inspeksi',
+                          hintText: 'Contoh: Yogyakarta / Semarang',
+                          focusNode: _cabangInspeksiFocusNode,
+                           onChanged: (value) {
+                            if (_formSubmitted) { // Only validate on change after first submission
+                              context.findAncestorStateOfType<FormFieldState>()?.validate();
+                            }
+                          },
+                           validator: (value) {
+                            if (_formSubmitted && (value == null || value.isEmpty)) {
+                              return 'Cabang Inspeksi belum terisi'; // Validation message
+                            }
+                            return null; // Return null if valid
+                          },
+                        );
                       },
                     ),
                     const SizedBox(height: 16.0), // Keep internal spacing
-                    LabeledDateField(
-                      label: 'Tanggal Inspeksi',
-                      hintText: 'Pilih tanggal inspeksi',
-                      initialDate: _selectedDate,
-                      onChanged: (date) {
-                        setState(() {
-                          _selectedDate = date;
-                      });
-                    },
-                    focusNode: _tanggalInspeksiFocusNode,
-                     validator: (date) {
-                        if (_formSubmitted && date == null) {
-                          return 'Tanggal Inspeksi belum terisi'; // Validation message
-                        }
-                        return null; // Return null if valid
+                    Builder( // Wrap with Builder to get context for FormField.of
+                      builder: (BuildContext context) {
+                        return LabeledDateField(
+                          label: 'Tanggal Inspeksi',
+                          hintText: 'Pilih tanggal inspeksi',
+                          initialDate: _selectedDate,
+                          onChanged: (date) {
+                            setState(() {
+                              _selectedDate = date;
+                          });
+                            if (_formSubmitted) { // Only validate on change after first submission
+                              context.findAncestorStateOfType<FormFieldState>()?.validate();
+                            }
+                          },
+                          focusNode: _tanggalInspeksiFocusNode,
+                           validator: (date) {
+                            if (_formSubmitted && date == null) {
+                              return 'Tanggal Inspeksi belum terisi'; // Validation message
+                            }
+                            return null; // Return null if valid
+                            },
+                        );
                       },
-                  ),
+                    ),
                   const SizedBox(height: 32.0), // Keep internal spacing
                   // Pass isBackButtonEnabled: false for PageOne
                     NavigationButtonRow(

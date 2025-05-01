@@ -159,37 +159,14 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
                 onTap: () async {
                    // Use the provided focusNode if available, otherwise use the internal one
                   (widget.focusNode ?? _focusNode).requestFocus(); // Request focus for this widget
-                  final picked = await showDatePicker( // Capture the picked date
-                    context: context,
-                    initialDate: _selectedDate ?? DateTime.now(),
-                    firstDate: DateTime(2000), // Sensible default range start
-                    lastDate: DateTime.now(), // Restrict to today's date
-                    builder: (BuildContext context, Widget? child) {
-                      return Theme(
-                        data: ThemeData(
-                          colorScheme: const ColorScheme.light(
-                            primary: pickedDateColor, // Color of the selected date
-                            onSurface: Colors.black, // Color of the dates in the calendar
-                            surface: Colors.white, // Background color of the date picker
-                          ),
-                          textTheme: Theme.of(context).textTheme.apply(
-                            fontFamily: GoogleFonts.rubik().fontFamily, // Use Rubik font
-                          ),
-                        ),
-                        child: child!,
-                      );
-                    },
-                  );
+                  await _selectDate(context); // Call the _selectDate function
 
-                  // Check if the widget is still mounted before interacting with context or state
-                  if (!mounted) return; // Exit if the widget was removed during the await
-
-                  // Check if a date was actually picked and it's different
-                  if (picked != null && picked != field.value) { // Compare with field.value
-                     // Update the FormField's value
-                    field.didChange(picked);
-                    // Call the callback function provided by the parent widget
-                    widget.onChanged?.call(picked);
+                  // After _selectDate updates _selectedDate, update the FormField's value
+                  // and call the onChanged callback if a date was picked and is different.
+                  // _selectDate already handles the mounted check and the picked != null check.
+                  if (_selectedDate != null && _selectedDate != field.value) {
+                     field.didChange(_selectedDate);
+                     widget.onChanged?.call(_selectedDate);
                   }
                 },
                  focusNode: widget.focusNode ?? _focusNode, // Assign the focus node to InkWell
