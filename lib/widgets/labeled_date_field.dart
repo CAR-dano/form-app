@@ -8,6 +8,7 @@ class LabeledDateField extends StatefulWidget {
   final String hintText; // Placeholder when no date is selected
   final DateTime? initialDate; // Optional initial date
   final ValueChanged<DateTime?>? onChanged; // Callback when date changes
+  final FocusNode? focusNode; // Optional focus node
 
   // --- End Styles ---
 
@@ -17,6 +18,7 @@ class LabeledDateField extends StatefulWidget {
     this.hintText = 'Pilih tanggal', // Default hint
     this.initialDate,
     this.onChanged,
+    this.focusNode, // Accept optional focus node
   });
 
   @override
@@ -25,12 +27,20 @@ class LabeledDateField extends StatefulWidget {
 
 class _LabeledDateFieldState extends State<LabeledDateField> {
   DateTime? _selectedDate;
+  late FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
     // Initialize the state with the initialDate provided to the widget
     _selectedDate = widget.initialDate;
+    _focusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
   }
 
   // Helper function to build the input decoration, similar to LabeledTextField
@@ -56,9 +66,6 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
 
   // Date Picker Function
   Future<void> _selectDate(BuildContext context) async {
-    // Dismiss keyboard if any field has focus
-    FocusScope.of(context).unfocus();
-
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? DateTime.now(),
@@ -81,11 +88,12 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
       },
     );
 
+    // Request focus for this widget after the date picker is closed
+    _focusNode.requestFocus();
+
     // Check if the widget is still mounted before interacting with context or state
     if (!mounted) return; // Exit if the widget was removed during the await
 
-    // Unfocus again after the picker is closed to prevent keyboard reappearing
-    // on the previously focused text field.
     // Check if a date was actually picked and it's different
     if (picked != null && picked != _selectedDate) {
       // No need for another mounted check here as setState does it internally,
@@ -109,7 +117,12 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
 
         // --- Tappable Date Input Area ---
         InkWell(
-          onTap: () => _selectDate(context),
+          onTap: () {
+            // Use the provided focusNode if available, otherwise use the internal one
+            (widget.focusNode ?? _focusNode).requestFocus(); // Request focus for this widget
+            _selectDate(context);
+          },
+          focusNode: widget.focusNode ?? _focusNode, // Assign the focus node to InkWell
           child: InputDecorator( // Use InputDecorator for consistent styling
             decoration: _buildInputDecoration(),
             child: Row(

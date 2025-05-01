@@ -11,7 +11,7 @@ const Color selectedDateColor = Color(
   0xFF4C1C82,
 ); // Specific selected date color
 
-const Color iconColor = Colors.grey; // Color for the dropdown icon
+const Color iconColor = borderColor; // Color for the dropdown icon
 
 // Date Picker Colors
 const Color pickedDateColor = Color(0xFFFF7D43); // Orange color for picked date
@@ -24,7 +24,7 @@ const Color buttonTextColor = Colors.white;
 // Text Styles
 final TextStyle labelStyle = GoogleFonts.rubik(
   fontSize: 20.0,
-  fontWeight: FontWeight.w500,
+  fontWeight: FontWeight.w400,
   color: labelTextColor,
 );
 
