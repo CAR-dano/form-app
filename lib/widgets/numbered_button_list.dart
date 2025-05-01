@@ -8,15 +8,15 @@ class NumberedButtonList extends StatefulWidget {
   final ValueChanged<int> onItemSelected;
 
   const NumberedButtonList({
-    Key? key,
+    super.key,
     required this.label,
     required this.count,
     required this.selectedIndex,
     required this.onItemSelected,
-  }) : super(key: key);
+  });
 
   @override
-  _NumberedButtonListState createState() => _NumberedButtonListState();
+  State<NumberedButtonList> createState() => _NumberedButtonListState();
 }
 
 class _NumberedButtonListState extends State<NumberedButtonList> {
