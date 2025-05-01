@@ -56,11 +56,13 @@ class _PageFourState extends State<PageFour> {
                       // TODO: Implement navigation to Page Five
                     },
                   ),
+                  SizedBox(height: 32.0), // Optional spacing below the content
+                  // Footer
+                  Footer(),
                 ],
               ),
             ),
           ),
-          Footer(),
         ],
       ),
     );

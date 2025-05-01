@@ -93,12 +93,13 @@ class PageThree extends ConsumerWidget {
                     );
                   },
                 ),
+                SizedBox(height: 32.0), // Optional spacing below the content
+                // Footer
+                Footer(),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 16.0),
-        Footer(),
       ],
     );
   }

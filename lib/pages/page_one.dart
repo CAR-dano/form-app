@@ -163,23 +163,21 @@ class _PageOneState extends ConsumerState<PageOne> {
                         },
                       formSubmitted: _formSubmitted, // Pass the formSubmitted flag
                     ),
-                  const SizedBox(height: 32.0), // Keep internal spacing
-                  // Pass isBackButtonEnabled: false for PageOne
+                    const SizedBox(height: 32.0), // Keep internal spacing
+                    // Pass isBackButtonEnabled: false for PageOne
                     NavigationButtonRow(
                       onNextPressed: validateAndMoveToNextPage, // Call validation function
                       isBackButtonEnabled: false, // Hide back button on page 1
                       // Add onBackPressed: null explicitly if needed, though it won't be used when hidden
                       // onBackPressed: null,
                     ),
+                    SizedBox(height: 32.0), // Optional spacing below the content
+                    // Footer
+                    Footer(),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 16.0), // Optional padding between content and footer
-            // Footer is placed outside Expanded, at the bottom of the main Column
-            Footer(),
-            // Add some padding below the footer if needed, e.g.,
-            // const SizedBox(height: 16.0),
           ],
         ),
       ),

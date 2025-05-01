@@ -319,13 +319,13 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                       onNextPressed: validateAndMoveToNextPage, // Call validation function
                       // isBackButtonEnabled: true, // Default is true, so can be omitted
                     ),
+                    SizedBox(height: 32.0), // Optional spacing below the content
+                    // Footer
+                    Footer(),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 16.0), // Optional spacing below the content
-            // Footer
-            Footer(),
           ],
         ),
       ),
