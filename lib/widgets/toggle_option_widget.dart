@@ -4,10 +4,10 @@ import 'package:form_app/statics/app_styles.dart';
 class ToggleOption extends StatefulWidget {
   final String label;
 
-  const ToggleOption({Key? key, required this.label}) : super(key: key);
+  const ToggleOption({super.key, required this.label});
 
   @override
-  _ToggleOptionState createState() => _ToggleOptionState();
+  State<ToggleOption> createState() => _ToggleOptionState();
 }
 
 class _ToggleOptionState extends State<ToggleOption> {
@@ -57,8 +57,8 @@ class _ToggleOptionState extends State<ToggleOption> {
                           ? toggleOptionSelectedLengkapColor
                           : Colors.white,
                       borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(8.0),
-                        bottomLeft: Radius.circular(8.0),
+                        topLeft: Radius.circular(6.0),
+                        bottomLeft: Radius.circular(6.0),
                       ),
                       border: Border(
                         right: BorderSide(
@@ -74,13 +74,9 @@ class _ToggleOptionState extends State<ToggleOption> {
                     child: Center(
                       child: Text(
                         'Lengkap',
-                        style: _selectedOption == null
-                            ? hintTextStyle
-                            : toggleOptionTextStyle.copyWith(
-                                color: _selectedOption == 'Lengkap'
-                                    ? Colors.white
-                                    : hintTextColor,
-                              ),
+                        style: _selectedOption == 'Lengkap'
+                            ? toggleOptionTextStyle.copyWith(color: Colors.white)
+                            : hintTextStyle,
                       ),
                     ),
                   ),
@@ -104,20 +100,16 @@ class _ToggleOptionState extends State<ToggleOption> {
                           ? toggleOptionSelectedTidakColor
                           : Colors.white,
                       borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(8.0),
-                        bottomRight: Radius.circular(8.0),
+                        topRight: Radius.circular(6.0),
+                        bottomRight: Radius.circular(6.0),
                       ),
                     ),
                     child: Center(
                       child: Text(
                         'Tidak',
-                        style: _selectedOption == null
-                            ? hintTextStyle
-                            : toggleOptionTextStyle.copyWith(
-                                color: _selectedOption == 'Tidak'
-                                    ? Colors.white
-                                    : hintTextColor,
-                              ),
+                        style: _selectedOption == 'Tidak'
+                            ? toggleOptionTextStyle.copyWith(color: Colors.white)
+                            : hintTextStyle,
                       ),
                     ),
                   ),
