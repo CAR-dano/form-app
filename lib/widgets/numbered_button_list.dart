@@ -30,19 +30,18 @@ class _NumberedButtonListState extends State<NumberedButtonList> {
           style: labelStyle,
         ),
         const SizedBox(height: 8.0),
-        SizedBox(
-          height: 35,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: widget.count,
-            itemBuilder: (context, index) {
-              final itemNumber = index + 1;
-              final isSelected = index == widget.selectedIndex;
-              return GestureDetector(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround, // Distribute space around the buttons
+          children: List.generate(widget.count, (index) {
+            final itemNumber = index + 1;
+            final isSelected = index == widget.selectedIndex;
+            return Expanded( // Use Expanded to make buttons take equal space
+              child: GestureDetector(
                 onTap: () => widget.onItemSelected(index),
                 child: Container(
-                  width: 35,
-                  margin: const EdgeInsets.symmetric(horizontal: 2),
+                  height: 35, // Maintain height
+                  width: 35, // Set a fixed width for the button
+                  // No margin here, Expanded will handle spacing
                   decoration: BoxDecoration(
                     color: isSelected ? toggleOptionSelectedLengkapColor : Colors.white,
                     borderRadius: BorderRadius.circular(12),
@@ -62,9 +61,9 @@ class _NumberedButtonListState extends State<NumberedButtonList> {
                     ),
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          }),
         ),
       ],
     );

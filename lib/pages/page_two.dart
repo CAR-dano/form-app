@@ -158,6 +158,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                       label: 'Tahun',
                       hintText: 'Masukkan tahun pembuatan',
                       keyboardType: TextInputType.number, // Use number keyboard
+                      useThousandsSeparator: false, // Disable thousands separator for Tahun
                       focusNode: _tahunFocusNode,
                       initialValue: formData.tahun, // Initialize with data from provider
                       onChanged: (value) {

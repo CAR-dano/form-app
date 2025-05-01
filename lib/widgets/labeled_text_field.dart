@@ -14,6 +14,7 @@ class LabeledTextField extends StatefulWidget {
   final FocusNode? focusNode; // Optional focus node
   final bool formSubmitted; // Add formSubmitted parameter
   final String? initialValue; // Add initialValue parameter
+  final bool useThousandsSeparator; // Add parameter to control thousands separator
 
   const LabeledTextField({
     super.key,
@@ -28,6 +29,7 @@ class LabeledTextField extends StatefulWidget {
     this.focusNode, // Accept optional focus node
     this.formSubmitted = false, // Default to false
     this.initialValue, // Accept initialValue
+    this.useThousandsSeparator = true, // Default to true
   });
 
   @override
@@ -78,9 +80,10 @@ class _LabeledTextFieldState extends State<LabeledTextField> {
           maxLines: widget.maxLines,
           style: inputTextStyling,
           focusNode: widget.focusNode, // Pass the focus node to TextFormField
-          inputFormatters: widget.keyboardType == TextInputType.number
-              ? [_ThousandsSeparatorInputFormatter()] // Apply formatter for numbers
-              : null, // No formatter for other types
+          textCapitalization: TextCapitalization.sentences, // Auto-capitalize the first letter
+          inputFormatters: widget.keyboardType == TextInputType.number && widget.useThousandsSeparator
+              ? [_ThousandsSeparatorInputFormatter()] // Apply formatter for numbers if enabled
+              : null, // No formatter for other types or if disabled
           decoration: InputDecoration(
             hintText: widget.hintText,
             hintStyle: hintTextStyling,

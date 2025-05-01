@@ -41,6 +41,12 @@ final TextStyle hintTextStyle = GoogleFonts.rubik(
   fontWeight: FontWeight.w400,
 );
 
+final TextStyle pageTitleStyle = GoogleFonts.rubik(
+  fontSize: 40.0,
+  fontWeight: FontWeight.w500,
+  color: labelTextColor, // Assuming page title color is the same as label text color
+);
+
 // Toggle Option Text Styles
 final TextStyle toggleOptionTextStyle = GoogleFonts.rubik(
   fontSize: 16.0,
