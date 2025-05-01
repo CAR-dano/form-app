@@ -13,6 +13,9 @@ const Color selectedDateColor = Color(
 
 const Color iconColor = borderColor; // Color for the dropdown icon
 
+// Error Color
+const Color errorBorderColor = Color(0xFFE24717);
+
 // Date Picker Colors
 const Color pickedDateColor = Color(0xFFFF7D43); // Orange color for picked date
 

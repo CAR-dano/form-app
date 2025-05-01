@@ -100,9 +100,9 @@ class _PageOneState extends State<PageOne> {
                           hintText: 'Masukkan nama inspektor',
                           focusNode: _namaInspektorFocusNode,
                           onChanged: (value) {
-                            if (_formSubmitted) { // Only validate on change after first submission
-                              context.findAncestorStateOfType<FormFieldState>()?.validate();
-                            }
+                            // The validation is now handled within LabeledTextField's onChanged
+                            // Call the original onChanged if needed by the parent
+                            // widget.onChanged?.call(value);
                           },
                           validator: (value) {
                             if (_formSubmitted && (value == null || value.isEmpty)) {
@@ -110,6 +110,7 @@ class _PageOneState extends State<PageOne> {
                             }
                             return null; // Return null if valid
                           },
+                          formSubmitted: _formSubmitted, // Pass the formSubmitted flag
                         );
                       },
                     ),
@@ -121,9 +122,9 @@ class _PageOneState extends State<PageOne> {
                           hintText: 'Masukkan nama customer',
                           focusNode: _namaCustomerFocusNode,
                           onChanged: (value) {
-                            if (_formSubmitted) { // Only validate on change after first submission
-                              context.findAncestorStateOfType<FormFieldState>()?.validate();
-                            }
+                            // The validation is now handled within LabeledTextField's onChanged
+                            // Call the original onChanged if needed by the parent
+                            // widget.onChanged?.call(value);
                           },
                            validator: (value) {
                             if (_formSubmitted && (value == null || value.isEmpty)) {
@@ -131,6 +132,7 @@ class _PageOneState extends State<PageOne> {
                             }
                             return null; // Return null if valid
                           },
+                          formSubmitted: _formSubmitted, // Pass the formSubmitted flag
                         );
                       },
                     ),
@@ -142,9 +144,9 @@ class _PageOneState extends State<PageOne> {
                           hintText: 'Contoh: Yogyakarta / Semarang',
                           focusNode: _cabangInspeksiFocusNode,
                            onChanged: (value) {
-                            if (_formSubmitted) { // Only validate on change after first submission
-                              context.findAncestorStateOfType<FormFieldState>()?.validate();
-                            }
+                            // The validation is now handled within LabeledTextField's onChanged
+                            // Call the original onChanged if needed by the parent
+                            // widget.onChanged?.call(value);
                           },
                            validator: (value) {
                             if (_formSubmitted && (value == null || value.isEmpty)) {
@@ -152,6 +154,7 @@ class _PageOneState extends State<PageOne> {
                             }
                             return null; // Return null if valid
                           },
+                          formSubmitted: _formSubmitted, // Pass the formSubmitted flag
                         );
                       },
                     ),
@@ -166,9 +169,9 @@ class _PageOneState extends State<PageOne> {
                             setState(() {
                               _selectedDate = date;
                           });
-                            if (_formSubmitted) { // Only validate on change after first submission
-                              context.findAncestorStateOfType<FormFieldState>()?.validate();
-                            }
+                            // The validation is now handled within LabeledDateField's onChanged
+                            // Call the original onChanged if needed by the parent
+                            // widget.onChanged?.call(date);
                           },
                           focusNode: _tanggalInspeksiFocusNode,
                            validator: (date) {
@@ -177,6 +180,7 @@ class _PageOneState extends State<PageOne> {
                             }
                             return null; // Return null if valid
                             },
+                          formSubmitted: _formSubmitted, // Pass the formSubmitted flag
                         );
                       },
                     ),

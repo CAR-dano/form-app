@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import for input formatters
 import 'package:form_app/statics/app_styles.dart';
 
-class LabeledTextField extends StatelessWidget {
+class LabeledTextField extends StatefulWidget {
   final String label;
   final String hintText;
   final TextEditingController? controller; // Allow passing a controller
@@ -12,6 +12,7 @@ class LabeledTextField extends StatelessWidget {
   final FormFieldValidator<String>? validator; // For form validation
   final int? maxLines;
   final FocusNode? focusNode; // Optional focus node
+  final bool formSubmitted; // Add formSubmitted parameter
 
   const LabeledTextField({
     super.key,
@@ -24,29 +25,45 @@ class LabeledTextField extends StatelessWidget {
     this.validator,
     this.maxLines = 1, // Default to single line
     this.focusNode, // Accept optional focus node
+    this.formSubmitted = false, // Default to false
   });
+
+  @override
+  State<LabeledTextField> createState() => _LabeledTextFieldState();
+}
+
+class _LabeledTextFieldState extends State<LabeledTextField> {
+  final _formFieldKey = GlobalKey<FormFieldState>(); // Key for managing form field state
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: labelStyle),
+        Text(widget.label, style: labelStyle),
         const SizedBox(height: 8.0), // Consistent spacing
         TextFormField( // Use TextFormField for validation integration
-          controller: controller,
-          keyboardType: keyboardType,
-          obscureText: obscureText,
-          onChanged: onChanged,
-          validator: validator,
-          maxLines: maxLines,
+          key: _formFieldKey, // Assign the key
+          controller: widget.controller,
+          keyboardType: widget.keyboardType,
+          obscureText: widget.obscureText,
+          onChanged: (value) {
+            // Call the original onChanged callback
+            widget.onChanged?.call(value);
+            // Trigger validation if the form has been submitted
+            if (widget.formSubmitted) {
+              _formFieldKey.currentState?.validate();
+            }
+          },
+          validator: widget.validator,
+          maxLines: widget.maxLines,
           style: inputTextStyling,
-          focusNode: focusNode, // Pass the focus node to TextFormField
-          inputFormatters: keyboardType == TextInputType.number
+          focusNode: widget.focusNode, // Pass the focus node to TextFormField
+          inputFormatters: widget.keyboardType == TextInputType.number
               ? [_ThousandsSeparatorInputFormatter()] // Apply formatter for numbers
               : null, // No formatter for other types
           decoration: InputDecoration(
-            hintText: hintText,
+            hintText: widget.hintText,
             hintStyle: hintTextStyling,
             contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
             isDense: true, // Make the input decorator more compact
@@ -65,11 +82,11 @@ class LabeledTextField extends StatelessWidget {
             // Add error border style if needed based on validation feedback
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: const BorderSide(color: Colors.red, width: 1.5),
+              borderSide: const BorderSide(color: errorBorderColor, width: 1.5),
             ),
              focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: const BorderSide(color: Colors.red, width: 2.0),
+              borderSide: const BorderSide(color: errorBorderColor, width: 2.0),
             ),
           ),
         ),

@@ -10,6 +10,7 @@ class LabeledDateField extends StatefulWidget {
   final ValueChanged<DateTime?>? onChanged; // Callback when date changes
   final FocusNode? focusNode; // Optional focus node
   final FormFieldValidator<DateTime?>? validator; // Optional validator
+  final bool formSubmitted; // Add formSubmitted parameter
 
   // --- End Styles ---
 
@@ -21,6 +22,7 @@ class LabeledDateField extends StatefulWidget {
     this.onChanged,
     this.focusNode, // Accept optional focus node
     this.validator, // Accept optional validator
+    this.formSubmitted = false, // Default to false
   });
 
   @override
@@ -134,24 +136,24 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
                  enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide(
-                    color: field.hasError ? const Color(0xFFE24717) : borderColor, // Error color or default
+                    color: field.hasError ? errorBorderColor : borderColor, // Error color or default
                     width: 1.5,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide(
-                    color: field.hasError ? const Color(0xFFE24717) : borderColor, // Error color or default
+                    color: field.hasError ? errorBorderColor : borderColor, // Error color or default
                     width: 2.0,
                   ),
                 ),
                  errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
-                  borderSide: const BorderSide(color: Color(0xFFE24717), width: 1.5), // Error color
+                  borderSide: const BorderSide(color: errorBorderColor, width: 1.5), // Error color
                 ),
                  focusedErrorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
-                  borderSide: const BorderSide(color: Color(0xFFE24717), width: 2.0), // Error color
+                  borderSide: const BorderSide(color: errorBorderColor, width: 2.0), // Error color
                 ),
               ),
               isEmpty: field.value == null,
