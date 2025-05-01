@@ -169,6 +169,10 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
                   if (_selectedDate != null && _selectedDate != field.value) {
                      field.didChange(_selectedDate);
                      widget.onChanged?.call(_selectedDate);
+                     // Trigger validation if the form has been submitted
+                     if (widget.formSubmitted) {
+                       _fieldKey.currentState?.validate();
+                     }
                   }
                 },
                  focusNode: widget.focusNode ?? _focusNode, // Assign the focus node to InkWell
