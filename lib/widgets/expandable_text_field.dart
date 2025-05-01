@@ -105,14 +105,16 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
                 maxLines: null, // Allows the field to expand vertically
                 minLines: 3, // Initial height of 3 lines
                 onChanged: (value) {
-                  widget.onChanged?.call(value);
-                  if (widget.controller != null) {
-                    // Update external controller if provided
-                    widget.controller!.text = value;
-                  }
-                  if (widget.formSubmitted) {
-                    _formFieldKey.currentState?.validate();
-                  }
+                  setState(() { // Add setState here
+                    widget.onChanged?.call(value);
+                    if (widget.controller != null) {
+                      // Update external controller if provided
+                      widget.controller!.text = value;
+                    }
+                    if (widget.formSubmitted) {
+                      _formFieldKey.currentState?.validate();
+                    }
+                  });
                 },
                 validator: widget.validator,
                 style: inputTextStyling,
@@ -147,12 +149,14 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
         if (_internalController.text.isEmpty) // Modified condition
           Positioned(
             top: 12.0, // Adjust as needed for padding
-                  left: 16.0, // Adjust as needed for padding
-                  child: Text(
-                    formattedHintText,
-                    style: hintTextStyling,
-                  ),
-                ),
+            left: 16.0, // Adjust as needed for padding
+            child: IgnorePointer( // Wrap with IgnorePointer
+              child: Text(
+                formattedHintText,
+                style: hintTextStyling,
+              ),
+            ),
+          ),
             ],
           ),
         ),
