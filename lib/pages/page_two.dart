@@ -32,6 +32,9 @@ class _PageTwoState extends State<PageTwo> {
   late FocusNode _pajak5TahunFocusNode;
   late FocusNode _biayaPajakFocusNode;
 
+  final _formKey = GlobalKey<FormState>(); // GlobalKey for the form
+  bool _formSubmitted = false; // Track if the form has been submitted
+
   @override
   void initState() {
     super.initState();
@@ -66,19 +69,32 @@ class _PageTwoState extends State<PageTwo> {
     super.dispose();
   }
 
-
   void moveToNextPage() {
     // Navigate to Page Three, wrapped in CommonLayout
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const CommonLayout(child: PageThree()), // Wrap PageThree
+        builder:
+            (context) =>
+                const CommonLayout(child: PageThree()), // Wrap PageThree
       ),
     );
   }
 
   void moveToPreviousPage() {
-    Navigator.pop(context); // Simple pop to go back to the previous page (PageOne)
+    Navigator.pop(
+      context,
+    ); // Simple pop to go back to the previous page (PageOne)
+  }
+
+  void validateAndMoveToNextPage() {
+    setState(() {
+      _formSubmitted = true; // Mark the form as submitted
+    });
+    if (_formKey.currentState!.validate()) {
+      // If the form is valid, navigate to the next page.
+      moveToNextPage(); // Move to the next page if validation passes
+    }
   }
 
   @override
@@ -86,116 +102,197 @@ class _PageTwoState extends State<PageTwo> {
     // Return the core content Column directly. Scaffold/SafeArea are in CommonLayout.
     return FocusScope(
       node: _focusScopeNode,
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  PageNumber(data: '2/9'), // Updated Page Number
-                  const SizedBox(height: 8.0),
-                  PageTitle(data: 'Data Kendaraan'), // Updated Title
-                  const SizedBox(height: 24.0),
+      child: Form(
+        // Wrap with Form widget
+        key: _formKey, // Assign the form key
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    PageNumber(data: '2/9'), // Updated Page Number
+                    const SizedBox(height: 8.0),
+                    PageTitle(data: 'Data Kendaraan'), // Updated Title
+                    const SizedBox(height: 24.0),
 
-                  // Input Fields based on user request
+                    // Input Fields based on user request
                   LabeledTextField(
                     label: 'Merek Kendaraan',
                     hintText: 'Masukkan merek kendaraan',
                     focusNode: _merekKendaraanFocusNode,
+                    formSubmitted: _formSubmitted, // Pass the formSubmitted flag
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Merek Kendaraan tidak boleh kosong';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 16.0),
                   LabeledTextField(
                     label: 'Tipe Kendaraan',
-                    hintText: 'Masukkan tipe kendaraan',
-                    focusNode: _tipeKendaraanFocusNode,
-                  ),
-                  const SizedBox(height: 16.0),
-                   LabeledTextField(
-                    label: 'Tahun',
-                    hintText: 'Masukkan tahun pembuatan',
-                    keyboardType: TextInputType.number, // Use number keyboard
-                    focusNode: _tahunFocusNode,
-                  ),
-                  const SizedBox(height: 16.0),
-                  LabeledTextField(
-                    label: 'Transmisi',
-                    hintText: 'Contoh: Otomatis / Manual',
-                    focusNode: _transmisiFocusNode,
-                  ),
-                   const SizedBox(height: 16.0),
-                  LabeledTextField(
-                    label: 'Warna Kendaraan',
-                    hintText: 'Masukkan warna kendaraan',
-                    focusNode: _warnaKendaraanFocusNode,
-                  ),
-                  const SizedBox(height: 16.0),
-                   LabeledTextField(
-                    label: 'Odometer',
-                    hintText: 'Masukkan angka odometer (km)',
-                     keyboardType: TextInputType.number, // Use number keyboard
-                     focusNode: _odometerFocusNode,
-                  ),
-                  const SizedBox(height: 16.0),
-                   LabeledTextField(
-                    label: 'Kepemilikan',
-                    hintText: 'Contoh: Pribadi / Perusahaan',
-                    focusNode: _kepemilikanFocusNode,
-                  ),
-                  const SizedBox(height: 16.0),
-                   LabeledTextField(
-                    label: 'Plat Nomor',
-                    hintText: 'Masukkan plat nomor',
-                    focusNode: _platNomorFocusNode,
-                  ),
-                  const SizedBox(height: 16.0),
-                  LabeledDateField(
-                    label: 'Pajak 1 Tahun s.d.',
-                    hintText: 'Pilih tanggal',
-                    initialDate: _pajak1TahunDate,
-                    onChanged: (date) {
-                      setState(() {
-                        _pajak1TahunDate = date;
-                      });
-                    },
-                    focusNode: _pajak1TahunFocusNode,
-                  ),
-                   const SizedBox(height: 16.0),
-                   LabeledDateField(
-                    label: 'Pajak 5 Tahun s.d.',
-                    hintText: 'Pilih tanggal',
-                    initialDate: _pajak5TahunDate,
-                    onChanged: (date) {
-                      setState(() {
-                        _pajak5TahunDate = date;
-                      });
-                    },
-                    focusNode: _pajak5TahunFocusNode,
-                  ),
-                  const SizedBox(height: 16.0),
-                   LabeledTextField(
-                    label: 'Biaya Pajak',
-                    hintText: 'Masukkan biaya pajak (Rp)',
-                    keyboardType: TextInputType.number, // Use number keyboard
-                    focusNode: _biayaPajakFocusNode,
-                  ),
+                      hintText: 'Masukkan tipe kendaraan',
+                      focusNode: _tipeKendaraanFocusNode,
+                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Tipe Kendaraan tidak boleh kosong';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    LabeledTextField(
+                      label: 'Tahun',
+                      hintText: 'Masukkan tahun pembuatan',
+                      keyboardType: TextInputType.number, // Use number keyboard
+                      focusNode: _tahunFocusNode,
+                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Tahun tidak boleh kosong';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    LabeledTextField(
+                      label: 'Transmisi',
+                      hintText: 'Contoh: Otomatis / Manual',
+                      focusNode: _transmisiFocusNode,
+                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Transmisi tidak boleh kosong';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    LabeledTextField(
+                      label: 'Warna Kendaraan',
+                      hintText: 'Masukkan warna kendaraan',
+                      focusNode: _warnaKendaraanFocusNode,
+                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Warna Kendaraan tidak boleh kosong';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    LabeledTextField(
+                      label: 'Odometer',
+                      hintText: 'Masukkan angka odometer (km)',
+                      keyboardType: TextInputType.number, // Use number keyboard
+                      focusNode: _odometerFocusNode,
+                      formSubmitted: _formSubmitted,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Odometer tidak boleh kosong';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    LabeledTextField(
+                      label: 'Kepemilikan',
+                      hintText: 'Contoh: Pribadi / Perusahaan',
+                      focusNode: _kepemilikanFocusNode,
+                      formSubmitted: _formSubmitted,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Kepemilikan tidak boleh kosong';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    LabeledTextField(
+                      label: 'Plat Nomor',
+                      hintText: 'Masukkan plat nomor',
+                      focusNode: _platNomorFocusNode,
+                      formSubmitted: _formSubmitted,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Plat Nomor tidak boleh kosong';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    LabeledDateField(
+                      label: 'Pajak 1 Tahun s.d.',
+                      hintText: 'Pilih tanggal',
+                      initialDate: _pajak1TahunDate,
+                      onChanged: (date) {
+                        setState(() {
+                          _pajak1TahunDate = date;
+                        });
+                      },
+                      focusNode: _pajak1TahunFocusNode,
+                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
+                       validator: (value) {
+                        if (value == null) {
+                          return 'Pajak 1 Tahun s.d. tidak boleh kosong';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    LabeledDateField(
+                      label: 'Pajak 5 Tahun s.d.',
+                      hintText: 'Pilih tanggal',
+                      initialDate: _pajak5TahunDate,
+                      onChanged: (date) {
+                        setState(() {
+                          _pajak5TahunDate = date;
+                        });
+                      },
+                      focusNode: _pajak5TahunFocusNode,
+                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
+                       validator: (value) {
+                        if (value == null) {
+                          return 'Pajak 5 Tahun s.d. tidak boleh kosong';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    LabeledTextField(
+                      label: 'Biaya Pajak',
+                      hintText: 'Masukkan biaya pajak (Rp)',
+                      keyboardType: TextInputType.number, // Use number keyboard
+                      focusNode: _biayaPajakFocusNode,
+                      formSubmitted: _formSubmitted,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Biaya Pajak tidak boleh kosong';
+                        }
+                        return null;
+                      },
+                    ),
 
-                  const SizedBox(height: 32.0), // Spacing before buttons
-
-                  // Navigation Row - Back button is enabled here
-                  NavigationButtonRow(
-                    onBackPressed: moveToPreviousPage, // Enable back navigation
-                    onNextPressed: moveToNextPage,
-                    // isBackButtonEnabled: true, // Default is true, so can be omitted
-                  ),
-                ],
+                    const SizedBox(height: 32.0), // Spacing before buttons
+                    // Navigation Row - Back button is enabled here
+                    NavigationButtonRow(
+                      onBackPressed:
+                          moveToPreviousPage, // Enable back navigation
+                      onNextPressed: validateAndMoveToNextPage, // Call validation function
+                      // isBackButtonEnabled: true, // Default is true, so can be omitted
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          SizedBox(height: 16.0), // Optional spacing below the content
-          // Footer
-          Footer(),
-        ],
+            SizedBox(height: 16.0), // Optional spacing below the content
+            // Footer
+            Footer(),
+          ],
+        ),
       ),
     );
   }
