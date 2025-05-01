@@ -30,18 +30,27 @@ class ExpandableTextField extends StatefulWidget {
 
 class _ExpandableTextFieldState extends State<ExpandableTextField> {
   final _formFieldKey = GlobalKey<FormFieldState>();
-  late TextEditingController _internalController; // Revert to standard controller
+  late TextEditingController _internalController;
   late FocusNode _focusNode;
+  List<String> _lines = []; // List to store lines
 
   @override
   void initState() {
     super.initState();
-    _internalController = widget.controller ?? TextEditingController(text: widget.initialValue); // Fix initialization
+    _internalController = widget.controller ?? TextEditingController(text: widget.initialValue);
+    if (widget.initialValue != null && widget.initialValue!.isNotEmpty) {
+      _lines = widget.initialValue!.split('\n'); // Initialize lines from initial value
+    } else {
+      _lines = ['']; // Start with one empty line
+    }
+
     if (widget.controller != null) {
       // If an external controller is provided, copy its text and listen for changes
       widget.controller!.addListener(_handleExternalControllerChange);
     }
+
     _focusNode = widget.focusNode ?? FocusNode();
+    _focusNode.addListener(_handleFocusChange); // Listen for focus changes
   }
 
   @override
@@ -49,18 +58,33 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
     if (widget.controller != null) {
       widget.controller!.removeListener(_handleExternalControllerChange);
     }
-    if (widget.controller == null) { // Only dispose if internal controller was created
+    if (widget.controller == null) {
       _internalController.dispose();
     }
     if (widget.focusNode == null) {
+      _focusNode.removeListener(_handleFocusChange); // Remove listener
       _focusNode.dispose();
     }
     super.dispose();
   }
 
   void _handleExternalControllerChange() {
-    // Update internal controller when external controller changes
+    // Update internal controller and lines when external controller changes
     _internalController.text = widget.controller!.text;
+    _lines = _internalController.text.split('\n');
+  }
+
+  void _handleFocusChange() {
+    if (_focusNode.hasFocus && _internalController.text.isEmpty) {
+      // If gains focus and is empty, add the first bullet point line
+      setState(() {
+        _lines = ['• '];
+        _internalController.text = _lines.join('\n');
+        // Position cursor after the bullet point
+        _internalController.selection = TextSelection.fromPosition(
+            TextPosition(offset: _internalController.text.length));
+      });
+    }
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
@@ -69,13 +93,22 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
         final text = _internalController.text;
         final selection = _internalController.selection;
         if (selection.isValid) {
+          final currentLineIndex = text.substring(0, selection.start).split('\n').length - 1;
           final newText = text.replaceRange(selection.start, selection.end, '\n• ');
-          _internalController.value = TextEditingValue(
-            text: newText,
-            selection: TextSelection.fromPosition(
-              TextPosition(offset: selection.start + 3), // Move cursor after bullet and space
-            ),
-          );
+
+          setState(() {
+            _lines = newText.split('\n');
+            _internalController.value = TextEditingValue(
+              text: newText,
+              selection: TextSelection.fromPosition(
+                TextPosition(offset: selection.start + 3), // Move cursor after bullet and space
+              ),
+            );
+             widget.onChanged?.call(_internalController.text); // Call onChanged
+             if (widget.controller != null) {
+                widget.controller!.text = _internalController.text; // Update external controller
+             }
+          });
           return KeyEventResult.handled; // Mark the event as handled
         }
       }
@@ -105,12 +138,12 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
                 maxLines: null, // Allows the field to expand vertically
                 minLines: 3, // Initial height of 3 lines
                 onChanged: (value) {
-                  setState(() { // Add setState here
-                    widget.onChanged?.call(value);
-                    if (widget.controller != null) {
-                      // Update external controller if provided
-                      widget.controller!.text = value;
-                    }
+                  setState(() {
+                    _lines = value.split('\n'); // Update lines on text change
+                     widget.onChanged?.call(_internalController.text); // Call onChanged
+                     if (widget.controller != null) {
+                        widget.controller!.text = _internalController.text; // Update external controller
+                     }
                     if (widget.formSubmitted) {
                       _formFieldKey.currentState?.validate();
                     }
