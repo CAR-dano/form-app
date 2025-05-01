@@ -5,6 +5,7 @@ import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/numbered_button_list.dart';
 import 'package:form_app/widgets/common_layout.dart';
+import 'package:form_app/widgets/expandable_text_field.dart';
 // Import other necessary widgets like CommonLayout if you plan to use it here
 
 // Placeholder for Page Four
@@ -48,6 +49,14 @@ class _PageFourState extends State<PageFour> {
                     count: 10, // Assuming 10 options based on the image
                     selectedIndex: _selectedIndex,
                     onItemSelected: _onItemSelected,
+                  ),
+                  const SizedBox(height: 24.0),
+                  ExpandableTextField(
+                    label: 'Tambahkan Catatan Eksterior', // Placeholder label
+                    hintText: 'Masukkan catatan di sini...', // Placeholder hint text
+                    onChanged: (value) {
+                      // TODO: Handle text changes
+                    },
                   ),
                   const SizedBox(height: 32.0),
                   NavigationButtonRow(
