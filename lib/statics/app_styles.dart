@@ -24,6 +24,10 @@ const Color buttonColor = Color(0xFFFF7D43);
 const Color disabledButtonColor = Colors.grey;
 const Color buttonTextColor = Colors.white;
 
+// Toggle Option Colors
+const Color toggleOptionSelectedLengkapColor = Color(0xFF30B6ED);
+const Color toggleOptionSelectedTidakColor = Color(0xFFFF80B4);
+
 // Text Styles
 final TextStyle labelStyle = GoogleFonts.rubik(
   fontSize: 20.0,
@@ -35,6 +39,12 @@ final TextStyle hintTextStyle = GoogleFonts.rubik(
   fontSize: 16.0,
   color: hintTextColor,
   fontWeight: FontWeight.w400,
+);
+
+// Toggle Option Text Styles
+final TextStyle toggleOptionTextStyle = GoogleFonts.rubik(
+  fontSize: 16.0,
+  fontWeight: FontWeight.bold,
 );
 
 // Navigation Button Text Style
