@@ -9,6 +9,7 @@ class LabeledDateField extends StatefulWidget {
   final DateTime? initialDate; // Optional initial date
   final ValueChanged<DateTime?>? onChanged; // Callback when date changes
   final FocusNode? focusNode; // Optional focus node
+  final FormFieldValidator<DateTime?>? validator; // Optional validator
 
   // --- End Styles ---
 
@@ -19,6 +20,7 @@ class LabeledDateField extends StatefulWidget {
     this.initialDate,
     this.onChanged,
     this.focusNode, // Accept optional focus node
+    this.validator, // Accept optional validator
   });
 
   @override
@@ -28,6 +30,7 @@ class LabeledDateField extends StatefulWidget {
 class _LabeledDateFieldState extends State<LabeledDateField> {
   DateTime? _selectedDate;
   late FocusNode _focusNode;
+  final _fieldKey = GlobalKey<FormFieldState>(); // Key for managing form field state
 
   @override
   void initState() {
@@ -48,6 +51,7 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
     return InputDecoration(
       // No hintText here, handled by the Text widget logic
       contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
+      isDense: true, // Make the input decorator more compact
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8.0),
         borderSide: const BorderSide(color: borderColor, width: 1.5), // Access borderColor from AppStyles
@@ -116,32 +120,98 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
         const SizedBox(height: 8.0),
 
         // --- Tappable Date Input Area ---
-        InkWell(
-          onTap: () {
-            // Use the provided focusNode if available, otherwise use the internal one
-            (widget.focusNode ?? _focusNode).requestFocus(); // Request focus for this widget
-            _selectDate(context);
-          },
-          focusNode: widget.focusNode ?? _focusNode, // Assign the focus node to InkWell
-          child: InputDecorator( // Use InputDecorator for consistent styling
-            decoration: _buildInputDecoration(),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                // --- Display Text (Hint or Formatted Date) ---
-                Text(
-                  _selectedDate == null
-                      ? widget.hintText // Show hint text if no date selected
-                      : DateFormat('dd/MM/yyyy').format(_selectedDate!), // Show formatted date
-                  style: _selectedDate == null
-                      ? hintTextStyle // Access hintTextStyle from AppStyles
-                      : selectedDateTextStyle, // Access selectedDateTextStyle from AppStyles
+        // Use FormField to integrate with Form and provide validation
+        FormField<DateTime?>(
+          key: _fieldKey, // Assign the field key
+          initialValue: _selectedDate,
+          validator: widget.validator, // Use the provided validator
+          builder: (FormFieldState<DateTime?> field) {
+            return InputDecorator( // Use InputDecorator for consistent styling
+              decoration: _buildInputDecoration().copyWith(
+                // Display error text if validation fails
+                errorText: field.errorText,
+                // Customize border color based on validation state
+                 enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide(
+                    color: field.hasError ? const Color(0xFFE24717) : borderColor, // Error color or default
+                    width: 1.5,
+                  ),
                 ),
-                // --- Dropdown Icon ---
-                const Icon(Icons.arrow_drop_down, color: iconColor), // Access iconColor from AppStyles
-              ],
-            ),
-          ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide(
+                    color: field.hasError ? const Color(0xFFE24717) : borderColor, // Error color or default
+                    width: 2.0,
+                  ),
+                ),
+                 errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: const BorderSide(color: Color(0xFFE24717), width: 1.5), // Error color
+                ),
+                 focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: const BorderSide(color: Color(0xFFE24717), width: 2.0), // Error color
+                ),
+              ),
+              isEmpty: field.value == null,
+              child: InkWell(
+                onTap: () async {
+                   // Use the provided focusNode if available, otherwise use the internal one
+                  (widget.focusNode ?? _focusNode).requestFocus(); // Request focus for this widget
+                  final picked = await showDatePicker( // Capture the picked date
+                    context: context,
+                    initialDate: _selectedDate ?? DateTime.now(),
+                    firstDate: DateTime(2000), // Sensible default range start
+                    lastDate: DateTime.now(), // Restrict to today's date
+                    builder: (BuildContext context, Widget? child) {
+                      return Theme(
+                        data: ThemeData(
+                          colorScheme: const ColorScheme.light(
+                            primary: pickedDateColor, // Color of the selected date
+                            onSurface: Colors.black, // Color of the dates in the calendar
+                            surface: Colors.white, // Background color of the date picker
+                          ),
+                          textTheme: Theme.of(context).textTheme.apply(
+                            fontFamily: GoogleFonts.rubik().fontFamily, // Use Rubik font
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+
+                  // Check if the widget is still mounted before interacting with context or state
+                  if (!mounted) return; // Exit if the widget was removed during the await
+
+                  // Check if a date was actually picked and it's different
+                  if (picked != null && picked != field.value) { // Compare with field.value
+                     // Update the FormField's value
+                    field.didChange(picked);
+                    // Call the callback function provided by the parent widget
+                    widget.onChanged?.call(picked);
+                  }
+                },
+                 focusNode: widget.focusNode ?? _focusNode, // Assign the focus node to InkWell
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    // --- Display Text (Hint or Formatted Date) ---
+                    Text(
+                      field.value == null
+                          ? widget.hintText // Show hint text if no date selected
+                          : DateFormat('dd/MM/yyyy').format(field.value!), // Show formatted date
+                      style: field.value == null
+                          ? hintTextStyle // Access hintTextStyle from AppStyles
+                          : selectedDateTextStyle.copyWith(color: selectedDateColor), // Explicitly set color
+                    ),
+                    // --- Dropdown Icon ---
+                    const Icon(Icons.arrow_drop_down, color: iconColor), // Access iconColor from AppStyles
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ],
     );

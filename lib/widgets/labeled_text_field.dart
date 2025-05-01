@@ -49,6 +49,7 @@ class LabeledTextField extends StatelessWidget {
             hintText: hintText,
             hintStyle: hintTextStyling,
             contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+            isDense: true, // Make the input decorator more compact
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: const BorderSide(color: borderColor, width: 1.5),
