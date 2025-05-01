@@ -93,96 +93,80 @@ class _PageOneState extends State<PageOne> {
                     const SizedBox(height: 8.0),
                     PageTitle(data: 'Identitas'),
                     const SizedBox(height: 24.0), // Keep internal spacing
-                    Builder( // Wrap with Builder to get context for FormField.of
-                      builder: (BuildContext context) {
-                        return LabeledTextField(
-                          label: 'Nama Inspektor',
-                          hintText: 'Masukkan nama inspektor',
-                          focusNode: _namaInspektorFocusNode,
-                          onChanged: (value) {
-                            // The validation is now handled within LabeledTextField's onChanged
-                            // Call the original onChanged if needed by the parent
-                            // widget.onChanged?.call(value);
-                          },
-                          validator: (value) {
-                            if (_formSubmitted && (value == null || value.isEmpty)) {
-                              return 'Nama Inspektor belum terisi'; // Validation message
-                            }
-                            return null; // Return null if valid
-                          },
-                          formSubmitted: _formSubmitted, // Pass the formSubmitted flag
-                        );
+                    LabeledTextField(
+                      label: 'Nama Inspektor',
+                      hintText: 'Masukkan nama inspektor',
+                      focusNode: _namaInspektorFocusNode,
+                      onChanged: (value) {
+                        // The validation is now handled within LabeledTextField's onChanged
+                        // Call the original onChanged if needed by the parent
+                        // widget.onChanged?.call(value);
                       },
+                      validator: (value) {
+                        if (_formSubmitted && (value == null || value.isEmpty)) {
+                          return 'Nama Inspektor belum terisi'; // Validation message
+                        }
+                        return null; // Return null if valid
+                      },
+                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
                     ),
                     const SizedBox(height: 16.0), // Keep internal spacing
-                    Builder( // Wrap with Builder to get context for FormField.of
-                      builder: (BuildContext context) {
-                        return LabeledTextField(
-                          label: 'Nama Customer',
-                          hintText: 'Masukkan nama customer',
-                          focusNode: _namaCustomerFocusNode,
-                          onChanged: (value) {
-                            // The validation is now handled within LabeledTextField's onChanged
-                            // Call the original onChanged if needed by the parent
-                            // widget.onChanged?.call(value);
-                          },
-                           validator: (value) {
-                            if (_formSubmitted && (value == null || value.isEmpty)) {
-                              return 'Nama Customer belum terisi'; // Validation message
-                            }
-                            return null; // Return null if valid
-                          },
-                          formSubmitted: _formSubmitted, // Pass the formSubmitted flag
-                        );
+                    LabeledTextField(
+                      label: 'Nama Customer',
+                      hintText: 'Masukkan nama customer',
+                      focusNode: _namaCustomerFocusNode,
+                      onChanged: (value) {
+                        // The validation is now handled within LabeledTextField's onChanged
+                        // Call the original onChanged if needed by the parent
+                        // widget.onChanged?.call(value);
                       },
+                       validator: (value) {
+                        if (_formSubmitted && (value == null || value.isEmpty)) {
+                          return 'Nama Customer belum terisi'; // Validation message
+                        }
+                        return null; // Return null if valid
+                      },
+                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
                     ),
                     const SizedBox(height: 16.0), // Keep internal spacing
-                    Builder( // Wrap with Builder to get context for FormField.of
-                      builder: (BuildContext context) {
-                        return LabeledTextField(
-                          label: 'Cabang Inspeksi',
-                          hintText: 'Contoh: Yogyakarta / Semarang',
-                          focusNode: _cabangInspeksiFocusNode,
-                           onChanged: (value) {
-                            // The validation is now handled within LabeledTextField's onChanged
-                            // Call the original onChanged if needed by the parent
-                            // widget.onChanged?.call(value);
-                          },
-                           validator: (value) {
-                            if (_formSubmitted && (value == null || value.isEmpty)) {
-                              return 'Cabang Inspeksi belum terisi'; // Validation message
-                            }
-                            return null; // Return null if valid
-                          },
-                          formSubmitted: _formSubmitted, // Pass the formSubmitted flag
-                        );
+                    LabeledTextField(
+                      label: 'Cabang Inspeksi',
+                      hintText: 'Contoh: Yogyakarta / Semarang',
+                      focusNode: _cabangInspeksiFocusNode,
+                       onChanged: (value) {
+                        // The validation is now handled within LabeledTextField's onChanged
+                        // Call the original onChanged if needed by the parent
+                        // widget.onChanged?.call(value);
                       },
+                       validator: (value) {
+                        if (_formSubmitted && (value == null || value.isEmpty)) {
+                          return 'Cabang Inspeksi belum terisi'; // Validation message
+                        }
+                        return null; // Return null if valid
+                      },
+                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
                     ),
                     const SizedBox(height: 16.0), // Keep internal spacing
-                    Builder( // Wrap with Builder to get context for FormField.of
-                      builder: (BuildContext context) {
-                        return LabeledDateField(
-                          label: 'Tanggal Inspeksi',
-                          hintText: 'Pilih tanggal inspeksi',
-                          initialDate: _selectedDate,
-                          onChanged: (date) {
-                            setState(() {
-                              _selectedDate = date;
-                          });
-                            // The validation is now handled within LabeledDateField's onChanged
-                            // Call the original onChanged if needed by the parent
-                            // widget.onChanged?.call(date);
-                          },
-                          focusNode: _tanggalInspeksiFocusNode,
-                           validator: (date) {
-                            if (_formSubmitted && date == null) {
-                              return 'Tanggal Inspeksi belum terisi'; // Validation message
-                            }
-                            return null; // Return null if valid
-                            },
-                          formSubmitted: _formSubmitted, // Pass the formSubmitted flag
-                        );
+                    LabeledDateField(
+                      label: 'Tanggal Inspeksi',
+                      hintText: 'Pilih tanggal inspeksi',
+                      initialDate: _selectedDate,
+                      onChanged: (date) {
+                        setState(() {
+                          _selectedDate = date;
+                      });
+                        // The validation is now handled within LabeledDateField's onChanged
+                        // Call the original onChanged if needed by the parent
+                        // widget.onChanged?.call(date);
                       },
+                      focusNode: _tanggalInspeksiFocusNode,
+                       validator: (date) {
+                        if (_formSubmitted && date == null) {
+                          return 'Tanggal Inspeksi belum terisi'; // Validation message
+                        }
+                        return null; // Return null if valid
+                        },
+                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
                     ),
                   const SizedBox(height: 32.0), // Keep internal spacing
                   // Pass isBackButtonEnabled: false for PageOne
