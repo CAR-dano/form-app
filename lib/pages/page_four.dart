@@ -16,11 +16,15 @@ class PageFour extends StatefulWidget {
 }
 
 class _PageFourState extends State<PageFour> {
-  int _selectedIndex = 0;
+  int _selectedIndex = -1;
 
   void _onItemSelected(int index) {
     setState(() {
-      _selectedIndex = index;
+      if (_selectedIndex == index) {
+        _selectedIndex = -1; // Unselect if already selected
+      } else {
+        _selectedIndex = index; // Select the tapped index
+      }
     });
   }
 

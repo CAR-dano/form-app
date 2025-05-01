@@ -51,6 +51,7 @@ class _ToggleOptionState extends State<ToggleOption> {
             borderRadius: BorderRadius.circular(8.0),
           ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: GestureDetector(
