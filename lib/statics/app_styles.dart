@@ -41,6 +41,19 @@ final TextStyle hintTextStyle = GoogleFonts.rubik(
   fontWeight: FontWeight.w400,
 );
 
+const Map<int, Color> numberedButtonColors = {
+  1: Color(0xFFF14091),
+  2: Color(0xFFE35488),
+  3: Color(0xFFD76582),
+  4: Color(0xFFCF727D),
+  5: Color(0xFFC38377),
+  6: Color(0xFFB79271),
+  7: Color(0xFFAD9F6A),
+  8: Color(0xFFA2B164),
+  9: Color(0xFF97BF5E),
+  10: Color(0xFF98BE5F),
+};
+
 final TextStyle pageTitleStyle = GoogleFonts.rubik(
   fontSize: 40.0,
   fontWeight: FontWeight.w500,
