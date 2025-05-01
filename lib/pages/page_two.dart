@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/pages/page_three.dart'; // Assuming PageThree exists or will be created
+import 'package:form_app/providers/form_provider.dart'; // Import the provider
 import 'package:form_app/widgets/common_layout.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/labeled_date_field.dart';
@@ -8,17 +10,14 @@ import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 
-class PageTwo extends StatefulWidget {
+class PageTwo extends ConsumerStatefulWidget {
   const PageTwo({super.key});
 
   @override
-  State<PageTwo> createState() => _PageTwoState();
+  ConsumerState<PageTwo> createState() => _PageTwoState();
 }
 
-class _PageTwoState extends State<PageTwo> {
-  DateTime? _pajak1TahunDate;
-  DateTime? _pajak5TahunDate;
-
+class _PageTwoState extends ConsumerState<PageTwo> {
   late FocusScopeNode _focusScopeNode;
   late FocusNode _merekKendaraanFocusNode;
   late FocusNode _tipeKendaraanFocusNode;
@@ -99,6 +98,9 @@ class _PageTwoState extends State<PageTwo> {
 
   @override
   Widget build(BuildContext context) {
+    final formData = ref.watch(formProvider); // Watch the form data
+    final formNotifier = ref.read(formProvider.notifier); // Read the notifier
+
     // Return the core content Column directly. Scaffold/SafeArea are in CommonLayout.
     return FocusScope(
       node: _focusScopeNode,
@@ -122,6 +124,10 @@ class _PageTwoState extends State<PageTwo> {
                     label: 'Merek Kendaraan',
                     hintText: 'Masukkan merek kendaraan',
                     focusNode: _merekKendaraanFocusNode,
+                    initialValue: formData.merekKendaraan, // Initialize with data from provider
+                    onChanged: (value) {
+                      formNotifier.updateMerekKendaraan(value); // Update data in provider
+                    },
                     formSubmitted: _formSubmitted, // Pass the formSubmitted flag
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -135,6 +141,10 @@ class _PageTwoState extends State<PageTwo> {
                     label: 'Tipe Kendaraan',
                       hintText: 'Masukkan tipe kendaraan',
                       focusNode: _tipeKendaraanFocusNode,
+                      initialValue: formData.tipeKendaraan, // Initialize with data from provider
+                      onChanged: (value) {
+                        formNotifier.updateTipeKendaraan(value); // Update data in provider
+                      },
                       formSubmitted: _formSubmitted, // Pass the formSubmitted flag
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -149,6 +159,10 @@ class _PageTwoState extends State<PageTwo> {
                       hintText: 'Masukkan tahun pembuatan',
                       keyboardType: TextInputType.number, // Use number keyboard
                       focusNode: _tahunFocusNode,
+                      initialValue: formData.tahun, // Initialize with data from provider
+                      onChanged: (value) {
+                        formNotifier.updateTahun(value); // Update data in provider
+                      },
                       formSubmitted: _formSubmitted, // Pass the formSubmitted flag
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -162,7 +176,11 @@ class _PageTwoState extends State<PageTwo> {
                       label: 'Transmisi',
                       hintText: 'Contoh: Otomatis / Manual',
                       focusNode: _transmisiFocusNode,
-                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
+                      initialValue: formData.transmisi, // Initialize with data from provider
+                      onChanged: (value) {
+                        formNotifier.updateTransmisi(value); // Update data in provider
+                      },
+                      formSubmitted: _formSubmitted,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Transmisi tidak boleh kosong';
@@ -175,7 +193,11 @@ class _PageTwoState extends State<PageTwo> {
                       label: 'Warna Kendaraan',
                       hintText: 'Masukkan warna kendaraan',
                       focusNode: _warnaKendaraanFocusNode,
-                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
+                      initialValue: formData.warnaKendaraan, // Initialize with data from provider
+                      onChanged: (value) {
+                        formNotifier.updateWarnaKendaraan(value); // Update data in provider
+                      },
+                      formSubmitted: _formSubmitted,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Warna Kendaraan tidak boleh kosong';
@@ -189,6 +211,10 @@ class _PageTwoState extends State<PageTwo> {
                       hintText: 'Masukkan angka odometer (km)',
                       keyboardType: TextInputType.number, // Use number keyboard
                       focusNode: _odometerFocusNode,
+                      initialValue: formData.odometer, // Initialize with data from provider
+                      onChanged: (value) {
+                        formNotifier.updateOdometer(value); // Update data in provider
+                      },
                       formSubmitted: _formSubmitted,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -202,6 +228,10 @@ class _PageTwoState extends State<PageTwo> {
                       label: 'Kepemilikan',
                       hintText: 'Contoh: Pribadi / Perusahaan',
                       focusNode: _kepemilikanFocusNode,
+                      initialValue: formData.kepemilikan, // Initialize with data from provider
+                      onChanged: (value) {
+                        formNotifier.updateKepemilikan(value); // Update data in provider
+                      },
                       formSubmitted: _formSubmitted,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -215,6 +245,10 @@ class _PageTwoState extends State<PageTwo> {
                       label: 'Plat Nomor',
                       hintText: 'Masukkan plat nomor',
                       focusNode: _platNomorFocusNode,
+                      initialValue: formData.platNomor, // Initialize with data from provider
+                      onChanged: (value) {
+                        formNotifier.updatePlatNomor(value); // Update data in provider
+                      },
                       formSubmitted: _formSubmitted,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -227,11 +261,9 @@ class _PageTwoState extends State<PageTwo> {
                     LabeledDateField(
                       label: 'Pajak 1 Tahun s.d.',
                       hintText: 'Pilih tanggal',
-                      initialDate: _pajak1TahunDate,
+                      initialDate: formData.pajak1TahunDate, // Initialize with data from provider
                       onChanged: (date) {
-                        setState(() {
-                          _pajak1TahunDate = date;
-                        });
+                        formNotifier.updatePajak1TahunDate(date); // Update data in provider
                       },
                       focusNode: _pajak1TahunFocusNode,
                       formSubmitted: _formSubmitted, // Pass the formSubmitted flag
@@ -246,11 +278,9 @@ class _PageTwoState extends State<PageTwo> {
                     LabeledDateField(
                       label: 'Pajak 5 Tahun s.d.',
                       hintText: 'Pilih tanggal',
-                      initialDate: _pajak5TahunDate,
+                      initialDate: formData.pajak5TahunDate, // Initialize with data from provider
                       onChanged: (date) {
-                        setState(() {
-                          _pajak5TahunDate = date;
-                        });
+                        formNotifier.updatePajak5TahunDate(date); // Update data in provider
                       },
                       focusNode: _pajak5TahunFocusNode,
                       formSubmitted: _formSubmitted, // Pass the formSubmitted flag
@@ -267,6 +297,10 @@ class _PageTwoState extends State<PageTwo> {
                       hintText: 'Masukkan biaya pajak (Rp)',
                       keyboardType: TextInputType.number, // Use number keyboard
                       focusNode: _biayaPajakFocusNode,
+                      initialValue: formData.biayaPajak, // Initialize with data from provider
+                      onChanged: (value) {
+                        formNotifier.updateBiayaPajak(value); // Update data in provider
+                      },
                       formSubmitted: _formSubmitted,
                       validator: (value) {
                         if (value == null || value.isEmpty) {

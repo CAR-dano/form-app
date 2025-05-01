@@ -1,6 +1,8 @@
 // page_one.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/pages/page_two.dart';
+import 'package:form_app/providers/form_provider.dart'; // Import the provider
 import 'package:form_app/widgets/common_layout.dart'; // Import CommonLayout
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/labeled_date_field.dart';
@@ -10,15 +12,14 @@ import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
 
 
-class PageOne extends StatefulWidget {
+class PageOne extends ConsumerStatefulWidget {
   const PageOne({super.key});
 
   @override
-  State<PageOne> createState() => _PageOneState();
+  ConsumerState<PageOne> createState() => _PageOneState();
 }
 
-class _PageOneState extends State<PageOne> {
-  DateTime? _selectedDate;
+class _PageOneState extends ConsumerState<PageOne> {
   late FocusScopeNode _focusScopeNode;
   late FocusNode _namaInspektorFocusNode;
   late FocusNode _namaCustomerFocusNode;
@@ -31,7 +32,6 @@ class _PageOneState extends State<PageOne> {
   @override
   void initState() {
     super.initState();
-    _selectedDate = null; // Initialize selected date
     _focusScopeNode = FocusScopeNode();
     _namaInspektorFocusNode = FocusNode();
     _namaCustomerFocusNode = FocusNode();
@@ -74,6 +74,9 @@ class _PageOneState extends State<PageOne> {
 
   @override
   Widget build(BuildContext context) {
+    final formData = ref.watch(formProvider); // Watch the form data
+    final formNotifier = ref.read(formProvider.notifier); // Read the notifier
+
     // Return the core content Column directly. Scaffold/SafeArea are in CommonLayout.
     // The GestureDetector for unfocus is removed; can be added to CommonLayout if needed globally.
     return FocusScope(
@@ -97,10 +100,9 @@ class _PageOneState extends State<PageOne> {
                       label: 'Nama Inspektor',
                       hintText: 'Masukkan nama inspektor',
                       focusNode: _namaInspektorFocusNode,
+                      initialValue: formData.namaInspektor, // Initialize with data from provider
                       onChanged: (value) {
-                        // The validation is now handled within LabeledTextField's onChanged
-                        // Call the original onChanged if needed by the parent
-                        // widget.onChanged?.call(value);
+                        formNotifier.updateNamaInspektor(value); // Update data in provider
                       },
                       validator: (value) {
                         if (_formSubmitted && (value == null || value.isEmpty)) {
@@ -115,10 +117,9 @@ class _PageOneState extends State<PageOne> {
                       label: 'Nama Customer',
                       hintText: 'Masukkan nama customer',
                       focusNode: _namaCustomerFocusNode,
+                      initialValue: formData.namaCustomer, // Initialize with data from provider
                       onChanged: (value) {
-                        // The validation is now handled within LabeledTextField's onChanged
-                        // Call the original onChanged if needed by the parent
-                        // widget.onChanged?.call(value);
+                        formNotifier.updateNamaCustomer(value); // Update data in provider
                       },
                        validator: (value) {
                         if (_formSubmitted && (value == null || value.isEmpty)) {
@@ -133,10 +134,9 @@ class _PageOneState extends State<PageOne> {
                       label: 'Cabang Inspeksi',
                       hintText: 'Contoh: Yogyakarta / Semarang',
                       focusNode: _cabangInspeksiFocusNode,
+                      initialValue: formData.cabangInspeksi, // Initialize with data from provider
                        onChanged: (value) {
-                        // The validation is now handled within LabeledTextField's onChanged
-                        // Call the original onChanged if needed by the parent
-                        // widget.onChanged?.call(value);
+                        formNotifier.updateCabangInspeksi(value); // Update data in provider
                       },
                        validator: (value) {
                         if (_formSubmitted && (value == null || value.isEmpty)) {
@@ -150,14 +150,9 @@ class _PageOneState extends State<PageOne> {
                     LabeledDateField(
                       label: 'Tanggal Inspeksi',
                       hintText: 'Pilih tanggal inspeksi',
-                      initialDate: _selectedDate,
+                      initialDate: formData.tanggalInspeksi, // Initialize with data from provider
                       onChanged: (date) {
-                        setState(() {
-                          _selectedDate = date;
-                      });
-                        // The validation is now handled within LabeledDateField's onChanged
-                        // Call the original onChanged if needed by the parent
-                        // widget.onChanged?.call(date);
+                        formNotifier.updateTanggalInspeksi(date); // Update data in provider
                       },
                       focusNode: _tanggalInspeksiFocusNode,
                        validator: (date) {

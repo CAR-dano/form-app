@@ -13,6 +13,7 @@ class LabeledTextField extends StatefulWidget {
   final int? maxLines;
   final FocusNode? focusNode; // Optional focus node
   final bool formSubmitted; // Add formSubmitted parameter
+  final String? initialValue; // Add initialValue parameter
 
   const LabeledTextField({
     super.key,
@@ -26,6 +27,7 @@ class LabeledTextField extends StatefulWidget {
     this.maxLines = 1, // Default to single line
     this.focusNode, // Accept optional focus node
     this.formSubmitted = false, // Default to false
+    this.initialValue, // Accept initialValue
   });
 
   @override
@@ -34,6 +36,23 @@ class LabeledTextField extends StatefulWidget {
 
 class _LabeledTextFieldState extends State<LabeledTextField> {
   final _formFieldKey = GlobalKey<FormFieldState>(); // Key for managing form field state
+  late TextEditingController _internalController; // Internal controller
+
+  @override
+  void initState() {
+    super.initState();
+    // Use the provided controller or create an internal one
+    _internalController = widget.controller ?? TextEditingController(text: widget.initialValue);
+  }
+
+  @override
+  void dispose() {
+    // Dispose the internal controller if it was created
+    if (widget.controller == null) {
+      _internalController.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +63,7 @@ class _LabeledTextFieldState extends State<LabeledTextField> {
         const SizedBox(height: 8.0), // Consistent spacing
         TextFormField( // Use TextFormField for validation integration
           key: _formFieldKey, // Assign the key
-          controller: widget.controller,
+          controller: _internalController, // Use the internal controller
           keyboardType: widget.keyboardType,
           obscureText: widget.obscureText,
           onChanged: (value) {

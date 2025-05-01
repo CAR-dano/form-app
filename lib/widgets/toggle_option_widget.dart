@@ -3,8 +3,15 @@ import 'package:form_app/statics/app_styles.dart';
 
 class ToggleOption extends StatefulWidget {
   final String label;
+  final String? initialValue; // Add initialValue parameter
+  final ValueChanged<String?>? onChanged; // Add onChanged callback
 
-  const ToggleOption({super.key, required this.label});
+  const ToggleOption({
+    super.key,
+    required this.label,
+    this.initialValue, // Accept initialValue
+    this.onChanged, // Accept onChanged callback
+  });
 
   @override
   State<ToggleOption> createState() => _ToggleOptionState();
@@ -12,6 +19,12 @@ class ToggleOption extends StatefulWidget {
 
 class _ToggleOptionState extends State<ToggleOption> {
   String? _selectedOption; // 'Lengkap' or 'Tidak'
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedOption = widget.initialValue; // Initialize with initialValue
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +62,7 @@ class _ToggleOptionState extends State<ToggleOption> {
                         _selectedOption = 'Lengkap';
                       }
                     });
+                    widget.onChanged?.call(_selectedOption); // Call onChanged
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -92,6 +106,7 @@ class _ToggleOptionState extends State<ToggleOption> {
                         _selectedOption = 'Tidak';
                       }
                     });
+                    widget.onChanged?.call(_selectedOption); // Call onChanged
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12.0),
