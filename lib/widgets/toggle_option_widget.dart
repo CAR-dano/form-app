@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:form_app/statics/app_styles.dart';
 
-class ToggleOptionWidget extends StatefulWidget {
+class ToggleOption extends StatefulWidget {
   final String label;
 
-  const ToggleOptionWidget({Key? key, required this.label}) : super(key: key);
+  const ToggleOption({Key? key, required this.label}) : super(key: key);
 
   @override
-  _ToggleOptionWidgetState createState() => _ToggleOptionWidgetState();
+  _ToggleOptionState createState() => _ToggleOptionState();
 }
 
-class _ToggleOptionWidgetState extends State<ToggleOptionWidget> {
+class _ToggleOptionState extends State<ToggleOption> {
   String? _selectedOption; // 'Lengkap' or 'Tidak'
 
   @override
@@ -74,11 +74,13 @@ class _ToggleOptionWidgetState extends State<ToggleOptionWidget> {
                     child: Center(
                       child: Text(
                         'Lengkap',
-                        style: toggleOptionTextStyle.copyWith(
-                          color: _selectedOption == 'Lengkap'
-                              ? Colors.white
-                              : hintTextColor,
-                        ),
+                        style: _selectedOption == null
+                            ? hintTextStyle
+                            : toggleOptionTextStyle.copyWith(
+                                color: _selectedOption == 'Lengkap'
+                                    ? Colors.white
+                                    : hintTextColor,
+                              ),
                       ),
                     ),
                   ),
@@ -109,11 +111,13 @@ class _ToggleOptionWidgetState extends State<ToggleOptionWidget> {
                     child: Center(
                       child: Text(
                         'Tidak',
-                        style: toggleOptionTextStyle.copyWith(
-                          color: _selectedOption == 'Tidak'
-                              ? Colors.white
-                              : hintTextColor,
-                        ),
+                        style: _selectedOption == null
+                            ? hintTextStyle
+                            : toggleOptionTextStyle.copyWith(
+                                color: _selectedOption == 'Tidak'
+                                    ? Colors.white
+                                    : hintTextColor,
+                              ),
                       ),
                     ),
                   ),
