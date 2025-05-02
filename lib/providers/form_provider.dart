@@ -179,6 +179,11 @@ extension on FormData {
     String? merekBanBelakang,
     String? tipeVelgBelakang,
     String? ketebalanBanBelakang,
+    int? interiorSelectedIndex,
+    int? eksteriorSelectedIndex,
+    int? kakiKakiSelectedIndex,
+    int? mesinSelectedIndex,
+    int? penilaianKeseluruhanSelectedIndex,
   }) {
     return FormData(
       namaInspektor: namaInspektor ?? this.namaInspektor,
@@ -214,6 +219,11 @@ extension on FormData {
       merekBanBelakang: merekBanBelakang ?? this.merekBanBelakang,
       tipeVelgBelakang: tipeVelgBelakang ?? this.tipeVelgBelakang,
       ketebalanBanBelakang: ketebalanBanBelakang ?? this.ketebalanBanBelakang,
+      interiorSelectedIndex: interiorSelectedIndex ?? this.interiorSelectedIndex,
+      eksteriorSelectedIndex: eksteriorSelectedIndex ?? this.eksteriorSelectedIndex,
+      kakiKakiSelectedIndex: kakiKakiSelectedIndex ?? this.kakiKakiSelectedIndex,
+      mesinSelectedIndex: mesinSelectedIndex ?? this.mesinSelectedIndex,
+      penilaianKeseluruhanSelectedIndex: penilaianKeseluruhanSelectedIndex ?? this.penilaianKeseluruhanSelectedIndex,
     );
   }
 }

@@ -42,6 +42,12 @@ class FormData {
   String? tipeVelgBelakang;
   String? ketebalanBanBelakang;
 
+  // New fields for inspection results
+  int? interiorSelectedIndex;
+  int? eksteriorSelectedIndex;
+  int? kakiKakiSelectedIndex;
+  int? mesinSelectedIndex;
+  int? penilaianKeseluruhanSelectedIndex;
 
   FormData({
     this.namaInspektor = '',
@@ -77,6 +83,11 @@ class FormData {
     this.merekBanBelakang,
     this.tipeVelgBelakang,
     this.ketebalanBanBelakang,
+    this.interiorSelectedIndex,
+    this.eksteriorSelectedIndex,
+    this.kakiKakiSelectedIndex,
+    this.mesinSelectedIndex,
+    this.penilaianKeseluruhanSelectedIndex,
   });
 
   // Add methods to update data if needed, or update directly

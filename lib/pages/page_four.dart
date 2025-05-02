@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_provider.dart';
 import 'package:form_app/widgets/toggle_option_widget.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
+import 'package:form_app/services/api_service.dart'; // Import ApiService
 // Import other necessary widgets like CommonLayout if you plan to use it here
 
 // Placeholder for Page Four
@@ -22,6 +23,7 @@ class PageFour extends ConsumerStatefulWidget { // Change to ConsumerStatefulWid
 
 class _PageFourState extends ConsumerState<PageFour> { // Change to ConsumerState
   late FocusScopeNode _focusScopeNode; // Add FocusScopeNode
+  final ApiService _apiService = ApiService(); // Create ApiService instance
 
   int _interiorSelectedIndex = -1;
   int _eksteriorSelectedIndex = -1;
@@ -127,7 +129,7 @@ class _PageFourState extends ConsumerState<PageFour> { // Change to ConsumerStat
                         NumberedButtonList(
                           label: 'Interior',
                           count: 10, // Assuming 10 options based on the image
-                          selectedIndex: _interiorSelectedIndex,
+                          selectedIndex: formData.interiorSelectedIndex ?? -1,
                           onItemSelected: _onInteriorItemSelected,
                         ),
                         const SizedBox(height: 24.0),
@@ -143,7 +145,7 @@ class _PageFourState extends ConsumerState<PageFour> { // Change to ConsumerStat
                         NumberedButtonList(
                           label: 'Eksterior',
                           count: 10, // Assuming 10 options based on the image
-                          selectedIndex: _eksteriorSelectedIndex,
+                          selectedIndex: formData.eksteriorSelectedIndex ?? -1,
                           onItemSelected: _onEksteriorItemSelected,
                         ),
                         const SizedBox(height: 24.0),
@@ -159,7 +161,7 @@ class _PageFourState extends ConsumerState<PageFour> { // Change to ConsumerStat
                         NumberedButtonList(
                           label: 'Kaki-kaki',
                           count: 10, // Assuming 10 options based on the image
-                          selectedIndex: _kakiKakiSelectedIndex,
+                          selectedIndex: formData.kakiKakiSelectedIndex ?? -1,
                           onItemSelected: _onKakiKakiItemSelected,
                         ),
                         const SizedBox(height: 24.0),
@@ -175,7 +177,7 @@ class _PageFourState extends ConsumerState<PageFour> { // Change to ConsumerStat
                         NumberedButtonList(
                           label: 'Mesin',
                           count: 10, // Assuming 10 options based on the image
-                          selectedIndex: _mesinSelectedIndex,
+                          selectedIndex: formData.mesinSelectedIndex ?? -1,
                           onItemSelected: _onMesinItemSelected,
                         ),
                         const SizedBox(height: 24.0),
@@ -191,7 +193,7 @@ class _PageFourState extends ConsumerState<PageFour> { // Change to ConsumerStat
                         NumberedButtonList(
                           label: 'Penilaian Keseluruhan',
                           count: 10, // Assuming 10 options based on the image
-                          selectedIndex: _penilaianKeseluruhanSelectedIndex,
+                          selectedIndex: formData.penilaianKeseluruhanSelectedIndex ?? -1,
                           onItemSelected: _onPenilaianKeseluruhanItemSelected,
                         ),
                         const SizedBox(height: 24.0),
@@ -282,7 +284,7 @@ class _PageFourState extends ConsumerState<PageFour> { // Change to ConsumerStat
                         NavigationButtonRow(
                           onBackPressed: () => Navigator.pop(context),
                           onNextPressed: () {
-                            // TODO: Implement submission logic
+                            _apiService.submitFormData(formData); // Call API service
                           },
                           isLastPage: true,
                         ),
