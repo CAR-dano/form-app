@@ -113,6 +113,31 @@ class FormNotifier extends StateNotifier<FormData> {
   void updateIndikasiOdometerReset(String? value) {
     state = state.copyWith(indikasiOdometerReset: value);
   }
+
+  // New update methods for tire and wheel information
+  void updateMerekBanDepan(String? value) {
+    state = state.copyWith(merekBanDepan: value);
+  }
+
+  void updateTipeVelgDepan(String? value) {
+    state = state.copyWith(tipeVelgDepan: value);
+  }
+
+  void updateKetebalanBanDepan(String? value) {
+    state = state.copyWith(ketebalanBanDepan: value);
+  }
+
+  void updateMerekBanBelakang(String? value) {
+    state = state.copyWith(merekBanBelakang: value);
+  }
+
+  void updateTipeVelgBelakang(String? value) {
+    state = state.copyWith(tipeVelgBelakang: value);
+  }
+
+  void updateKetebalanBanBelakang(String? value) {
+    state = state.copyWith(ketebalanBanBelakang: value);
+  }
 }
 
 final formProvider = StateNotifierProvider<FormNotifier, FormData>((ref) {
@@ -148,6 +173,12 @@ extension on FormData {
     String? indikasiTabrakan, // Add new parameter
     String? indikasiBanjir, // Add new parameter
     String? indikasiOdometerReset, // Add new parameter
+    String? merekBanDepan,
+    String? tipeVelgDepan,
+    String? ketebalanBanDepan,
+    String? merekBanBelakang,
+    String? tipeVelgBelakang,
+    String? ketebalanBanBelakang,
   }) {
     return FormData(
       namaInspektor: namaInspektor ?? this.namaInspektor,
@@ -177,6 +208,12 @@ extension on FormData {
       indikasiTabrakan: indikasiTabrakan ?? this.indikasiTabrakan,
       indikasiBanjir: indikasiBanjir ?? this.indikasiBanjir,
       indikasiOdometerReset: indikasiOdometerReset ?? this.indikasiOdometerReset,
+      merekBanDepan: merekBanDepan ?? this.merekBanDepan,
+      tipeVelgDepan: tipeVelgDepan ?? this.tipeVelgDepan,
+      ketebalanBanDepan: ketebalanBanDepan ?? this.ketebalanBanDepan,
+      merekBanBelakang: merekBanBelakang ?? this.merekBanBelakang,
+      tipeVelgBelakang: tipeVelgBelakang ?? this.tipeVelgBelakang,
+      ketebalanBanBelakang: ketebalanBanBelakang ?? this.ketebalanBanBelakang,
     );
   }
 }

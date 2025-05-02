@@ -6,9 +6,10 @@ import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/numbered_button_list.dart';
 import 'package:form_app/widgets/common_layout.dart';
 import 'package:form_app/widgets/expandable_text_field.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import flutter_riverpod
-import 'package:form_app/providers/form_provider.dart'; // Import the provider
-import 'package:form_app/widgets/toggle_option_widget.dart'; // Import ToggleOption
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_app/providers/form_provider.dart';
+import 'package:form_app/widgets/toggle_option_widget.dart';
+import 'package:form_app/widgets/labeled_text_field.dart';
 // Import other necessary widgets like CommonLayout if you plan to use it here
 
 // Placeholder for Page Four
@@ -222,6 +223,60 @@ class _PageFourState extends ConsumerState<PageFour> { // Change to ConsumerStat
                           toggleValues: ['Tidak ada', 'Terindikasi'],
                           initialValue: formData.indikasiOdometerReset,
                           onChanged: (value) => formNotifier.updateIndikasiOdometerReset(value),
+                        ),
+                        const SizedBox(height: 32.0), // Spacing before new text fields
+                        LabeledTextField(
+                          label: 'Merek Ban Depan',
+                          hintText: 'Masukkan Merek Ban',
+                          initialValue: formData.merekBanDepan,
+                          onChanged: (value) {
+                            formNotifier.updateMerekBanDepan(value);
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        LabeledTextField(
+                          label: 'Tipe Velg Depan',
+                          hintText: 'Masukkan tipe velg',
+                          initialValue: formData.tipeVelgDepan,
+                          onChanged: (value) {
+                            formNotifier.updateTipeVelgDepan(value);
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        LabeledTextField(
+                          label: 'Ketebalan Ban Depan',
+                          hintText: 'Masukkan ketebalan ban',
+                          initialValue: formData.ketebalanBanDepan,
+                          onChanged: (value) {
+                            formNotifier.updateKetebalanBanDepan(value);
+                          },
+                        ),
+                        const SizedBox(height: 32.0), // Spacing between front and rear tire fields
+                        LabeledTextField(
+                          label: 'Merek Ban Belakang',
+                          hintText: 'Masukkan Merek Ban',
+                          initialValue: formData.merekBanBelakang,
+                          onChanged: (value) {
+                            formNotifier.updateMerekBanBelakang(value);
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        LabeledTextField(
+                          label: 'Tipe Velg Belakang',
+                          hintText: 'Masukkan tipe velg',
+                          initialValue: formData.tipeVelgBelakang,
+                          onChanged: (value) {
+                            formNotifier.updateTipeVelgBelakang(value);
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        LabeledTextField(
+                          label: 'Ketebalan Ban Belakang',
+                          hintText: 'Masukkan ketebalan ban',
+                          initialValue: formData.ketebalanBanBelakang,
+                          onChanged: (value) {
+                            formNotifier.updateKetebalanBanBelakang(value);
+                          },
                         ),
                         const SizedBox(height: 32.0), // Spacing before navigation buttons
                         NavigationButtonRow(

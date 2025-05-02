@@ -34,6 +34,14 @@ class FormData {
   String? indikasiBanjir;
   String? indikasiOdometerReset;
 
+  // New fields for tire and wheel information
+  String? merekBanDepan;
+  String? tipeVelgDepan;
+  String? ketebalanBanDepan;
+  String? merekBanBelakang;
+  String? tipeVelgBelakang;
+  String? ketebalanBanBelakang;
+
 
   FormData({
     this.namaInspektor = '',
@@ -63,6 +71,12 @@ class FormData {
     this.indikasiTabrakan,
     this.indikasiBanjir,
     this.indikasiOdometerReset,
+    this.merekBanDepan,
+    this.tipeVelgDepan,
+    this.ketebalanBanDepan,
+    this.merekBanBelakang,
+    this.tipeVelgBelakang,
+    this.ketebalanBanBelakang,
   });
 
   // Add methods to update data if needed, or update directly
