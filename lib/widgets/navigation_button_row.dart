@@ -6,6 +6,7 @@ class NavigationButtonRow extends StatelessWidget {
   final VoidCallback onNextPressed;
   final String nextButtonText;
   final bool isBackButtonEnabled;
+  final bool isLastPage;
   // Optional: Add isLoading state for the next button later if needed for submission
   // final bool isLoading;
 
@@ -25,6 +26,7 @@ class NavigationButtonRow extends StatelessWidget {
     this.onBackPressed, // Make optional
     this.nextButtonText = 'Next', // Default text
     this.isBackButtonEnabled = true, // Default to enabled
+    this.isLastPage = false, // Default to not the last page
     // this.isLoading = false,
   });
 
@@ -95,7 +97,7 @@ class NavigationButtonRow extends StatelessWidget {
             //         ),
             //       )
             //     : Text(nextButtonText, style: buttonTextStyle),
-              child: Text(nextButtonText, style: buttonTextStyle),
+              child: Text(isLastPage ? 'Submit' : nextButtonText, style: buttonTextStyle),
           ),
         ),
       ],

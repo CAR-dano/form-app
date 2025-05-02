@@ -282,8 +282,9 @@ class _PageFourState extends ConsumerState<PageFour> { // Change to ConsumerStat
                         NavigationButtonRow(
                           onBackPressed: () => Navigator.pop(context),
                           onNextPressed: () {
-                            // TODO: Implement navigation to Page Five
+                            // TODO: Implement submission logic
                           },
+                          isLastPage: true,
                         ),
                         SizedBox(
                           height: 32.0,
