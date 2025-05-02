@@ -21,82 +21,26 @@ class PageFour extends ConsumerStatefulWidget { // Change to ConsumerStatefulWid
   ConsumerState<PageFour> createState() => _PageFourState(); // Change to ConsumerState
 }
 
-class _PageFourState extends ConsumerState<PageFour> { // Change to ConsumerState
-  late FocusScopeNode _focusScopeNode; // Add FocusScopeNode
-  final ApiService _apiService = ApiService(); // Create ApiService instance
-
-  int _interiorSelectedIndex = -1;
-  int _eksteriorSelectedIndex = -1;
-  int _kakiKakiSelectedIndex = -1;
-  int _mesinSelectedIndex = -1;
-  int _penilaianKeseluruhanSelectedIndex = -1;
+class _PageFourState extends ConsumerState<PageFour> {
+  late FocusScopeNode _focusScopeNode;
+  final ApiService _apiService = ApiService();
 
   @override
   void initState() {
     super.initState();
-    _focusScopeNode = FocusScopeNode(); // Initialize FocusScopeNode
+    _focusScopeNode = FocusScopeNode();
   }
 
   @override
   void dispose() {
-    _focusScopeNode.dispose(); // Dispose FocusScopeNode
+    _focusScopeNode.dispose();
     super.dispose();
-  }
-
-  void _onInteriorItemSelected(int index) {
-    setState(() {
-      if (_interiorSelectedIndex == index) {
-        _interiorSelectedIndex = -1; // Unselect if already selected
-      } else {
-        _interiorSelectedIndex = index; // Select the tapped index
-      }
-    });
-  }
-
-  void _onEksteriorItemSelected(int index) {
-    setState(() {
-      if (_eksteriorSelectedIndex == index) {
-        _eksteriorSelectedIndex = -1; // Unselect if already selected
-      } else {
-        _eksteriorSelectedIndex = index; // Select the tapped index
-      }
-    });
-  }
-
-  void _onKakiKakiItemSelected(int index) {
-    setState(() {
-      if (_kakiKakiSelectedIndex == index) {
-        _kakiKakiSelectedIndex = -1; // Unselect if already selected
-      } else {
-        _kakiKakiSelectedIndex = index; // Select the tapped index
-      }
-    });
-  }
-
-  void _onMesinItemSelected(int index) {
-    setState(() {
-      if (_mesinSelectedIndex == index) {
-        _mesinSelectedIndex = -1; // Unselect if already selected
-      } else {
-        _mesinSelectedIndex = index; // Select the tapped index
-      }
-    });
-  }
-
-  void _onPenilaianKeseluruhanItemSelected(int index) {
-    setState(() {
-      if (_penilaianKeseluruhanSelectedIndex == index) {
-        _penilaianKeseluruhanSelectedIndex = -1; // Unselect if already selected
-      } else {
-        _penilaianKeseluruhanSelectedIndex = index; // Select the tapped index
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final formData = ref.watch(formProvider); // Watch the form data
-    final formNotifier = ref.read(formProvider.notifier); // Read the notifier
+    final formData = ref.watch(formProvider);
+    final formNotifier = ref.read(formProvider.notifier);
 
     // Basic structure, replace with actual content later
     return PopScope(
@@ -130,7 +74,10 @@ class _PageFourState extends ConsumerState<PageFour> { // Change to ConsumerStat
                           label: 'Interior',
                           count: 10, // Assuming 10 options based on the image
                           selectedIndex: formData.interiorSelectedIndex ?? -1,
-                          onItemSelected: _onInteriorItemSelected,
+                          onItemSelected: (index) {
+                            final formNotifier = ref.read(formProvider.notifier);
+                            formNotifier.updateInteriorSelectedIndex(index == formData.interiorSelectedIndex ? -1 : index);
+                          },
                         ),
                         const SizedBox(height: 24.0),
                         ExpandableTextField(
@@ -146,7 +93,10 @@ class _PageFourState extends ConsumerState<PageFour> { // Change to ConsumerStat
                           label: 'Eksterior',
                           count: 10, // Assuming 10 options based on the image
                           selectedIndex: formData.eksteriorSelectedIndex ?? -1,
-                          onItemSelected: _onEksteriorItemSelected,
+                          onItemSelected: (index) {
+                            final formNotifier = ref.read(formProvider.notifier);
+                            formNotifier.updateEksteriorSelectedIndex(index == formData.eksteriorSelectedIndex ? -1 : index);
+                          },
                         ),
                         const SizedBox(height: 24.0),
                         ExpandableTextField(
@@ -162,7 +112,10 @@ class _PageFourState extends ConsumerState<PageFour> { // Change to ConsumerStat
                           label: 'Kaki-kaki',
                           count: 10, // Assuming 10 options based on the image
                           selectedIndex: formData.kakiKakiSelectedIndex ?? -1,
-                          onItemSelected: _onKakiKakiItemSelected,
+                          onItemSelected: (index) {
+                            final formNotifier = ref.read(formProvider.notifier);
+                            formNotifier.updateKakiKakiSelectedIndex(index == formData.kakiKakiSelectedIndex ? -1 : index);
+                          },
                         ),
                         const SizedBox(height: 24.0),
                         ExpandableTextField(
@@ -178,7 +131,10 @@ class _PageFourState extends ConsumerState<PageFour> { // Change to ConsumerStat
                           label: 'Mesin',
                           count: 10, // Assuming 10 options based on the image
                           selectedIndex: formData.mesinSelectedIndex ?? -1,
-                          onItemSelected: _onMesinItemSelected,
+                          onItemSelected: (index) {
+                            final formNotifier = ref.read(formProvider.notifier);
+                            formNotifier.updateMesinSelectedIndex(index == formData.mesinSelectedIndex ? -1 : index);
+                          },
                         ),
                         const SizedBox(height: 24.0),
                         ExpandableTextField(
@@ -194,7 +150,10 @@ class _PageFourState extends ConsumerState<PageFour> { // Change to ConsumerStat
                           label: 'Penilaian Keseluruhan',
                           count: 10, // Assuming 10 options based on the image
                           selectedIndex: formData.penilaianKeseluruhanSelectedIndex ?? -1,
-                          onItemSelected: _onPenilaianKeseluruhanItemSelected,
+                          onItemSelected: (index) {
+                            final formNotifier = ref.read(formProvider.notifier);
+                            formNotifier.updatePenilaianKeseluruhanSelectedIndex(index == formData.penilaianKeseluruhanSelectedIndex ? -1 : index);
+                          },
                         ),
                         const SizedBox(height: 24.0),
                         ExpandableTextField(

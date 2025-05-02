@@ -138,6 +138,28 @@ class FormNotifier extends StateNotifier<FormData> {
   void updateKetebalanBanBelakang(String? value) {
     state = state.copyWith(ketebalanBanBelakang: value);
   }
+
+  // New update methods for selected indices
+  void updateInteriorSelectedIndex(int index) {
+    state = state.copyWith(interiorSelectedIndex: index);
+  }
+
+  void updateEksteriorSelectedIndex(int index) {
+    state = state.copyWith(eksteriorSelectedIndex: index);
+  }
+
+  void updateKakiKakiSelectedIndex(int index) {
+    state = state.copyWith(kakiKakiSelectedIndex: index);
+  }
+
+  void updateMesinSelectedIndex(int index) {
+    state = state.copyWith(mesinSelectedIndex: index);
+  }
+
+  void updatePenilaianKeseluruhanSelectedIndex(int index) {
+    state = state.copyWith(penilaianKeseluruhanSelectedIndex: index);
+  }
+
 }
 
 final formProvider = StateNotifierProvider<FormNotifier, FormData>((ref) {
