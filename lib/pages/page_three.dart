@@ -31,7 +31,7 @@ class PageThree extends ConsumerWidget {
                 PageTitle(data: 'Kelengkapan'),
                 const SizedBox(height: 24.0),
                 ToggleOption(
-                  toggleValues: ['Lengkap', 'Tidak Lengkap'],
+                  toggleValues: ['Lengkap', 'Tidak'],
                   label: 'Buku Service',
                   initialValue: formData.bukuService,
                   onChanged: (value) => formNotifier.updateBukuService(value),

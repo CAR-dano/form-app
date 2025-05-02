@@ -148,7 +148,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                               _formSubmitted, // Pass the formSubmitted flag
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Merek Kendaraan tidak boleh kosong';
+                              return 'Merek Kendaraan belum terisi';
                             }
                             return null;
                           },
@@ -170,7 +170,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                               _formSubmitted, // Pass the formSubmitted flag
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Tipe Kendaraan tidak boleh kosong';
+                              return 'Tipe Kendaraan belum terisi';
                             }
                             return null;
                           },
@@ -196,7 +196,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                               _formSubmitted, // Pass the formSubmitted flag
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Tahun tidak boleh kosong';
+                              return 'Tahun belum terisi';
                             }
                             return null;
                           },
@@ -217,7 +217,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                           formSubmitted: _formSubmitted,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Transmisi tidak boleh kosong';
+                              return 'Transmisi belum terisi';
                             }
                             return null;
                           },
@@ -238,7 +238,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                           formSubmitted: _formSubmitted,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Warna Kendaraan tidak boleh kosong';
+                              return 'Warna Kendaraan belum terisi';
                             }
                             return null;
                           },
@@ -261,7 +261,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                           formSubmitted: _formSubmitted,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Odometer tidak boleh kosong';
+                              return 'Odometer belum terisi';
                             }
                             return null;
                           },
@@ -282,7 +282,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                           formSubmitted: _formSubmitted,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Kepemilikan tidak boleh kosong';
+                              return 'Kepemilikan belum terisi';
                             }
                             return null;
                           },
@@ -303,7 +303,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                           formSubmitted: _formSubmitted,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Plat Nomor tidak boleh kosong';
+                              return 'Plat Nomor belum terisi';
                             }
                             return null;
                           },
@@ -328,7 +328,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                           ),
                           validator: (value) {
                             if (value == null) {
-                              return 'Pajak 1 Tahun s.d. tidak boleh kosong';
+                              return 'Pajak 1 Tahun s.d. belum terisi';
                             }
                             return null;
                           },
@@ -353,7 +353,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                           ), // Set last date to 20 years from now
                           validator: (value) {
                             if (value == null) {
-                              return 'Pajak 5 Tahun s.d. tidak boleh kosong';
+                              return 'Pajak 5 Tahun s.d. belum terisi';
                             }
                             return null;
                           },
@@ -376,7 +376,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                           formSubmitted: _formSubmitted,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Biaya Pajak tidak boleh kosong';
+                              return 'Biaya Pajak belum terisi';
                             }
                             return null;
                           },
