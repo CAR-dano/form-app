@@ -11,7 +11,6 @@ import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
 
-
 class PageOne extends ConsumerStatefulWidget {
   const PageOne({super.key});
 
@@ -49,13 +48,13 @@ class _PageOneState extends ConsumerState<PageOne> {
     super.dispose();
   }
 
-
   moveToNextPage() {
     // Wrap the next page with CommonLayout as well
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const CommonLayout(child: PageTwo()), // Wrap PageTwo
+        builder:
+            (context) => const CommonLayout(child: PageTwo()), // Wrap PageTwo
       ),
     );
   }
@@ -67,10 +66,10 @@ class _PageOneState extends ConsumerState<PageOne> {
     if (_formKey.currentState!.validate()) {
       // If the form is valid, display a snackbar. In a real app,
       // you would save the data and navigate to the next page.
+      _focusScopeNode.unfocus(); // Unfocus any focused text field
       moveToNextPage(); // Move to the next page if validation passes
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -79,106 +78,149 @@ class _PageOneState extends ConsumerState<PageOne> {
 
     // Return the core content Column directly. Scaffold/SafeArea are in CommonLayout.
     // The GestureDetector for unfocus is removed; can be added to CommonLayout if needed globally.
-    return FocusScope(
-      node: _focusScopeNode,
-      child: Form( // Wrap with Form widget
-        key: _formKey, // Assign the form key
-        child: Column( // This Column is now the root widget returned by PageOne's build method
-          children: [
-            // Expanded takes up available space, pushing footer down
-            Expanded(
-              // Removed the Container with margin, CommonLayout handles padding
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    PageNumber(data: '1/9'),
-                    const SizedBox(height: 8.0),
-                    PageTitle(data: 'Identitas'),
-                    const SizedBox(height: 24.0), // Keep internal spacing
-                    LabeledTextField(
-                      label: 'Nama Inspektor',
-                      hintText: 'Masukkan nama inspektor',
-                      focusNode: _namaInspektorFocusNode,
-                      initialValue: formData.namaInspektor, // Initialize with data from provider
-                      onChanged: (value) {
-                        formNotifier.updateNamaInspektor(value); // Update data in provider
-                      },
-                      validator: (value) {
-                        if (_formSubmitted && (value == null || value.isEmpty)) {
-                          return 'Nama Inspektor belum terisi'; // Validation message
-                        }
-                        return null; // Return null if valid
-                      },
-                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
+    return PopScope(
+      // Wrap with PopScope
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if (didPop) {
+          _focusScopeNode.unfocus(); // Unfocus when navigating back
+        }
+      },
+      child: FocusScope(
+        node: _focusScopeNode,
+        child: Form(
+          // Wrap with Form widget
+          key: _formKey, // Assign the form key
+          child: GestureDetector(
+            // Wrap with GestureDetector
+            onTap: () {
+              _focusScopeNode.unfocus(); // Unfocus on tap outside text fields
+            },
+            child: Column(
+              // This Column is now the root widget returned by PageOne's build method
+              children: [
+                // Expanded takes up available space, pushing footer down
+                Expanded(
+                  // Removed the Container with margin, CommonLayout handles padding
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        PageNumber(data: '1/9'),
+                        const SizedBox(height: 8.0),
+                        PageTitle(data: 'Identitas'),
+                        const SizedBox(height: 24.0), // Keep internal spacing
+                        LabeledTextField(
+                          label: 'Nama Inspektor',
+                          hintText: 'Masukkan nama inspektor',
+                          focusNode: _namaInspektorFocusNode,
+                          initialValue:
+                              formData
+                                  .namaInspektor, // Initialize with data from provider
+                          onChanged: (value) {
+                            formNotifier.updateNamaInspektor(
+                              value,
+                            ); // Update data in provider
+                          },
+                          validator: (value) {
+                            if (_formSubmitted &&
+                                (value == null || value.isEmpty)) {
+                              return 'Nama Inspektor belum terisi'; // Validation message
+                            }
+                            return null; // Return null if valid
+                          },
+                          formSubmitted:
+                              _formSubmitted, // Pass the formSubmitted flag
+                        ),
+                        const SizedBox(height: 16.0), // Keep internal spacing
+                        LabeledTextField(
+                          label: 'Nama Customer',
+                          hintText: 'Masukkan nama customer',
+                          focusNode: _namaCustomerFocusNode,
+                          initialValue:
+                              formData
+                                  .namaCustomer, // Initialize with data from provider
+                          onChanged: (value) {
+                            formNotifier.updateNamaCustomer(
+                              value,
+                            ); // Update data in provider
+                          },
+                          validator: (value) {
+                            if (_formSubmitted &&
+                                (value == null || value.isEmpty)) {
+                              return 'Nama Customer belum terisi'; // Validation message
+                            }
+                            return null; // Return null if valid
+                          },
+                          formSubmitted:
+                              _formSubmitted, // Pass the formSubmitted flag
+                        ),
+                        const SizedBox(height: 16.0), // Keep internal spacing
+                        LabeledTextField(
+                          label: 'Cabang Inspeksi',
+                          hintText: 'Contoh: Yogyakarta / Semarang',
+                          focusNode: _cabangInspeksiFocusNode,
+                          initialValue:
+                              formData
+                                  .cabangInspeksi, // Initialize with data from provider
+                          onChanged: (value) {
+                            formNotifier.updateCabangInspeksi(
+                              value,
+                            ); // Update data in provider
+                          },
+                          validator: (value) {
+                            if (_formSubmitted &&
+                                (value == null || value.isEmpty)) {
+                              return 'Cabang Inspeksi belum terisi'; // Validation message
+                            }
+                            return null; // Return null if valid
+                          },
+                          formSubmitted:
+                              _formSubmitted, // Pass the formSubmitted flag
+                        ),
+                        const SizedBox(height: 16.0), // Keep internal spacing
+                        LabeledDateField(
+                          label: 'Tanggal Inspeksi',
+                          hintText: 'Pilih tanggal inspeksi',
+                          initialDate:
+                              formData
+                                  .tanggalInspeksi, // Initialize with data from provider
+                          onChanged: (date) {
+                            formNotifier.updateTanggalInspeksi(
+                              date,
+                            ); // Update data in provider
+                          },
+                          focusNode: _tanggalInspeksiFocusNode,
+                          validator: (date) {
+                            if (_formSubmitted && date == null) {
+                              return 'Tanggal Inspeksi belum terisi'; // Validation message
+                            }
+                            return null; // Return null if valid
+                          },
+                          formSubmitted:
+                              _formSubmitted, // Pass the formSubmitted flag
+                        ),
+                        const SizedBox(height: 32.0), // Keep internal spacing
+                        // Pass isBackButtonEnabled: false for PageOne
+                        NavigationButtonRow(
+                          onNextPressed:
+                              validateAndMoveToNextPage, // Call validation function
+                          isBackButtonEnabled:
+                              false, // Hide back button on page 1
+                          // Add onBackPressed: null explicitly if needed, though it won't be used when hidden
+                          // onBackPressed: null,
+                        ),
+                        SizedBox(
+                          height: 32.0,
+                        ), // Optional spacing below the content
+                        // Footer
+                        Footer(),
+                      ],
                     ),
-                    const SizedBox(height: 16.0), // Keep internal spacing
-                    LabeledTextField(
-                      label: 'Nama Customer',
-                      hintText: 'Masukkan nama customer',
-                      focusNode: _namaCustomerFocusNode,
-                      initialValue: formData.namaCustomer, // Initialize with data from provider
-                      onChanged: (value) {
-                        formNotifier.updateNamaCustomer(value); // Update data in provider
-                      },
-                       validator: (value) {
-                        if (_formSubmitted && (value == null || value.isEmpty)) {
-                          return 'Nama Customer belum terisi'; // Validation message
-                        }
-                        return null; // Return null if valid
-                      },
-                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
-                    ),
-                    const SizedBox(height: 16.0), // Keep internal spacing
-                    LabeledTextField(
-                      label: 'Cabang Inspeksi',
-                      hintText: 'Contoh: Yogyakarta / Semarang',
-                      focusNode: _cabangInspeksiFocusNode,
-                      initialValue: formData.cabangInspeksi, // Initialize with data from provider
-                       onChanged: (value) {
-                        formNotifier.updateCabangInspeksi(value); // Update data in provider
-                      },
-                       validator: (value) {
-                        if (_formSubmitted && (value == null || value.isEmpty)) {
-                          return 'Cabang Inspeksi belum terisi'; // Validation message
-                        }
-                        return null; // Return null if valid
-                      },
-                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
-                    ),
-                    const SizedBox(height: 16.0), // Keep internal spacing
-                    LabeledDateField(
-                      label: 'Tanggal Inspeksi',
-                      hintText: 'Pilih tanggal inspeksi',
-                      initialDate: formData.tanggalInspeksi, // Initialize with data from provider
-                      onChanged: (date) {
-                        formNotifier.updateTanggalInspeksi(date); // Update data in provider
-                      },
-                      focusNode: _tanggalInspeksiFocusNode,
-                       validator: (date) {
-                        if (_formSubmitted && date == null) {
-                          return 'Tanggal Inspeksi belum terisi'; // Validation message
-                        }
-                        return null; // Return null if valid
-                        },
-                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
-                    ),
-                    const SizedBox(height: 32.0), // Keep internal spacing
-                    // Pass isBackButtonEnabled: false for PageOne
-                    NavigationButtonRow(
-                      onNextPressed: validateAndMoveToNextPage, // Call validation function
-                      isBackButtonEnabled: false, // Hide back button on page 1
-                      // Add onBackPressed: null explicitly if needed, though it won't be used when hidden
-                      // onBackPressed: null,
-                    ),
-                    SizedBox(height: 32.0), // Optional spacing below the content
-                    // Footer
-                    Footer(),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ), // Closing parenthesis for GestureDetector
         ),
       ),
     );
