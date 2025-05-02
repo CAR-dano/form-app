@@ -43,14 +43,10 @@ class _NumberedButtonListState extends State<NumberedButtonList> {
                   width: 35, // Set a fixed width for the button
                   // No margin here, Expanded will handle spacing
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? numberedButtonColors[itemNumber] ?? Colors.blue
-                        : Colors.white, // White background for unselected
+                    color: isSelected ? toggleOptionSelectedLengkapColor : Colors.white,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isSelected
-                          ? numberedButtonColors[itemNumber] ?? Colors.blue
-                          : Colors.blue, // Blue border for unselected
+                      color: toggleOptionSelectedLengkapColor,
                       width: 2,
                     ),
                   ),

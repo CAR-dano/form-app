@@ -100,47 +100,6 @@ class FormNotifier extends StateNotifier<FormData> {
   void updateNoMesin(String? value) {
     state = state.copyWith(noMesin: value);
   }
-
-  // Page Four Update Methods
-  void updateInteriorSelectedIndex(int index) {
-    state = state.copyWith(interiorSelectedIndex: index);
-  }
-
-  void updateKeteranganInterior(List<String> text) {
-    state = state.copyWith(keteranganInterior: text);
-  }
-
-  void updateEksteriorSelectedIndex(int index) {
-    state = state.copyWith(eksteriorSelectedIndex: index);
-  }
-
-  void updateKeteranganEksterior(List<String> text) {
-    state = state.copyWith(keteranganEksterior: text);
-  }
-
-  void updateKakiKakiSelectedIndex(int index) {
-    state = state.copyWith(kakiKakiSelectedIndex: index);
-  }
-
-  void updateKeteranganKakiKaki(List<String> text) {
-    state = state.copyWith(keteranganKakiKaki: text);
-  }
-
-  void updateMesinSelectedIndex(int index) {
-    state = state.copyWith(mesinSelectedIndex: index);
-  }
-
-  void updateKeteranganMesin(List<String> text) {
-    state = state.copyWith(keteranganMesin: text);
-  }
-
-  void updatePenilaianKeseluruhanSelectedIndex(int index) {
-    state = state.copyWith(penilaianKeseluruhanSelectedIndex: index);
-  }
-
-  void updateKeteranganPenilaianKeseluruhan(List<String> text) {
-    state = state.copyWith(keteranganPenilaianKeseluruhan: text);
-  }
 }
 
 final formProvider = StateNotifierProvider<FormNotifier, FormData>((ref) {
@@ -173,16 +132,6 @@ extension on FormData {
     String? toolkit,
     String? noRangka,
     String? noMesin,
-    int? interiorSelectedIndex,
-    List<String>? keteranganInterior,
-    int? eksteriorSelectedIndex,
-    List<String>? keteranganEksterior,
-    int? kakiKakiSelectedIndex,
-    List<String>? keteranganKakiKaki,
-    int? mesinSelectedIndex,
-    List<String>? keteranganMesin,
-    int? penilaianKeseluruhanSelectedIndex,
-    List<String>? keteranganPenilaianKeseluruhan,
   }) {
     return FormData(
       namaInspektor: namaInspektor ?? this.namaInspektor,
@@ -209,16 +158,6 @@ extension on FormData {
       toolkit: toolkit ?? this.toolkit,
       noRangka: noRangka ?? this.noRangka,
       noMesin: noMesin ?? this.noMesin,
-      interiorSelectedIndex: interiorSelectedIndex ?? this.interiorSelectedIndex,
-      keteranganInterior: keteranganInterior ?? this.keteranganInterior,
-      eksteriorSelectedIndex: eksteriorSelectedIndex ?? this.eksteriorSelectedIndex,
-      keteranganEksterior: keteranganEksterior ?? this.keteranganEksterior,
-      kakiKakiSelectedIndex: kakiKakiSelectedIndex ?? this.kakiKakiSelectedIndex,
-      keteranganKakiKaki: keteranganKakiKaki ?? this.keteranganKakiKaki,
-      mesinSelectedIndex: mesinSelectedIndex ?? this.mesinSelectedIndex,
-      keteranganMesin: keteranganMesin ?? this.keteranganMesin,
-      penilaianKeseluruhanSelectedIndex: penilaianKeseluruhanSelectedIndex ?? this.penilaianKeseluruhanSelectedIndex,
-      keteranganPenilaianKeseluruhan: keteranganPenilaianKeseluruhan ?? this.keteranganPenilaianKeseluruhan,
     );
   }
 }

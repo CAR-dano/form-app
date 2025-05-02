@@ -29,18 +29,6 @@ class FormData {
   String? noRangka;
   String? noMesin;
 
-  // Page Four Data (Hasil Inspeksi)
-  int interiorSelectedIndex;
-  List<String> keteranganInterior;
-  int eksteriorSelectedIndex;
-  List<String> keteranganEksterior;
-  int kakiKakiSelectedIndex;
-  List<String> keteranganKakiKaki;
-  int mesinSelectedIndex;
-  List<String> keteranganMesin;
-  int penilaianKeseluruhanSelectedIndex;
-  List<String> keteranganPenilaianKeseluruhan;
-
 
   FormData({
     this.namaInspektor = '',
@@ -67,16 +55,6 @@ class FormData {
     this.toolkit,
     this.noRangka,
     this.noMesin,
-    this.interiorSelectedIndex = -1,
-    this.keteranganInterior = const [],
-    this.eksteriorSelectedIndex = -1,
-    this.keteranganEksterior = const [],
-    this.kakiKakiSelectedIndex = -1,
-    this.keteranganKakiKaki = const [],
-    this.mesinSelectedIndex = -1,
-    this.keteranganMesin = const [],
-    this.penilaianKeseluruhanSelectedIndex = -1,
-    this.keteranganPenilaianKeseluruhan = const [],
   });
 
   // Add methods to update data if needed, or update directly
