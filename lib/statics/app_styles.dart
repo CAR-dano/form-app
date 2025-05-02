@@ -12,6 +12,7 @@ const Color selectedDateColor = Color(
 ); // Specific selected date color
 
 const Color iconColor = borderColor; // Color for the dropdown icon
+const Color pageNumberColor = Color(0xFFF4622F); // Hex color #F4622F
 
 // Error Color
 const Color errorBorderColor = Color(0xFFE24717);
@@ -45,6 +46,12 @@ final TextStyle pageTitleStyle = GoogleFonts.rubik(
   fontSize: 40.0,
   fontWeight: FontWeight.w500,
   color: labelTextColor, // Assuming page title color is the same as label text color
+);
+
+final TextStyle pageNumberStyle = GoogleFonts.rubik(
+  fontSize: 48,
+  color: pageNumberColor,
+  fontWeight: FontWeight.w300,
 );
 
 // Toggle Option Text Styles
