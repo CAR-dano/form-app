@@ -268,6 +268,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                       },
                       focusNode: _pajak1TahunFocusNode,
                       formSubmitted: _formSubmitted, // Pass the formSubmitted flag
+                      lastDate: DateTime.now().add(const Duration(days: 365 * 20)),
                        validator: (value) {
                         if (value == null) {
                           return 'Pajak 1 Tahun s.d. tidak boleh kosong';
@@ -285,6 +286,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                       },
                       focusNode: _pajak5TahunFocusNode,
                       formSubmitted: _formSubmitted, // Pass the formSubmitted flag
+                      lastDate: DateTime.now().add(const Duration(days: 365 * 20)), // Set last date to 20 years from now
                        validator: (value) {
                         if (value == null) {
                           return 'Pajak 5 Tahun s.d. tidak boleh kosong';
