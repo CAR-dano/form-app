@@ -32,15 +32,15 @@ const Color toggleOptionSelectedTidakColor = Color(0xFFFF80B4);
 // Numbered Button Colors
 const Map<int, Color> numberedButtonColors = {
   1: Color(0xFFF14091),
-  2: Color(0xFFE35488),
-  3: Color(0xFFD76582),
-  4: Color(0xFFCF727D),
-  5: Color(0xFFC38377),
-  6: Color(0xFFB79271),
-  7: Color(0xFFAD9F6A),
-  8: Color(0xFFA2B164),
-  9: Color(0xFF97BF5E),
-  10: Color(0xFF98BE5F),
+  2: Color(0xFFEE6F76),
+  3: Color(0xFFEC9562),
+  4: Color(0xFFEAAA55),
+  5: Color(0xFFE8D23E),
+  6: Color(0xFFD8DA3D),
+  7: Color(0xFFCCD941),
+  8: Color(0xFFB9D747),
+  9: Color(0xFFA8D64E),
+  10: Color(0xFF8CD357),
 };
 
 // Text Styles
