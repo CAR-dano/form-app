@@ -29,6 +29,11 @@ class FormData {
   String? noRangka;
   String? noMesin;
 
+  // New fields for Page Four
+  String? indikasiTabrakan;
+  String? indikasiBanjir;
+  String? indikasiOdometerReset;
+
 
   FormData({
     this.namaInspektor = '',
@@ -55,6 +60,9 @@ class FormData {
     this.toolkit,
     this.noRangka,
     this.noMesin,
+    this.indikasiTabrakan,
+    this.indikasiBanjir,
+    this.indikasiOdometerReset,
   });
 
   // Add methods to update data if needed, or update directly

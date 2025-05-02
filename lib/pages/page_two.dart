@@ -102,233 +102,307 @@ class _PageTwoState extends ConsumerState<PageTwo> {
     final formNotifier = ref.read(formProvider.notifier); // Read the notifier
 
     // Return the core content Column directly. Scaffold/SafeArea are in CommonLayout.
-    return FocusScope(
-      node: _focusScopeNode,
-      child: Form(
-        // Wrap with Form widget
-        key: _formKey, // Assign the form key
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    PageNumber(data: '2/9'), // Updated Page Number
-                    const SizedBox(height: 8.0),
-                    PageTitle(data: 'Data Kendaraan'), // Updated Title
-                    const SizedBox(height: 24.0),
+    return PopScope(
+      // Wrap with PopScope
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if (didPop) {
+          _focusScopeNode.unfocus(); // Unfocus when navigating back
+        }
+      },
+      child: FocusScope(
+        node: _focusScopeNode,
+        child: Form(
+          // Wrap with Form widget
+          key: _formKey, // Assign the form key
+          child: GestureDetector(
+            // Wrap with GestureDetector
+            onTap: () {
+              _focusScopeNode.unfocus(); // Unfocus on tap outside text fields
+            },
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        PageNumber(data: '2/9'), // Updated Page Number
+                        const SizedBox(height: 8.0),
+                        PageTitle(data: 'Data Kendaraan'), // Updated Title
+                        const SizedBox(height: 24.0),
 
-                    // Input Fields based on user request
-                  LabeledTextField(
-                    label: 'Merek Kendaraan',
-                    hintText: 'Masukkan merek kendaraan',
-                    focusNode: _merekKendaraanFocusNode,
-                    initialValue: formData.merekKendaraan, // Initialize with data from provider
-                    onChanged: (value) {
-                      formNotifier.updateMerekKendaraan(value); // Update data in provider
-                    },
-                    formSubmitted: _formSubmitted, // Pass the formSubmitted flag
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Merek Kendaraan tidak boleh kosong';
-                      }
-                      return null;
-                    },
+                        // Input Fields based on user request
+                        LabeledTextField(
+                          label: 'Merek Kendaraan',
+                          hintText: 'Masukkan merek kendaraan',
+                          focusNode: _merekKendaraanFocusNode,
+                          initialValue:
+                              formData
+                                  .merekKendaraan, // Initialize with data from provider
+                          onChanged: (value) {
+                            formNotifier.updateMerekKendaraan(
+                              value,
+                            ); // Update data in provider
+                          },
+                          formSubmitted:
+                              _formSubmitted, // Pass the formSubmitted flag
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Merek Kendaraan tidak boleh kosong';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        LabeledTextField(
+                          label: 'Tipe Kendaraan',
+                          hintText: 'Masukkan tipe kendaraan',
+                          focusNode: _tipeKendaraanFocusNode,
+                          initialValue:
+                              formData
+                                  .tipeKendaraan, // Initialize with data from provider
+                          onChanged: (value) {
+                            formNotifier.updateTipeKendaraan(
+                              value,
+                            ); // Update data in provider
+                          },
+                          formSubmitted:
+                              _formSubmitted, // Pass the formSubmitted flag
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Tipe Kendaraan tidak boleh kosong';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        LabeledTextField(
+                          label: 'Tahun',
+                          hintText: 'Masukkan tahun pembuatan',
+                          keyboardType:
+                              TextInputType.number, // Use number keyboard
+                          useThousandsSeparator:
+                              false, // Disable thousands separator for Tahun
+                          focusNode: _tahunFocusNode,
+                          initialValue:
+                              formData
+                                  .tahun, // Initialize with data from provider
+                          onChanged: (value) {
+                            formNotifier.updateTahun(
+                              value,
+                            ); // Update data in provider
+                          },
+                          formSubmitted:
+                              _formSubmitted, // Pass the formSubmitted flag
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Tahun tidak boleh kosong';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        LabeledTextField(
+                          label: 'Transmisi',
+                          hintText: 'Contoh: Otomatis / Manual',
+                          focusNode: _transmisiFocusNode,
+                          initialValue:
+                              formData
+                                  .transmisi, // Initialize with data from provider
+                          onChanged: (value) {
+                            formNotifier.updateTransmisi(
+                              value,
+                            ); // Update data in provider
+                          },
+                          formSubmitted: _formSubmitted,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Transmisi tidak boleh kosong';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        LabeledTextField(
+                          label: 'Warna Kendaraan',
+                          hintText: 'Masukkan warna kendaraan',
+                          focusNode: _warnaKendaraanFocusNode,
+                          initialValue:
+                              formData
+                                  .warnaKendaraan, // Initialize with data from provider
+                          onChanged: (value) {
+                            formNotifier.updateWarnaKendaraan(
+                              value,
+                            ); // Update data in provider
+                          },
+                          formSubmitted: _formSubmitted,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Warna Kendaraan tidak boleh kosong';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        LabeledTextField(
+                          label: 'Odometer',
+                          hintText: 'Masukkan angka odometer (km)',
+                          keyboardType:
+                              TextInputType.number, // Use number keyboard
+                          focusNode: _odometerFocusNode,
+                          initialValue:
+                              formData
+                                  .odometer, // Initialize with data from provider
+                          onChanged: (value) {
+                            formNotifier.updateOdometer(
+                              value,
+                            ); // Update data in provider
+                          },
+                          formSubmitted: _formSubmitted,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Odometer tidak boleh kosong';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        LabeledTextField(
+                          label: 'Kepemilikan',
+                          hintText: 'Contoh: Pribadi / Perusahaan',
+                          focusNode: _kepemilikanFocusNode,
+                          initialValue:
+                              formData
+                                  .kepemilikan, // Initialize with data from provider
+                          onChanged: (value) {
+                            formNotifier.updateKepemilikan(
+                              value,
+                            ); // Update data in provider
+                          },
+                          formSubmitted: _formSubmitted,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Kepemilikan tidak boleh kosong';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        LabeledTextField(
+                          label: 'Plat Nomor',
+                          hintText: 'Masukkan plat nomor',
+                          focusNode: _platNomorFocusNode,
+                          initialValue:
+                              formData
+                                  .platNomor, // Initialize with data from provider
+                          onChanged: (value) {
+                            formNotifier.updatePlatNomor(
+                              value,
+                            ); // Update data in provider
+                          },
+                          formSubmitted: _formSubmitted,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Plat Nomor tidak boleh kosong';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        LabeledDateField(
+                          label: 'Pajak 1 Tahun s.d.',
+                          hintText: 'Pilih tanggal',
+                          initialDate:
+                              formData
+                                  .pajak1TahunDate, // Initialize with data from provider
+                          onChanged: (date) {
+                            formNotifier.updatePajak1TahunDate(
+                              date,
+                            ); // Update data in provider
+                          },
+                          focusNode: _pajak1TahunFocusNode,
+                          formSubmitted:
+                              _formSubmitted, // Pass the formSubmitted flag
+                          lastDate: DateTime.now().add(
+                            const Duration(days: 365 * 20),
+                          ),
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Pajak 1 Tahun s.d. tidak boleh kosong';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        LabeledDateField(
+                          label: 'Pajak 5 Tahun s.d.',
+                          hintText: 'Pilih tanggal',
+                          initialDate:
+                              formData
+                                  .pajak5TahunDate, // Initialize with data from provider
+                          onChanged: (date) {
+                            formNotifier.updatePajak5TahunDate(
+                              date,
+                            ); // Update data in provider
+                          },
+                          focusNode: _pajak5TahunFocusNode,
+                          formSubmitted:
+                              _formSubmitted, // Pass the formSubmitted flag
+                          lastDate: DateTime.now().add(
+                            const Duration(days: 365 * 20),
+                          ), // Set last date to 20 years from now
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Pajak 5 Tahun s.d. tidak boleh kosong';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16.0),
+                        LabeledTextField(
+                          label: 'Biaya Pajak',
+                          hintText: 'Masukkan biaya pajak (Rp)',
+                          keyboardType:
+                              TextInputType.number, // Use number keyboard
+                          focusNode: _biayaPajakFocusNode,
+                          initialValue:
+                              formData
+                                  .biayaPajak, // Initialize with data from provider
+                          onChanged: (value) {
+                            formNotifier.updateBiayaPajak(
+                              value,
+                            ); // Update data in provider
+                          },
+                          formSubmitted: _formSubmitted,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Biaya Pajak tidak boleh kosong';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 32.0), // Spacing before buttons
+                        // Navigation Row - Back button is enabled here
+                        NavigationButtonRow(
+                          onBackPressed:
+                              moveToPreviousPage, // Enable back navigation
+                          onNextPressed:
+                              validateAndMoveToNextPage, // Call validation function
+                          // isBackButtonEnabled: true, // Default is true, so can be omitted
+                        ),
+                        SizedBox(
+                          height: 32.0,
+                        ), // Optional spacing below the content
+                        // Footer
+                        Footer(),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 16.0),
-                  LabeledTextField(
-                    label: 'Tipe Kendaraan',
-                      hintText: 'Masukkan tipe kendaraan',
-                      focusNode: _tipeKendaraanFocusNode,
-                      initialValue: formData.tipeKendaraan, // Initialize with data from provider
-                      onChanged: (value) {
-                        formNotifier.updateTipeKendaraan(value); // Update data in provider
-                      },
-                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Tipe Kendaraan tidak boleh kosong';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    LabeledTextField(
-                      label: 'Tahun',
-                      hintText: 'Masukkan tahun pembuatan',
-                      keyboardType: TextInputType.number, // Use number keyboard
-                      useThousandsSeparator: false, // Disable thousands separator for Tahun
-                      focusNode: _tahunFocusNode,
-                      initialValue: formData.tahun, // Initialize with data from provider
-                      onChanged: (value) {
-                        formNotifier.updateTahun(value); // Update data in provider
-                      },
-                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Tahun tidak boleh kosong';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    LabeledTextField(
-                      label: 'Transmisi',
-                      hintText: 'Contoh: Otomatis / Manual',
-                      focusNode: _transmisiFocusNode,
-                      initialValue: formData.transmisi, // Initialize with data from provider
-                      onChanged: (value) {
-                        formNotifier.updateTransmisi(value); // Update data in provider
-                      },
-                      formSubmitted: _formSubmitted,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Transmisi tidak boleh kosong';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    LabeledTextField(
-                      label: 'Warna Kendaraan',
-                      hintText: 'Masukkan warna kendaraan',
-                      focusNode: _warnaKendaraanFocusNode,
-                      initialValue: formData.warnaKendaraan, // Initialize with data from provider
-                      onChanged: (value) {
-                        formNotifier.updateWarnaKendaraan(value); // Update data in provider
-                      },
-                      formSubmitted: _formSubmitted,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Warna Kendaraan tidak boleh kosong';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    LabeledTextField(
-                      label: 'Odometer',
-                      hintText: 'Masukkan angka odometer (km)',
-                      keyboardType: TextInputType.number, // Use number keyboard
-                      focusNode: _odometerFocusNode,
-                      initialValue: formData.odometer, // Initialize with data from provider
-                      onChanged: (value) {
-                        formNotifier.updateOdometer(value); // Update data in provider
-                      },
-                      formSubmitted: _formSubmitted,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Odometer tidak boleh kosong';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    LabeledTextField(
-                      label: 'Kepemilikan',
-                      hintText: 'Contoh: Pribadi / Perusahaan',
-                      focusNode: _kepemilikanFocusNode,
-                      initialValue: formData.kepemilikan, // Initialize with data from provider
-                      onChanged: (value) {
-                        formNotifier.updateKepemilikan(value); // Update data in provider
-                      },
-                      formSubmitted: _formSubmitted,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Kepemilikan tidak boleh kosong';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    LabeledTextField(
-                      label: 'Plat Nomor',
-                      hintText: 'Masukkan plat nomor',
-                      focusNode: _platNomorFocusNode,
-                      initialValue: formData.platNomor, // Initialize with data from provider
-                      onChanged: (value) {
-                        formNotifier.updatePlatNomor(value); // Update data in provider
-                      },
-                      formSubmitted: _formSubmitted,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Plat Nomor tidak boleh kosong';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    LabeledDateField(
-                      label: 'Pajak 1 Tahun s.d.',
-                      hintText: 'Pilih tanggal',
-                      initialDate: formData.pajak1TahunDate, // Initialize with data from provider
-                      onChanged: (date) {
-                        formNotifier.updatePajak1TahunDate(date); // Update data in provider
-                      },
-                      focusNode: _pajak1TahunFocusNode,
-                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
-                      lastDate: DateTime.now().add(const Duration(days: 365 * 20)),
-                       validator: (value) {
-                        if (value == null) {
-                          return 'Pajak 1 Tahun s.d. tidak boleh kosong';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    LabeledDateField(
-                      label: 'Pajak 5 Tahun s.d.',
-                      hintText: 'Pilih tanggal',
-                      initialDate: formData.pajak5TahunDate, // Initialize with data from provider
-                      onChanged: (date) {
-                        formNotifier.updatePajak5TahunDate(date); // Update data in provider
-                      },
-                      focusNode: _pajak5TahunFocusNode,
-                      formSubmitted: _formSubmitted, // Pass the formSubmitted flag
-                      lastDate: DateTime.now().add(const Duration(days: 365 * 20)), // Set last date to 20 years from now
-                       validator: (value) {
-                        if (value == null) {
-                          return 'Pajak 5 Tahun s.d. tidak boleh kosong';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-                    LabeledTextField(
-                      label: 'Biaya Pajak',
-                      hintText: 'Masukkan biaya pajak (Rp)',
-                      keyboardType: TextInputType.number, // Use number keyboard
-                      focusNode: _biayaPajakFocusNode,
-                      initialValue: formData.biayaPajak, // Initialize with data from provider
-                      onChanged: (value) {
-                        formNotifier.updateBiayaPajak(value); // Update data in provider
-                      },
-                      formSubmitted: _formSubmitted,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Biaya Pajak tidak boleh kosong';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 32.0), // Spacing before buttons
-                    // Navigation Row - Back button is enabled here
-                    NavigationButtonRow(
-                      onBackPressed:
-                          moveToPreviousPage, // Enable back navigation
-                      onNextPressed: validateAndMoveToNextPage, // Call validation function
-                      // isBackButtonEnabled: true, // Default is true, so can be omitted
-                    ),
-                    SizedBox(height: 32.0), // Optional spacing below the content
-                    // Footer
-                    Footer(),
-                  ],
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

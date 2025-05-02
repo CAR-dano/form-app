@@ -100,6 +100,19 @@ class FormNotifier extends StateNotifier<FormData> {
   void updateNoMesin(String? value) {
     state = state.copyWith(noMesin: value);
   }
+
+  // New update methods for Page Four
+  void updateIndikasiTabrakan(String? value) {
+    state = state.copyWith(indikasiTabrakan: value);
+  }
+
+  void updateIndikasiBanjir(String? value) {
+    state = state.copyWith(indikasiBanjir: value);
+  }
+
+  void updateIndikasiOdometerReset(String? value) {
+    state = state.copyWith(indikasiOdometerReset: value);
+  }
 }
 
 final formProvider = StateNotifierProvider<FormNotifier, FormData>((ref) {
@@ -132,6 +145,9 @@ extension on FormData {
     String? toolkit,
     String? noRangka,
     String? noMesin,
+    String? indikasiTabrakan, // Add new parameter
+    String? indikasiBanjir, // Add new parameter
+    String? indikasiOdometerReset, // Add new parameter
   }) {
     return FormData(
       namaInspektor: namaInspektor ?? this.namaInspektor,
@@ -158,6 +174,9 @@ extension on FormData {
       toolkit: toolkit ?? this.toolkit,
       noRangka: noRangka ?? this.noRangka,
       noMesin: noMesin ?? this.noMesin,
+      indikasiTabrakan: indikasiTabrakan ?? this.indikasiTabrakan,
+      indikasiBanjir: indikasiBanjir ?? this.indikasiBanjir,
+      indikasiOdometerReset: indikasiOdometerReset ?? this.indikasiOdometerReset,
     );
   }
 }
