@@ -191,7 +191,7 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
                           : selectedDateTextStyle.copyWith(color: selectedDateColor), // Explicitly set color
                     ),
                     // --- Dropdown Icon ---
-                    const Icon(Icons.arrow_drop_down, color: iconColor), // Access iconColor from AppStyles
+                    Icon(Icons.arrow_drop_down, color: field.hasError ? errorBorderColor : iconColor), // Access iconColor from AppStyles
                   ],
                 ),
               ),

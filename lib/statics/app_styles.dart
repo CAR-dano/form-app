@@ -30,7 +30,6 @@ const Color toggleOptionSelectedLengkapColor = Color(0xFF30B6ED);
 const Color toggleOptionSelectedTidakColor = Color(0xFFFF80B4);
 
 // Numbered Button Colors
-// Numbered Button Colors
 const Map<int, Color> numberedButtonColors = {
   1: Color(0xFFF14091),
   2: Color(0xFFE35488),

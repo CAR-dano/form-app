@@ -156,8 +156,8 @@ class _PageFourState extends State<PageFour> {
                   ),
                   const SizedBox(height: 24.0),
                   ExpandableTextField(
-                    label: 'Keterangan Penilaian Keseluruhan', // Placeholder label
-                    hintText: 'keterangan 1\nketerangan 2\nketerangan 3', // Multi-line hint text
+                    label: 'Deskripsi Keseluruhan', // Placeholder label
+                    hintText: 'Deskripsi 1\nDeskripsi 2\nDeskripsi 3', // Multi-line hint text
                     onChanged: (value) {
                       // TODO: Handle text changes
                     },
