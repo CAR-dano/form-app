@@ -15,6 +15,8 @@ class LabeledTextField extends StatefulWidget {
   final bool formSubmitted; // Add formSubmitted parameter
   final String? initialValue; // Add initialValue parameter
   final bool useThousandsSeparator; // Add parameter to control thousands separator
+  final String? prefixText; // Add prefixText parameter
+  final String? suffixText; // Add suffixText parameter
 
   const LabeledTextField({
     super.key,
@@ -30,6 +32,8 @@ class LabeledTextField extends StatefulWidget {
     this.formSubmitted = false, // Default to false
     this.initialValue, // Accept initialValue
     this.useThousandsSeparator = true, // Default to true
+    this.prefixText, // Accept prefixText
+    this.suffixText, // Accept suffixText
   });
 
   @override
@@ -87,8 +91,9 @@ class _LabeledTextFieldState extends State<LabeledTextField> {
           decoration: InputDecoration(
             hintText: widget.hintText,
             hintStyle: hintTextStyling,
-            contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+            contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0), // Keep original padding
             isDense: true, // Make the input decorator more compact
+            alignLabelWithHint: true, // Align hint text with label
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: const BorderSide(color: borderColor, width: 1.5),
@@ -110,6 +115,24 @@ class _LabeledTextFieldState extends State<LabeledTextField> {
               borderRadius: BorderRadius.circular(8.0),
               borderSide: const BorderSide(color: errorBorderColor, width: 2.0),
             ),
+            prefix: widget.prefixText != null
+                ? Padding(
+                    padding: const EdgeInsets.only(right: 8.0), // Add padding after the prefix
+                    child: Text(
+                      widget.prefixText!,
+                      style: hintTextStyle, // Use the same style as input text
+                    ),
+                  )
+                : null,
+            suffix: widget.suffixText != null
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 8.0), // Add padding before the suffix
+                    child: Text(
+                      widget.suffixText!,
+                      style: hintTextStyle, // Use the same style as hint text
+                    ),
+                  )
+                : null,
           ),
         ),
         // No SizedBox needed here usually, as the next LabeledTextField

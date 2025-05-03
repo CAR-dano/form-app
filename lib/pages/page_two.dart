@@ -249,6 +249,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                           hintText: 'Masukkan angka odometer (km)',
                           keyboardType:
                               TextInputType.number, // Use number keyboard
+                          suffixText: 'km', // Add suffix text for km
                           focusNode: _odometerFocusNode,
                           initialValue:
                               formData
@@ -362,6 +363,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         LabeledTextField(
                           label: 'Biaya Pajak',
                           hintText: 'Masukkan biaya pajak (Rp)',
+                          suffixText: 'Rupiah', // Add prefix text for currency
                           keyboardType:
                               TextInputType.number, // Use number keyboard
                           focusNode: _biayaPajakFocusNode,
