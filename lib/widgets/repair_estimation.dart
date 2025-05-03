@@ -98,54 +98,70 @@ class _RepairEstimationState extends State<RepairEstimation> {
 
             return Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _repairControllers[index],
-                      style: TextStyle(
-                        color: repairHasText ? buttonTextColor : hintTextColor, // Use buttonTextColor and hintTextColor
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Masukkan perbaikan',
-                        hintStyle: hintTextStyle, // Use hintTextStyle
-                        filled: repairHasText,
-                        fillColor: borderColor, // Use borderColor
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide.none,
+              child: Container( // Wrap with Container for border
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: borderColor, // Use borderColor from app_styles.dart
+                    width: 2.0,
+                  ),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container( // Wrap TextField in Container for border
+                        decoration: BoxDecoration(
+                           border: Border(
+                            right: BorderSide(
+                              color: borderColor, // Use borderColor for vertical separator
+                              width: 2.0,
+                            ),
+                          ),
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 15.0),
+                        child: TextField(
+                          controller: _repairControllers[index],
+                          style: repairHasText ? toggleOptionTextStyle.copyWith(color: Colors.white) : hintTextStyle, // Use toggleOptionTextStyle when text is present, hintTextStyle otherwise
+                          decoration: InputDecoration(
+                            hintText: 'Masukkan perbaikan',
+                            hintStyle: hintTextStyle, // Use hintTextStyle
+                            filled: repairHasText, // Fill only if text is present
+                            fillColor: borderColor, // Use borderColor for background when filled
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0), bottomLeft: Radius.circular(6.0)), // Apply border radius to left side
+                            borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0), // Adjusted vertical padding
+                            isDense: true, // Make the input decorator more compact
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8.0),
-                  Expanded(
-                    child: TextField(
-                      controller: _priceControllers[index],
-                      style: TextStyle(
-                        color: priceHasText ? buttonTextColor : hintTextColor, // Use buttonTextColor and hintTextColor
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Masukkan harga',
-                        hintStyle: hintTextStyle, // Use hintTextStyle
-                        filled: priceHasText,
-                        fillColor: borderColor, // Use borderColor
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: BorderSide.none,
+                    Expanded(
+                      child: TextField(
+                        controller: _priceControllers[index],
+                        style: priceHasText ? priceTextStyle : hintTextStyle, // Use priceTextStyle when text is present, hintTextStyle otherwise
+                        decoration: InputDecoration(
+                          hintText: 'Masukkan harga',
+                          hintStyle: hintTextStyle, // Use hintTextStyle
+                          filled: false, // Do not fill based on text
+                          fillColor: Colors.transparent, // Keep background transparent
+                          border: OutlineInputBorder(
+                             borderRadius: BorderRadius.only(topRight: Radius.circular(6.0), bottomRight: Radius.circular(6.0)), // Apply border radius to right side
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0), // Adjusted vertical padding
+                          isDense: true, // Make the input decorator more compact
                         ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 15.0),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {
-                      _removeEstimation(index);
-                    },
-                  ),
-                ],
+                    IconButton(
+                      icon: const Icon(Icons.close_outlined), // Set icon size to 14.0 as per previous request
+                      onPressed: () {
+                        _removeEstimation(index);
+                      },
+                    ),
+                  ],
+                ),
               ),
             );
           },

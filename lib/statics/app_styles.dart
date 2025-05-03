@@ -98,3 +98,9 @@ final TextStyle hintTextStyling = GoogleFonts.rubik(
   color: hintTextColor,
   fontWeight: FontWeight.w400,
 );
+
+final TextStyle priceTextStyle = GoogleFonts.rubik(
+  fontSize: 16.0,
+  color: Color(0xFF141414), // Hex color #FF141414
+  fontWeight: FontWeight.w400,
+);
