@@ -140,34 +140,50 @@ class _RepairEstimationState extends State<RepairEstimation> {
                     ),
                     Expanded(
                       flex: 1,
-                      child: TextField(
-                        controller: _priceControllers[index],
-                        keyboardType: TextInputType.number, // Set keyboard type to number
-                        style: priceHasText ? priceTextStyle : hintTextStyle, // Use priceTextStyle when text is present, hintTextStyle otherwise
-                        inputFormatters: [
-                          ThousandsSeparatorInputFormatter()
-                        ], // Apply thousands separator formatter
-                        decoration: InputDecoration(
-                          hintText: 'Masukkan harga',
-                          hintStyle: hintTextStyle, // Use hintTextStyle
-                          filled: false, // Do not fill based on text
-                          fillColor: Colors.transparent, // Keep background transparent
-                          border: OutlineInputBorder(
-                             borderRadius: BorderRadius.only(topRight: Radius.circular(6.0), bottomRight: Radius.circular(6.0)), // Apply border radius to right side
-                            borderSide: BorderSide.none,
+                      child: Container( // Wrap TextField and IconButton in Container for border
+                        decoration: BoxDecoration(
+                           border: Border(
+                            left: BorderSide( // Add left border
+                              color: borderColor, // Use borderColor for vertical separator
+                              width: 2.0,
+                            ),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0), // Adjusted vertical padding
-                          isDense: true, // Make the input decorator more compact
                         ),
-                      ),
-                    ),
-                    SizedBox( // Wrap IconButton in SizedBox for fixed width
-                      width: 48.0, // Approximate width of an IconButton
-                      child: IconButton(
-                        icon: const Icon(Icons.close_outlined, size: 14.0), // Set icon size to 14.0
-                        onPressed: () {
-                          _removeEstimation(index);
-                        },
+                        child: Row( // Inner Row for price TextField and IconButton
+                          children: [
+                            Expanded( // Expanded for price TextField
+                              child: TextField(
+                                controller: _priceControllers[index],
+                                keyboardType: TextInputType.number, // Set keyboard type to number
+                                style: priceHasText ? priceTextStyle : hintTextStyle, // Use priceTextStyle when text is present, hintTextStyle otherwise
+                                inputFormatters: [
+                                  ThousandsSeparatorInputFormatter()
+                                ], // Apply thousands separator formatter
+                                decoration: InputDecoration(
+                                  hintText: 'Masukkan harga',
+                                  hintStyle: hintTextStyle, // Use hintTextStyle
+                                  filled: false, // Do not fill based on text
+                                  fillColor: Colors.transparent, // Keep background transparent
+                                  border: OutlineInputBorder(
+                                     borderRadius: BorderRadius.only(topRight: Radius.circular(6.0), bottomRight: Radius.circular(6.0)), // Apply border radius to right side
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0), // Adjusted vertical padding
+                                  isDense: true, // Make the input decorator more compact
+                                ),
+                              ),
+                            ),
+                            SizedBox( // Wrap IconButton in SizedBox for fixed width
+                              width: 48.0, // Approximate width of an IconButton
+                              child: IconButton(
+                                icon: const Icon(Icons.close_outlined, size: 14.0), // Set icon size to 14.0
+                                onPressed: () {
+                                  _removeEstimation(index);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
