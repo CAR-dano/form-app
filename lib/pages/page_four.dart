@@ -8,6 +8,7 @@ import 'package:form_app/widgets/common_layout.dart';
 import 'package:form_app/widgets/expandable_text_field.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_provider.dart';
+import 'package:form_app/widgets/repair_estimation.dart';
 import 'package:form_app/widgets/toggle_option_widget.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/services/api_service.dart'; // Import ApiService
@@ -187,57 +188,41 @@ class _PageFourState extends ConsumerState<PageFour> {
                         ),
                         const SizedBox(height: 32.0), // Spacing before new text fields
                         LabeledTextField(
-                          label: 'Merek Ban Depan',
-                          hintText: 'Masukkan Merek Ban',
-                          initialValue: formData.merekBanDepan,
+                          label: 'Posisi Ban',
+                          hintText: 'Misal : Ban agak miring ke kanan',
                           onChanged: (value) {
-                            formNotifier.updateMerekBanDepan(value);
+                            formNotifier.updatePosisiBan(value);
                           },
                         ),
                         const SizedBox(height: 16.0),
                         LabeledTextField(
-                          label: 'Tipe Velg Depan',
-                          hintText: 'Masukkan tipe velg',
-                          initialValue: formData.tipeVelgDepan,
+                          label: 'Merk',
+                          hintText: 'Misal : Bridgestone',
                           onChanged: (value) {
-                            formNotifier.updateTipeVelgDepan(value);
+                            formNotifier.updateMerk(value);
                           },
                         ),
                         const SizedBox(height: 16.0),
                         LabeledTextField(
-                          label: 'Ketebalan Ban Depan',
-                          hintText: 'Masukkan ketebalan ban',
-                          initialValue: formData.ketebalanBanDepan,
+                          label: 'Tipe Velg',
+                          hintText: 'Misal : Alloy Standar',
                           onChanged: (value) {
-                            formNotifier.updateKetebalanBanDepan(value);
-                          },
-                        ),
-                        const SizedBox(height: 32.0), // Spacing between front and rear tire fields
-                        LabeledTextField(
-                          label: 'Merek Ban Belakang',
-                          hintText: 'Masukkan Merek Ban',
-                          initialValue: formData.merekBanBelakang,
-                          onChanged: (value) {
-                            formNotifier.updateMerekBanBelakang(value);
+                            formNotifier.updateTipeVelg(value);
                           },
                         ),
                         const SizedBox(height: 16.0),
                         LabeledTextField(
-                          label: 'Tipe Velg Belakang',
-                          hintText: 'Masukkan tipe velg',
-                          initialValue: formData.tipeVelgBelakang,
+                          label: 'Ketebalan',
+                          hintText: 'Misal : Ban telah aus',
                           onChanged: (value) {
-                            formNotifier.updateTipeVelgBelakang(value);
+                            formNotifier.updateKetebalan(value);
                           },
                         ),
-                        const SizedBox(height: 16.0),
-                        LabeledTextField(
-                          label: 'Ketebalan Ban Belakang',
-                          hintText: 'Masukkan ketebalan ban',
-                          initialValue: formData.ketebalanBanBelakang,
-                          onChanged: (value) {
-                            formNotifier.updateKetebalanBanBelakang(value);
-                          },
+                        const SizedBox(height: 16.0), // Spacing before Estimasi Perbaikan section
+                        RepairEstimation(
+                          label: 'Estimasi Perbaikan', // Added the custom widget with label
+                          initialEstimations: formData.repairEstimations ?? [],
+                          onChanged: (estimations) => formNotifier.updateRepairEstimations(estimations),
                         ),
                         const SizedBox(height: 32.0), // Spacing before navigation buttons
                         NavigationButtonRow(

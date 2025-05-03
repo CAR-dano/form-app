@@ -114,29 +114,20 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(indikasiOdometerReset: value);
   }
 
-  // New update methods for tire and wheel information
-  void updateMerekBanDepan(String? value) {
-    state = state.copyWith(merekBanDepan: value);
+  void updatePosisiBan(String? value) {
+    state = state.copyWith(posisiBan: value);
   }
 
-  void updateTipeVelgDepan(String? value) {
-    state = state.copyWith(tipeVelgDepan: value);
+  void updateMerk(String? value) {
+    state = state.copyWith(merk: value);
   }
 
-  void updateKetebalanBanDepan(String? value) {
-    state = state.copyWith(ketebalanBanDepan: value);
+  void updateTipeVelg(String? value) {
+    state = state.copyWith(tipeVelg: value);
   }
 
-  void updateMerekBanBelakang(String? value) {
-    state = state.copyWith(merekBanBelakang: value);
-  }
-
-  void updateTipeVelgBelakang(String? value) {
-    state = state.copyWith(tipeVelgBelakang: value);
-  }
-
-  void updateKetebalanBanBelakang(String? value) {
-    state = state.copyWith(ketebalanBanBelakang: value);
+  void updateKetebalan(String? value) {
+    state = state.copyWith(ketebalan: value);
   }
 
   // New update methods for selected indices
@@ -160,6 +151,9 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(penilaianKeseluruhanSelectedIndex: index);
   }
 
+  void updateRepairEstimations(List<Map<String, String>> estimations) {
+    state = state.copyWith(repairEstimations: estimations);
+  }
 }
 
 final formProvider = StateNotifierProvider<FormNotifier, FormData>((ref) {
@@ -192,20 +186,19 @@ extension on FormData {
     String? toolkit,
     String? noRangka,
     String? noMesin,
-    String? indikasiTabrakan, // Add new parameter
-    String? indikasiBanjir, // Add new parameter
-    String? indikasiOdometerReset, // Add new parameter
-    String? merekBanDepan,
-    String? tipeVelgDepan,
-    String? ketebalanBanDepan,
-    String? merekBanBelakang,
-    String? tipeVelgBelakang,
-    String? ketebalanBanBelakang,
+    String? indikasiTabrakan,
+    String? indikasiBanjir,
+    String? indikasiOdometerReset,
+    String? posisiBan,
+    String? merk,
+    String? tipeVelg,
+    String? ketebalan,
     int? interiorSelectedIndex,
     int? eksteriorSelectedIndex,
     int? kakiKakiSelectedIndex,
     int? mesinSelectedIndex,
     int? penilaianKeseluruhanSelectedIndex,
+    List<Map<String, String>>? repairEstimations,
   }) {
     return FormData(
       namaInspektor: namaInspektor ?? this.namaInspektor,
@@ -235,17 +228,16 @@ extension on FormData {
       indikasiTabrakan: indikasiTabrakan ?? this.indikasiTabrakan,
       indikasiBanjir: indikasiBanjir ?? this.indikasiBanjir,
       indikasiOdometerReset: indikasiOdometerReset ?? this.indikasiOdometerReset,
-      merekBanDepan: merekBanDepan ?? this.merekBanDepan,
-      tipeVelgDepan: tipeVelgDepan ?? this.tipeVelgDepan,
-      ketebalanBanDepan: ketebalanBanDepan ?? this.ketebalanBanDepan,
-      merekBanBelakang: merekBanBelakang ?? this.merekBanBelakang,
-      tipeVelgBelakang: tipeVelgBelakang ?? this.tipeVelgBelakang,
-      ketebalanBanBelakang: ketebalanBanBelakang ?? this.ketebalanBanBelakang,
+      posisiBan: posisiBan ?? this.posisiBan,
+      merk: merk ?? this.merk,
+      tipeVelg: tipeVelg ?? this.tipeVelg,
+      ketebalan: ketebalan ?? this.ketebalan,
       interiorSelectedIndex: interiorSelectedIndex ?? this.interiorSelectedIndex,
       eksteriorSelectedIndex: eksteriorSelectedIndex ?? this.eksteriorSelectedIndex,
       kakiKakiSelectedIndex: kakiKakiSelectedIndex ?? this.kakiKakiSelectedIndex,
       mesinSelectedIndex: mesinSelectedIndex ?? this.mesinSelectedIndex,
       penilaianKeseluruhanSelectedIndex: penilaianKeseluruhanSelectedIndex ?? this.penilaianKeseluruhanSelectedIndex,
+      repairEstimations: repairEstimations ?? this.repairEstimations,
     );
   }
 }

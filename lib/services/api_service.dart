@@ -51,18 +51,12 @@ class ApiService {
               "interiorScore": null, // TODO: Get from form data
               "kakiKakiNotes": null, // TODO: Get from form data
               "kakiKakiScore": null, // TODO: Get from form data
-              "merekBanDepan": formData.merekBanDepan,
-              "tipeVelgDepan": formData.tipeVelgDepan,
               "eksteriorNotes": null, // TODO: Get from form data
               "eksteriorScore": null, // TODO: Get from form data
               "indikasiBanjir": formData.indikasiBanjir == 'Terindikasi',
               "indikasiTabrakan": formData.indikasiTabrakan == 'Terindikasi',
-              "merekBanBelakang": formData.merekBanBelakang,
-              "tipeVelgBelakang": formData.tipeVelgBelakang,
               "estimasiPerbaikan": [], // TODO: Get from form data if available
-              "ketebalanBanDepan": formData.ketebalanBanDepan,
               "deskripsiKeseluruhan": [], // TODO: Get from form data if available
-              "ketebalanBanBelakang": formData.ketebalanBanBelakang,
               "indikasiOdometerReset": formData.indikasiOdometerReset == 'Terindikasi',
               "penilaianKeseluruhanScore": null // TODO: Get from form data
           },
