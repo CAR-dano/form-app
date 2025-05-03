@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:form_app/statics/app_styles.dart';
+import 'package:form_app/formatters/thousands_separator_input_formatter.dart'; // Import thousands separator formatter
 
 class RepairEstimation extends StatefulWidget {
   const RepairEstimation({
@@ -109,6 +110,7 @@ class _RepairEstimationState extends State<RepairEstimation> {
                 child: Row(
                   children: [
                     Expanded(
+                      flex: 1,
                       child: Container( // Wrap TextField in Container for border
                         decoration: BoxDecoration(
                            border: Border(
@@ -137,9 +139,14 @@ class _RepairEstimationState extends State<RepairEstimation> {
                       ),
                     ),
                     Expanded(
+                      flex: 1,
                       child: TextField(
                         controller: _priceControllers[index],
+                        keyboardType: TextInputType.number, // Set keyboard type to number
                         style: priceHasText ? priceTextStyle : hintTextStyle, // Use priceTextStyle when text is present, hintTextStyle otherwise
+                        inputFormatters: [
+                          ThousandsSeparatorInputFormatter()
+                        ], // Apply thousands separator formatter
                         decoration: InputDecoration(
                           hintText: 'Masukkan harga',
                           hintStyle: hintTextStyle, // Use hintTextStyle
@@ -154,11 +161,14 @@ class _RepairEstimationState extends State<RepairEstimation> {
                         ),
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.close_outlined), // Set icon size to 14.0 as per previous request
-                      onPressed: () {
-                        _removeEstimation(index);
-                      },
+                    SizedBox( // Wrap IconButton in SizedBox for fixed width
+                      width: 48.0, // Approximate width of an IconButton
+                      child: IconButton(
+                        icon: const Icon(Icons.close_outlined, size: 14.0), // Set icon size to 14.0
+                        onPressed: () {
+                          _removeEstimation(index);
+                        },
+                      ),
                     ),
                   ],
                 ),
