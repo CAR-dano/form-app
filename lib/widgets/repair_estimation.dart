@@ -143,10 +143,7 @@ class _RepairEstimationState extends State<RepairEstimation> {
                       child: Container( // Wrap TextField and IconButton in Container for border
                         decoration: BoxDecoration(
                            border: Border(
-                            left: BorderSide( // Add left border
-                              color: borderColor, // Use borderColor for vertical separator
-                              width: 2.0,
-                            ),
+                            // Removed left border to avoid double border
                           ),
                         ),
                         child: Row( // Inner Row for price TextField and IconButton

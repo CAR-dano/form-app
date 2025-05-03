@@ -221,7 +221,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                         const SizedBox(height: 16.0), // Spacing before Estimasi Perbaikan section
                         RepairEstimation(
                           label: 'Estimasi Perbaikan', // Added the custom widget with label
-                          initialEstimations: formData.repairEstimations ?? [],
+                          initialEstimations: formData.repairEstimations,
                           onChanged: (estimations) => formNotifier.updateRepairEstimations(estimations),
                         ),
                         const SizedBox(height: 32.0), // Spacing before navigation buttons
