@@ -190,6 +190,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                         LabeledTextField(
                           label: 'Posisi Ban',
                           hintText: 'Misal : Ban agak miring ke kanan',
+                          initialValue: formData.posisiBan,
                           onChanged: (value) {
                             formNotifier.updatePosisiBan(value);
                           },
@@ -198,6 +199,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                         LabeledTextField(
                           label: 'Merk',
                           hintText: 'Misal : Bridgestone',
+                          initialValue: formData.merk,
                           onChanged: (value) {
                             formNotifier.updateMerk(value);
                           },
@@ -206,6 +208,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                         LabeledTextField(
                           label: 'Tipe Velg',
                           hintText: 'Misal : Alloy Standar',
+                          initialValue: formData.tipeVelg,
                           onChanged: (value) {
                             formNotifier.updateTipeVelg(value);
                           },
@@ -214,6 +217,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                         LabeledTextField(
                           label: 'Ketebalan',
                           hintText: 'Misal : Ban telah aus',
+                          initialValue: formData.ketebalan,
                           onChanged: (value) {
                             formNotifier.updateKetebalan(value);
                           },
@@ -229,8 +233,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                           onBackPressed: () => Navigator.pop(context),
                           onNextPressed: () {
                             _apiService.submitFormData(formData); // Call API service
-                          },
-                          isLastPage: true,
+                          },                          
                         ),
                         SizedBox(
                           height: 32.0,
