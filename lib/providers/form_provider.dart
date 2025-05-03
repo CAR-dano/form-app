@@ -151,6 +151,27 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(penilaianKeseluruhanSelectedIndex: index);
   }
 
+  // NEW: Update methods for ExpandableTextField data
+  void updateKeteranganInterior(List<String> lines) {
+    state = state.copyWith(keteranganInterior: lines);
+  }
+
+  void updateKeteranganEksterior(List<String> lines) {
+    state = state.copyWith(keteranganEksterior: lines);
+  }
+
+  void updateKeteranganKakiKaki(List<String> lines) {
+    state = state.copyWith(keteranganKakiKaki: lines);
+  }
+
+  void updateKeteranganMesin(List<String> lines) {
+    state = state.copyWith(keteranganMesin: lines);
+  }
+
+  void updateDeskripsiKeseluruhan(List<String> lines) {
+    state = state.copyWith(deskripsiKeseluruhan: lines);
+  }
+
   void updateRepairEstimations(List<Map<String, String>> estimations) {
     state = state.copyWith(repairEstimations: estimations);
   }
@@ -198,6 +219,11 @@ extension on FormData {
     int? kakiKakiSelectedIndex,
     int? mesinSelectedIndex,
     int? penilaianKeseluruhanSelectedIndex,
+    List<String>? keteranganInterior,
+    List<String>? keteranganEksterior,
+    List<String>? keteranganKakiKaki,
+    List<String>? keteranganMesin,
+    List<String>? deskripsiKeseluruhan,
     List<Map<String, String>>? repairEstimations,
   }) {
     return FormData(
@@ -237,6 +263,11 @@ extension on FormData {
       kakiKakiSelectedIndex: kakiKakiSelectedIndex ?? this.kakiKakiSelectedIndex,
       mesinSelectedIndex: mesinSelectedIndex ?? this.mesinSelectedIndex,
       penilaianKeseluruhanSelectedIndex: penilaianKeseluruhanSelectedIndex ?? this.penilaianKeseluruhanSelectedIndex,
+      keteranganInterior: keteranganInterior ?? this.keteranganInterior,
+      keteranganEksterior: keteranganEksterior ?? this.keteranganEksterior,
+      keteranganKakiKaki: keteranganKakiKaki ?? this.keteranganKakiKaki,
+      keteranganMesin: keteranganMesin ?? this.keteranganMesin,
+      deskripsiKeseluruhan: deskripsiKeseluruhan ?? this.deskripsiKeseluruhan,
       repairEstimations: repairEstimations ?? this.repairEstimations,
     );
   }

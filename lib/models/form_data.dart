@@ -47,6 +47,13 @@ class FormData {
   int? mesinSelectedIndex;
   int? penilaianKeseluruhanSelectedIndex;
 
+  // NEW: Fields for ExpandableTextField data (as List<String>)
+  List<String> keteranganInterior;
+  List<String> keteranganEksterior;
+  List<String> keteranganKakiKaki;
+  List<String> keteranganMesin;
+  List<String> deskripsiKeseluruhan;
+
   // New field for repair estimations
   List<Map<String, String>> repairEstimations;
 
@@ -87,8 +94,19 @@ class FormData {
     this.kakiKakiSelectedIndex,
     this.mesinSelectedIndex,
     this.penilaianKeseluruhanSelectedIndex,
+    List<String>? keteranganInterior,
+    List<String>? keteranganEksterior,
+    List<String>? keteranganKakiKaki,
+    List<String>? keteranganMesin,
+    List<String>? deskripsiKeseluruhan,
     List<Map<String, String>>? repairEstimations,
-  }) : repairEstimations = repairEstimations ?? [];
+
+  }) : keteranganEksterior = keteranganEksterior ?? [],
+       keteranganInterior = keteranganInterior ?? [],
+       keteranganKakiKaki = keteranganKakiKaki ?? [],
+       keteranganMesin = keteranganMesin ?? [],
+       deskripsiKeseluruhan = deskripsiKeseluruhan ?? [],
+       repairEstimations = repairEstimations ?? [];
 
   // Add methods to update data if needed, or update directly
 }

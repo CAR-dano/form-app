@@ -85,8 +85,9 @@ class _PageFourState extends ConsumerState<PageFour> {
                           label: 'Keterangan Interior', // Placeholder label
                           hintText:
                               'keterangan 1\nketerangan 2\nketerangan 3', // Multi-line hint text
-                          onChanged: (value) {
-                            // TODO: Handle text changes
+                          initialLines: formData.keteranganInterior,
+                          onChangedList: (lines) {
+                            formNotifier.updateKeteranganInterior(lines);
                           },
                         ),
                         const SizedBox(height: 32.0),
@@ -104,8 +105,9 @@ class _PageFourState extends ConsumerState<PageFour> {
                           label: 'Keterangan Eksterior', // Placeholder label
                           hintText:
                               'keterangan 1\nketerangan 2\nketerangan 3', // Multi-line hint text
-                          onChanged: (value) {
-                            // TODO: Handle text changes
+                          initialLines: formData.keteranganEksterior,
+                          onChangedList: (lines) {
+                            formNotifier.updateKeteranganEksterior(lines);
                           },
                         ),
                         const SizedBox(height: 32.0),
@@ -123,8 +125,9 @@ class _PageFourState extends ConsumerState<PageFour> {
                           label: 'Keterangan Kaki-kaki', // Placeholder label
                           hintText:
                               'keterangan 1\nketerangan 2\nketerangan 3', // Multi-line hint text
-                          onChanged: (value) {
-                            // TODO: Handle text changes
+                          initialLines: formData.keteranganKakiKaki,
+                          onChangedList: (lines) {
+                            formNotifier.updateKeteranganKakiKaki(lines);
                           },
                         ),
                         const SizedBox(height: 32.0),
@@ -142,8 +145,9 @@ class _PageFourState extends ConsumerState<PageFour> {
                           label: 'Keterangan Mesin', // Placeholder label
                           hintText:
                               'keterangan 1\nketerangan 2\nketerangan 3', // Multi-line hint text
-                          onChanged: (value) {
-                            // TODO: Handle text changes
+                          initialLines: formData.keteranganMesin,
+                          onChangedList: (lines) {
+                            formNotifier.updateKeteranganMesin(lines);
                           },
                         ),
                         const SizedBox(height: 32.0),
@@ -161,8 +165,9 @@ class _PageFourState extends ConsumerState<PageFour> {
                           label: 'Deskripsi Keseluruhan', // Placeholder label
                           hintText:
                               'Deskripsi 1\nDeskripsi 2\nDeskripsi 3', // Multi-line hint text
-                          onChanged: (value) {
-                            // TODO: Handle text changes
+                          initialLines: formData.deskripsiKeseluruhan,
+                          onChangedList: (lines) {
+                            formNotifier.updateDeskripsiKeseluruhan(lines);
                           },
                         ),
                         const SizedBox(height: 32.0), // Spacing before new toggle options
