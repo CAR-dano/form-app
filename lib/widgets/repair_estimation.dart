@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_app/statics/app_styles.dart';
 
 class RepairEstimation extends StatefulWidget {
   const RepairEstimation({
@@ -84,10 +85,7 @@ class _RepairEstimationState extends State<RepairEstimation> {
       children: [
         Text(
           widget.label,
-          style: const TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-          ),
+          style: labelStyle, // Use labelStyle from app_styles.dart
         ),
         const SizedBox(height: 8.0),
         ListView.builder(
@@ -106,12 +104,13 @@ class _RepairEstimationState extends State<RepairEstimation> {
                     child: TextField(
                       controller: _repairControllers[index],
                       style: TextStyle(
-                        color: repairHasText ? Colors.white : Colors.grey,
+                        color: repairHasText ? buttonTextColor : hintTextColor, // Use buttonTextColor and hintTextColor
                       ),
                       decoration: InputDecoration(
                         hintText: 'Masukkan perbaikan',
+                        hintStyle: hintTextStyle, // Use hintTextStyle
                         filled: repairHasText,
-                        fillColor: Colors.purple[300],
+                        fillColor: borderColor, // Use borderColor
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
                           borderSide: BorderSide.none,
@@ -125,12 +124,13 @@ class _RepairEstimationState extends State<RepairEstimation> {
                     child: TextField(
                       controller: _priceControllers[index],
                       style: TextStyle(
-                        color: priceHasText ? Colors.white : Colors.grey,
+                        color: priceHasText ? buttonTextColor : hintTextColor, // Use buttonTextColor and hintTextColor
                       ),
                       decoration: InputDecoration(
                         hintText: 'Masukkan harga',
+                        hintStyle: hintTextStyle, // Use hintTextStyle
                         filled: priceHasText,
-                        fillColor: Colors.purple[300],
+                        fillColor: borderColor, // Use borderColor
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
                           borderSide: BorderSide.none,
