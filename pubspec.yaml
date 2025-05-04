@@ -40,6 +40,7 @@ dependencies:
   flutter_riverpod: ^2.6.1
   intl: ^0.20.2
   flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.6
 
 
 dev_dependencies:
@@ -101,3 +102,12 @@ flutter_launcher_icons:
   ios: true
   image_path: "assets/images/icon.png"
   min_sdk_android: 21
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/images/palapa_logo.png
+  branding: assets/images/cardano_logo.png
+  android: true
+  ios: true
+  branding_mode: bottom
+  branding_bottom_padding: 24
