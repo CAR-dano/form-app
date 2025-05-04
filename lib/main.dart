@@ -15,7 +15,7 @@ class FormApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      title: 'Form App',
+      title: 'Palapa Inspeksi',
       theme: ThemeData(),
 
       debugShowCheckedModeBanner: false,

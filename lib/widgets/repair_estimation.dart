@@ -60,6 +60,7 @@ class _RepairEstimationState extends State<RepairEstimation> {
       _priceControllers[index].dispose();
       _repairControllers.removeAt(index);
       _priceControllers.removeAt(index);
+      FocusScope.of(context).unfocus(); // Unfocus the text fields
       _notifyParent();
     });
   }

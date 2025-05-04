@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="Car-dano Form"
+        android:label="Palapa Inspeksi"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
