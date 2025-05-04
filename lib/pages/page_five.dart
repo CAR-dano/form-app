@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_app/widgets/common_layout.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
@@ -12,31 +13,33 @@ class PageFive extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Basic structure, replace with actual content later
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                PageNumber(data: '5/9'),
-                const SizedBox(height: 8.0),
-                PageTitle(data: 'Page Five Title'), // Placeholder Title
-                const SizedBox(height: 24.0),
-                const Center(child: Text('Page Five Content Goes Here')),
-                const SizedBox(height: 32.0),
-                NavigationButtonRow(
-                  onBackPressed: () => Navigator.pop(context),
-                  onNextPressed: () {
-                    // TODO: Implement navigation to Page Six
-                  },
-                ),
-              ],
+    return CommonLayout(
+      child: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  PageNumber(data: '5/9'),
+                  const SizedBox(height: 8.0),
+                  PageTitle(data: 'Page Five Title'), // Placeholder Title
+                  const SizedBox(height: 24.0),
+                  const Center(child: Text('Page Five Content Goes Here')),
+                  const SizedBox(height: 32.0),
+                  NavigationButtonRow(
+                    onBackPressed: () => Navigator.pop(context),
+                    onNextPressed: () {
+                      // TODO: Implement navigation to Page Six
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        Footer(),
-      ],
+          Footer(),
+        ],
+      ),
     );
   }
 }

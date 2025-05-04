@@ -12,6 +12,7 @@ import 'package:form_app/widgets/repair_estimation.dart';
 import 'package:form_app/widgets/toggle_option_widget.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/services/api_service.dart'; // Import ApiService
+import 'package:form_app/pages/page_five.dart'; // Import PageFive
 // Import other necessary widgets like CommonLayout if you plan to use it here
 
 // Placeholder for Page Four
@@ -237,7 +238,10 @@ class _PageFourState extends ConsumerState<PageFour> {
                         NavigationButtonRow(
                           onBackPressed: () => Navigator.pop(context),
                           onNextPressed: () {
-                            _apiService.submitFormData(formData); // Call API service
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const PageFive()),
+                            );
                           },                          
                         ),
                         SizedBox(
