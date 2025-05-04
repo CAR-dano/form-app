@@ -4,6 +4,7 @@ import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
+import 'package:form_app/pages/page_six.dart'; // Import PageSix
 // Import other necessary widgets like CommonLayout if you plan to use it here
 
 // Placeholder for Page Five
@@ -30,7 +31,10 @@ class PageFive extends StatelessWidget {
                   NavigationButtonRow(
                     onBackPressed: () => Navigator.pop(context),
                     onNextPressed: () {
-                      // TODO: Implement navigation to Page Six
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const PageSix()),
+                      );
                     },
                   ),
                 ],
