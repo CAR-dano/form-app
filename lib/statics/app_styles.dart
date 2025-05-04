@@ -104,3 +104,9 @@ final TextStyle priceTextStyle = GoogleFonts.rubik(
   color: Color(0xFF141414), // Hex color #FF141414
   fontWeight: FontWeight.w400,
 );
+
+final TextStyle headingOneStyle = GoogleFonts.rubik(
+  fontSize: 32.0,
+  fontWeight: FontWeight.w400,
+  color: Colors.black,
+);

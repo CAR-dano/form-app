@@ -29,6 +29,7 @@ class PageNine extends StatelessWidget {
                   const SizedBox(height: 32.0),
                   NavigationButtonRow(
                     onBackPressed: () => Navigator.pop(context),
+                    isLastPage: true,
                     onNextPressed: () {
                       // TODO: Implement final submission or navigation
                     },
