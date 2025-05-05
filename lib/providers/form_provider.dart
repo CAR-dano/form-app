@@ -205,8 +205,8 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(sistemAcIsEnabled: enabled);
   }
 
-  void updateFiturCatatan(String? text) {
-    state = state.copyWith(fiturCatatan: text);
+  void updateFiturCatatanList(List<String> lines) {
+    state = state.copyWith(fiturCatatanList: lines);
   }
 
   // New update methods for Page Five Two
@@ -933,7 +933,7 @@ extension on FormData {
     bool? powerWindowIsEnabled,
     int? sistemAcSelectedIndex,
     bool? sistemAcIsEnabled,
-    String? fiturCatatan,
+    List<String>? fiturCatatanList,
     int? getaranMesinSelectedIndex,
     bool? getaranMesinIsEnabled,
     int? suaraMesinSelectedIndex,
@@ -1151,7 +1151,7 @@ extension on FormData {
       powerWindowIsEnabled: powerWindowIsEnabled ?? this.powerWindowIsEnabled,
       sistemAcSelectedIndex: sistemAcSelectedIndex ?? this.sistemAcSelectedIndex,
       sistemAcIsEnabled: sistemAcIsEnabled ?? this.sistemAcIsEnabled,
-      fiturCatatan: fiturCatatan ?? this.fiturCatatan,
+      fiturCatatanList: fiturCatatanList ?? this.fiturCatatanList,
       getaranMesinSelectedIndex: getaranMesinSelectedIndex ?? this.getaranMesinSelectedIndex,
       getaranMesinIsEnabled: getaranMesinIsEnabled ?? this.getaranMesinIsEnabled,
       suaraMesinSelectedIndex: suaraMesinSelectedIndex ?? this.suaraMesinSelectedIndex,

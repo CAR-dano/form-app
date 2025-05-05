@@ -31,8 +31,6 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
   int _sistemAcSelectedIndex = -1;
   bool _sistemAcIsEnabled = true;
 
-  late TextEditingController _fiturCatatanController;
-
   @override
   void initState() {
     super.initState();
@@ -45,12 +43,10 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
     _powerWindowIsEnabled = formData.powerWindowIsEnabled ?? true;
     _sistemAcSelectedIndex = formData.sistemAcSelectedIndex ?? -1;
     _sistemAcIsEnabled = formData.sistemAcIsEnabled ?? true;
-    _fiturCatatanController = TextEditingController(text: formData.fiturCatatan ?? '');
   }
 
   @override
   void dispose() {
-    _fiturCatatanController.dispose();
     super.dispose();
   }
 
@@ -127,11 +123,12 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
   }
 
   void _onFiturCatatanChanged(List<String> lines) {
-    ref.read(formProvider.notifier).updateFiturCatatan(lines.join('\n'));
+    ref.read(formProvider.notifier).updateFiturCatatanList(lines);
   }
 
   @override
   Widget build(BuildContext context) {
+    final formData = ref.watch(formProvider);
     return CommonLayout(
       child: Column(
         children: [
@@ -185,7 +182,7 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
                   ExpandableTextField(
                     label: 'Catatan',
                     hintText: 'Masukkan catatan di sini',
-                    controller: _fiturCatatanController,
+                    initialLines: formData.fiturCatatanList,
                     onChangedList: _onFiturCatatanChanged,
                   ),
                   const SizedBox(height: 32.0),

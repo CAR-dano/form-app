@@ -63,7 +63,7 @@ class FormData {
   bool? powerWindowIsEnabled;
   int? sistemAcSelectedIndex;
   bool? sistemAcIsEnabled;
-  String? fiturCatatan;
+  List<String> fiturCatatanList;
 
   // New fields for Page Five Two
   int? getaranMesinSelectedIndex;
@@ -291,8 +291,8 @@ class FormData {
     this.powerWindowIsEnabled,
     this.sistemAcSelectedIndex,
     this.sistemAcIsEnabled,
-    this.fiturCatatan,
     this.getaranMesinSelectedIndex,
+    this.fiturCatatanList = const [],
     this.getaranMesinIsEnabled,
     this.suaraMesinSelectedIndex,
     this.suaraMesinIsEnabled,
