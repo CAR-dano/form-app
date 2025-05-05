@@ -122,6 +122,58 @@ class FormData {
   bool? tutupRadiatorIsEnabled;
   String? mesinCatatan;
 
+  // New fields for Page Five Three
+  int? stirSelectedIndex;
+  bool? stirIsEnabled;
+  int? remTonganSelectedIndex;
+  bool? remTonganIsEnabled;
+  int? pedalSelectedIndex;
+  bool? pedalIsEnabled;
+  int? switchWiperSelectedIndex;
+  bool? switchWiperIsEnabled;
+  int? lampuHazardSelectedIndex;
+  bool? lampuHazardIsEnabled;
+  int? panelDashboardSelectedIndex;
+  bool? panelDashboardIsEnabled;
+  int? pembukaKapMesinSelectedIndex;
+  bool? pembukaKapMesinIsEnabled;
+  int? pembukaBagasiSelectedIndex;
+  bool? pembukaBagasiIsEnabled;
+  int? jokDepanSelectedIndex;
+  bool? jokDepanIsEnabled;
+  int? aromaInteriorSelectedIndex;
+  bool? aromaInteriorIsEnabled;
+  int? handlePintuSelectedIndex;
+  bool? handlePintuIsEnabled;
+  int? consoleBoxSelectedIndex;
+  bool? consoleBoxIsEnabled;
+  int? spionTengahSelectedIndex;
+  bool? spionTengahIsEnabled;
+  int? tuasPersnelingSelectedIndex;
+  bool? tuasPersnelingIsEnabled;
+  int? jokBelakangSelectedIndex;
+  bool? jokBelakangIsEnabled;
+  int? panelIndikatorSelectedIndex;
+  bool? panelIndikatorIsEnabled;
+  int? switchLampuSelectedIndex;
+  bool? switchLampuIsEnabled;
+  int? karpetDasarSelectedIndex;
+  bool? karpetDasarIsEnabled;
+  int? klaksonSelectedIndex;
+  bool? klaksonIsEnabled;
+  int? sunVisorSelectedIndex;
+  bool? sunVisorIsEnabled;
+  int? tuasTangkiBensinSelectedIndex;
+  bool? tuasTangkiBensinIsEnabled;
+  int? sabukPengamanSelectedIndex;
+  bool? sabukPengamanIsEnabled;
+  int? trimInteriorSelectedIndex;
+  bool? trimInteriorIsEnabled;
+  int? plafonSelectedIndex;
+  bool? plafonIsEnabled;
+  String? interiorCatatan;
+
+
   // New field for repair estimations
   List<Map<String, String>> repairEstimations;
 
@@ -232,6 +284,55 @@ class FormData {
     this.tutupRadiatorSelectedIndex,
     this.tutupRadiatorIsEnabled,
     this.mesinCatatan,
+    this.stirSelectedIndex,
+    this.stirIsEnabled,
+    this.remTonganSelectedIndex,
+    this.remTonganIsEnabled,
+    this.pedalSelectedIndex,
+    this.pedalIsEnabled,
+    this.switchWiperSelectedIndex,
+    this.switchWiperIsEnabled,
+    this.lampuHazardSelectedIndex,
+    this.lampuHazardIsEnabled,
+    this.panelDashboardSelectedIndex,
+    this.panelDashboardIsEnabled,
+    this.pembukaKapMesinSelectedIndex,
+    this.pembukaKapMesinIsEnabled,
+    this.pembukaBagasiSelectedIndex,
+    this.pembukaBagasiIsEnabled,
+    this.jokDepanSelectedIndex,
+    this.jokDepanIsEnabled,
+    this.aromaInteriorSelectedIndex,
+    this.aromaInteriorIsEnabled,
+    this.handlePintuSelectedIndex,
+    this.handlePintuIsEnabled,
+    this.consoleBoxSelectedIndex,
+    this.consoleBoxIsEnabled,
+    this.spionTengahSelectedIndex,
+    this.spionTengahIsEnabled,
+    this.tuasPersnelingSelectedIndex,
+    this.tuasPersnelingIsEnabled,
+    this.jokBelakangSelectedIndex,
+    this.jokBelakangIsEnabled,
+    this.panelIndikatorSelectedIndex,
+    this.panelIndikatorIsEnabled,
+    this.switchLampuSelectedIndex,
+    this.switchLampuIsEnabled,
+    this.karpetDasarSelectedIndex,
+    this.karpetDasarIsEnabled,
+    this.klaksonSelectedIndex,
+    this.klaksonIsEnabled,
+    this.sunVisorSelectedIndex,
+    this.sunVisorIsEnabled,
+    this.tuasTangkiBensinSelectedIndex,
+    this.tuasTangkiBensinIsEnabled,
+    this.sabukPengamanSelectedIndex,
+    this.sabukPengamanIsEnabled,
+    this.trimInteriorSelectedIndex,
+    this.trimInteriorIsEnabled,
+    this.plafonSelectedIndex,
+    this.plafonIsEnabled,
+    this.interiorCatatan,
 
   }) : keteranganEksterior = keteranganEksterior ?? [],
        keteranganInterior = keteranganInterior ?? [],
