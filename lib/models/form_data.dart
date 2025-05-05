@@ -173,6 +173,69 @@ class FormData {
   bool? plafonIsEnabled;
   String? interiorCatatan;
 
+  // New fields for Page Five Four
+  int? bumperDepanSelectedIndex;
+  bool? bumperDepanIsEnabled;
+  int? kapMesinSelectedIndex;
+  bool? kapMesinIsEnabled;
+  int? lampuUtamaSelectedIndex;
+  bool? lampuUtamaIsEnabled;
+  int? panelAtapSelectedIndex;
+  bool? panelAtapIsEnabled;
+  int? grillSelectedIndex;
+  bool? grillIsEnabled;
+  int? lampuFoglampSelectedIndex;
+  bool? lampuFoglampIsEnabled;
+  int? kacaBeningSelectedIndex;
+  bool? kacaBeningIsEnabled;
+  int? wiperBelakangSelectedIndex;
+  bool? wiperBelakangIsEnabled;
+  int? bumperBelakangSelectedIndex;
+  bool? bumperBelakangIsEnabled;
+  int? lampuBelakangSelectedIndex;
+  bool? lampuBelakangIsEnabled;
+  int? trunklidSelectedIndex;
+  bool? trunklidIsEnabled;
+  int? kacaDepanSelectedIndex;
+  bool? kacaDepanIsEnabled;
+  int? fenderKananSelectedIndex;
+  bool? fenderKananIsEnabled;
+  int? quarterPanelKananSelectedIndex;
+  bool? quarterPanelKananIsEnabled;
+  int? pintuBelakangKananSelectedIndex;
+  bool? pintuBelakangKananIsEnabled;
+  int? spionKananSelectedIndex;
+  bool? spionKananIsEnabled;
+  int? lisplangKananSelectedIndex;
+  bool? lisplangKananIsEnabled;
+  int? sideSkirtKananSelectedIndex;
+  bool? sideSkirtKananIsEnabled;
+  int? daunWiperSelectedIndex;
+  bool? daunWiperIsEnabled;
+  int? pintuBelakangSelectedIndex;
+  bool? pintuBelakangIsEnabled;
+  int? fenderKiriSelectedIndex;
+  bool? fenderKiriIsEnabled;
+  int? quarterPanelKiriSelectedIndex;
+  bool? quarterPanelKiriIsEnabled;
+  int? pintuDepanSelectedIndex;
+  bool? pintuDepanIsEnabled;
+  int? kacaJendelaKananSelectedIndex;
+  bool? kacaJendelaKananIsEnabled;
+  int? pintuBelakangKiriSelectedIndex;
+  bool? pintuBelakangKiriIsEnabled;
+  int? spionKiriSelectedIndex;
+  bool? spionKiriIsEnabled;
+  int? pintuDepanKiriSelectedIndex;
+  bool? pintuDepanKiriIsEnabled;
+  int? kacaJendelaKiriSelectedIndex;
+  bool? kacaJendelaKiriIsEnabled;
+  int? lisplangKiriSelectedIndex;
+  bool? lisplangKiriIsEnabled;
+  int? sideSkirtKiriSelectedIndex;
+  bool? sideSkirtKiriIsEnabled;
+  String? eksteriorCatatan;
+
 
   // New field for repair estimations
   List<Map<String, String>> repairEstimations;
@@ -333,6 +396,67 @@ class FormData {
     this.plafonSelectedIndex,
     this.plafonIsEnabled,
     this.interiorCatatan,
+    this.bumperDepanSelectedIndex,
+    this.bumperDepanIsEnabled,
+    this.kapMesinSelectedIndex,
+    this.kapMesinIsEnabled,
+    this.lampuUtamaSelectedIndex,
+    this.lampuUtamaIsEnabled,
+    this.panelAtapSelectedIndex,
+    this.panelAtapIsEnabled,
+    this.grillSelectedIndex,
+    this.grillIsEnabled,
+    this.lampuFoglampSelectedIndex,
+    this.lampuFoglampIsEnabled,
+    this.kacaBeningSelectedIndex,
+    this.kacaBeningIsEnabled,
+    this.wiperBelakangSelectedIndex,
+    this.wiperBelakangIsEnabled,
+    this.bumperBelakangSelectedIndex,
+    this.bumperBelakangIsEnabled,
+    this.lampuBelakangSelectedIndex,
+    this.lampuBelakangIsEnabled,
+    this.trunklidSelectedIndex,
+    this.trunklidIsEnabled,
+    this.kacaDepanSelectedIndex,
+    this.kacaDepanIsEnabled,
+    this.fenderKananSelectedIndex,
+    this.fenderKananIsEnabled,
+    this.quarterPanelKananSelectedIndex,
+    this.quarterPanelKananIsEnabled,
+    this.pintuBelakangKananSelectedIndex,
+    this.pintuBelakangKananIsEnabled,
+    this.spionKananSelectedIndex,
+    this.spionKananIsEnabled,
+    this.lisplangKananSelectedIndex,
+    this.lisplangKananIsEnabled,
+    this.sideSkirtKananSelectedIndex,
+    this.sideSkirtKananIsEnabled,
+    this.daunWiperSelectedIndex,
+    this.daunWiperIsEnabled,
+    this.pintuBelakangSelectedIndex,
+    this.pintuBelakangIsEnabled,
+    this.fenderKiriSelectedIndex,
+    this.fenderKiriIsEnabled,
+    this.quarterPanelKiriSelectedIndex,
+    this.quarterPanelKiriIsEnabled,
+    this.pintuDepanSelectedIndex,
+    this.pintuDepanIsEnabled,
+    this.kacaJendelaKananSelectedIndex,
+    this.kacaJendelaKananIsEnabled,
+    this.pintuBelakangKiriSelectedIndex,
+    this.pintuBelakangKiriIsEnabled,
+    this.spionKiriSelectedIndex,
+    this.spionKiriIsEnabled,
+    this.pintuDepanKiriSelectedIndex,
+    this.pintuDepanKiriIsEnabled,
+    this.kacaJendelaKiriSelectedIndex,
+    this.kacaJendelaKiriIsEnabled,
+    this.lisplangKiriSelectedIndex,
+    this.lisplangKiriIsEnabled,
+    this.sideSkirtKiriSelectedIndex,
+    this.sideSkirtKiriIsEnabled,
+    this.eksteriorCatatan,
 
   }) : keteranganEksterior = keteranganEksterior ?? [],
        keteranganInterior = keteranganInterior ?? [],

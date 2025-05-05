@@ -627,6 +627,251 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(interiorCatatan: catatan);
   }
 
+  // New update methods for Page Five Four
+  void updateBumperDepanSelectedIndex(int? index) {
+    state = state.copyWith(bumperDepanSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateBumperDepanIsEnabled(bool? enabled) {
+    state = state.copyWith(bumperDepanIsEnabled: enabled);
+  }
+
+  void updateKapMesinSelectedIndex(int? index) {
+    state = state.copyWith(kapMesinSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateKapMesinIsEnabled(bool? enabled) {
+    state = state.copyWith(kapMesinIsEnabled: enabled);
+  }
+
+  void updateLampuUtamaSelectedIndex(int? index) {
+    state = state.copyWith(lampuUtamaSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateLampuUtamaIsEnabled(bool? enabled) {
+    state = state.copyWith(lampuUtamaIsEnabled: enabled);
+  }
+
+  void updatePanelAtapSelectedIndex(int? index) {
+    state = state.copyWith(panelAtapSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updatePanelAtapIsEnabled(bool? enabled) {
+    state = state.copyWith(panelAtapIsEnabled: enabled);
+  }
+
+  void updateGrillSelectedIndex(int? index) {
+    state = state.copyWith(grillSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateGrillIsEnabled(bool? enabled) {
+    state = state.copyWith(grillIsEnabled: enabled);
+  }
+
+  void updateLampuFoglampSelectedIndex(int? index) {
+    state = state.copyWith(lampuFoglampSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateLampuFoglampIsEnabled(bool? enabled) {
+    state = state.copyWith(lampuFoglampIsEnabled: enabled);
+  }
+
+  void updateKacaBeningSelectedIndex(int? index) {
+    state = state.copyWith(kacaBeningSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateKacaBeningIsEnabled(bool? enabled) {
+    state = state.copyWith(kacaBeningIsEnabled: enabled);
+  }
+
+  void updateWiperBelakangSelectedIndex(int? index) {
+    state = state.copyWith(wiperBelakangSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateWiperBelakangIsEnabled(bool? enabled) {
+    state = state.copyWith(wiperBelakangIsEnabled: enabled);
+  }
+
+  void updateBumperBelakangSelectedIndex(int? index) {
+    state = state.copyWith(bumperBelakangSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateBumperBelakangIsEnabled(bool? enabled) {
+    state = state.copyWith(bumperBelakangIsEnabled: enabled);
+  }
+
+  void updateLampuBelakangSelectedIndex(int? index) {
+    state = state.copyWith(lampuBelakangSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateLampuBelakangIsEnabled(bool? enabled) {
+    state = state.copyWith(lampuBelakangIsEnabled: enabled);
+  }
+
+  void updateTrunklidSelectedIndex(int? index) {
+    state = state.copyWith(trunklidSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateTrunklidIsEnabled(bool? enabled) {
+    state = state.copyWith(trunklidIsEnabled: enabled);
+  }
+
+  void updateKacaDepanSelectedIndex(int? index) {
+    state = state.copyWith(kacaDepanSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateKacaDepanIsEnabled(bool? enabled) {
+    state = state.copyWith(kacaDepanIsEnabled: enabled);
+  }
+
+  void updateFenderKananSelectedIndex(int? index) {
+    state = state.copyWith(fenderKananSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateFenderKananIsEnabled(bool? enabled) {
+    state = state.copyWith(fenderKananIsEnabled: enabled);
+  }
+
+  void updateQuarterPanelKananSelectedIndex(int? index) {
+    state = state.copyWith(quarterPanelKananSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateQuarterPanelKananIsEnabled(bool? enabled) {
+    state = state.copyWith(quarterPanelKananIsEnabled: enabled);
+  }
+
+  void updatePintuBelakangKananSelectedIndex(int? index) {
+    state = state.copyWith(pintuBelakangKananSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updatePintuBelakangKananIsEnabled(bool? enabled) {
+    state = state.copyWith(pintuBelakangKananIsEnabled: enabled);
+  }
+
+  void updateSpionKananSelectedIndex(int? index) {
+    state = state.copyWith(spionKananSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateSpionKananIsEnabled(bool? enabled) {
+    state = state.copyWith(spionKananIsEnabled: enabled);
+  }
+
+  void updateLisplangKananSelectedIndex(int? index) {
+    state = state.copyWith(lisplangKananSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateLisplangKananIsEnabled(bool? enabled) {
+    state = state.copyWith(lisplangKananIsEnabled: enabled);
+  }
+
+  void updateSideSkirtKananSelectedIndex(int? index) {
+    state = state.copyWith(sideSkirtKananSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateSideSkirtKananIsEnabled(bool? enabled) {
+    state = state.copyWith(sideSkirtKananIsEnabled: enabled);
+  }
+
+  void updateDaunWiperSelectedIndex(int? index) {
+    state = state.copyWith(daunWiperSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateDaunWiperIsEnabled(bool? enabled) {
+    state = state.copyWith(daunWiperIsEnabled: enabled);
+  }
+
+  void updatePintuBelakangSelectedIndex(int? index) {
+    state = state.copyWith(pintuBelakangSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updatePintuBelakangIsEnabled(bool? enabled) {
+    state = state.copyWith(pintuBelakangIsEnabled: enabled);
+  }
+
+  void updateFenderKiriSelectedIndex(int? index) {
+    state = state.copyWith(fenderKiriSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateFenderKiriIsEnabled(bool? enabled) {
+    state = state.copyWith(fenderKiriIsEnabled: enabled);
+  }
+
+  void updateQuarterPanelKiriSelectedIndex(int? index) {
+    state = state.copyWith(quarterPanelKiriSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateQuarterPanelKiriIsEnabled(bool? enabled) {
+    state = state.copyWith(quarterPanelKiriIsEnabled: enabled);
+  }
+
+  void updatePintuDepanSelectedIndex(int? index) {
+    state = state.copyWith(pintuDepanSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updatePintuDepanIsEnabled(bool? enabled) {
+    state = state.copyWith(pintuDepanIsEnabled: enabled);
+  }
+
+  void updateKacaJendelaKananSelectedIndex(int? index) {
+    state = state.copyWith(kacaJendelaKananSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateKacaJendelaKananIsEnabled(bool? enabled) {
+    state = state.copyWith(kacaJendelaKananIsEnabled: enabled);
+  }
+
+  void updatePintuBelakangKiriSelectedIndex(int? index) {
+    state = state.copyWith(pintuBelakangKiriSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updatePintuBelakangKiriIsEnabled(bool? enabled) {
+    state = state.copyWith(pintuBelakangKiriIsEnabled: enabled);
+  }
+
+  void updateSpionKiriSelectedIndex(int? index) {
+    state = state.copyWith(spionKiriSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateSpionKiriIsEnabled(bool? enabled) {
+    state = state.copyWith(spionKiriIsEnabled: enabled);
+  }
+
+  void updatePintuDepanKiriSelectedIndex(int? index) {
+    state = state.copyWith(pintuDepanKiriSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updatePintuDepanKiriIsEnabled(bool? enabled) {
+    state = state.copyWith(pintuDepanKiriIsEnabled: enabled);
+  }
+
+  void updateKacaJendelaKiriSelectedIndex(int? index) {
+    state = state.copyWith(kacaJendelaKiriSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateKacaJendelaKiriIsEnabled(bool? enabled) {
+    state = state.copyWith(kacaJendelaKiriIsEnabled: enabled);
+  }
+
+  void updateLisplangKiriSelectedIndex(int? index) {
+    state = state.copyWith(lisplangKiriSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateLisplangKiriIsEnabled(bool? enabled) {
+    state = state.copyWith(lisplangKiriIsEnabled: enabled);
+  }
+
+  void updateSideSkirtKiriSelectedIndex(int? index) {
+    state = state.copyWith(sideSkirtKiriSelectedIndex: (index == null || index <= 0) ? 0 : index);
+  }
+
+  void updateSideSkirtKiriIsEnabled(bool? enabled) {
+    state = state.copyWith(sideSkirtKiriIsEnabled: enabled);
+  }
+
+  void updateEksteriorCatatan(String? catatan) {
+    state = state.copyWith(eksteriorCatatan: catatan);
+  }
+
   void updateRepairEstimations(List<Map<String, String>> estimations) {
     state = state.copyWith(repairEstimations: estimations);
   }
@@ -793,6 +1038,67 @@ extension on FormData {
     int? plafonSelectedIndex,
     bool? plafonIsEnabled,
     String? interiorCatatan,
+    int? bumperDepanSelectedIndex,
+    bool? bumperDepanIsEnabled,
+    int? kapMesinSelectedIndex,
+    bool? kapMesinIsEnabled,
+    int? lampuUtamaSelectedIndex,
+    bool? lampuUtamaIsEnabled,
+    int? panelAtapSelectedIndex,
+    bool? panelAtapIsEnabled,
+    int? grillSelectedIndex,
+    bool? grillIsEnabled,
+    int? lampuFoglampSelectedIndex,
+    bool? lampuFoglampIsEnabled,
+    int? kacaBeningSelectedIndex,
+    bool? kacaBeningIsEnabled,
+    int? wiperBelakangSelectedIndex,
+    bool? wiperBelakangIsEnabled,
+    int? bumperBelakangSelectedIndex,
+    bool? bumperBelakangIsEnabled,
+    int? lampuBelakangSelectedIndex,
+    bool? lampuBelakangIsEnabled,
+    int? trunklidSelectedIndex,
+    bool? trunklidIsEnabled,
+    int? kacaDepanSelectedIndex,
+    bool? kacaDepanIsEnabled,
+    int? fenderKananSelectedIndex,
+    bool? fenderKananIsEnabled,
+    int? quarterPanelKananSelectedIndex,
+    bool? quarterPanelKananIsEnabled,
+    int? pintuBelakangKananSelectedIndex,
+    bool? pintuBelakangKananIsEnabled,
+    int? spionKananSelectedIndex,
+    bool? spionKananIsEnabled,
+    int? lisplangKananSelectedIndex,
+    bool? lisplangKananIsEnabled,
+    int? sideSkirtKananSelectedIndex,
+    bool? sideSkirtKananIsEnabled,
+    int? daunWiperSelectedIndex,
+    bool? daunWiperIsEnabled,
+    int? pintuBelakangSelectedIndex,
+    bool? pintuBelakangIsEnabled,
+    int? fenderKiriSelectedIndex,
+    bool? fenderKiriIsEnabled,
+    int? quarterPanelKiriSelectedIndex,
+    bool? quarterPanelKiriIsEnabled,
+    int? pintuDepanSelectedIndex,
+    bool? pintuDepanIsEnabled,
+    int? kacaJendelaKananSelectedIndex,
+    bool? kacaJendelaKananIsEnabled,
+    int? pintuBelakangKiriSelectedIndex,
+    bool? pintuBelakangKiriIsEnabled,
+    int? spionKiriSelectedIndex,
+    bool? spionKiriIsEnabled,
+    int? pintuDepanKiriSelectedIndex,
+    bool? pintuDepanKiriIsEnabled,
+    int? kacaJendelaKiriSelectedIndex,
+    bool? kacaJendelaKiriIsEnabled,
+    int? lisplangKiriSelectedIndex,
+    bool? lisplangKiriIsEnabled,
+    int? sideSkirtKiriSelectedIndex,
+    bool? sideSkirtKiriIsEnabled,
+    String? eksteriorCatatan,
   }) {
     return FormData(
       namaInspektor: namaInspektor ?? this.namaInspektor,
@@ -950,6 +1256,67 @@ extension on FormData {
       plafonSelectedIndex: plafonSelectedIndex ?? this.plafonSelectedIndex,
       plafonIsEnabled: plafonIsEnabled ?? this.plafonIsEnabled,
       interiorCatatan: interiorCatatan ?? this.interiorCatatan,
+      bumperDepanSelectedIndex: bumperDepanSelectedIndex ?? this.bumperDepanSelectedIndex,
+      bumperDepanIsEnabled: bumperDepanIsEnabled ?? this.bumperDepanIsEnabled,
+      kapMesinSelectedIndex: kapMesinSelectedIndex ?? this.kapMesinSelectedIndex,
+      kapMesinIsEnabled: kapMesinIsEnabled ?? this.kapMesinIsEnabled,
+      lampuUtamaSelectedIndex: lampuUtamaSelectedIndex ?? this.lampuUtamaSelectedIndex,
+      lampuUtamaIsEnabled: lampuUtamaIsEnabled ?? this.lampuUtamaIsEnabled,
+      panelAtapSelectedIndex: panelAtapSelectedIndex ?? this.panelAtapSelectedIndex,
+      panelAtapIsEnabled: panelAtapIsEnabled ?? this.panelAtapIsEnabled,
+      grillSelectedIndex: grillSelectedIndex ?? this.grillSelectedIndex,
+      grillIsEnabled: grillIsEnabled ?? this.grillIsEnabled,
+      lampuFoglampSelectedIndex: lampuFoglampSelectedIndex ?? this.lampuFoglampSelectedIndex,
+      lampuFoglampIsEnabled: lampuFoglampIsEnabled ?? this.lampuFoglampIsEnabled,
+      kacaBeningSelectedIndex: kacaBeningSelectedIndex ?? this.kacaBeningSelectedIndex,
+      kacaBeningIsEnabled: kacaBeningIsEnabled ?? this.kacaBeningIsEnabled,
+      wiperBelakangSelectedIndex: wiperBelakangSelectedIndex ?? this.wiperBelakangSelectedIndex,
+      wiperBelakangIsEnabled: wiperBelakangIsEnabled ?? this.wiperBelakangIsEnabled,
+      bumperBelakangSelectedIndex: bumperBelakangSelectedIndex ?? this.bumperBelakangSelectedIndex,
+      bumperBelakangIsEnabled: bumperBelakangIsEnabled ?? this.bumperBelakangIsEnabled,
+      lampuBelakangSelectedIndex: lampuBelakangSelectedIndex ?? this.lampuBelakangSelectedIndex,
+      lampuBelakangIsEnabled: lampuBelakangIsEnabled ?? this.lampuBelakangIsEnabled,
+      trunklidSelectedIndex: trunklidSelectedIndex ?? this.trunklidSelectedIndex,
+      trunklidIsEnabled: trunklidIsEnabled ?? this.trunklidIsEnabled,
+      kacaDepanSelectedIndex: kacaDepanSelectedIndex ?? this.kacaDepanSelectedIndex,
+      kacaDepanIsEnabled: kacaDepanIsEnabled ?? this.kacaDepanIsEnabled,
+      fenderKananSelectedIndex: fenderKananSelectedIndex ?? this.fenderKananSelectedIndex,
+      fenderKananIsEnabled: fenderKananIsEnabled ?? this.fenderKananIsEnabled,
+      quarterPanelKananSelectedIndex: quarterPanelKananSelectedIndex ?? this.quarterPanelKananSelectedIndex,
+      quarterPanelKananIsEnabled: quarterPanelKananIsEnabled ?? this.quarterPanelKananIsEnabled,
+      pintuBelakangKananSelectedIndex: pintuBelakangKananSelectedIndex ?? this.pintuBelakangKananSelectedIndex,
+      pintuBelakangKananIsEnabled: pintuBelakangKananIsEnabled ?? this.pintuBelakangKananIsEnabled,
+      spionKananSelectedIndex: spionKananSelectedIndex ?? this.spionKananSelectedIndex,
+      spionKananIsEnabled: spionKananIsEnabled ?? this.spionKananIsEnabled,
+      lisplangKananSelectedIndex: lisplangKananSelectedIndex ?? this.lisplangKananSelectedIndex,
+      lisplangKananIsEnabled: lisplangKananIsEnabled ?? this.lisplangKananIsEnabled,
+      sideSkirtKananSelectedIndex: sideSkirtKananSelectedIndex ?? this.sideSkirtKananSelectedIndex,
+      sideSkirtKananIsEnabled: sideSkirtKananIsEnabled ?? this.sideSkirtKananIsEnabled,
+      daunWiperSelectedIndex: daunWiperSelectedIndex ?? this.daunWiperSelectedIndex,
+      daunWiperIsEnabled: daunWiperIsEnabled ?? this.daunWiperIsEnabled,
+      pintuBelakangSelectedIndex: pintuBelakangSelectedIndex ?? this.pintuBelakangSelectedIndex,
+      pintuBelakangIsEnabled: pintuBelakangIsEnabled ?? this.pintuBelakangIsEnabled,
+      fenderKiriSelectedIndex: fenderKiriSelectedIndex ?? this.fenderKiriSelectedIndex,
+      fenderKiriIsEnabled: fenderKiriIsEnabled ?? this.fenderKiriIsEnabled,
+      quarterPanelKiriSelectedIndex: quarterPanelKiriSelectedIndex ?? this.quarterPanelKiriSelectedIndex,
+      quarterPanelKiriIsEnabled: quarterPanelKiriIsEnabled ?? this.quarterPanelKiriIsEnabled,
+      pintuDepanSelectedIndex: pintuDepanSelectedIndex ?? this.pintuDepanSelectedIndex,
+      pintuDepanIsEnabled: pintuDepanIsEnabled ?? this.pintuDepanIsEnabled,
+      kacaJendelaKananSelectedIndex: kacaJendelaKananSelectedIndex ?? this.kacaJendelaKananSelectedIndex,
+      kacaJendelaKananIsEnabled: kacaJendelaKananIsEnabled ?? this.kacaJendelaKananIsEnabled,
+      pintuBelakangKiriSelectedIndex: pintuBelakangKiriSelectedIndex ?? this.pintuBelakangKiriSelectedIndex,
+      pintuBelakangKiriIsEnabled: pintuBelakangKiriIsEnabled ?? this.pintuBelakangKiriIsEnabled,
+      spionKiriSelectedIndex: spionKiriSelectedIndex ?? this.spionKiriSelectedIndex,
+      spionKiriIsEnabled: spionKiriIsEnabled ?? this.spionKiriIsEnabled,
+      pintuDepanKiriSelectedIndex: pintuDepanKiriSelectedIndex ?? this.pintuDepanKiriSelectedIndex,
+      pintuDepanKiriIsEnabled: pintuDepanKiriIsEnabled ?? this.pintuDepanKiriIsEnabled,
+      kacaJendelaKiriSelectedIndex: kacaJendelaKiriSelectedIndex ?? this.kacaJendelaKiriSelectedIndex,
+      kacaJendelaKiriIsEnabled: kacaJendelaKiriIsEnabled ?? this.kacaJendelaKiriIsEnabled,
+      lisplangKiriSelectedIndex: lisplangKiriSelectedIndex ?? this.lisplangKiriSelectedIndex,
+      lisplangKiriIsEnabled: lisplangKiriIsEnabled ?? this.lisplangKiriIsEnabled,
+      sideSkirtKiriSelectedIndex: sideSkirtKiriSelectedIndex ?? this.sideSkirtKiriSelectedIndex,
+      sideSkirtKiriIsEnabled: sideSkirtKiriIsEnabled ?? this.sideSkirtKiriIsEnabled,
+      eksteriorCatatan: eksteriorCatatan ?? this.eksteriorCatatan,
     );
   }
 }
