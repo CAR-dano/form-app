@@ -71,8 +71,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Bumper Depan',
                           count: 10,
                           selectedValue: formData.bumperDepanSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateBumperDepanSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateBumperDepanSelectedIndex(value);
                           },
                           initialEnabled: formData.bumperDepanIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -87,8 +87,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Kap Mesin',
                           count: 10,
                           selectedValue: formData.kapMesinSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateKapMesinSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateKapMesinSelectedIndex(value);
                           },
                           initialEnabled: formData.kapMesinIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -103,8 +103,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Lampu Utama',
                           count: 10,
                           selectedValue: formData.lampuUtamaSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateLampuUtamaSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateLampuUtamaSelectedIndex(value);
                           },
                           initialEnabled: formData.lampuUtamaIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -119,8 +119,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Panel Atap',
                           count: 10,
                           selectedValue: formData.panelAtapSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updatePanelAtapSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updatePanelAtapSelectedIndex(value);
                           },
                           initialEnabled: formData.panelAtapIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -135,8 +135,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Grill',
                           count: 10,
                           selectedValue: formData.grillSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateGrillSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateGrillSelectedIndex(value);
                           },
                           initialEnabled: formData.grillIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -151,8 +151,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Lampu Foglamp',
                           count: 10,
                           selectedValue: formData.lampuFoglampSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateLampuFoglampSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateLampuFoglampSelectedIndex(value);
                           },
                           initialEnabled: formData.lampuFoglampIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -167,8 +167,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Kaca Bening',
                           count: 10,
                           selectedValue: formData.kacaBeningSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateKacaBeningSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateKacaBeningSelectedIndex(value);
                           },
                           initialEnabled: formData.kacaBeningIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -183,8 +183,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Wiper Belakang',
                           count: 10,
                           selectedValue: formData.wiperBelakangSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateWiperBelakangSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateWiperBelakangSelectedIndex(value);
                           },
                           initialEnabled: formData.wiperBelakangIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -199,8 +199,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Bumper Belakang',
                           count: 10,
                           selectedValue: formData.bumperBelakangSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateBumperBelakangSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateBumperBelakangSelectedIndex(value);
                           },
                           initialEnabled: formData.bumperBelakangIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -215,8 +215,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Lampu Belakang',
                           count: 10,
                           selectedValue: formData.lampuBelakangSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateLampuBelakangSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateLampuBelakangSelectedIndex(value);
                           },
                           initialEnabled: formData.lampuBelakangIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -231,8 +231,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Trunklid',
                           count: 10,
                           selectedValue: formData.trunklidSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateTrunklidSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateTrunklidSelectedIndex(value);
                           },
                           initialEnabled: formData.trunklidIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -247,8 +247,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Kaca Depan',
                           count: 10,
                           selectedValue: formData.kacaDepanSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateKacaDepanSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateKacaDepanSelectedIndex(value);
                           },
                           initialEnabled: formData.kacaDepanIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -263,8 +263,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Fender Kanan',
                           count: 10,
                           selectedValue: formData.fenderKananSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateFenderKananSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateFenderKananSelectedIndex(value);
                           },
                           initialEnabled: formData.fenderKananIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -279,8 +279,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Quarter Panel Kanan',
                           count: 10,
                           selectedValue: formData.quarterPanelKananSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateQuarterPanelKananSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateQuarterPanelKananSelectedIndex(value);
                           },
                           initialEnabled: formData.quarterPanelKananIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -295,8 +295,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Pintu Belakang Kanan',
                           count: 10,
                           selectedValue: formData.pintuBelakangKananSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updatePintuBelakangKananSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updatePintuBelakangKananSelectedIndex(value);
                           },
                           initialEnabled: formData.pintuBelakangKananIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -311,8 +311,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Spion Kanan',
                           count: 10,
                           selectedValue: formData.spionKananSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateSpionKananSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateSpionKananSelectedIndex(value);
                           },
                           initialEnabled: formData.spionKananIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -327,8 +327,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Lisplang Kanan',
                           count: 10,
                           selectedValue: formData.lisplangKananSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateLisplangKananSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateLisplangKananSelectedIndex(value);
                           },
                           initialEnabled: formData.lisplangKananIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -343,8 +343,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Side Skirt Kanan',
                           count: 10,
                           selectedValue: formData.sideSkirtKananSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateSideSkirtKananSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateSideSkirtKananSelectedIndex(value);
                           },
                           initialEnabled: formData.sideSkirtKananIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -359,8 +359,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Daun Wiper',
                           count: 10,
                           selectedValue: formData.daunWiperSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateDaunWiperSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateDaunWiperSelectedIndex(value);
                           },
                           initialEnabled: formData.daunWiperIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -375,8 +375,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Pintu Belakang',
                           count: 10,
                           selectedValue: formData.pintuBelakangSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updatePintuBelakangSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updatePintuBelakangSelectedIndex(value);
                           },
                           initialEnabled: formData.pintuBelakangIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -391,8 +391,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Fender Kiri',
                           count: 10,
                           selectedValue: formData.fenderKiriSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateFenderKiriSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateFenderKiriSelectedIndex(value);
                           },
                           initialEnabled: formData.fenderKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -407,8 +407,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Quarter Panel Kiri',
                           count: 10,
                           selectedValue: formData.quarterPanelKiriSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateQuarterPanelKiriSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateQuarterPanelKiriSelectedIndex(value);
                           },
                           initialEnabled: formData.quarterPanelKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -423,8 +423,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Pintu Depan',
                           count: 10,
                           selectedValue: formData.pintuDepanSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updatePintuDepanSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updatePintuDepanSelectedIndex(value);
                           },
                           initialEnabled: formData.pintuDepanIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -439,8 +439,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Kaca Jendela Kanan',
                           count: 10,
                           selectedValue: formData.kacaJendelaKananSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateKacaJendelaKananSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateKacaJendelaKananSelectedIndex(value);
                           },
                           initialEnabled: formData.kacaJendelaKananIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -455,8 +455,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Pintu Belakang Kiri',
                           count: 10,
                           selectedValue: formData.pintuBelakangKiriSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updatePintuBelakangKiriSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updatePintuBelakangKiriSelectedIndex(value);
                           },
                           initialEnabled: formData.pintuBelakangKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -471,8 +471,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Spion Kiri',
                           count: 10,
                           selectedValue: formData.spionKiriSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateSpionKiriSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateSpionKiriSelectedIndex(value);
                           },
                           initialEnabled: formData.spionKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -487,8 +487,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Pintu Depan Kiri',
                           count: 10,
                           selectedValue: formData.pintuDepanKiriSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updatePintuDepanKiriSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updatePintuDepanKiriSelectedIndex(value);
                           },
                           initialEnabled: formData.pintuDepanKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -503,8 +503,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Kaca Jendela Kiri',
                           count: 10,
                           selectedValue: formData.kacaJendelaKiriSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateKacaJendelaKiriSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateKacaJendelaKiriSelectedIndex(value);
                           },
                           initialEnabled: formData.kacaJendelaKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -519,8 +519,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Lisplang Kiri',
                           count: 10,
                           selectedValue: formData.lisplangKiriSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateLisplangKiriSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateLisplangKiriSelectedIndex(value);
                           },
                           initialEnabled: formData.lisplangKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -535,8 +535,8 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                           label: 'Side Skirt Kiri',
                           count: 10,
                           selectedValue: formData.sideSkirtKiriSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateSideSkirtKiriSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateSideSkirtKiriSelectedIndex(value);
                           },
                           initialEnabled: formData.sideSkirtKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {

@@ -73,8 +73,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Getaran Mesin',
                           count: 10,
                           selectedValue: formData.getaranMesinSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateGetaranMesinSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateGetaranMesinSelectedIndex(value);
                           },
                           initialEnabled: formData.getaranMesinIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -89,8 +89,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Suara Mesin',
                           count: 10,
                           selectedValue: formData.suaraMesinSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateSuaraMesinSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateSuaraMesinSelectedIndex(value);
                           },
                           initialEnabled: formData.suaraMesinIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -105,8 +105,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Transmisi',
                           count: 10,
                           selectedValue: formData.transmisiSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateTransmisiSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateTransmisiSelectedIndex(value);
                           },
                           initialEnabled: formData.transmisiIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -121,8 +121,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Pompa Power Steering',
                           count: 10,
                           selectedValue: formData.pompaPowerSteeringSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updatePompaPowerSteeringSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updatePompaPowerSteeringSelectedIndex(value);
                           },
                           initialEnabled: formData.pompaPowerSteeringIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -137,8 +137,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Cover Timing Chain',
                           count: 10,
                           selectedValue: formData.coverTimingChainSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateCoverTimingChainSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateCoverTimingChainSelectedIndex(value);
                           },
                           initialEnabled: formData.coverTimingChainIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -153,8 +153,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Oli Power Steering',
                           count: 10,
                           selectedValue: formData.oliPowerSteeringSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateOliPowerSteeringSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateOliPowerSteeringSelectedIndex(value);
                           },
                           initialEnabled: formData.oliPowerSteeringIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -169,8 +169,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Accu',
                           count: 10,
                           selectedValue: formData.accuSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateAccuSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateAccuSelectedIndex(value);
                           },
                           initialEnabled: formData.accuIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -185,8 +185,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Kompressor AC',
                           count: 10,
                           selectedValue: formData.kompressorAcSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateKompressorAcSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateKompressorAcSelectedIndex(value);
                           },
                           initialEnabled: formData.kompressorAcIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -201,8 +201,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Fan',
                           count: 10,
                           selectedValue: formData.fanSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateFanSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateFanSelectedIndex(value);
                           },
                           initialEnabled: formData.fanIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -217,8 +217,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Selang',
                           count: 10,
                           selectedValue: formData.selangSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateSelangSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateSelangSelectedIndex(value);
                           },
                           initialEnabled: formData.selangIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -233,8 +233,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Karter Oli',
                           count: 10,
                           selectedValue: formData.karterOliSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateKarterOliSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateKarterOliSelectedIndex(value);
                           },
                           initialEnabled: formData.karterOliIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -249,8 +249,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Oil Rem',
                           count: 10,
                           selectedValue: formData.oilRemSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateOilRemSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateOilRemSelectedIndex(value);
                           },
                           initialEnabled: formData.oilRemIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -265,8 +265,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Kabel',
                           count: 10,
                           selectedValue: formData.kabelSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateKabelSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateKabelSelectedIndex(value);
                           },
                           initialEnabled: formData.kabelIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -281,8 +281,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Kondensor',
                           count: 10,
                           selectedValue: formData.kondensorSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateKondensorSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateKondensorSelectedIndex(value);
                           },
                           initialEnabled: formData.kondensorIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -297,8 +297,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Radiator',
                           count: 10,
                           selectedValue: formData.radiatorSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateRadiatorSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateRadiatorSelectedIndex(value);
                           },
                           initialEnabled: formData.radiatorIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -313,8 +313,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Cylinder Head',
                           count: 10,
                           selectedValue: formData.cylinderHeadSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateCylinderHeadSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateCylinderHeadSelectedIndex(value);
                           },
                           initialEnabled: formData.cylinderHeadIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -329,8 +329,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Oli Mesin',
                           count: 10,
                           selectedValue: formData.oliMesinSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateOliMesinSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateOliMesinSelectedIndex(value);
                           },
                           initialEnabled: formData.oliMesinIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -345,8 +345,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Air Radiator',
                           count: 10,
                           selectedValue: formData.airRadiatorSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateAirRadiatorSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateAirRadiatorSelectedIndex(value);
                           },
                           initialEnabled: formData.airRadiatorIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -361,8 +361,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Cover Klep',
                           count: 10,
                           selectedValue: formData.coverKlepSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateCoverKlepSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateCoverKlepSelectedIndex(value);
                           },
                           initialEnabled: formData.coverKlepIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -377,8 +377,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Alternator',
                           count: 10,
                           selectedValue: formData.alternatorSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateAlternatorSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateAlternatorSelectedIndex(value);
                           },
                           initialEnabled: formData.alternatorIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -393,8 +393,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Water Pump',
                           count: 10,
                           selectedValue: formData.waterPumpSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateWaterPumpSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateWaterPumpSelectedIndex(value);
                           },
                           initialEnabled: formData.waterPumpIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -409,8 +409,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Belt',
                           count: 10,
                           selectedValue: formData.beltSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateBeltSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateBeltSelectedIndex(value);
                           },
                           initialEnabled: formData.beltIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -425,8 +425,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Oli Transmisi',
                           count: 10,
                           selectedValue: formData.oliTransmisiSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateOliTransmisiSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateOliTransmisiSelectedIndex(value);
                           },
                           initialEnabled: formData.oliTransmisiIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -441,8 +441,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Cylinder Block',
                           count: 10,
                           selectedValue: formData.cylinderBlockSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateCylinderBlockSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateCylinderBlockSelectedIndex(value);
                           },
                           initialEnabled: formData.cylinderBlockIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -457,8 +457,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Bushing Besar',
                           count: 10,
                           selectedValue: formData.bushingBesarSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateBushingBesarSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateBushingBesarSelectedIndex(value);
                           },
                           initialEnabled: formData.bushingBesarIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -473,8 +473,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Bushing Kecil',
                           count: 10,
                           selectedValue: formData.bushingKecilSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateBushingKecilSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateBushingKecilSelectedIndex(value);
                           },
                           initialEnabled: formData.bushingKecilIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -489,8 +489,8 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                           label: 'Tutup Radiator',
                           count: 10,
                           selectedValue: formData.tutupRadiatorSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateTutupRadiatorSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateTutupRadiatorSelectedIndex(value);
                           },
                           initialEnabled: formData.tutupRadiatorIsEnabled ?? true,
                           onEnabledChanged: (enabled) {

@@ -71,8 +71,8 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
                           label: 'Airbag',
                           count: 10,
                           selectedValue: formData.airbagSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateAirbagSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateAirbagSelectedIndex(value);
                           },
                           initialEnabled: formData.airbagIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -87,8 +87,8 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
                           label: 'Sistem Audio',
                           count: 10,
                           selectedValue: formData.sistemAudioSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateSistemAudioSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateSistemAudioSelectedIndex(value);
                           },
                           initialEnabled: formData.sistemAudioIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -103,8 +103,8 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
                           label: 'Power Window',
                           count: 10,
                           selectedValue: formData.powerWindowSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updatePowerWindowSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updatePowerWindowSelectedIndex(value);
                           },
                           initialEnabled: formData.powerWindowIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
@@ -119,8 +119,8 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
                           label: 'Sistem AC',
                           count: 10,
                           selectedValue: formData.sistemAcSelectedIndex ?? -1,
-                          onItemSelected: (index) {
-                            formNotifier.updateSistemAcSelectedIndex(index);
+                          onItemSelected: (value) {
+                            formNotifier.updateSistemAcSelectedIndex(value);
                           },
                           initialEnabled: formData.sistemAcIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
