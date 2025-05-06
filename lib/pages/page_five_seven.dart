@@ -62,7 +62,7 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> {
                         const SizedBox(height: 8.0),
                         PageTitle(data: 'Penilaian'),
                         const SizedBox(height: 24.0),
-                        const HeadingOne(text: 'Tools Test'),
+                        const HeadingOne(text: 'Tools Test (7)'),
                         const SizedBox(height: 16.0),
                         ToggleableNumberedButtonList(
                           label: 'Tebal Cat Body Depan',

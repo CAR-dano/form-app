@@ -320,7 +320,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         LabeledTextField(
                           label: 'Biaya Pajak',
                           hintText: 'Masukkan biaya pajak (Rp)',
-                          suffixText: 'Rupiah', // Add prefix text for currency
+                          suffixText: 'Rp', // Add prefix text for currency
                           keyboardType:
                               TextInputType.number, // Use number keyboard
                           initialValue:

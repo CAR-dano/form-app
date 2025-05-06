@@ -8,7 +8,7 @@ import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
-import 'package:form_app/widgets/custom_checkbox_tile.dart';
+import 'package:form_app/widgets/form_confirmation.dart';
 
 // Placeholder for Page Nine
 class PageNine extends ConsumerStatefulWidget {
@@ -88,7 +88,7 @@ class _PageNineState extends ConsumerState<PageNine> {
                     style: labelStyle.copyWith(fontWeight: FontWeight.w300), // Corrected font weight
                   ),
                   const SizedBox(height: 16.0), // Added spacing
-                  CustomCheckboxTile(
+                  FormConfirmation(
                     label: 'Data yang saya isi telah sesuai',
                     initialValue: _isChecked,
                     onChanged: (bool newValue) {

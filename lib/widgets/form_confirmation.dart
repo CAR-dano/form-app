@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:form_app/statics/app_styles.dart';
 
-class CustomCheckboxTile extends StatefulWidget {
+class FormConfirmation extends StatefulWidget {
   final String label;
   final bool initialValue;
   final ValueChanged<bool> onChanged;
 
-  const CustomCheckboxTile({
+  const FormConfirmation({
     super.key,
     required this.label,
     this.initialValue = false,
@@ -14,10 +14,10 @@ class CustomCheckboxTile extends StatefulWidget {
   });
 
   @override
-  State<CustomCheckboxTile> createState() => _CustomCheckboxTileState();
+  State<FormConfirmation> createState() => _CustomCheckboxTileState();
 }
 
-class _CustomCheckboxTileState extends State<CustomCheckboxTile> {
+class _CustomCheckboxTileState extends State<FormConfirmation> {
   late bool _isChecked;
 
   @override
