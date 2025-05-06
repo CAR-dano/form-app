@@ -227,14 +227,14 @@ class ApiService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print('Form data submitted successfully!');
+        //print('Form data submitted successfully!');
         // TODO: Handle success (e.g., show a success message)
       } else {
-        print('Failed to submit form data: ${response.statusCode}');
+        //print('Failed to submit form data: ${response.statusCode}');
         // TODO: Handle errors (e.g., show an error message)
       }
     } catch (e) {
-      print('Error submitting form data: $e');
+      //print('Error submitting form data: $e');
       // TODO: Handle network errors or exceptions (e.g., show an error message)
     }
   }
