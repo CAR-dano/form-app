@@ -22,7 +22,7 @@ class PageFiveFive extends StatelessWidget {
                 children: [
                   PageNumber(data: '5/9'),
                   const SizedBox(height: 8.0),
-                  PageTitle(data: 'Penilaian'),
+                  PageTitle(data: 'Penilaian (5)'),
                   const SizedBox(height: 24.0),
                   const HeadingOne(text: 'Ban dan Kaki-kaki'),
                   const SizedBox(height: 32.0),

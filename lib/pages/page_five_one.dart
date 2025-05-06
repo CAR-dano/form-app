@@ -63,7 +63,7 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
                       children: [
                         PageNumber(data: '5/9'),
                         const SizedBox(height: 8.0),
-                        PageTitle(data: 'Penilaian'),
+                        PageTitle(data: 'Penilaian (1)'),
                         const SizedBox(height: 24.0),
                         HeadingOne(text: 'Fitur'),
                         const SizedBox(height: 16.0),
