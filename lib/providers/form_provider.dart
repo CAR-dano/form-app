@@ -1077,6 +1077,75 @@ class FormNotifier extends StateNotifier<FormData> {
   void updateTestDriveCatatanList(List<String> lines) {
     state = state.copyWith(testDriveCatatanList: lines);
   }
+
+  // New update methods for Page Five Seven (Tools Test)
+  void updateTebalCatBodyDepanSelectedValue(int? value) {
+    state = state.copyWith(tebalCatBodyDepanSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateTebalCatBodyDepanIsEnabled(bool? enabled) {
+    state = state.copyWith(tebalCatBodyDepanIsEnabled: enabled);
+  }
+
+  void updateTebalCatBodyKiriSelectedValue(int? value) {
+    state = state.copyWith(tebalCatBodyKiriSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateTebalCatBodyKiriIsEnabled(bool? enabled) {
+    state = state.copyWith(tebalCatBodyKiriIsEnabled: enabled);
+  }
+
+  void updateTemperatureAcMobilSelectedValue(int? value) {
+    state = state.copyWith(temperatureAcMobilSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateTemperatureAcMobilIsEnabled(bool? enabled) {
+    state = state.copyWith(temperatureAcMobilIsEnabled: enabled);
+  }
+
+  void updateTebalCatBodyKananSelectedValue(int? value) {
+    state = state.copyWith(tebalCatBodyKananSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateTebalCatBodyKananIsEnabled(bool? enabled) {
+    state = state.copyWith(tebalCatBodyKananIsEnabled: enabled);
+  }
+
+  void updateTebalCatBodyBelakangSelectedValue(int? value) {
+    state = state.copyWith(tebalCatBodyBelakangSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateTebalCatBodyBelakangIsEnabled(bool? enabled) {
+    state = state.copyWith(tebalCatBodyBelakangIsEnabled: enabled);
+  }
+
+  void updateObdScannerSelectedValue(int? value) {
+    state = state.copyWith(obdScannerSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateObdScannerIsEnabled(bool? enabled) {
+    state = state.copyWith(obdScannerIsEnabled: enabled);
+  }
+
+  void updateTebalCatBodyAtapSelectedValue(int? value) {
+    state = state.copyWith(tebalCatBodyAtapSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateTebalCatBodyAtapIsEnabled(bool? enabled) {
+    state = state.copyWith(tebalCatBodyAtapIsEnabled: enabled);
+  }
+
+  void updateTestAccuSelectedValue(int? value) {
+    state = state.copyWith(testAccuSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateTestAccuIsEnabled(bool? enabled) {
+    state = state.copyWith(testAccuIsEnabled: enabled);
+  }
+
+  void updateToolsTestCatatanList(List<String> lines) {
+    state = state.copyWith(toolsTestCatatanList: lines);
+  }
 }
 
 final formProvider = StateNotifierProvider<FormNotifier, FormData>((ref) {
@@ -1351,6 +1420,23 @@ extension on FormData {
     int? rpmSelectedValue,
     bool? rpmIsEnabled,
     List<String>? testDriveCatatanList,
+    int? tebalCatBodyDepanSelectedValue,
+    bool? tebalCatBodyDepanIsEnabled,
+    int? tebalCatBodyKiriSelectedValue,
+    bool? tebalCatBodyKiriIsEnabled,
+    int? temperatureAcMobilSelectedValue,
+    bool? temperatureAcMobilIsEnabled,
+    int? tebalCatBodyKananSelectedValue,
+    bool? tebalCatBodyKananIsEnabled,
+    int? tebalCatBodyBelakangSelectedValue,
+    bool? tebalCatBodyBelakangIsEnabled,
+    int? obdScannerSelectedValue,
+    bool? obdScannerIsEnabled,
+    int? tebalCatBodyAtapSelectedValue,
+    bool? tebalCatBodyAtapIsEnabled,
+    int? testAccuSelectedValue,
+    bool? testAccuIsEnabled,
+    List<String>? toolsTestCatatanList,
   }) {
     return FormData(
       namaInspektor: namaInspektor ?? this.namaInspektor,
@@ -1619,6 +1705,24 @@ extension on FormData {
       rpmSelectedValue: rpmSelectedValue ?? this.rpmSelectedValue,
       rpmIsEnabled: rpmIsEnabled ?? this.rpmIsEnabled,
       testDriveCatatanList: testDriveCatatanList ?? this.testDriveCatatanList,
+      // New fields for Page Five Seven (Tools Test)
+      tebalCatBodyDepanSelectedValue: tebalCatBodyDepanSelectedValue ?? this.tebalCatBodyDepanSelectedValue,
+      tebalCatBodyDepanIsEnabled: tebalCatBodyDepanIsEnabled ?? this.tebalCatBodyDepanIsEnabled,
+      tebalCatBodyKiriSelectedValue: tebalCatBodyKiriSelectedValue ?? this.tebalCatBodyKiriSelectedValue,
+      tebalCatBodyKiriIsEnabled: tebalCatBodyKiriIsEnabled ?? this.tebalCatBodyKiriIsEnabled,
+      temperatureAcMobilSelectedValue: temperatureAcMobilSelectedValue ?? this.temperatureAcMobilSelectedValue,
+      temperatureAcMobilIsEnabled: temperatureAcMobilIsEnabled ?? this.temperatureAcMobilIsEnabled,
+      tebalCatBodyKananSelectedValue: tebalCatBodyKananSelectedValue ?? this.tebalCatBodyKananSelectedValue,
+      tebalCatBodyKananIsEnabled: tebalCatBodyKananIsEnabled ?? this.tebalCatBodyKananIsEnabled,
+      tebalCatBodyBelakangSelectedValue: tebalCatBodyBelakangSelectedValue ?? this.tebalCatBodyBelakangSelectedValue,
+      tebalCatBodyBelakangIsEnabled: tebalCatBodyBelakangIsEnabled ?? this.tebalCatBodyBelakangIsEnabled,
+      obdScannerSelectedValue: obdScannerSelectedValue ?? this.obdScannerSelectedValue,
+      obdScannerIsEnabled: obdScannerIsEnabled ?? this.obdScannerIsEnabled,
+      tebalCatBodyAtapSelectedValue: tebalCatBodyAtapSelectedValue ?? this.tebalCatBodyAtapSelectedValue,
+      tebalCatBodyAtapIsEnabled: tebalCatBodyAtapIsEnabled ?? this.tebalCatBodyAtapIsEnabled,
+      testAccuSelectedValue: testAccuSelectedValue ?? this.testAccuSelectedValue,
+      testAccuIsEnabled: testAccuIsEnabled ?? this.testAccuIsEnabled,
+      toolsTestCatatanList: toolsTestCatatanList ?? this.toolsTestCatatanList,
     );
   }
 }

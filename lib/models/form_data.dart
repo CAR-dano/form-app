@@ -290,6 +290,25 @@ class FormData {
   bool? rpmIsEnabled;
   List<String> testDriveCatatanList;
 
+  // New fields for Page Five Seven (Tools Test)
+  int? tebalCatBodyDepanSelectedValue;
+  bool? tebalCatBodyDepanIsEnabled;
+  int? tebalCatBodyKiriSelectedValue;
+  bool? tebalCatBodyKiriIsEnabled;
+  int? temperatureAcMobilSelectedValue;
+  bool? temperatureAcMobilIsEnabled;
+  int? tebalCatBodyKananSelectedValue;
+  bool? tebalCatBodyKananIsEnabled;
+  int? tebalCatBodyBelakangSelectedValue;
+  bool? tebalCatBodyBelakangIsEnabled;
+  int? obdScannerSelectedValue;
+  bool? obdScannerIsEnabled;
+  int? tebalCatBodyAtapSelectedValue;
+  bool? tebalCatBodyAtapIsEnabled;
+  int? testAccuSelectedValue;
+  bool? testAccuIsEnabled;
+  List<String> toolsTestCatatanList;
+
 
   // New field for repair estimations
   List<Map<String, String>> repairEstimations;
@@ -561,6 +580,24 @@ class FormData {
     this.rpmSelectedValue,
     this.rpmIsEnabled,
     List<String>? testDriveCatatanList,
+    // New fields for Page Five Seven (Tools Test)
+    this.tebalCatBodyDepanSelectedValue,
+    this.tebalCatBodyDepanIsEnabled,
+    this.tebalCatBodyKiriSelectedValue,
+    this.tebalCatBodyKiriIsEnabled,
+    this.temperatureAcMobilSelectedValue,
+    this.temperatureAcMobilIsEnabled,
+    this.tebalCatBodyKananSelectedValue,
+    this.tebalCatBodyKananIsEnabled,
+    this.tebalCatBodyBelakangSelectedValue,
+    this.tebalCatBodyBelakangIsEnabled,
+    this.obdScannerSelectedValue,
+    this.obdScannerIsEnabled,
+    this.tebalCatBodyAtapSelectedValue,
+    this.tebalCatBodyAtapIsEnabled,
+    this.testAccuSelectedValue,
+    this.testAccuIsEnabled,
+    List<String>? toolsTestCatatanList,
 
   }) : keteranganEksterior = eksteriorCatatanList ?? [],
        keteranganInterior = keteranganInterior ?? [],
@@ -572,7 +609,8 @@ class FormData {
        interiorCatatanList = interiorCatatanList ?? [],
        eksteriorCatatanList = eksteriorCatatanList ?? [],
        banDanKakiKakiCatatanList = banDanKakiKakiCatatanList ?? [],
-       testDriveCatatanList = testDriveCatatanList ?? [];
+       testDriveCatatanList = testDriveCatatanList ?? [],
+       toolsTestCatatanList = toolsTestCatatanList ?? [];
 
   // Add methods to update data if needed, or update directly
 }
