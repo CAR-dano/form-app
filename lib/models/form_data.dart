@@ -273,6 +273,23 @@ class FormData {
   bool? linkStabilizerIsEnabled;
   List<String> banDanKakiKakiCatatanList;
 
+  // New fields for Page Five Six (Test Drive)
+  int? bunyiGetaranSelectedValue;
+  bool? bunyiGetaranIsEnabled;
+  int? performaStirSelectedValue;
+  bool? performaStirIsEnabled;
+  int? perpindahanTransmisiSelectedValue;
+  bool? perpindahanTransmisiIsEnabled;
+  int? stirBalanceSelectedValue;
+  bool? stirBalanceIsEnabled;
+  int? performaSuspensiSelectedValue;
+  bool? performaSuspensiIsEnabled;
+  int? performaKoplingSelectedValue;
+  bool? performaKoplingIsEnabled;
+  int? rpmSelectedValue;
+  bool? rpmIsEnabled;
+  List<String> testDriveCatatanList;
+
 
   // New field for repair estimations
   List<Map<String, String>> repairEstimations;
@@ -529,6 +546,21 @@ class FormData {
     this.linkStabilizerSelectedValue,
     this.linkStabilizerIsEnabled,
     List<String>? banDanKakiKakiCatatanList,
+    this.bunyiGetaranSelectedValue,
+    this.bunyiGetaranIsEnabled,
+    this.performaStirSelectedValue,
+    this.performaStirIsEnabled,
+    this.perpindahanTransmisiSelectedValue,
+    this.perpindahanTransmisiIsEnabled,
+    this.stirBalanceSelectedValue,
+    this.stirBalanceIsEnabled,
+    this.performaSuspensiSelectedValue,
+    this.performaSuspensiIsEnabled,
+    this.performaKoplingSelectedValue,
+    this.performaKoplingIsEnabled,
+    this.rpmSelectedValue,
+    this.rpmIsEnabled,
+    List<String>? testDriveCatatanList,
 
   }) : keteranganEksterior = eksteriorCatatanList ?? [],
        keteranganInterior = keteranganInterior ?? [],
@@ -539,7 +571,8 @@ class FormData {
        mesinCatatanList = mesinCatatanList ?? [],
        interiorCatatanList = interiorCatatanList ?? [],
        eksteriorCatatanList = eksteriorCatatanList ?? [],
-       banDanKakiKakiCatatanList = banDanKakiKakiCatatanList ?? [];
+       banDanKakiKakiCatatanList = banDanKakiKakiCatatanList ?? [],
+       testDriveCatatanList = testDriveCatatanList ?? [];
 
   // Add methods to update data if needed, or update directly
 }

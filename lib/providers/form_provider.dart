@@ -1016,6 +1016,67 @@ class FormNotifier extends StateNotifier<FormData> {
   void updateBanDanKakiKakiCatatanList(List<String> lines) {
     state = state.copyWith(banDanKakiKakiCatatanList: lines);
   }
+
+  // New update methods for Page Five Six (Test Drive)
+  void updateBunyiGetaranSelectedValue(int? value) {
+    state = state.copyWith(bunyiGetaranSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateBunyiGetaranIsEnabled(bool? enabled) {
+    state = state.copyWith(bunyiGetaranIsEnabled: enabled);
+  }
+
+  void updatePerformaStirSelectedValue(int? value) {
+    state = state.copyWith(performaStirSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updatePerformaStirIsEnabled(bool? enabled) {
+    state = state.copyWith(performaStirIsEnabled: enabled);
+  }
+
+  void updatePerpindahanTransmisiSelectedValue(int? value) {
+    state = state.copyWith(perpindahanTransmisiSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updatePerpindahanTransmisiIsEnabled(bool? enabled) {
+    state = state.copyWith(perpindahanTransmisiIsEnabled: enabled);
+  }
+
+  void updateStirBalanceSelectedValue(int? value) {
+    state = state.copyWith(stirBalanceSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateStirBalanceIsEnabled(bool? enabled) {
+    state = state.copyWith(stirBalanceIsEnabled: enabled);
+  }
+
+  void updatePerformaSuspensiSelectedValue(int? value) {
+    state = state.copyWith(performaSuspensiSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updatePerformaSuspensiIsEnabled(bool? enabled) {
+    state = state.copyWith(performaSuspensiIsEnabled: enabled);
+  }
+
+  void updatePerformaKoplingSelectedValue(int? value) {
+    state = state.copyWith(performaKoplingSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updatePerformaKoplingIsEnabled(bool? enabled) {
+    state = state.copyWith(performaKoplingIsEnabled: enabled);
+  }
+
+  void updateRpmSelectedValue(int? value) {
+    state = state.copyWith(rpmSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateRpmIsEnabled(bool? enabled) {
+    state = state.copyWith(rpmIsEnabled: enabled);
+  }
+
+  void updateTestDriveCatatanList(List<String> lines) {
+    state = state.copyWith(testDriveCatatanList: lines);
+  }
 }
 
 final formProvider = StateNotifierProvider<FormNotifier, FormData>((ref) {
@@ -1275,6 +1336,21 @@ extension on FormData {
     int? linkStabilizerSelectedValue,
     bool? linkStabilizerIsEnabled,
     List<String>? banDanKakiKakiCatatanList,
+    int? bunyiGetaranSelectedValue,
+    bool? bunyiGetaranIsEnabled,
+    int? performaStirSelectedValue,
+    bool? performaStirIsEnabled,
+    int? perpindahanTransmisiSelectedValue,
+    bool? perpindahanTransmisiIsEnabled,
+    int? stirBalanceSelectedValue,
+    bool? stirBalanceIsEnabled,
+    int? performaSuspensiSelectedValue,
+    bool? performaSuspensiIsEnabled,
+    int? performaKoplingSelectedValue,
+    bool? performaKoplingIsEnabled,
+    int? rpmSelectedValue,
+    bool? rpmIsEnabled,
+    List<String>? testDriveCatatanList,
   }) {
     return FormData(
       namaInspektor: namaInspektor ?? this.namaInspektor,
@@ -1528,6 +1604,21 @@ extension on FormData {
       linkStabilizerSelectedValue: linkStabilizerSelectedValue ?? this.linkStabilizerSelectedValue,
       linkStabilizerIsEnabled: linkStabilizerIsEnabled ?? this.linkStabilizerIsEnabled,
       banDanKakiKakiCatatanList: banDanKakiKakiCatatanList ?? this.banDanKakiKakiCatatanList,
+      bunyiGetaranSelectedValue: bunyiGetaranSelectedValue ?? this.bunyiGetaranSelectedValue,
+      bunyiGetaranIsEnabled: bunyiGetaranIsEnabled ?? this.bunyiGetaranIsEnabled,
+      performaStirSelectedValue: performaStirSelectedValue ?? this.performaStirSelectedValue,
+      performaStirIsEnabled: performaStirIsEnabled ?? this.performaStirIsEnabled,
+      perpindahanTransmisiSelectedValue: perpindahanTransmisiSelectedValue ?? this.perpindahanTransmisiSelectedValue,
+      perpindahanTransmisiIsEnabled: perpindahanTransmisiIsEnabled ?? this.perpindahanTransmisiIsEnabled,
+      stirBalanceSelectedValue: stirBalanceSelectedValue ?? this.stirBalanceSelectedValue,
+      stirBalanceIsEnabled: stirBalanceIsEnabled ?? this.stirBalanceIsEnabled,
+      performaSuspensiSelectedValue: performaSuspensiSelectedValue ?? this.performaSuspensiSelectedValue,
+      performaSuspensiIsEnabled: performaSuspensiIsEnabled ?? this.performaSuspensiIsEnabled,
+      performaKoplingSelectedValue: performaKoplingSelectedValue ?? this.performaKoplingSelectedValue,
+      performaKoplingIsEnabled: performaKoplingIsEnabled ?? this.performaKoplingIsEnabled,
+      rpmSelectedValue: rpmSelectedValue ?? this.rpmSelectedValue,
+      rpmIsEnabled: rpmIsEnabled ?? this.rpmIsEnabled,
+      testDriveCatatanList: testDriveCatatanList ?? this.testDriveCatatanList,
     );
   }
 }
