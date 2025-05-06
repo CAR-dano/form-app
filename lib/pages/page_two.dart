@@ -101,7 +101,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         // Input Fields based on user request
                         LabeledTextField(
                           label: 'Merek Kendaraan',
-                          hintText: 'Masukkan merek kendaraan',
+                          hintText: 'Misal : Honda',
                           initialValue:
                               formData
                                   .merekKendaraan, // Initialize with data from provider
@@ -122,7 +122,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         const SizedBox(height: 16.0),
                         LabeledTextField(
                           label: 'Tipe Kendaraan',
-                          hintText: 'Masukkan tipe kendaraan',
+                          hintText: 'Misal : City 1.5 HB RS CVT',
                           initialValue:
                               formData
                                   .tipeKendaraan, // Initialize with data from provider
@@ -143,7 +143,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         const SizedBox(height: 16.0),
                         LabeledTextField(
                           label: 'Tahun',
-                          hintText: 'Masukkan tahun pembuatan',
+                          hintText: 'Misal : 2022',
                           keyboardType:
                               TextInputType.number, // Use number keyboard
                           useThousandsSeparator:
@@ -168,7 +168,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         const SizedBox(height: 16.0),
                         LabeledTextField(
                           label: 'Transmisi',
-                          hintText: 'Contoh: Otomatis / Manual',
+                          hintText: 'Misal : Automatis CVT',
                           initialValue:
                               formData
                                   .transmisi, // Initialize with data from provider
@@ -188,7 +188,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         const SizedBox(height: 16.0),
                         LabeledTextField(
                           label: 'Warna Kendaraan',
-                          hintText: 'Masukkan warna kendaraan',
+                          hintText: 'Misal : Kuning',
                           initialValue:
                               formData
                                   .warnaKendaraan, // Initialize with data from provider
@@ -208,7 +208,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         const SizedBox(height: 16.0),
                         LabeledTextField(
                           label: 'Odometer',
-                          hintText: 'Masukkan angka odometer (km)',
+                          hintText: 'Misal : 43.456',
                           keyboardType:
                               TextInputType.number, // Use number keyboard
                           suffixText: 'km', // Add suffix text for km
@@ -231,7 +231,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         const SizedBox(height: 16.0),
                         LabeledTextField(
                           label: 'Kepemilikan',
-                          hintText: 'Contoh: Pribadi / Perusahaan',
+                          hintText: 'Misal : Pribadi',
                           initialValue:
                               formData
                                   .kepemilikan, // Initialize with data from provider
@@ -251,7 +251,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         const SizedBox(height: 16.0),
                         LabeledTextField(
                           label: 'Plat Nomor',
-                          hintText: 'Masukkan plat nomor',
+                          hintText: 'Misal : AB 1234 CD',
                           initialValue:
                               formData
                                   .platNomor, // Initialize with data from provider
@@ -319,7 +319,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         const SizedBox(height: 16.0),
                         LabeledTextField(
                           label: 'Biaya Pajak',
-                          hintText: 'Masukkan biaya pajak (Rp)',
+                          hintText: 'Misal : 3.123.456',
                           suffixText: 'Rp', // Add prefix text for currency
                           keyboardType:
                               TextInputType.number, // Use number keyboard
@@ -349,10 +349,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                               validateAndMoveToNextPage, // Call validation function
                           // isBackButtonEnabled: true, // Default is true, so can be omitted
                         ),
-                        SizedBox(
-                          height: 32.0,
-                        ), // Optional spacing below the content
-                        // Footer
+                        SizedBox(height: 32.0),
                         Footer(),
                       ],
                     ),
