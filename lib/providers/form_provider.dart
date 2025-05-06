@@ -426,8 +426,8 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(tutupRadiatorIsEnabled: enabled);
   }
 
-  void updateMesinCatatan(String? text) {
-    state = state.copyWith(mesinCatatan: text);
+  void updateMesinCatatanList(List<String> lines) {
+    state = state.copyWith(mesinCatatanList: lines);
   }
 
   // New update methods for Page Five Three
@@ -623,8 +623,8 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(plafonIsEnabled: enabled);
   }
 
-  void updateInteriorCatatan(String? catatan) {
-    state = state.copyWith(interiorCatatan: catatan);
+  void updateInteriorCatatanList(List<String> lines) {
+    state = state.copyWith(interiorCatatanList: lines);
   }
 
   // New update methods for Page Five Four
@@ -868,8 +868,8 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(sideSkirtKiriIsEnabled: enabled);
   }
 
-  void updateEksteriorCatatan(String? catatan) {
-    state = state.copyWith(eksteriorCatatan: catatan);
+  void updateEksteriorCatatanList(List<String> lines) {
+    state = state.copyWith(eksteriorCatatanList: lines);
   }
 
   void updateRepairEstimations(List<Map<String, String>> estimations) {
@@ -988,7 +988,7 @@ extension on FormData {
     bool? bushingKecilIsEnabled,
     int? tutupRadiatorSelectedIndex,
     bool? tutupRadiatorIsEnabled,
-    String? mesinCatatan,
+    List<String>? mesinCatatanList,
     int? stirSelectedIndex,
     bool? stirIsEnabled,
     int? remTonganSelectedIndex,
@@ -1037,7 +1037,7 @@ extension on FormData {
     bool? trimInteriorIsEnabled,
     int? plafonSelectedIndex,
     bool? plafonIsEnabled,
-    String? interiorCatatan,
+    List<String>? interiorCatatanList,
     int? bumperDepanSelectedIndex,
     bool? bumperDepanIsEnabled,
     int? kapMesinSelectedIndex,
@@ -1098,7 +1098,7 @@ extension on FormData {
     bool? lisplangKiriIsEnabled,
     int? sideSkirtKiriSelectedIndex,
     bool? sideSkirtKiriIsEnabled,
-    String? eksteriorCatatan,
+    List<String>? eksteriorCatatanList,
   }) {
     return FormData(
       namaInspektor: namaInspektor ?? this.namaInspektor,
@@ -1206,7 +1206,7 @@ extension on FormData {
       bushingKecilIsEnabled: bushingKecilIsEnabled ?? this.bushingKecilIsEnabled,
       tutupRadiatorSelectedIndex: tutupRadiatorSelectedIndex ?? this.tutupRadiatorSelectedIndex,
       tutupRadiatorIsEnabled: tutupRadiatorIsEnabled ?? this.tutupRadiatorIsEnabled,
-      mesinCatatan: mesinCatatan ?? this.mesinCatatan,
+      mesinCatatanList: mesinCatatanList ?? this.mesinCatatanList,
       stirSelectedIndex: stirSelectedIndex ?? this.stirSelectedIndex,
       stirIsEnabled: stirIsEnabled ?? this.stirIsEnabled,
       remTonganSelectedIndex: remTonganSelectedIndex ?? this.remTonganSelectedIndex,
@@ -1255,7 +1255,7 @@ extension on FormData {
       trimInteriorIsEnabled: trimInteriorIsEnabled ?? this.trimInteriorIsEnabled,
       plafonSelectedIndex: plafonSelectedIndex ?? this.plafonSelectedIndex,
       plafonIsEnabled: plafonIsEnabled ?? this.plafonIsEnabled,
-      interiorCatatan: interiorCatatan ?? this.interiorCatatan,
+      interiorCatatanList: interiorCatatanList ?? this.interiorCatatanList,
       bumperDepanSelectedIndex: bumperDepanSelectedIndex ?? this.bumperDepanSelectedIndex,
       bumperDepanIsEnabled: bumperDepanIsEnabled ?? this.bumperDepanIsEnabled,
       kapMesinSelectedIndex: kapMesinSelectedIndex ?? this.kapMesinSelectedIndex,
@@ -1316,7 +1316,7 @@ extension on FormData {
       lisplangKiriIsEnabled: lisplangKiriIsEnabled ?? this.lisplangKiriIsEnabled,
       sideSkirtKiriSelectedIndex: sideSkirtKiriSelectedIndex ?? this.sideSkirtKiriSelectedIndex,
       sideSkirtKiriIsEnabled: sideSkirtKiriIsEnabled ?? this.sideSkirtKiriIsEnabled,
-      eksteriorCatatan: eksteriorCatatan ?? this.eksteriorCatatan,
+      eksteriorCatatanList: eksteriorCatatanList ?? this.eksteriorCatatanList,
     );
   }
 }

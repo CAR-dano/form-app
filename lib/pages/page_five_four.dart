@@ -22,21 +22,15 @@ class PageFiveFour extends ConsumerStatefulWidget {
 class _PageFiveFourState extends ConsumerState<PageFiveFour> {
   late FocusScopeNode _focusScopeNode;
 
-  // State variable for ExpandableTextField
-  late TextEditingController _eksteriorCatatanController;
-
   @override
   void initState() {
     super.initState();
     _focusScopeNode = FocusScopeNode();
-    final formData = ref.read(formProvider);
-    _eksteriorCatatanController = TextEditingController(text: formData.eksteriorCatatan ?? '');
   }
 
   @override
   void dispose() {
     _focusScopeNode.dispose();
-    _eksteriorCatatanController.dispose();
     super.dispose();
   }
 
@@ -558,9 +552,9 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ExpandableTextField(
                           label: 'Catatan',
                           hintText: 'Masukkan catatan di sini',
-                          controller: _eksteriorCatatanController,
+                          initialLines: formData.eksteriorCatatanList,
                           onChangedList: (lines) {
-                            formNotifier.updateEksteriorCatatan(lines.join('\n'));
+                            formNotifier.updateEksteriorCatatanList(lines);
                           },
                         ),
                         const SizedBox(height: 32.0),

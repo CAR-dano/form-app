@@ -120,7 +120,7 @@ class FormData {
   bool? bushingKecilIsEnabled;
   int? tutupRadiatorSelectedIndex;
   bool? tutupRadiatorIsEnabled;
-  String? mesinCatatan;
+  List<String> mesinCatatanList;
 
   // New fields for Page Five Three
   int? stirSelectedIndex;
@@ -171,7 +171,7 @@ class FormData {
   bool? trimInteriorIsEnabled;
   int? plafonSelectedIndex;
   bool? plafonIsEnabled;
-  String? interiorCatatan;
+  List<String> interiorCatatanList;
 
   // New fields for Page Five Four
   int? bumperDepanSelectedIndex;
@@ -234,7 +234,7 @@ class FormData {
   bool? lisplangKiriIsEnabled;
   int? sideSkirtKiriSelectedIndex;
   bool? sideSkirtKiriIsEnabled;
-  String? eksteriorCatatan;
+  List<String> eksteriorCatatanList;
 
 
   // New field for repair estimations
@@ -346,7 +346,7 @@ class FormData {
     this.bushingKecilIsEnabled,
     this.tutupRadiatorSelectedIndex,
     this.tutupRadiatorIsEnabled,
-    this.mesinCatatan,
+    List<String>? mesinCatatanList,
     this.stirSelectedIndex,
     this.stirIsEnabled,
     this.remTonganSelectedIndex,
@@ -395,7 +395,7 @@ class FormData {
     this.trimInteriorIsEnabled,
     this.plafonSelectedIndex,
     this.plafonIsEnabled,
-    this.interiorCatatan,
+    List<String>? interiorCatatanList,
     this.bumperDepanSelectedIndex,
     this.bumperDepanIsEnabled,
     this.kapMesinSelectedIndex,
@@ -456,14 +456,17 @@ class FormData {
     this.lisplangKiriIsEnabled,
     this.sideSkirtKiriSelectedIndex,
     this.sideSkirtKiriIsEnabled,
-    this.eksteriorCatatan,
+    List<String>? eksteriorCatatanList,
 
   }) : keteranganEksterior = keteranganEksterior ?? [],
        keteranganInterior = keteranganInterior ?? [],
        keteranganKakiKaki = keteranganKakiKaki ?? [],
        keteranganMesin = keteranganMesin ?? [],
        deskripsiKeseluruhan = deskripsiKeseluruhan ?? [],
-       repairEstimations = repairEstimations ?? [];
+       repairEstimations = repairEstimations ?? [],
+       mesinCatatanList = mesinCatatanList ?? [],
+       interiorCatatanList = interiorCatatanList ?? [],
+       eksteriorCatatanList = eksteriorCatatanList ?? [];
 
   // Add methods to update data if needed, or update directly
 }
