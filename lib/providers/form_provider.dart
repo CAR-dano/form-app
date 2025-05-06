@@ -875,6 +875,147 @@ class FormNotifier extends StateNotifier<FormData> {
   void updateRepairEstimations(List<Map<String, String>> estimations) {
     state = state.copyWith(repairEstimations: estimations);
   }
+
+  // New update methods for Page Five Five
+  void updateBanDepanSelectedValue(int? value) {
+    state = state.copyWith(banDepanSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateBanDepanIsEnabled(bool? enabled) {
+    state = state.copyWith(banDepanIsEnabled: enabled);
+  }
+
+  void updateVelgDepanSelectedValue(int? value) {
+    state = state.copyWith(velgDepanSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateVelgDepanIsEnabled(bool? enabled) {
+    state = state.copyWith(velgDepanIsEnabled: enabled);
+  }
+
+  void updateDiscBrakeSelectedValue(int? value) {
+    state = state.copyWith(discBrakeSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateDiscBrakeIsEnabled(bool? enabled) {
+    state = state.copyWith(discBrakeIsEnabled: enabled);
+  }
+
+  void updateMasterRemSelectedValue(int? value) {
+    state = state.copyWith(masterRemSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateMasterRemIsEnabled(bool? enabled) {
+    state = state.copyWith(masterRemIsEnabled: enabled);
+  }
+
+  void updateTieRodSelectedValue(int? value) {
+    state = state.copyWith(tieRodSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateTieRodIsEnabled(bool? enabled) {
+    state = state.copyWith(tieRodIsEnabled: enabled);
+  }
+
+  void updateGardanSelectedValue(int? value) {
+    state = state.copyWith(gardanSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateGardanIsEnabled(bool? enabled) {
+    state = state.copyWith(gardanIsEnabled: enabled);
+  }
+
+  void updateBanBelakangSelectedValue(int? value) {
+    state = state.copyWith(banBelakangSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateBanBelakangIsEnabled(bool? enabled) {
+    state = state.copyWith(banBelakangIsEnabled: enabled);
+  }
+
+  void updateVelgBelakangSelectedValue(int? value) {
+    state = state.copyWith(velgBelakangSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateVelgBelakangIsEnabled(bool? enabled) {
+    state = state.copyWith(velgBelakangIsEnabled: enabled);
+  }
+
+  void updateBrakePadSelectedValue(int? value) {
+    state = state.copyWith(brakePadSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateBrakePadIsEnabled(bool? enabled) {
+    state = state.copyWith(brakePadIsEnabled: enabled);
+  }
+
+  void updateCrossmemberSelectedValue(int? value) {
+    state = state.copyWith(crossmemberSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateCrossmemberIsEnabled(bool? enabled) {
+    state = state.copyWith(crossmemberIsEnabled: enabled);
+  }
+
+  void updateKnalpotSelectedValue(int? value) {
+    state = state.copyWith(knalpotSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateKnalpotIsEnabled(bool? enabled) {
+    state = state.copyWith(knalpotIsEnabled: enabled);
+  }
+
+  void updateBalljointSelectedValue(int? value) {
+    state = state.copyWith(balljointSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateBalljointIsEnabled(bool? enabled) {
+    state = state.copyWith(balljointIsEnabled: enabled);
+  }
+
+  void updateRocksteerSelectedValue(int? value) {
+    state = state.copyWith(rocksteerSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateRocksteerIsEnabled(bool? enabled) {
+    state = state.copyWith(rocksteerIsEnabled: enabled);
+  }
+
+  void updateKaretBootSelectedValue(int? value) {
+    state = state.copyWith(karetBootSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateKaretBootIsEnabled(bool? enabled) {
+    state = state.copyWith(karetBootIsEnabled: enabled);
+  }
+
+  void updateUpperLowerArmSelectedValue(int? value) {
+    state = state.copyWith(upperLowerArmSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateUpperLowerArmIsEnabled(bool? enabled) {
+    state = state.copyWith(upperLowerArmIsEnabled: enabled);
+  }
+
+  void updateShockBreakerSelectedValue(int? value) {
+    state = state.copyWith(shockBreakerSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateShockBreakerIsEnabled(bool? enabled) {
+    state = state.copyWith(shockBreakerIsEnabled: enabled);
+  }
+
+  void updateLinkStabilizerSelectedValue(int? value) {
+    state = state.copyWith(linkStabilizerSelectedValue: (value == null || value <= 0) ? 0 : value);
+  }
+
+  void updateLinkStabilizerIsEnabled(bool? enabled) {
+    state = state.copyWith(linkStabilizerIsEnabled: enabled);
+  }
+
+  void updateBanDanKakiKakiCatatanList(List<String> lines) {
+    state = state.copyWith(banDanKakiKakiCatatanList: lines);
+  }
 }
 
 final formProvider = StateNotifierProvider<FormNotifier, FormData>((ref) {
@@ -1099,6 +1240,41 @@ extension on FormData {
     int? sideSkirtKiriSelectedValue,
     bool? sideSkirtKiriIsEnabled,
     List<String>? eksteriorCatatanList,
+    int? banDepanSelectedValue,
+    bool? banDepanIsEnabled,
+    int? velgDepanSelectedValue,
+    bool? velgDepanIsEnabled,
+    int? discBrakeSelectedValue,
+    bool? discBrakeIsEnabled,
+    int? masterRemSelectedValue,
+    bool? masterRemIsEnabled,
+    int? tieRodSelectedValue,
+    bool? tieRodIsEnabled,
+    int? gardanSelectedValue,
+    bool? gardanIsEnabled,
+    int? banBelakangSelectedValue,
+    bool? banBelakangIsEnabled,
+    int? velgBelakangSelectedValue,
+    bool? velgBelakangIsEnabled,
+    int? brakePadSelectedValue,
+    bool? brakePadIsEnabled,
+    int? crossmemberSelectedValue,
+    bool? crossmemberIsEnabled,
+    int? knalpotSelectedValue,
+    bool? knalpotIsEnabled,
+    int? balljointSelectedValue,
+    bool? balljointIsEnabled,
+    int? rocksteerSelectedValue,
+    bool? rocksteerIsEnabled,
+    int? karetBootSelectedValue,
+    bool? karetBootIsEnabled,
+    int? upperLowerArmSelectedValue,
+    bool? upperLowerArmIsEnabled,
+    int? shockBreakerSelectedValue,
+    bool? shockBreakerIsEnabled,
+    int? linkStabilizerSelectedValue,
+    bool? linkStabilizerIsEnabled,
+    List<String>? banDanKakiKakiCatatanList,
   }) {
     return FormData(
       namaInspektor: namaInspektor ?? this.namaInspektor,
@@ -1317,6 +1493,41 @@ extension on FormData {
       sideSkirtKiriSelectedValue: sideSkirtKiriSelectedValue ?? this.sideSkirtKiriSelectedValue,
       sideSkirtKiriIsEnabled: sideSkirtKiriIsEnabled ?? this.sideSkirtKiriIsEnabled,
       eksteriorCatatanList: eksteriorCatatanList ?? this.eksteriorCatatanList,
+      banDepanSelectedValue: banDepanSelectedValue ?? this.banDepanSelectedValue,
+      banDepanIsEnabled: banDepanIsEnabled ?? this.banDepanIsEnabled,
+      velgDepanSelectedValue: velgDepanSelectedValue ?? this.velgDepanSelectedValue,
+      velgDepanIsEnabled: velgDepanIsEnabled ?? this.velgDepanIsEnabled,
+      discBrakeSelectedValue: discBrakeSelectedValue ?? this.discBrakeSelectedValue,
+      discBrakeIsEnabled: discBrakeIsEnabled ?? this.discBrakeIsEnabled,
+      masterRemSelectedValue: masterRemSelectedValue ?? this.masterRemSelectedValue,
+      masterRemIsEnabled: masterRemIsEnabled ?? this.masterRemIsEnabled,
+      tieRodSelectedValue: tieRodSelectedValue ?? this.tieRodSelectedValue,
+      tieRodIsEnabled: tieRodIsEnabled ?? this.tieRodIsEnabled,
+      gardanSelectedValue: gardanSelectedValue ?? this.gardanSelectedValue,
+      gardanIsEnabled: gardanIsEnabled ?? this.gardanIsEnabled,
+      banBelakangSelectedValue: banBelakangSelectedValue ?? this.banBelakangSelectedValue,
+      banBelakangIsEnabled: banBelakangIsEnabled ?? this.banBelakangIsEnabled,
+      velgBelakangSelectedValue: velgBelakangSelectedValue ?? this.velgBelakangSelectedValue,
+      velgBelakangIsEnabled: velgBelakangIsEnabled ?? this.velgBelakangIsEnabled,
+      brakePadSelectedValue: brakePadSelectedValue ?? this.brakePadSelectedValue,
+      brakePadIsEnabled: brakePadIsEnabled ?? this.brakePadIsEnabled,
+      crossmemberSelectedValue: crossmemberSelectedValue ?? this.crossmemberSelectedValue,
+      crossmemberIsEnabled: crossmemberIsEnabled ?? this.crossmemberIsEnabled,
+      knalpotSelectedValue: knalpotSelectedValue ?? this.knalpotSelectedValue,
+      knalpotIsEnabled: knalpotIsEnabled ?? this.knalpotIsEnabled,
+      balljointSelectedValue: balljointSelectedValue ?? this.balljointSelectedValue,
+      balljointIsEnabled: balljointIsEnabled ?? this.balljointIsEnabled,
+      rocksteerSelectedValue: rocksteerSelectedValue ?? this.rocksteerSelectedValue,
+      rocksteerIsEnabled: rocksteerIsEnabled ?? this.rocksteerIsEnabled,
+      karetBootSelectedValue: karetBootSelectedValue ?? this.karetBootSelectedValue,
+      karetBootIsEnabled: karetBootIsEnabled ?? this.karetBootIsEnabled,
+      upperLowerArmSelectedValue: upperLowerArmSelectedValue ?? this.upperLowerArmSelectedValue,
+      upperLowerArmIsEnabled: upperLowerArmIsEnabled ?? this.upperLowerArmIsEnabled,
+      shockBreakerSelectedValue: shockBreakerSelectedValue ?? this.shockBreakerSelectedValue,
+      shockBreakerIsEnabled: shockBreakerIsEnabled ?? this.shockBreakerIsEnabled,
+      linkStabilizerSelectedValue: linkStabilizerSelectedValue ?? this.linkStabilizerSelectedValue,
+      linkStabilizerIsEnabled: linkStabilizerIsEnabled ?? this.linkStabilizerIsEnabled,
+      banDanKakiKakiCatatanList: banDanKakiKakiCatatanList ?? this.banDanKakiKakiCatatanList,
     );
   }
 }

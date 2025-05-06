@@ -236,6 +236,43 @@ class FormData {
   bool? sideSkirtKiriIsEnabled;
   List<String> eksteriorCatatanList;
 
+  // New fields for Page Five Five
+  int? banDepanSelectedValue;
+  bool? banDepanIsEnabled;
+  int? velgDepanSelectedValue;
+  bool? velgDepanIsEnabled;
+  int? discBrakeSelectedValue;
+  bool? discBrakeIsEnabled;
+  int? masterRemSelectedValue;
+  bool? masterRemIsEnabled;
+  int? tieRodSelectedValue;
+  bool? tieRodIsEnabled;
+  int? gardanSelectedValue;
+  bool? gardanIsEnabled;
+  int? banBelakangSelectedValue;
+  bool? banBelakangIsEnabled;
+  int? velgBelakangSelectedValue;
+  bool? velgBelakangIsEnabled;
+  int? brakePadSelectedValue;
+  bool? brakePadIsEnabled;
+  int? crossmemberSelectedValue;
+  bool? crossmemberIsEnabled;
+  int? knalpotSelectedValue;
+  bool? knalpotIsEnabled;
+  int? balljointSelectedValue;
+  bool? balljointIsEnabled;
+  int? rocksteerSelectedValue;
+  bool? rocksteerIsEnabled;
+  int? karetBootSelectedValue;
+  bool? karetBootIsEnabled;
+  int? upperLowerArmSelectedValue;
+  bool? upperLowerArmIsEnabled;
+  int? shockBreakerSelectedValue;
+  bool? shockBreakerIsEnabled;
+  int? linkStabilizerSelectedValue;
+  bool? linkStabilizerIsEnabled;
+  List<String> banDanKakiKakiCatatanList;
+
 
   // New field for repair estimations
   List<Map<String, String>> repairEstimations;
@@ -457,8 +494,43 @@ class FormData {
     this.sideSkirtKiriSelectedValue,
     this.sideSkirtKiriIsEnabled,
     List<String>? eksteriorCatatanList,
+    this.banDepanSelectedValue,
+    this.banDepanIsEnabled,
+    this.velgDepanSelectedValue,
+    this.velgDepanIsEnabled,
+    this.discBrakeSelectedValue,
+    this.discBrakeIsEnabled,
+    this.masterRemSelectedValue,
+    this.masterRemIsEnabled,
+    this.tieRodSelectedValue,
+    this.tieRodIsEnabled,
+    this.gardanSelectedValue,
+    this.gardanIsEnabled,
+    this.banBelakangSelectedValue,
+    this.banBelakangIsEnabled,
+    this.velgBelakangSelectedValue,
+    this.velgBelakangIsEnabled,
+    this.brakePadSelectedValue,
+    this.brakePadIsEnabled,
+    this.crossmemberSelectedValue,
+    this.crossmemberIsEnabled,
+    this.knalpotSelectedValue,
+    this.knalpotIsEnabled,
+    this.balljointSelectedValue,
+    this.balljointIsEnabled,
+    this.rocksteerSelectedValue,
+    this.rocksteerIsEnabled,
+    this.karetBootSelectedValue,
+    this.karetBootIsEnabled,
+    this.upperLowerArmSelectedValue,
+    this.upperLowerArmIsEnabled,
+    this.shockBreakerSelectedValue,
+    this.shockBreakerIsEnabled,
+    this.linkStabilizerSelectedValue,
+    this.linkStabilizerIsEnabled,
+    List<String>? banDanKakiKakiCatatanList,
 
-  }) : keteranganEksterior = keteranganEksterior ?? [],
+  }) : keteranganEksterior = eksteriorCatatanList ?? [],
        keteranganInterior = keteranganInterior ?? [],
        keteranganKakiKaki = keteranganKakiKaki ?? [],
        keteranganMesin = keteranganMesin ?? [],
@@ -466,7 +538,8 @@ class FormData {
        repairEstimations = repairEstimations ?? [],
        mesinCatatanList = mesinCatatanList ?? [],
        interiorCatatanList = interiorCatatanList ?? [],
-       eksteriorCatatanList = eksteriorCatatanList ?? [];
+       eksteriorCatatanList = eksteriorCatatanList ?? [],
+       banDanKakiKakiCatatanList = banDanKakiKakiCatatanList ?? [];
 
   // Add methods to update data if needed, or update directly
 }
