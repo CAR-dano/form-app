@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 // Colors
 const Color borderColor = Color(0xFFC28CFF);
-const Color labelTextColor = Colors.black87;
+const Color labelTextColor = Colors.black;
 const Color hintTextColor = Color(0xFFCBCBCB);
 const Color selectedDateColor = Color(
   0xFF4C1C82,

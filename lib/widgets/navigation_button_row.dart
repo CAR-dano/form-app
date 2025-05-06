@@ -83,8 +83,9 @@ class NavigationButtonRow extends StatelessWidget {
             onPressed: onNextPressed, // Always use the provided callback
             // Apply base style and override background/foreground explicitly for clarity
             style: _baseButtonStyle.copyWith(
-               backgroundColor: WidgetStateProperty.all(buttonColor), // Always orange when enabled
+               backgroundColor: WidgetStateProperty.all(isLastPage ? toggleOptionSelectedLengkapColor : buttonColor), // Blue if last page, else orange
                foregroundColor: WidgetStateProperty.all(buttonTextColor), // Always white when enabled
+               shadowColor: WidgetStateProperty.all(isLastPage ? toggleOptionSelectedLengkapColor.withAlpha(102) : buttonColor.withAlpha(102)), // Adjust shadow color
             ),
             // TODO: Handle isLoading state here later if needed
             // child: isLoading
@@ -97,7 +98,7 @@ class NavigationButtonRow extends StatelessWidget {
             //         ),
             //       )
             //     : Text(nextButtonText, style: buttonTextStyle),
-              child: Text(isLastPage ? 'Submit' : nextButtonText, style: buttonTextStyle),
+              child: Text(isLastPage ? 'Kirim' : nextButtonText, style: buttonTextStyle),
           ),
         ),
       ],

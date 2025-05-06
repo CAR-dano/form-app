@@ -81,7 +81,7 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
                   value: _isEnabled,
                   onChanged: _handleCheckboxChange,
                   activeColor: toggleOptionSelectedLengkapColor,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  materialTapTargetSize: MaterialTapTargetSize.padded, // Changed to padded
                   visualDensity: VisualDensity.compact,
                   side: BorderSide(
                     color: toggleOptionSelectedLengkapColor,
