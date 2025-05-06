@@ -33,25 +33,25 @@ class ApiService {
             "biayaPajak": formData.biayaPajak,
           },
           "equipmentChecklist": {
-            "bukuService": formData.bukuService != null ? (formData.bukuService == 'Ada') : null,
-            "kunciSerep": formData.kunciSerep != null ? (formData.kunciSerep == 'Ada') : null,
-            "bukuManual": formData.bukuManual != null ? (formData.bukuManual == 'Ada') : null,
-            "banSerep": formData.banSerep != null ? (formData.banSerep == 'Ada') : null,
-            "bpkb": formData.bpkp != null ? (formData.bpkp == 'Ada') : null,
-            "dongkrak": formData.dongkrak != null ? (formData.dongkrak == 'Ada') : null,
-            "toolkit": formData.toolkit != null ? (formData.toolkit == 'Ada') : null,
-            "noRangka": formData.noRangka != null ? (formData.noRangka == 'Ada') : null,
-            "noMesin": formData.noMesin != null ? (formData.noMesin == 'Ada') : null,
+            "bukuService": formData.bukuService,
+            "kunciSerep": formData.kunciSerep,
+            "bukuManual": formData.bukuManual,
+            "banSerep": formData.banSerep,
+            "bpkb": formData.bpkp,
+            "dongkrak": formData.dongkrak,
+            "toolkit": formData.toolkit,
+            "noRangka": formData.noRangka,
+            "noMesin": formData.noMesin,
           },
           "inspectionSummary": {
             "interiorScore": formData.interiorSelectedValue,
-            "interiorNotes": formData.keteranganInterior.isNotEmpty ? formData.keteranganInterior.join(', ') : null,
+            "interiorNotes": formData.keteranganInterior.isNotEmpty ? formData.keteranganInterior : null,
             "eksteriorScore": formData.eksteriorSelectedValue,
-            "eksteriorNotes": formData.keteranganEksterior.isNotEmpty ? formData.keteranganEksterior.join(', ') : null,
+            "eksteriorNotes": formData.keteranganEksterior.isNotEmpty ? formData.keteranganEksterior : null,
             "kakiKakiScore": formData.kakiKakiSelectedValue,
-            "kakiKakiNotes": formData.keteranganKakiKaki.isNotEmpty ? formData.keteranganKakiKaki.join(', ') : null,
+            "kakiKakiNotes": formData.keteranganKakiKaki.isNotEmpty ? formData.keteranganKakiKaki : null,
             "mesinScore": formData.mesinSelectedValue,
-            "mesinNotes": formData.keteranganMesin.isNotEmpty ? formData.keteranganMesin.join(', ') : null,
+            "mesinNotes": formData.keteranganMesin.isNotEmpty ? formData.keteranganMesin : null,
             "penilaianKeseluruhanScore": formData.penilaianKeseluruhanSelectedValue,
             "deskripsiKeseluruhan": formData.deskripsiKeseluruhan.isNotEmpty ? formData.deskripsiKeseluruhan : null,
             "indikasiTabrakan": formData.indikasiTabrakan != null ? (formData.indikasiTabrakan == 'Ya') : null,
@@ -65,34 +65,34 @@ class ApiService {
           },
           "detailedAssessment": {
             "testDrive": {
-              "bunyiGetaran": null, // TODO: Map to FormData field if available
-              "performaStir": null, // TODO: Map to FormData field if available
-              "perpindahanTransmisi": null, // TODO: Map to FormData field if available
-              "stirBalance": null, // TODO: Map to FormData field if available
-              "performaSuspensi": null, // TODO: Map to FormData field if available
-              "performaKopling": null, // TODO: Map to FormData field if available
-              "rpm": null, // TODO: Map to FormData field if available
-              "catatan": formData.fiturCatatanList.isNotEmpty ? formData.fiturCatatanList.join(', ') : null,
+              "bunyiGetaran": formData.bunyiGetaranSelectedValue,
+              "performaStir": formData.performaStirSelectedValue,
+              "perpindahanTransmisi": formData.perpindahanTransmisiSelectedValue,
+              "stirBalance": formData.stirBalanceSelectedValue,
+              "performaSuspensi": formData.performaSuspensiSelectedValue,
+              "performaKopling": formData.performaKoplingSelectedValue,
+              "rpm": formData.rpmSelectedValue,
+              "catatan": formData.testDriveCatatanList.isNotEmpty ? formData.testDriveCatatanList : null,
             },
             "banDanKakiKaki": {
-              "banDepan": null, // TODO: Map to FormData field if available
-              "velgDepan": null, // TODO: Map to FormData field if available
-              "discBrake": null, // TODO: Map to FormData field if available
-              "masterRem": null, // TODO: Map to FormData field if available
-              "tieRod": null, // TODO: Map to FormData field if available
-              "gardan": null, // TODO: Map to FormData field if available
-              "banBelakang": null, // TODO: Map to FormData field if available
-              "velgBelakang": null, // TODO: Map to FormData field if available
-              "brakePad": null, // TODO: Map to FormData field if available
-              "crossmember": null, // TODO: Map to FormData field if available
-              "knalpot": null, // TODO: Map to FormData field if available
-              "balljoint": null, // TODO: Map to FormData field if available
-              "rocksteer": null, // TODO: Map to FormData field if available
-              "karetBoot": null, // TODO: Map to FormData field if available
-              "upperLowerArm": null, // TODO: Map to FormData field if available
-              "shockBreaker": null, // TODO: Map to FormData field if available
-              "linkStabilizer": null, // TODO: Map to FormData field if available
-              "catatan": formData.mesinCatatanList.isNotEmpty ? formData.mesinCatatanList.join(', ') : null,
+              "banDepan": formData.banDepanSelectedValue,
+              "velgDepan": formData.velgDepanSelectedValue,
+              "discBrake": formData.discBrakeSelectedValue,
+              "masterRem": formData.masterRemSelectedValue,
+              "tieRod": formData.tieRodSelectedValue,
+              "gardan": formData.gardanSelectedValue,
+              "banBelakang": formData.banBelakangSelectedValue,
+              "velgBelakang": formData.velgBelakangSelectedValue,
+              "brakePad": formData.brakePadSelectedValue,
+              "crossmember": formData.crossmemberSelectedValue,
+              "knalpot": formData.knalpotSelectedValue,
+              "balljoint": formData.balljointSelectedValue,
+              "rocksteer": formData.rocksteerSelectedValue,
+              "karetBoot": formData.karetBootSelectedValue,
+              "upperLowerArm": formData.upperLowerArmSelectedValue,
+              "shockBreaker": formData.shockBreakerSelectedValue,
+              "linkStabilizer": formData.linkStabilizerSelectedValue,
+              "catatan": formData.banDanKakiKakiCatatanList.isNotEmpty ? formData.banDanKakiKakiCatatanList : null,
             },
             "hasilInspeksiEksterior": {
               "bumperDepan": formData.bumperDepanSelectedValue,
@@ -125,28 +125,28 @@ class ApiService {
               "kacaJendelaKiri": formData.kacaJendelaKiriSelectedValue,
               "lisplangKiri": formData.lisplangKiriSelectedValue,
               "sideSkirtKiri": formData.sideSkirtKiriSelectedValue,
-              "catatan": formData.eksteriorCatatanList.isNotEmpty ? formData.eksteriorCatatanList.join(', ') : null,
+              "catatan": formData.eksteriorCatatanList.isNotEmpty ? formData.eksteriorCatatanList : null,
             },
             "toolsTest": {
-              "tebalCatBodyDepan": null, // TODO: Map to FormData field if available
-              "tebalCatBodyKiri": null, // TODO: Map to FormData field if available
-              "temperatureAC": null, // TODO: Map to FormData field if available
-              "tebalCatBodyKanan": null, // TODO: Map to FormData field if available
-              "tebalCatBodyBelakang": null, // TODO: Map to FormData field if available
-              "obdScanner": null, // TODO: Map to FormData field if available
-              "tebalCatBodyAtap": null, // TODO: Map to FormData field if available
-              "testAccu": null, // TODO: Map to FormData field if available
-              "catatan": null, // TODO: Map to FormData field if available
+              "tebalCatBodyDepan": formData.tebalCatBodyDepanSelectedValue,
+              "tebalCatBodyKiri": formData.tebalCatBodyKiriSelectedValue,
+              "temperatureAC": formData.temperatureAcMobilSelectedValue,
+              "tebalCatBodyKanan": formData.tebalCatBodyKananSelectedValue,
+              "tebalCatBodyBelakang": formData.tebalCatBodyBelakangSelectedValue,
+              "obdScanner": formData.obdScannerSelectedValue,
+              "tebalCatBodyAtap": formData.tebalCatBodyAtapSelectedValue,
+              "testAccu": formData.testAccuSelectedValue,
+              "catatan": formData.toolsTestCatatanList.isNotEmpty ? formData.toolsTestCatatanList : null,
             },
             "fitur": {
               "airbag": formData.airbagSelectedValue,
               "sistemAudio": formData.sistemAudioSelectedValue,
               "powerWindow": formData.powerWindowSelectedValue,
               "sistemAC": formData.sistemAcSelectedValue,
-              "interior1": null, // TODO: Map to FormData field if available
-              "interior2": null, // TODO: Map to FormData field if available
-              "interior3": null, // TODO: Map to FormData field if available
-              "catatan": formData.fiturCatatanList.isNotEmpty ? formData.fiturCatatanList.join(', ') : null,
+              "interior1": formData.interiorSelectedValue,
+              "interior2": formData.eksteriorSelectedValue,
+              "interior3": formData.kakiKakiSelectedValue,
+              "catatan": formData.fiturCatatanList.isNotEmpty ? formData.fiturCatatanList : null,
             },
             "hasilInspeksiMesin": {
               "getaranMesin": formData.getaranMesinSelectedValue,
@@ -176,7 +176,7 @@ class ApiService {
               "bushingBesar": formData.bushingBesarSelectedValue,
               "bushingKecil": formData.bushingKecilSelectedValue,
               "tutupRadiator": formData.tutupRadiatorSelectedValue,
-              "catatan": formData.mesinCatatanList.isNotEmpty ? formData.mesinCatatanList.join(', ') : null,
+              "catatan": formData.mesinCatatanList.isNotEmpty ? formData.mesinCatatanList : null,
             },
             "hasilInspeksiInterior": {
               "stir": formData.stirSelectedValue,
@@ -204,23 +204,23 @@ class ApiService {
               "sabukPengaman": formData.sabukPengamanSelectedValue,
               "trimInterior": formData.trimInteriorSelectedValue,
               "plafon": formData.plafonSelectedValue,
-              "catatan": formData.interiorCatatanList.isNotEmpty ? formData.interiorCatatanList.join(', ') : null,
+              "catatan": formData.interiorCatatanList.isNotEmpty ? formData.interiorCatatanList : null,
             },
           },
-          "bodyPaintThickness": {
-            "front": null, // TODO: Map to FormData field if available
-            "rear": {"trunk": null, "bumper": null}, // TODO: Map to FormData field if available
+            "bodyPaintThickness": {
+            "front": formData.tebalCatBodyDepanSelectedValue,
+            "rear": {"trunk": formData.tebalCatBodyBelakangSelectedValue, "bumper": formData.bumperBelakangSelectedValue},
             "right": {
-              "frontFender": null, // TODO: Map to FormData field if available
-              "frontDoor": null, // TODO: Map to FormData field if available
-              "rearDoor": null, // TODO: Map to FormData field if available
-              "rearFender": null, // TODO: Map to FormData field if available
+              "frontFender": formData.fenderKananSelectedValue,
+              "frontDoor": formData.pintuDepanSelectedValue,
+              "rearDoor": formData.pintuBelakangKananSelectedValue,
+              "rearFender": formData.quarterPanelKananSelectedValue,
             },
             "left": {
-              "frontFender": null, // TODO: Map to FormData field if available
-              "frontDoor": null, // TODO: Map to FormData field if available
-              "rearDoor": null, // TODO: Map to FormData field if available
-              "rearFender": null, // TODO: Map to FormData field if available
+              "frontFender": formData.fenderKiriSelectedValue,
+              "frontDoor": formData.pintuDepanKiriSelectedValue,
+              "rearDoor": formData.pintuBelakangKiriSelectedValue,
+              "rearFender": formData.quarterPanelKiriSelectedValue,
             },
           },
         },
