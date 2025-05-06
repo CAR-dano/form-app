@@ -123,9 +123,10 @@ class _RepairEstimationState extends State<RepairEstimation> {
                         ),
                         child: TextField(
                           controller: _repairControllers[index],
+                          textCapitalization: TextCapitalization.sentences, // Auto capitalize the first letter of each sentence
                           style: repairHasText ? toggleOptionTextStyle.copyWith(color: Colors.white) : hintTextStyle, // Use toggleOptionTextStyle when text is present, hintTextStyle otherwise
                           decoration: InputDecoration(
-                            hintText: 'Masukkan perbaikan',
+                            hintText: 'Barang',
                             hintStyle: hintTextStyle, // Use hintTextStyle
                             filled: repairHasText, // Fill only if text is present
                             fillColor: borderColor, // Use borderColor for background when filled
@@ -158,7 +159,7 @@ class _RepairEstimationState extends State<RepairEstimation> {
                                   ThousandsSeparatorInputFormatter()
                                 ], // Apply thousands separator formatter
                                 decoration: InputDecoration(
-                                  hintText: 'Masukkan harga',
+                                  hintText: 'Biaya',
                                   hintStyle: hintTextStyle, // Use hintTextStyle
                                   filled: false, // Do not fill based on text
                                   fillColor: Colors.transparent, // Keep background transparent

@@ -70,15 +70,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Stir',
                           count: 10,
-                          selectedValue: formData.stirSelectedIndex ?? -1,
+                          selectedValue: formData.stirSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateStirSelectedIndex(value);
+                            formNotifier.updateStirSelectedValue(value);
                           },
                           initialEnabled: formData.stirIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateStirIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateStirSelectedIndex(-1);
+                              formNotifier.updateStirSelectedValue(-1);
                             }
                           },
                         ),
@@ -86,15 +86,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Rem Tangan',
                           count: 10,
-                          selectedValue: formData.remTonganSelectedIndex ?? -1,
+                          selectedValue: formData.remTonganSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateRemTonganSelectedIndex(value);
+                            formNotifier.updateRemTonganSelectedValue(value);
                           },
                           initialEnabled: formData.remTonganIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateRemTonganIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateRemTonganSelectedIndex(-1);
+                              formNotifier.updateRemTonganSelectedValue(-1);
                             }
                           },
                         ),
@@ -102,15 +102,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Pedal',
                           count: 10,
-                          selectedValue: formData.pedalSelectedIndex ?? -1,
+                          selectedValue: formData.pedalSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updatePedalSelectedIndex(value);
+                            formNotifier.updatePedalSelectedValue(value);
                           },
                           initialEnabled: formData.pedalIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updatePedalIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updatePedalSelectedIndex(-1);
+                              formNotifier.updatePedalSelectedValue(-1);
                             }
                           },
                         ),
@@ -118,15 +118,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Switch Wiper',
                           count: 10,
-                          selectedValue: formData.switchWiperSelectedIndex ?? -1,
+                          selectedValue: formData.switchWiperSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateSwitchWiperSelectedIndex(value);
+                            formNotifier.updateSwitchWiperSelectedValue(value);
                           },
                           initialEnabled: formData.switchWiperIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateSwitchWiperIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateSwitchWiperSelectedIndex(-1);
+                              formNotifier.updateSwitchWiperSelectedValue(-1);
                             }
                           },
                         ),
@@ -134,15 +134,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Lampu Hazard',
                           count: 10,
-                          selectedValue: formData.lampuHazardSelectedIndex ?? -1,
+                          selectedValue: formData.lampuHazardSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateLampuHazardSelectedIndex(value);
+                            formNotifier.updateLampuHazardSelectedValue(value);
                           },
                           initialEnabled: formData.lampuHazardIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateLampuHazardIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateLampuHazardSelectedIndex(-1);
+                              formNotifier.updateLampuHazardSelectedValue(-1);
                             }
                           },
                         ),
@@ -150,15 +150,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Panel Dashboard',
                           count: 10,
-                          selectedValue: formData.panelDashboardSelectedIndex ?? -1,
+                          selectedValue: formData.panelDashboardSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updatePanelDashboardSelectedIndex(value);
+                            formNotifier.updatePanelDashboardSelectedValue(value);
                           },
                           initialEnabled: formData.panelDashboardIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updatePanelDashboardIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updatePanelDashboardSelectedIndex(-1);
+                              formNotifier.updatePanelDashboardSelectedValue(-1);
                             }
                           },
                         ),
@@ -166,15 +166,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Pembuka Kap Mesin',
                           count: 10,
-                          selectedValue: formData.pembukaKapMesinSelectedIndex ?? -1,
+                          selectedValue: formData.pembukaKapMesinSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updatePembukaKapMesinSelectedIndex(value);
+                            formNotifier.updatePembukaKapMesinSelectedValue(value);
                           },
                           initialEnabled: formData.pembukaKapMesinIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updatePembukaKapMesinIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updatePembukaKapMesinSelectedIndex(-1);
+                              formNotifier.updatePembukaKapMesinSelectedValue(-1);
                             }
                           },
                         ),
@@ -182,15 +182,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Pembuka Bagasi',
                           count: 10,
-                          selectedValue: formData.pembukaBagasiSelectedIndex ?? -1,
+                          selectedValue: formData.pembukaBagasiSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updatePembukaBagasiSelectedIndex(value);
+                            formNotifier.updatePembukaBagasiSelectedValue(value);
                           },
                           initialEnabled: formData.pembukaBagasiIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updatePembukaBagasiIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updatePembukaBagasiSelectedIndex(-1);
+                              formNotifier.updatePembukaBagasiSelectedValue(-1);
                             }
                           },
                         ),
@@ -198,15 +198,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Jok Depan',
                           count: 10,
-                          selectedValue: formData.jokDepanSelectedIndex ?? -1,
+                          selectedValue: formData.jokDepanSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateJokDepanSelectedIndex(value);
+                            formNotifier.updateJokDepanSelectedValue(value);
                           },
                           initialEnabled: formData.jokDepanIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateJokDepanIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateJokDepanSelectedIndex(-1);
+                              formNotifier.updateJokDepanSelectedValue(-1);
                             }
                           },
                         ),
@@ -214,15 +214,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Aroma Interior',
                           count: 10,
-                          selectedValue: formData.aromaInteriorSelectedIndex ?? -1,
+                          selectedValue: formData.aromaInteriorSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateAromaInteriorSelectedIndex(value);
+                            formNotifier.updateAromaInteriorSelectedValue(value);
                           },
                           initialEnabled: formData.aromaInteriorIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateAromaInteriorIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateAromaInteriorSelectedIndex(-1);
+                              formNotifier.updateAromaInteriorSelectedValue(-1);
                             }
                           },
                         ),
@@ -230,15 +230,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Handle Pintu',
                           count: 10,
-                          selectedValue: formData.handlePintuSelectedIndex ?? -1,
+                          selectedValue: formData.handlePintuSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateHandlePintuSelectedIndex(value);
+                            formNotifier.updateHandlePintuSelectedValue(value);
                           },
                           initialEnabled: formData.handlePintuIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateHandlePintuIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateHandlePintuSelectedIndex(-1);
+                              formNotifier.updateHandlePintuSelectedValue(-1);
                             }
                           },
                         ),
@@ -246,15 +246,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Console Box',
                           count: 10,
-                          selectedValue: formData.consoleBoxSelectedIndex ?? -1,
+                          selectedValue: formData.consoleBoxSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateConsoleBoxSelectedIndex(value);
+                            formNotifier.updateConsoleBoxSelectedValue(value);
                           },
                           initialEnabled: formData.consoleBoxIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateConsoleBoxIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateConsoleBoxSelectedIndex(-1);
+                              formNotifier.updateConsoleBoxSelectedValue(-1);
                             }
                           },
                         ),
@@ -262,15 +262,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Spion Tengah',
                           count: 10,
-                          selectedValue: formData.spionTengahSelectedIndex ?? -1,
+                          selectedValue: formData.spionTengahSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateSpionTengahSelectedIndex(value);
+                            formNotifier.updateSpionTengahSelectedValue(value);
                           },
                           initialEnabled: formData.spionTengahIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateSpionTengahIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateSpionTengahSelectedIndex(-1);
+                              formNotifier.updateSpionTengahSelectedValue(-1);
                             }
                           },
                         ),
@@ -278,15 +278,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Tuas Persneling',
                           count: 10,
-                          selectedValue: formData.tuasPersnelingSelectedIndex ?? -1,
+                          selectedValue: formData.tuasPersnelingSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateTuasPersnelingSelectedIndex(value);
+                            formNotifier.updateTuasPersnelingSelectedValue(value);
                           },
                           initialEnabled: formData.tuasPersnelingIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateTuasPersnelingIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateTuasPersnelingSelectedIndex(-1);
+                              formNotifier.updateTuasPersnelingSelectedValue(-1);
                             }
                           },
                         ),
@@ -294,15 +294,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Jok Belakang',
                           count: 10,
-                          selectedValue: formData.jokBelakangSelectedIndex ?? -1,
+                          selectedValue: formData.jokBelakangSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateJokBelakangSelectedIndex(value);
+                            formNotifier.updateJokBelakangSelectedValue(value);
                           },
                           initialEnabled: formData.jokBelakangIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateJokBelakangIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateJokBelakangSelectedIndex(-1);
+                              formNotifier.updateJokBelakangSelectedValue(-1);
                             }
                           },
                         ),
@@ -310,15 +310,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Panel Indikator',
                           count: 10,
-                          selectedValue: formData.panelIndikatorSelectedIndex ?? -1,
+                          selectedValue: formData.panelIndikatorSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updatePanelIndikatorSelectedIndex(value);
+                            formNotifier.updatePanelIndikatorSelectedValue(value);
                           },
                           initialEnabled: formData.panelIndikatorIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updatePanelIndikatorIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updatePanelIndikatorSelectedIndex(-1);
+                              formNotifier.updatePanelIndikatorSelectedValue(-1);
                             }
                           },
                         ),
@@ -326,15 +326,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Switch Lampu',
                           count: 10,
-                          selectedValue: formData.switchLampuSelectedIndex ?? -1,
+                          selectedValue: formData.switchLampuSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateSwitchLampuSelectedIndex(value);
+                            formNotifier.updateSwitchLampuSelectedValue(value);
                           },
                           initialEnabled: formData.switchLampuIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateSwitchLampuIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateSwitchLampuSelectedIndex(-1);
+                              formNotifier.updateSwitchLampuSelectedValue(-1);
                             }
                           },
                         ),
@@ -342,15 +342,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Karpet Dasar',
                           count: 10,
-                          selectedValue: formData.karpetDasarSelectedIndex ?? -1,
+                          selectedValue: formData.karpetDasarSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateKarpetDasarSelectedIndex(value);
+                            formNotifier.updateKarpetDasarSelectedValue(value);
                           },
                           initialEnabled: formData.karpetDasarIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateKarpetDasarIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateKarpetDasarSelectedIndex(-1);
+                              formNotifier.updateKarpetDasarSelectedValue(-1);
                             }
                           },
                         ),
@@ -358,15 +358,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Klakson',
                           count: 10,
-                          selectedValue: formData.klaksonSelectedIndex ?? -1,
+                          selectedValue: formData.klaksonSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateKlaksonSelectedIndex(value);
+                            formNotifier.updateKlaksonSelectedValue(value);
                           },
                           initialEnabled: formData.klaksonIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateKlaksonIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateKlaksonSelectedIndex(-1);
+                              formNotifier.updateKlaksonSelectedValue(-1);
                             }
                           },
                         ),
@@ -374,15 +374,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Sun Visor',
                           count: 10,
-                          selectedValue: formData.sunVisorSelectedIndex ?? -1,
+                          selectedValue: formData.sunVisorSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateSunVisorSelectedIndex(value);
+                            formNotifier.updateSunVisorSelectedValue(value);
                           },
                           initialEnabled: formData.sunVisorIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateSunVisorIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateSunVisorSelectedIndex(-1);
+                              formNotifier.updateSunVisorSelectedValue(-1);
                             }
                           },
                         ),
@@ -390,15 +390,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Tuas Tangki Bensin',
                           count: 10,
-                          selectedValue: formData.tuasTangkiBensinSelectedIndex ?? -1,
+                          selectedValue: formData.tuasTangkiBensinSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateTuasTangkiBensinSelectedIndex(value);
+                            formNotifier.updateTuasTangkiBensinSelectedValue(value);
                           },
                           initialEnabled: formData.tuasTangkiBensinIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateTuasTangkiBensinIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateTuasTangkiBensinSelectedIndex(-1);
+                              formNotifier.updateTuasTangkiBensinSelectedValue(-1);
                             }
                           },
                         ),
@@ -406,15 +406,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Sabuk Pengaman',
                           count: 10,
-                          selectedValue: formData.sabukPengamanSelectedIndex ?? -1,
+                          selectedValue: formData.sabukPengamanSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateSabukPengamanSelectedIndex(value);
+                            formNotifier.updateSabukPengamanSelectedValue(value);
                           },
                           initialEnabled: formData.sabukPengamanIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateSabukPengamanIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateSabukPengamanSelectedIndex(-1);
+                              formNotifier.updateSabukPengamanSelectedValue(-1);
                             }
                           },
                         ),
@@ -422,15 +422,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Trim Interior',
                           count: 10,
-                          selectedValue: formData.trimInteriorSelectedIndex ?? -1,
+                          selectedValue: formData.trimInteriorSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateTrimInteriorSelectedIndex(value);
+                            formNotifier.updateTrimInteriorSelectedValue(value);
                           },
                           initialEnabled: formData.trimInteriorIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateTrimInteriorIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateTrimInteriorSelectedIndex(-1);
+                              formNotifier.updateTrimInteriorSelectedValue(-1);
                             }
                           },
                         ),
@@ -438,15 +438,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Plafon',
                           count: 10,
-                          selectedValue: formData.plafonSelectedIndex ?? -1,
+                          selectedValue: formData.plafonSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updatePlafonSelectedIndex(value);
+                            formNotifier.updatePlafonSelectedValue(value);
                           },
                           initialEnabled: formData.plafonIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updatePlafonIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updatePlafonSelectedIndex(-1);
+                              formNotifier.updatePlafonSelectedValue(-1);
                             }
                           },
                         ),

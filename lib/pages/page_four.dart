@@ -73,10 +73,10 @@ class _PageFourState extends ConsumerState<PageFour> {
                         NumberedButtonList(
                           label: 'Interior',
                           count: 10, // Assuming 10 options based on the image
-                          selectedIndex: formData.interiorSelectedIndex ?? -1,
-                          onItemSelected: (index) {
+                          selectedValue: formData.interiorSelectedValue ?? -1,
+                          onItemSelected: (value) {
                             final formNotifier = ref.read(formProvider.notifier);
-                            formNotifier.updateInteriorSelectedIndex(index == formData.interiorSelectedIndex ? -1 : index);
+                            formNotifier.updateInteriorSelectedValue(value == formData.interiorSelectedValue ? -1 : value);
                           },
                         ),
                         const SizedBox(height: 24.0),
@@ -93,10 +93,10 @@ class _PageFourState extends ConsumerState<PageFour> {
                         NumberedButtonList(
                           label: 'Eksterior',
                           count: 10, // Assuming 10 options based on the image
-                          selectedIndex: formData.eksteriorSelectedIndex ?? -1,
-                          onItemSelected: (index) {
+                          selectedValue: formData.eksteriorSelectedValue ?? -1,
+                          onItemSelected: (value) {
                             final formNotifier = ref.read(formProvider.notifier);
-                            formNotifier.updateEksteriorSelectedIndex(index == formData.eksteriorSelectedIndex ? -1 : index);
+                            formNotifier.updateEksteriorSelectedValue(value == formData.eksteriorSelectedValue ? -1 : value);
                           },
                         ),
                         const SizedBox(height: 24.0),
@@ -113,10 +113,10 @@ class _PageFourState extends ConsumerState<PageFour> {
                         NumberedButtonList(
                           label: 'Kaki-kaki',
                           count: 10, // Assuming 10 options based on the image
-                          selectedIndex: formData.kakiKakiSelectedIndex ?? -1,
-                          onItemSelected: (index) {
+                          selectedValue: formData.kakiKakiSelectedValue ?? -1,
+                          onItemSelected: (value) {
                             final formNotifier = ref.read(formProvider.notifier);
-                            formNotifier.updateKakiKakiSelectedIndex(index == formData.kakiKakiSelectedIndex ? -1 : index);
+                            formNotifier.updateKakiKakiSelectedValue(value == formData.kakiKakiSelectedValue ? -1 : value);
                           },
                         ),
                         const SizedBox(height: 24.0),
@@ -133,10 +133,10 @@ class _PageFourState extends ConsumerState<PageFour> {
                         NumberedButtonList(
                           label: 'Mesin',
                           count: 10, // Assuming 10 options based on the image
-                          selectedIndex: formData.mesinSelectedIndex ?? -1,
-                          onItemSelected: (index) {
+                          selectedValue: formData.mesinSelectedValue ?? -1,
+                          onItemSelected: (value) {
                             final formNotifier = ref.read(formProvider.notifier);
-                            formNotifier.updateMesinSelectedIndex(index == formData.mesinSelectedIndex ? -1 : index);
+                            formNotifier.updateMesinSelectedValue(value == formData.mesinSelectedValue ? -1 : value);
                           },
                         ),
                         const SizedBox(height: 24.0),
@@ -153,10 +153,10 @@ class _PageFourState extends ConsumerState<PageFour> {
                         NumberedButtonList(
                           label: 'Penilaian Keseluruhan',
                           count: 10, // Assuming 10 options based on the image
-                          selectedIndex: formData.penilaianKeseluruhanSelectedIndex ?? -1,
-                          onItemSelected: (index) {
+                          selectedValue: formData.penilaianKeseluruhanSelectedValue ?? -1,
+                          onItemSelected: (value) {
                             final formNotifier = ref.read(formProvider.notifier);
-                            formNotifier.updatePenilaianKeseluruhanSelectedIndex(index == formData.penilaianKeseluruhanSelectedIndex ? -1 : index);
+                            formNotifier.updatePenilaianKeseluruhanSelectedValue(value == formData.penilaianKeseluruhanSelectedValue ? -1 : value);
                           },
                         ),
                         const SizedBox(height: 24.0),

@@ -70,15 +70,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Bumper Depan',
                           count: 10,
-                          selectedValue: formData.bumperDepanSelectedIndex ?? -1,
+                          selectedValue: formData.bumperDepanSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateBumperDepanSelectedIndex(value);
+                            formNotifier.updateBumperDepanSelectedValue(value);
                           },
                           initialEnabled: formData.bumperDepanIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateBumperDepanIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateBumperDepanSelectedIndex(-1);
+                              formNotifier.updateBumperDepanSelectedValue(-1);
                             }
                           },
                         ),
@@ -86,15 +86,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Kap Mesin',
                           count: 10,
-                          selectedValue: formData.kapMesinSelectedIndex ?? -1,
+                          selectedValue: formData.kapMesinSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateKapMesinSelectedIndex(value);
+                            formNotifier.updateKapMesinSelectedValue(value);
                           },
                           initialEnabled: formData.kapMesinIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateKapMesinIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateKapMesinSelectedIndex(-1);
+                              formNotifier.updateKapMesinSelectedValue(-1);
                             }
                           },
                         ),
@@ -102,15 +102,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Lampu Utama',
                           count: 10,
-                          selectedValue: formData.lampuUtamaSelectedIndex ?? -1,
+                          selectedValue: formData.lampuUtamaSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateLampuUtamaSelectedIndex(value);
+                            formNotifier.updateLampuUtamaSelectedValue(value);
                           },
                           initialEnabled: formData.lampuUtamaIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateLampuUtamaIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateLampuUtamaSelectedIndex(-1);
+                              formNotifier.updateLampuUtamaSelectedValue(-1);
                             }
                           },
                         ),
@@ -118,15 +118,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Panel Atap',
                           count: 10,
-                          selectedValue: formData.panelAtapSelectedIndex ?? -1,
+                          selectedValue: formData.panelAtapSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updatePanelAtapSelectedIndex(value);
+                            formNotifier.updatePanelAtapSelectedValue(value);
                           },
                           initialEnabled: formData.panelAtapIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updatePanelAtapIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updatePanelAtapSelectedIndex(-1);
+                              formNotifier.updatePanelAtapSelectedValue(-1);
                             }
                           },
                         ),
@@ -134,15 +134,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Grill',
                           count: 10,
-                          selectedValue: formData.grillSelectedIndex ?? -1,
+                          selectedValue: formData.grillSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateGrillSelectedIndex(value);
+                            formNotifier.updateGrillSelectedValue(value);
                           },
                           initialEnabled: formData.grillIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateGrillIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateGrillSelectedIndex(-1);
+                              formNotifier.updateGrillSelectedValue(-1);
                             }
                           },
                         ),
@@ -150,15 +150,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Lampu Foglamp',
                           count: 10,
-                          selectedValue: formData.lampuFoglampSelectedIndex ?? -1,
+                          selectedValue: formData.lampuFoglampSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateLampuFoglampSelectedIndex(value);
+                            formNotifier.updateLampuFoglampSelectedValue(value);
                           },
                           initialEnabled: formData.lampuFoglampIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateLampuFoglampIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateLampuFoglampSelectedIndex(-1);
+                              formNotifier.updateLampuFoglampSelectedValue(-1);
                             }
                           },
                         ),
@@ -166,15 +166,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Kaca Bening',
                           count: 10,
-                          selectedValue: formData.kacaBeningSelectedIndex ?? -1,
+                          selectedValue: formData.kacaBeningSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateKacaBeningSelectedIndex(value);
+                            formNotifier.updateKacaBeningSelectedValue(value);
                           },
                           initialEnabled: formData.kacaBeningIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateKacaBeningIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateKacaBeningSelectedIndex(-1);
+                              formNotifier.updateKacaBeningSelectedValue(-1);
                             }
                           },
                         ),
@@ -182,15 +182,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Wiper Belakang',
                           count: 10,
-                          selectedValue: formData.wiperBelakangSelectedIndex ?? -1,
+                          selectedValue: formData.wiperBelakangSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateWiperBelakangSelectedIndex(value);
+                            formNotifier.updateWiperBelakangSelectedValue(value);
                           },
                           initialEnabled: formData.wiperBelakangIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateWiperBelakangIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateWiperBelakangSelectedIndex(-1);
+                              formNotifier.updateWiperBelakangSelectedValue(-1);
                             }
                           },
                         ),
@@ -198,15 +198,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Bumper Belakang',
                           count: 10,
-                          selectedValue: formData.bumperBelakangSelectedIndex ?? -1,
+                          selectedValue: formData.bumperBelakangSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateBumperBelakangSelectedIndex(value);
+                            formNotifier.updateBumperBelakangSelectedValue(value);
                           },
                           initialEnabled: formData.bumperBelakangIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateBumperBelakangIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateBumperBelakangSelectedIndex(-1);
+                              formNotifier.updateBumperBelakangSelectedValue(-1);
                             }
                           },
                         ),
@@ -214,15 +214,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Lampu Belakang',
                           count: 10,
-                          selectedValue: formData.lampuBelakangSelectedIndex ?? -1,
+                          selectedValue: formData.lampuBelakangSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateLampuBelakangSelectedIndex(value);
+                            formNotifier.updateLampuBelakangSelectedValue(value);
                           },
                           initialEnabled: formData.lampuBelakangIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateLampuBelakangIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateLampuBelakangSelectedIndex(-1);
+                              formNotifier.updateLampuBelakangSelectedValue(-1);
                             }
                           },
                         ),
@@ -230,15 +230,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Trunklid',
                           count: 10,
-                          selectedValue: formData.trunklidSelectedIndex ?? -1,
+                          selectedValue: formData.trunklidSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateTrunklidSelectedIndex(value);
+                            formNotifier.updateTrunklidSelectedValue(value);
                           },
                           initialEnabled: formData.trunklidIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateTrunklidIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateTrunklidSelectedIndex(-1);
+                              formNotifier.updateTrunklidSelectedValue(-1);
                             }
                           },
                         ),
@@ -246,15 +246,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Kaca Depan',
                           count: 10,
-                          selectedValue: formData.kacaDepanSelectedIndex ?? -1,
+                          selectedValue: formData.kacaDepanSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateKacaDepanSelectedIndex(value);
+                            formNotifier.updateKacaDepanSelectedValue(value);
                           },
                           initialEnabled: formData.kacaDepanIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateKacaDepanIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateKacaDepanSelectedIndex(-1);
+                              formNotifier.updateKacaDepanSelectedValue(-1);
                             }
                           },
                         ),
@@ -262,15 +262,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Fender Kanan',
                           count: 10,
-                          selectedValue: formData.fenderKananSelectedIndex ?? -1,
+                          selectedValue: formData.fenderKananSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateFenderKananSelectedIndex(value);
+                            formNotifier.updateFenderKananSelectedValue(value);
                           },
                           initialEnabled: formData.fenderKananIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateFenderKananIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateFenderKananSelectedIndex(-1);
+                              formNotifier.updateFenderKananSelectedValue(-1);
                             }
                           },
                         ),
@@ -278,15 +278,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Quarter Panel Kanan',
                           count: 10,
-                          selectedValue: formData.quarterPanelKananSelectedIndex ?? -1,
+                          selectedValue: formData.quarterPanelKananSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateQuarterPanelKananSelectedIndex(value);
+                            formNotifier.updateQuarterPanelKananSelectedValue(value);
                           },
                           initialEnabled: formData.quarterPanelKananIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateQuarterPanelKananIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateQuarterPanelKananSelectedIndex(-1);
+                              formNotifier.updateQuarterPanelKananSelectedValue(-1);
                             }
                           },
                         ),
@@ -294,15 +294,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Pintu Belakang Kanan',
                           count: 10,
-                          selectedValue: formData.pintuBelakangKananSelectedIndex ?? -1,
+                          selectedValue: formData.pintuBelakangKananSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updatePintuBelakangKananSelectedIndex(value);
+                            formNotifier.updatePintuBelakangKananSelectedValue(value);
                           },
                           initialEnabled: formData.pintuBelakangKananIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updatePintuBelakangKananIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updatePintuBelakangKananSelectedIndex(-1);
+                              formNotifier.updatePintuBelakangKananSelectedValue(-1);
                             }
                           },
                         ),
@@ -310,15 +310,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Spion Kanan',
                           count: 10,
-                          selectedValue: formData.spionKananSelectedIndex ?? -1,
+                          selectedValue: formData.spionKananSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateSpionKananSelectedIndex(value);
+                            formNotifier.updateSpionKananSelectedValue(value);
                           },
                           initialEnabled: formData.spionKananIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateSpionKananIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateSpionKananSelectedIndex(-1);
+                              formNotifier.updateSpionKananSelectedValue(-1);
                             }
                           },
                         ),
@@ -326,15 +326,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Lisplang Kanan',
                           count: 10,
-                          selectedValue: formData.lisplangKananSelectedIndex ?? -1,
+                          selectedValue: formData.lisplangKananSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateLisplangKananSelectedIndex(value);
+                            formNotifier.updateLisplangKananSelectedValue(value);
                           },
                           initialEnabled: formData.lisplangKananIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateLisplangKananIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateLisplangKananSelectedIndex(-1);
+                              formNotifier.updateLisplangKananSelectedValue(-1);
                             }
                           },
                         ),
@@ -342,15 +342,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Side Skirt Kanan',
                           count: 10,
-                          selectedValue: formData.sideSkirtKananSelectedIndex ?? -1,
+                          selectedValue: formData.sideSkirtKananSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateSideSkirtKananSelectedIndex(value);
+                            formNotifier.updateSideSkirtKananSelectedValue(value);
                           },
                           initialEnabled: formData.sideSkirtKananIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateSideSkirtKananIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateSideSkirtKananSelectedIndex(-1);
+                              formNotifier.updateSideSkirtKananSelectedValue(-1);
                             }
                           },
                         ),
@@ -358,15 +358,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Daun Wiper',
                           count: 10,
-                          selectedValue: formData.daunWiperSelectedIndex ?? -1,
+                          selectedValue: formData.daunWiperSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateDaunWiperSelectedIndex(value);
+                            formNotifier.updateDaunWiperSelectedValue(value);
                           },
                           initialEnabled: formData.daunWiperIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateDaunWiperIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateDaunWiperSelectedIndex(-1);
+                              formNotifier.updateDaunWiperSelectedValue(-1);
                             }
                           },
                         ),
@@ -374,15 +374,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Pintu Belakang',
                           count: 10,
-                          selectedValue: formData.pintuBelakangSelectedIndex ?? -1,
+                          selectedValue: formData.pintuBelakangSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updatePintuBelakangSelectedIndex(value);
+                            formNotifier.updatePintuBelakangSelectedValue(value);
                           },
                           initialEnabled: formData.pintuBelakangIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updatePintuBelakangIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updatePintuBelakangSelectedIndex(-1);
+                              formNotifier.updatePintuBelakangSelectedValue(-1);
                             }
                           },
                         ),
@@ -390,15 +390,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Fender Kiri',
                           count: 10,
-                          selectedValue: formData.fenderKiriSelectedIndex ?? -1,
+                          selectedValue: formData.fenderKiriSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateFenderKiriSelectedIndex(value);
+                            formNotifier.updateFenderKiriSelectedValue(value);
                           },
                           initialEnabled: formData.fenderKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateFenderKiriIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateFenderKiriSelectedIndex(-1);
+                              formNotifier.updateFenderKiriSelectedValue(-1);
                             }
                           },
                         ),
@@ -406,15 +406,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Quarter Panel Kiri',
                           count: 10,
-                          selectedValue: formData.quarterPanelKiriSelectedIndex ?? -1,
+                          selectedValue: formData.quarterPanelKiriSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateQuarterPanelKiriSelectedIndex(value);
+                            formNotifier.updateQuarterPanelKiriSelectedValue(value);
                           },
                           initialEnabled: formData.quarterPanelKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateQuarterPanelKiriIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateQuarterPanelKiriSelectedIndex(-1);
+                              formNotifier.updateQuarterPanelKiriSelectedValue(-1);
                             }
                           },
                         ),
@@ -422,15 +422,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Pintu Depan',
                           count: 10,
-                          selectedValue: formData.pintuDepanSelectedIndex ?? -1,
+                          selectedValue: formData.pintuDepanSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updatePintuDepanSelectedIndex(value);
+                            formNotifier.updatePintuDepanSelectedValue(value);
                           },
                           initialEnabled: formData.pintuDepanIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updatePintuDepanIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updatePintuDepanSelectedIndex(-1);
+                              formNotifier.updatePintuDepanSelectedValue(-1);
                             }
                           },
                         ),
@@ -438,15 +438,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Kaca Jendela Kanan',
                           count: 10,
-                          selectedValue: formData.kacaJendelaKananSelectedIndex ?? -1,
+                          selectedValue: formData.kacaJendelaKananSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateKacaJendelaKananSelectedIndex(value);
+                            formNotifier.updateKacaJendelaKananSelectedValue(value);
                           },
                           initialEnabled: formData.kacaJendelaKananIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateKacaJendelaKananIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateKacaJendelaKananSelectedIndex(-1);
+                              formNotifier.updateKacaJendelaKananSelectedValue(-1);
                             }
                           },
                         ),
@@ -454,15 +454,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Pintu Belakang Kiri',
                           count: 10,
-                          selectedValue: formData.pintuBelakangKiriSelectedIndex ?? -1,
+                          selectedValue: formData.pintuBelakangKiriSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updatePintuBelakangKiriSelectedIndex(value);
+                            formNotifier.updatePintuBelakangKiriSelectedValue(value);
                           },
                           initialEnabled: formData.pintuBelakangKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updatePintuBelakangKiriIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updatePintuBelakangKiriSelectedIndex(-1);
+                              formNotifier.updatePintuBelakangKiriSelectedValue(-1);
                             }
                           },
                         ),
@@ -470,15 +470,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Spion Kiri',
                           count: 10,
-                          selectedValue: formData.spionKiriSelectedIndex ?? -1,
+                          selectedValue: formData.spionKiriSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateSpionKiriSelectedIndex(value);
+                            formNotifier.updateSpionKiriSelectedValue(value);
                           },
                           initialEnabled: formData.spionKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateSpionKiriIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateSpionKiriSelectedIndex(-1);
+                              formNotifier.updateSpionKiriSelectedValue(-1);
                             }
                           },
                         ),
@@ -486,15 +486,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Pintu Depan Kiri',
                           count: 10,
-                          selectedValue: formData.pintuDepanKiriSelectedIndex ?? -1,
+                          selectedValue: formData.pintuDepanKiriSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updatePintuDepanKiriSelectedIndex(value);
+                            formNotifier.updatePintuDepanKiriSelectedValue(value);
                           },
                           initialEnabled: formData.pintuDepanKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updatePintuDepanKiriIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updatePintuDepanKiriSelectedIndex(-1);
+                              formNotifier.updatePintuDepanKiriSelectedValue(-1);
                             }
                           },
                         ),
@@ -502,15 +502,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Kaca Jendela Kiri',
                           count: 10,
-                          selectedValue: formData.kacaJendelaKiriSelectedIndex ?? -1,
+                          selectedValue: formData.kacaJendelaKiriSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateKacaJendelaKiriSelectedIndex(value);
+                            formNotifier.updateKacaJendelaKiriSelectedValue(value);
                           },
                           initialEnabled: formData.kacaJendelaKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateKacaJendelaKiriIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateKacaJendelaKiriSelectedIndex(-1);
+                              formNotifier.updateKacaJendelaKiriSelectedValue(-1);
                             }
                           },
                         ),
@@ -518,15 +518,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Lisplang Kiri',
                           count: 10,
-                          selectedValue: formData.lisplangKiriSelectedIndex ?? -1,
+                          selectedValue: formData.lisplangKiriSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateLisplangKiriSelectedIndex(value);
+                            formNotifier.updateLisplangKiriSelectedValue(value);
                           },
                           initialEnabled: formData.lisplangKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateLisplangKiriIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateLisplangKiriSelectedIndex(-1);
+                              formNotifier.updateLisplangKiriSelectedValue(-1);
                             }
                           },
                         ),
@@ -534,15 +534,15 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> {
                         ToggleableNumberedButtonList(
                           label: 'Side Skirt Kiri',
                           count: 10,
-                          selectedValue: formData.sideSkirtKiriSelectedIndex ?? -1,
+                          selectedValue: formData.sideSkirtKiriSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateSideSkirtKiriSelectedIndex(value);
+                            formNotifier.updateSideSkirtKiriSelectedValue(value);
                           },
                           initialEnabled: formData.sideSkirtKiriIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateSideSkirtKiriIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateSideSkirtKiriSelectedIndex(-1);
+                              formNotifier.updateSideSkirtKiriSelectedValue(-1);
                             }
                           },
                         ),

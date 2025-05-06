@@ -70,15 +70,15 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
                         ToggleableNumberedButtonList(
                           label: 'Airbag',
                           count: 10,
-                          selectedValue: formData.airbagSelectedIndex ?? -1,
+                          selectedValue: formData.airbagSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateAirbagSelectedIndex(value);
+                            formNotifier.updateAirbagSelectedValue(value);
                           },
                           initialEnabled: formData.airbagIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateAirbagIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateAirbagSelectedIndex(-1);
+                              formNotifier.updateAirbagSelectedValue(-1);
                             }
                           },
                         ),
@@ -86,15 +86,15 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
                         ToggleableNumberedButtonList(
                           label: 'Sistem Audio',
                           count: 10,
-                          selectedValue: formData.sistemAudioSelectedIndex ?? -1,
+                          selectedValue: formData.sistemAudioSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateSistemAudioSelectedIndex(value);
+                            formNotifier.updateSistemAudioSelectedValue(value);
                           },
                           initialEnabled: formData.sistemAudioIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateSistemAudioIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateSistemAudioSelectedIndex(-1);
+                              formNotifier.updateSistemAudioSelectedValue(-1);
                             }
                           },
                         ),
@@ -102,15 +102,15 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
                         ToggleableNumberedButtonList(
                           label: 'Power Window',
                           count: 10,
-                          selectedValue: formData.powerWindowSelectedIndex ?? -1,
+                          selectedValue: formData.powerWindowSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updatePowerWindowSelectedIndex(value);
+                            formNotifier.updatePowerWindowSelectedValue(value);
                           },
                           initialEnabled: formData.powerWindowIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updatePowerWindowIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updatePowerWindowSelectedIndex(-1);
+                              formNotifier.updatePowerWindowSelectedValue(-1);
                             }
                           },
                         ),
@@ -118,15 +118,15 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
                         ToggleableNumberedButtonList(
                           label: 'Sistem AC',
                           count: 10,
-                          selectedValue: formData.sistemAcSelectedIndex ?? -1,
+                          selectedValue: formData.sistemAcSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateSistemAcSelectedIndex(value);
+                            formNotifier.updateSistemAcSelectedValue(value);
                           },
                           initialEnabled: formData.sistemAcIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
                             formNotifier.updateSistemAcIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateSistemAcSelectedIndex(-1);
+                              formNotifier.updateSistemAcSelectedValue(-1);
                             }
                           },
                         ),

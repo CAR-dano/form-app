@@ -41,11 +41,11 @@ class FormData {
   String? ketebalan;
 
   // New fields for inspection results
-  int? interiorSelectedIndex;
-  int? eksteriorSelectedIndex;
-  int? kakiKakiSelectedIndex;
-  int? mesinSelectedIndex;
-  int? penilaianKeseluruhanSelectedIndex;
+  int? interiorSelectedValue;
+  int? eksteriorSelectedValue;
+  int? kakiKakiSelectedValue;
+  int? mesinSelectedValue;
+  int? penilaianKeseluruhanSelectedValue;
 
   // NEW: Fields for ExpandableTextField data (as List<String>)
   List<String> keteranganInterior;
@@ -55,184 +55,184 @@ class FormData {
   List<String> deskripsiKeseluruhan;
 
   // New fields for Page Five One
-  int? airbagSelectedIndex;
+  int? airbagSelectedValue;
   bool? airbagIsEnabled;
-  int? sistemAudioSelectedIndex;
+  int? sistemAudioSelectedValue;
   bool? sistemAudioIsEnabled;
-  int? powerWindowSelectedIndex;
+  int? powerWindowSelectedValue;
   bool? powerWindowIsEnabled;
-  int? sistemAcSelectedIndex;
+  int? sistemAcSelectedValue;
   bool? sistemAcIsEnabled;
   List<String> fiturCatatanList;
 
   // New fields for Page Five Two
-  int? getaranMesinSelectedIndex;
+  int? getaranMesinSelectedValue;
   bool? getaranMesinIsEnabled;
-  int? suaraMesinSelectedIndex;
+  int? suaraMesinSelectedValue;
   bool? suaraMesinIsEnabled;
-  int? transmisiSelectedIndex;
+  int? transmisiSelectedValue;
   bool? transmisiIsEnabled;
-  int? pompaPowerSteeringSelectedIndex;
+  int? pompaPowerSteeringSelectedValue;
   bool? pompaPowerSteeringIsEnabled;
-  int? coverTimingChainSelectedIndex;
+  int? coverTimingChainSelectedValue;
   bool? coverTimingChainIsEnabled;
-  int? oliPowerSteeringSelectedIndex;
+  int? oliPowerSteeringSelectedValue;
   bool? oliPowerSteeringIsEnabled;
-  int? accuSelectedIndex;
+  int? accuSelectedValue;
   bool? accuIsEnabled;
-  int? kompressorAcSelectedIndex;
+  int? kompressorAcSelectedValue;
   bool? kompressorAcIsEnabled;
-  int? fanSelectedIndex;
+  int? fanSelectedValue;
   bool? fanIsEnabled;
-  int? selangSelectedIndex;
+  int? selangSelectedValue;
   bool? selangIsEnabled;
-  int? karterOliSelectedIndex;
+  int? karterOliSelectedValue;
   bool? karterOliIsEnabled;
-  int? oilRemSelectedIndex;
+  int? oilRemSelectedValue;
   bool? oilRemIsEnabled;
-  int? kabelSelectedIndex;
+  int? kabelSelectedValue;
   bool? kabelIsEnabled;
-  int? kondensorSelectedIndex;
+  int? kondensorSelectedValue;
   bool? kondensorIsEnabled;
-  int? radiatorSelectedIndex;
+  int? radiatorSelectedValue;
   bool? radiatorIsEnabled;
-  int? cylinderHeadSelectedIndex;
+  int? cylinderHeadSelectedValue;
   bool? cylinderHeadIsEnabled;
-  int? oliMesinSelectedIndex;
+  int? oliMesinSelectedValue;
   bool? oliMesinIsEnabled;
-  int? airRadiatorSelectedIndex;
+  int? airRadiatorSelectedValue;
   bool? airRadiatorIsEnabled;
-  int? coverKlepSelectedIndex;
+  int? coverKlepSelectedValue;
   bool? coverKlepIsEnabled;
-  int? alternatorSelectedIndex;
+  int? alternatorSelectedValue;
   bool? alternatorIsEnabled;
-  int? waterPumpSelectedIndex;
+  int? waterPumpSelectedValue;
   bool? waterPumpIsEnabled;
-  int? beltSelectedIndex;
+  int? beltSelectedValue;
   bool? beltIsEnabled;
-  int? oliTransmisiSelectedIndex;
+  int? oliTransmisiSelectedValue;
   bool? oliTransmisiIsEnabled;
-  int? cylinderBlockSelectedIndex;
+  int? cylinderBlockSelectedValue;
   bool? cylinderBlockIsEnabled;
-  int? bushingBesarSelectedIndex;
+  int? bushingBesarSelectedValue;
   bool? bushingBesarIsEnabled;
-  int? bushingKecilSelectedIndex;
+  int? bushingKecilSelectedValue;
   bool? bushingKecilIsEnabled;
-  int? tutupRadiatorSelectedIndex;
+  int? tutupRadiatorSelectedValue;
   bool? tutupRadiatorIsEnabled;
   List<String> mesinCatatanList;
 
   // New fields for Page Five Three
-  int? stirSelectedIndex;
+  int? stirSelectedValue;
   bool? stirIsEnabled;
-  int? remTonganSelectedIndex;
+  int? remTonganSelectedValue;
   bool? remTonganIsEnabled;
-  int? pedalSelectedIndex;
+  int? pedalSelectedValue;
   bool? pedalIsEnabled;
-  int? switchWiperSelectedIndex;
+  int? switchWiperSelectedValue;
   bool? switchWiperIsEnabled;
-  int? lampuHazardSelectedIndex;
+  int? lampuHazardSelectedValue;
   bool? lampuHazardIsEnabled;
-  int? panelDashboardSelectedIndex;
+  int? panelDashboardSelectedValue;
   bool? panelDashboardIsEnabled;
-  int? pembukaKapMesinSelectedIndex;
+  int? pembukaKapMesinSelectedValue;
   bool? pembukaKapMesinIsEnabled;
-  int? pembukaBagasiSelectedIndex;
+  int? pembukaBagasiSelectedValue;
   bool? pembukaBagasiIsEnabled;
-  int? jokDepanSelectedIndex;
+  int? jokDepanSelectedValue;
   bool? jokDepanIsEnabled;
-  int? aromaInteriorSelectedIndex;
+  int? aromaInteriorSelectedValue;
   bool? aromaInteriorIsEnabled;
-  int? handlePintuSelectedIndex;
+  int? handlePintuSelectedValue;
   bool? handlePintuIsEnabled;
-  int? consoleBoxSelectedIndex;
+  int? consoleBoxSelectedValue;
   bool? consoleBoxIsEnabled;
-  int? spionTengahSelectedIndex;
+  int? spionTengahSelectedValue;
   bool? spionTengahIsEnabled;
-  int? tuasPersnelingSelectedIndex;
+  int? tuasPersnelingSelectedValue;
   bool? tuasPersnelingIsEnabled;
-  int? jokBelakangSelectedIndex;
+  int? jokBelakangSelectedValue;
   bool? jokBelakangIsEnabled;
-  int? panelIndikatorSelectedIndex;
+  int? panelIndikatorSelectedValue;
   bool? panelIndikatorIsEnabled;
-  int? switchLampuSelectedIndex;
+  int? switchLampuSelectedValue;
   bool? switchLampuIsEnabled;
-  int? karpetDasarSelectedIndex;
+  int? karpetDasarSelectedValue;
   bool? karpetDasarIsEnabled;
-  int? klaksonSelectedIndex;
+  int? klaksonSelectedValue;
   bool? klaksonIsEnabled;
-  int? sunVisorSelectedIndex;
+  int? sunVisorSelectedValue;
   bool? sunVisorIsEnabled;
-  int? tuasTangkiBensinSelectedIndex;
+  int? tuasTangkiBensinSelectedValue;
   bool? tuasTangkiBensinIsEnabled;
-  int? sabukPengamanSelectedIndex;
+  int? sabukPengamanSelectedValue;
   bool? sabukPengamanIsEnabled;
-  int? trimInteriorSelectedIndex;
+  int? trimInteriorSelectedValue;
   bool? trimInteriorIsEnabled;
-  int? plafonSelectedIndex;
+  int? plafonSelectedValue;
   bool? plafonIsEnabled;
   List<String> interiorCatatanList;
 
   // New fields for Page Five Four
-  int? bumperDepanSelectedIndex;
+  int? bumperDepanSelectedValue;
   bool? bumperDepanIsEnabled;
-  int? kapMesinSelectedIndex;
+  int? kapMesinSelectedValue;
   bool? kapMesinIsEnabled;
-  int? lampuUtamaSelectedIndex;
+  int? lampuUtamaSelectedValue;
   bool? lampuUtamaIsEnabled;
-  int? panelAtapSelectedIndex;
+  int? panelAtapSelectedValue;
   bool? panelAtapIsEnabled;
-  int? grillSelectedIndex;
+  int? grillSelectedValue;
   bool? grillIsEnabled;
-  int? lampuFoglampSelectedIndex;
+  int? lampuFoglampSelectedValue;
   bool? lampuFoglampIsEnabled;
-  int? kacaBeningSelectedIndex;
+  int? kacaBeningSelectedValue;
   bool? kacaBeningIsEnabled;
-  int? wiperBelakangSelectedIndex;
+  int? wiperBelakangSelectedValue;
   bool? wiperBelakangIsEnabled;
-  int? bumperBelakangSelectedIndex;
+  int? bumperBelakangSelectedValue;
   bool? bumperBelakangIsEnabled;
-  int? lampuBelakangSelectedIndex;
+  int? lampuBelakangSelectedValue;
   bool? lampuBelakangIsEnabled;
-  int? trunklidSelectedIndex;
+  int? trunklidSelectedValue;
   bool? trunklidIsEnabled;
-  int? kacaDepanSelectedIndex;
+  int? kacaDepanSelectedValue;
   bool? kacaDepanIsEnabled;
-  int? fenderKananSelectedIndex;
+  int? fenderKananSelectedValue;
   bool? fenderKananIsEnabled;
-  int? quarterPanelKananSelectedIndex;
+  int? quarterPanelKananSelectedValue;
   bool? quarterPanelKananIsEnabled;
-  int? pintuBelakangKananSelectedIndex;
+  int? pintuBelakangKananSelectedValue;
   bool? pintuBelakangKananIsEnabled;
-  int? spionKananSelectedIndex;
+  int? spionKananSelectedValue;
   bool? spionKananIsEnabled;
-  int? lisplangKananSelectedIndex;
+  int? lisplangKananSelectedValue;
   bool? lisplangKananIsEnabled;
-  int? sideSkirtKananSelectedIndex;
+  int? sideSkirtKananSelectedValue;
   bool? sideSkirtKananIsEnabled;
-  int? daunWiperSelectedIndex;
+  int? daunWiperSelectedValue;
   bool? daunWiperIsEnabled;
-  int? pintuBelakangSelectedIndex;
+  int? pintuBelakangSelectedValue;
   bool? pintuBelakangIsEnabled;
-  int? fenderKiriSelectedIndex;
+  int? fenderKiriSelectedValue;
   bool? fenderKiriIsEnabled;
-  int? quarterPanelKiriSelectedIndex;
+  int? quarterPanelKiriSelectedValue;
   bool? quarterPanelKiriIsEnabled;
-  int? pintuDepanSelectedIndex;
+  int? pintuDepanSelectedValue;
   bool? pintuDepanIsEnabled;
-  int? kacaJendelaKananSelectedIndex;
+  int? kacaJendelaKananSelectedValue;
   bool? kacaJendelaKananIsEnabled;
-  int? pintuBelakangKiriSelectedIndex;
+  int? pintuBelakangKiriSelectedValue;
   bool? pintuBelakangKiriIsEnabled;
-  int? spionKiriSelectedIndex;
+  int? spionKiriSelectedValue;
   bool? spionKiriIsEnabled;
-  int? pintuDepanKiriSelectedIndex;
+  int? pintuDepanKiriSelectedValue;
   bool? pintuDepanKiriIsEnabled;
-  int? kacaJendelaKiriSelectedIndex;
+  int? kacaJendelaKiriSelectedValue;
   bool? kacaJendelaKiriIsEnabled;
-  int? lisplangKiriSelectedIndex;
+  int? lisplangKiriSelectedValue;
   bool? lisplangKiriIsEnabled;
-  int? sideSkirtKiriSelectedIndex;
+  int? sideSkirtKiriSelectedValue;
   bool? sideSkirtKiriIsEnabled;
   List<String> eksteriorCatatanList;
 
@@ -272,189 +272,189 @@ class FormData {
     this.merk,
     this.tipeVelg,
     this.ketebalan,
-    this.interiorSelectedIndex,
-    this.eksteriorSelectedIndex,
-    this.kakiKakiSelectedIndex,
-    this.mesinSelectedIndex,
-    this.penilaianKeseluruhanSelectedIndex,
+    this.interiorSelectedValue,
+    this.eksteriorSelectedValue,
+    this.kakiKakiSelectedValue,
+    this.mesinSelectedValue,
+    this.penilaianKeseluruhanSelectedValue,
     List<String>? keteranganInterior,
     List<String>? keteranganEksterior,
     List<String>? keteranganKakiKaki,
     List<String>? keteranganMesin,
     List<String>? deskripsiKeseluruhan,
     List<Map<String, String>>? repairEstimations,
-    this.airbagSelectedIndex,
+    this.airbagSelectedValue,
     this.airbagIsEnabled,
-    this.sistemAudioSelectedIndex,
+    this.sistemAudioSelectedValue,
     this.sistemAudioIsEnabled,
-    this.powerWindowSelectedIndex,
+    this.powerWindowSelectedValue,
     this.powerWindowIsEnabled,
-    this.sistemAcSelectedIndex,
+    this.sistemAcSelectedValue,
     this.sistemAcIsEnabled,
-    this.getaranMesinSelectedIndex,
+    this.getaranMesinSelectedValue,
     this.fiturCatatanList = const [],
     this.getaranMesinIsEnabled,
-    this.suaraMesinSelectedIndex,
+    this.suaraMesinSelectedValue,
     this.suaraMesinIsEnabled,
-    this.transmisiSelectedIndex,
+    this.transmisiSelectedValue,
     this.transmisiIsEnabled,
-    this.pompaPowerSteeringSelectedIndex,
+    this.pompaPowerSteeringSelectedValue,
     this.pompaPowerSteeringIsEnabled,
-    this.coverTimingChainSelectedIndex,
+    this.coverTimingChainSelectedValue,
     this.coverTimingChainIsEnabled,
-    this.oliPowerSteeringSelectedIndex,
+    this.oliPowerSteeringSelectedValue,
     this.oliPowerSteeringIsEnabled,
-    this.accuSelectedIndex,
+    this.accuSelectedValue,
     this.accuIsEnabled,
-    this.kompressorAcSelectedIndex,
+    this.kompressorAcSelectedValue,
     this.kompressorAcIsEnabled,
-    this.fanSelectedIndex,
+    this.fanSelectedValue,
     this.fanIsEnabled,
-    this.selangSelectedIndex,
+    this.selangSelectedValue,
     this.selangIsEnabled,
-    this.karterOliSelectedIndex,
+    this.karterOliSelectedValue,
     this.karterOliIsEnabled,
-    this.oilRemSelectedIndex,
+    this.oilRemSelectedValue,
     this.oilRemIsEnabled,
-    this.kabelSelectedIndex,
+    this.kabelSelectedValue,
     this.kabelIsEnabled,
-    this.kondensorSelectedIndex,
+    this.kondensorSelectedValue,
     this.kondensorIsEnabled,
-    this.radiatorSelectedIndex,
+    this.radiatorSelectedValue,
     this.radiatorIsEnabled,
-    this.cylinderHeadSelectedIndex,
+    this.cylinderHeadSelectedValue,
     this.cylinderHeadIsEnabled,
-    this.oliMesinSelectedIndex,
+    this.oliMesinSelectedValue,
     this.oliMesinIsEnabled,
-    this.airRadiatorSelectedIndex,
+    this.airRadiatorSelectedValue,
     this.airRadiatorIsEnabled,
-    this.coverKlepSelectedIndex,
+    this.coverKlepSelectedValue,
     this.coverKlepIsEnabled,
-    this.alternatorSelectedIndex,
+    this.alternatorSelectedValue,
     this.alternatorIsEnabled,
-    this.waterPumpSelectedIndex,
+    this.waterPumpSelectedValue,
     this.waterPumpIsEnabled,
-    this.beltSelectedIndex,
+    this.beltSelectedValue,
     this.beltIsEnabled,
-    this.oliTransmisiSelectedIndex,
+    this.oliTransmisiSelectedValue,
     this.oliTransmisiIsEnabled,
-    this.cylinderBlockSelectedIndex,
+    this.cylinderBlockSelectedValue,
     this.cylinderBlockIsEnabled,
-    this.bushingBesarSelectedIndex,
+    this.bushingBesarSelectedValue,
     this.bushingBesarIsEnabled,
-    this.bushingKecilSelectedIndex,
+    this.bushingKecilSelectedValue,
     this.bushingKecilIsEnabled,
-    this.tutupRadiatorSelectedIndex,
+    this.tutupRadiatorSelectedValue,
     this.tutupRadiatorIsEnabled,
     List<String>? mesinCatatanList,
-    this.stirSelectedIndex,
+    this.stirSelectedValue,
     this.stirIsEnabled,
-    this.remTonganSelectedIndex,
+    this.remTonganSelectedValue,
     this.remTonganIsEnabled,
-    this.pedalSelectedIndex,
+    this.pedalSelectedValue,
     this.pedalIsEnabled,
-    this.switchWiperSelectedIndex,
+    this.switchWiperSelectedValue,
     this.switchWiperIsEnabled,
-    this.lampuHazardSelectedIndex,
+    this.lampuHazardSelectedValue,
     this.lampuHazardIsEnabled,
-    this.panelDashboardSelectedIndex,
+    this.panelDashboardSelectedValue,
     this.panelDashboardIsEnabled,
-    this.pembukaKapMesinSelectedIndex,
+    this.pembukaKapMesinSelectedValue,
     this.pembukaKapMesinIsEnabled,
-    this.pembukaBagasiSelectedIndex,
+    this.pembukaBagasiSelectedValue,
     this.pembukaBagasiIsEnabled,
-    this.jokDepanSelectedIndex,
+    this.jokDepanSelectedValue,
     this.jokDepanIsEnabled,
-    this.aromaInteriorSelectedIndex,
+    this.aromaInteriorSelectedValue,
     this.aromaInteriorIsEnabled,
-    this.handlePintuSelectedIndex,
+    this.handlePintuSelectedValue,
     this.handlePintuIsEnabled,
-    this.consoleBoxSelectedIndex,
+    this.consoleBoxSelectedValue,
     this.consoleBoxIsEnabled,
-    this.spionTengahSelectedIndex,
+    this.spionTengahSelectedValue,
     this.spionTengahIsEnabled,
-    this.tuasPersnelingSelectedIndex,
+    this.tuasPersnelingSelectedValue,
     this.tuasPersnelingIsEnabled,
-    this.jokBelakangSelectedIndex,
+    this.jokBelakangSelectedValue,
     this.jokBelakangIsEnabled,
-    this.panelIndikatorSelectedIndex,
+    this.panelIndikatorSelectedValue,
     this.panelIndikatorIsEnabled,
-    this.switchLampuSelectedIndex,
+    this.switchLampuSelectedValue,
     this.switchLampuIsEnabled,
-    this.karpetDasarSelectedIndex,
+    this.karpetDasarSelectedValue,
     this.karpetDasarIsEnabled,
-    this.klaksonSelectedIndex,
+    this.klaksonSelectedValue,
     this.klaksonIsEnabled,
-    this.sunVisorSelectedIndex,
+    this.sunVisorSelectedValue,
     this.sunVisorIsEnabled,
-    this.tuasTangkiBensinSelectedIndex,
+    this.tuasTangkiBensinSelectedValue,
     this.tuasTangkiBensinIsEnabled,
-    this.sabukPengamanSelectedIndex,
+    this.sabukPengamanSelectedValue,
     this.sabukPengamanIsEnabled,
-    this.trimInteriorSelectedIndex,
+    this.trimInteriorSelectedValue,
     this.trimInteriorIsEnabled,
-    this.plafonSelectedIndex,
+    this.plafonSelectedValue,
     this.plafonIsEnabled,
     List<String>? interiorCatatanList,
-    this.bumperDepanSelectedIndex,
+    this.bumperDepanSelectedValue,
     this.bumperDepanIsEnabled,
-    this.kapMesinSelectedIndex,
+    this.kapMesinSelectedValue,
     this.kapMesinIsEnabled,
-    this.lampuUtamaSelectedIndex,
+    this.lampuUtamaSelectedValue,
     this.lampuUtamaIsEnabled,
-    this.panelAtapSelectedIndex,
+    this.panelAtapSelectedValue,
     this.panelAtapIsEnabled,
-    this.grillSelectedIndex,
+    this.grillSelectedValue,
     this.grillIsEnabled,
-    this.lampuFoglampSelectedIndex,
+    this.lampuFoglampSelectedValue,
     this.lampuFoglampIsEnabled,
-    this.kacaBeningSelectedIndex,
+    this.kacaBeningSelectedValue,
     this.kacaBeningIsEnabled,
-    this.wiperBelakangSelectedIndex,
+    this.wiperBelakangSelectedValue,
     this.wiperBelakangIsEnabled,
-    this.bumperBelakangSelectedIndex,
+    this.bumperBelakangSelectedValue,
     this.bumperBelakangIsEnabled,
-    this.lampuBelakangSelectedIndex,
+    this.lampuBelakangSelectedValue,
     this.lampuBelakangIsEnabled,
-    this.trunklidSelectedIndex,
+    this.trunklidSelectedValue,
     this.trunklidIsEnabled,
-    this.kacaDepanSelectedIndex,
+    this.kacaDepanSelectedValue,
     this.kacaDepanIsEnabled,
-    this.fenderKananSelectedIndex,
+    this.fenderKananSelectedValue,
     this.fenderKananIsEnabled,
-    this.quarterPanelKananSelectedIndex,
+    this.quarterPanelKananSelectedValue,
     this.quarterPanelKananIsEnabled,
-    this.pintuBelakangKananSelectedIndex,
+    this.pintuBelakangKananSelectedValue,
     this.pintuBelakangKananIsEnabled,
-    this.spionKananSelectedIndex,
+    this.spionKananSelectedValue,
     this.spionKananIsEnabled,
-    this.lisplangKananSelectedIndex,
+    this.lisplangKananSelectedValue,
     this.lisplangKananIsEnabled,
-    this.sideSkirtKananSelectedIndex,
+    this.sideSkirtKananSelectedValue,
     this.sideSkirtKananIsEnabled,
-    this.daunWiperSelectedIndex,
+    this.daunWiperSelectedValue,
     this.daunWiperIsEnabled,
-    this.pintuBelakangSelectedIndex,
+    this.pintuBelakangSelectedValue,
     this.pintuBelakangIsEnabled,
-    this.fenderKiriSelectedIndex,
+    this.fenderKiriSelectedValue,
     this.fenderKiriIsEnabled,
-    this.quarterPanelKiriSelectedIndex,
+    this.quarterPanelKiriSelectedValue,
     this.quarterPanelKiriIsEnabled,
-    this.pintuDepanSelectedIndex,
+    this.pintuDepanSelectedValue,
     this.pintuDepanIsEnabled,
-    this.kacaJendelaKananSelectedIndex,
+    this.kacaJendelaKananSelectedValue,
     this.kacaJendelaKananIsEnabled,
-    this.pintuBelakangKiriSelectedIndex,
+    this.pintuBelakangKiriSelectedValue,
     this.pintuBelakangKiriIsEnabled,
-    this.spionKiriSelectedIndex,
+    this.spionKiriSelectedValue,
     this.spionKiriIsEnabled,
-    this.pintuDepanKiriSelectedIndex,
+    this.pintuDepanKiriSelectedValue,
     this.pintuDepanKiriIsEnabled,
-    this.kacaJendelaKiriSelectedIndex,
+    this.kacaJendelaKiriSelectedValue,
     this.kacaJendelaKiriIsEnabled,
-    this.lisplangKiriSelectedIndex,
+    this.lisplangKiriSelectedValue,
     this.lisplangKiriIsEnabled,
-    this.sideSkirtKiriSelectedIndex,
+    this.sideSkirtKiriSelectedValue,
     this.sideSkirtKiriIsEnabled,
     List<String>? eksteriorCatatanList,
 
