@@ -19,17 +19,6 @@ class PageTwo extends ConsumerStatefulWidget {
 
 class _PageTwoState extends ConsumerState<PageTwo> {
   late FocusScopeNode _focusScopeNode;
-  late FocusNode _merekKendaraanFocusNode;
-  late FocusNode _tipeKendaraanFocusNode;
-  late FocusNode _tahunFocusNode;
-  late FocusNode _transmisiFocusNode;
-  late FocusNode _warnaKendaraanFocusNode;
-  late FocusNode _odometerFocusNode;
-  late FocusNode _kepemilikanFocusNode;
-  late FocusNode _platNomorFocusNode;
-  late FocusNode _pajak1TahunFocusNode;
-  late FocusNode _pajak5TahunFocusNode;
-  late FocusNode _biayaPajakFocusNode;
 
   final _formKey = GlobalKey<FormState>(); // GlobalKey for the form
   bool _formSubmitted = false; // Track if the form has been submitted
@@ -38,33 +27,11 @@ class _PageTwoState extends ConsumerState<PageTwo> {
   void initState() {
     super.initState();
     _focusScopeNode = FocusScopeNode();
-    _merekKendaraanFocusNode = FocusNode();
-    _tipeKendaraanFocusNode = FocusNode();
-    _tahunFocusNode = FocusNode();
-    _transmisiFocusNode = FocusNode();
-    _warnaKendaraanFocusNode = FocusNode();
-    _odometerFocusNode = FocusNode();
-    _kepemilikanFocusNode = FocusNode();
-    _platNomorFocusNode = FocusNode();
-    _pajak1TahunFocusNode = FocusNode();
-    _pajak5TahunFocusNode = FocusNode();
-    _biayaPajakFocusNode = FocusNode();
   }
 
   @override
   void dispose() {
     _focusScopeNode.dispose();
-    _merekKendaraanFocusNode.dispose();
-    _tipeKendaraanFocusNode.dispose();
-    _tahunFocusNode.dispose();
-    _transmisiFocusNode.dispose();
-    _warnaKendaraanFocusNode.dispose();
-    _odometerFocusNode.dispose();
-    _kepemilikanFocusNode.dispose();
-    _platNomorFocusNode.dispose();
-    _pajak1TahunFocusNode.dispose();
-    _pajak5TahunFocusNode.dispose();
-    _biayaPajakFocusNode.dispose();
     super.dispose();
   }
 
@@ -135,7 +102,6 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         LabeledTextField(
                           label: 'Merek Kendaraan',
                           hintText: 'Masukkan merek kendaraan',
-                          focusNode: _merekKendaraanFocusNode,
                           initialValue:
                               formData
                                   .merekKendaraan, // Initialize with data from provider
@@ -157,7 +123,6 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         LabeledTextField(
                           label: 'Tipe Kendaraan',
                           hintText: 'Masukkan tipe kendaraan',
-                          focusNode: _tipeKendaraanFocusNode,
                           initialValue:
                               formData
                                   .tipeKendaraan, // Initialize with data from provider
@@ -183,7 +148,6 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                               TextInputType.number, // Use number keyboard
                           useThousandsSeparator:
                               false, // Disable thousands separator for Tahun
-                          focusNode: _tahunFocusNode,
                           initialValue:
                               formData
                                   .tahun, // Initialize with data from provider
@@ -205,7 +169,6 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         LabeledTextField(
                           label: 'Transmisi',
                           hintText: 'Contoh: Otomatis / Manual',
-                          focusNode: _transmisiFocusNode,
                           initialValue:
                               formData
                                   .transmisi, // Initialize with data from provider
@@ -226,7 +189,6 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         LabeledTextField(
                           label: 'Warna Kendaraan',
                           hintText: 'Masukkan warna kendaraan',
-                          focusNode: _warnaKendaraanFocusNode,
                           initialValue:
                               formData
                                   .warnaKendaraan, // Initialize with data from provider
@@ -250,7 +212,6 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                           keyboardType:
                               TextInputType.number, // Use number keyboard
                           suffixText: 'km', // Add suffix text for km
-                          focusNode: _odometerFocusNode,
                           initialValue:
                               formData
                                   .odometer, // Initialize with data from provider
@@ -271,7 +232,6 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         LabeledTextField(
                           label: 'Kepemilikan',
                           hintText: 'Contoh: Pribadi / Perusahaan',
-                          focusNode: _kepemilikanFocusNode,
                           initialValue:
                               formData
                                   .kepemilikan, // Initialize with data from provider
@@ -292,7 +252,6 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         LabeledTextField(
                           label: 'Plat Nomor',
                           hintText: 'Masukkan plat nomor',
-                          focusNode: _platNomorFocusNode,
                           initialValue:
                               formData
                                   .platNomor, // Initialize with data from provider
@@ -321,7 +280,6 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                               date,
                             ); // Update data in provider
                           },
-                          focusNode: _pajak1TahunFocusNode,
                           formSubmitted:
                               _formSubmitted, // Pass the formSubmitted flag
                           lastDate: DateTime.now().add(
@@ -346,7 +304,6 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                               date,
                             ); // Update data in provider
                           },
-                          focusNode: _pajak5TahunFocusNode,
                           formSubmitted:
                               _formSubmitted, // Pass the formSubmitted flag
                           lastDate: DateTime.now().add(
@@ -366,7 +323,6 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                           suffixText: 'Rupiah', // Add prefix text for currency
                           keyboardType:
                               TextInputType.number, // Use number keyboard
-                          focusNode: _biayaPajakFocusNode,
                           initialValue:
                               formData
                                   .biayaPajak, // Initialize with data from provider

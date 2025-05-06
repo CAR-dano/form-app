@@ -20,10 +20,6 @@ class PageOne extends ConsumerStatefulWidget {
 
 class _PageOneState extends ConsumerState<PageOne> {
   late FocusScopeNode _focusScopeNode;
-  late FocusNode _namaInspektorFocusNode;
-  late FocusNode _namaCustomerFocusNode;
-  late FocusNode _cabangInspeksiFocusNode;
-  late FocusNode _tanggalInspeksiFocusNode;
 
   final _formKey = GlobalKey<FormState>(); // GlobalKey for the form
   bool _formSubmitted = false; // Track if the form has been submitted
@@ -32,19 +28,11 @@ class _PageOneState extends ConsumerState<PageOne> {
   void initState() {
     super.initState();
     _focusScopeNode = FocusScopeNode();
-    _namaInspektorFocusNode = FocusNode();
-    _namaCustomerFocusNode = FocusNode();
-    _cabangInspeksiFocusNode = FocusNode();
-    _tanggalInspeksiFocusNode = FocusNode();
   }
 
   @override
   void dispose() {
     _focusScopeNode.dispose();
-    _namaInspektorFocusNode.dispose();
-    _namaCustomerFocusNode.dispose();
-    _cabangInspeksiFocusNode.dispose();
-    _tanggalInspeksiFocusNode.dispose();
     super.dispose();
   }
 
@@ -112,7 +100,6 @@ class _PageOneState extends ConsumerState<PageOne> {
                         LabeledTextField(
                           label: 'Nama Inspektor',
                           hintText: 'Masukkan nama inspektor',
-                          focusNode: _namaInspektorFocusNode,
                           initialValue:
                               formData
                                   .namaInspektor, // Initialize with data from provider
@@ -135,7 +122,6 @@ class _PageOneState extends ConsumerState<PageOne> {
                         LabeledTextField(
                           label: 'Nama Customer',
                           hintText: 'Masukkan nama customer',
-                          focusNode: _namaCustomerFocusNode,
                           initialValue:
                               formData
                                   .namaCustomer, // Initialize with data from provider
@@ -158,7 +144,6 @@ class _PageOneState extends ConsumerState<PageOne> {
                         LabeledTextField(
                           label: 'Cabang Inspeksi',
                           hintText: 'Contoh: Yogyakarta / Semarang',
-                          focusNode: _cabangInspeksiFocusNode,
                           initialValue:
                               formData
                                   .cabangInspeksi, // Initialize with data from provider
@@ -189,7 +174,6 @@ class _PageOneState extends ConsumerState<PageOne> {
                               date,
                             ); // Update data in provider
                           },
-                          focusNode: _tanggalInspeksiFocusNode,
                           validator: (date) {
                             if (_formSubmitted && date == null) {
                               return 'Tanggal Inspeksi belum terisi'; // Validation message
