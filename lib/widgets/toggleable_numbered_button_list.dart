@@ -5,7 +5,7 @@ import 'package:form_app/statics/app_styles.dart';
 class ToggleableNumberedButtonList extends StatefulWidget {
   final String label;
   final int count;
-  final int selectedIndex; // Represents 1-based number (1-10) or <= 0 if none/disabled
+  final int selectedValue; // Represents 1-based number (1-10) or <= 0 if none/disabled
   final ValueChanged<int> onItemSelected; // Passes 1-based number or <= 0
   final bool initialEnabled;
   final ValueChanged<bool> onEnabledChanged;
@@ -15,7 +15,7 @@ class ToggleableNumberedButtonList extends StatefulWidget {
     super.key,
     required this.label,
     required this.count,
-    required this.selectedIndex,
+    required this.selectedValue,
     required this.onItemSelected,
     this.initialEnabled = true,
     required this.onEnabledChanged,
@@ -54,8 +54,8 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
     final Color effectiveBorderColor;
     if (!_isEnabled) {
       effectiveBorderColor = Colors.grey.shade300;
-    } else if (widget.selectedIndex > 0 && numberedButtonColors.containsKey(widget.selectedIndex)) {
-      effectiveBorderColor = numberedButtonColors[widget.selectedIndex]!;
+    } else if (widget.selectedValue > 0 && numberedButtonColors.containsKey(widget.selectedValue)) {
+      effectiveBorderColor = numberedButtonColors[widget.selectedValue]!;
     } else {
       effectiveBorderColor = toggleOptionSelectedLengkapColor;
     }
@@ -121,7 +121,7 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
            mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(widget.count, (index) {
             final itemNumber = index + 1;
-            final isSelected = _isEnabled && (itemNumber == widget.selectedIndex);
+            final isSelected = _isEnabled && (itemNumber == widget.selectedValue);
 
             final Color buttonBackgroundColor;
              if (isSelected) {
@@ -135,7 +135,7 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
             return Expanded(
               child: GestureDetector(
                 onTap: _isEnabled
-                  ? () => widget.onItemSelected(itemNumber == widget.selectedIndex ? -1 : itemNumber)
+                  ? () => widget.onItemSelected(itemNumber == widget.selectedValue ? -1 : itemNumber)
                   : null,
                 // --- Container INSIDE Expanded with fixed size ---
                 child: Container(

@@ -72,7 +72,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Getaran Mesin',
                           count: 10,
-                          selectedIndex: formData.getaranMesinSelectedIndex ?? -1,
+                          selectedValue: formData.getaranMesinSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateGetaranMesinSelectedIndex(index);
                           },
@@ -88,7 +88,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Suara Mesin',
                           count: 10,
-                          selectedIndex: formData.suaraMesinSelectedIndex ?? -1,
+                          selectedValue: formData.suaraMesinSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateSuaraMesinSelectedIndex(index);
                           },
@@ -104,7 +104,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Transmisi',
                           count: 10,
-                          selectedIndex: formData.transmisiSelectedIndex ?? -1,
+                          selectedValue: formData.transmisiSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateTransmisiSelectedIndex(index);
                           },
@@ -120,7 +120,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Pompa Power Steering',
                           count: 10,
-                          selectedIndex: formData.pompaPowerSteeringSelectedIndex ?? -1,
+                          selectedValue: formData.pompaPowerSteeringSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updatePompaPowerSteeringSelectedIndex(index);
                           },
@@ -136,7 +136,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Cover Timing Chain',
                           count: 10,
-                          selectedIndex: formData.coverTimingChainSelectedIndex ?? -1,
+                          selectedValue: formData.coverTimingChainSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateCoverTimingChainSelectedIndex(index);
                           },
@@ -152,7 +152,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Oli Power Steering',
                           count: 10,
-                          selectedIndex: formData.oliPowerSteeringSelectedIndex ?? -1,
+                          selectedValue: formData.oliPowerSteeringSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateOliPowerSteeringSelectedIndex(index);
                           },
@@ -168,7 +168,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Accu',
                           count: 10,
-                          selectedIndex: formData.accuSelectedIndex ?? -1,
+                          selectedValue: formData.accuSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateAccuSelectedIndex(index);
                           },
@@ -184,7 +184,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Kompressor AC',
                           count: 10,
-                          selectedIndex: formData.kompressorAcSelectedIndex ?? -1,
+                          selectedValue: formData.kompressorAcSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateKompressorAcSelectedIndex(index);
                           },
@@ -200,7 +200,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Fan',
                           count: 10,
-                          selectedIndex: formData.fanSelectedIndex ?? -1,
+                          selectedValue: formData.fanSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateFanSelectedIndex(index);
                           },
@@ -216,7 +216,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Selang',
                           count: 10,
-                          selectedIndex: formData.selangSelectedIndex ?? -1,
+                          selectedValue: formData.selangSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateSelangSelectedIndex(index);
                           },
@@ -232,7 +232,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Karter Oli',
                           count: 10,
-                          selectedIndex: formData.karterOliSelectedIndex ?? -1,
+                          selectedValue: formData.karterOliSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateKarterOliSelectedIndex(index);
                           },
@@ -248,7 +248,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Oil Rem',
                           count: 10,
-                          selectedIndex: formData.oilRemSelectedIndex ?? -1,
+                          selectedValue: formData.oilRemSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateOilRemSelectedIndex(index);
                           },
@@ -264,7 +264,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Kabel',
                           count: 10,
-                          selectedIndex: formData.kabelSelectedIndex ?? -1,
+                          selectedValue: formData.kabelSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateKabelSelectedIndex(index);
                           },
@@ -280,7 +280,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Kondensor',
                           count: 10,
-                          selectedIndex: formData.kondensorSelectedIndex ?? -1,
+                          selectedValue: formData.kondensorSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateKondensorSelectedIndex(index);
                           },
@@ -296,7 +296,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Radiator',
                           count: 10,
-                          selectedIndex: formData.radiatorSelectedIndex ?? -1,
+                          selectedValue: formData.radiatorSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateRadiatorSelectedIndex(index);
                           },
@@ -312,7 +312,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Cylinder Head',
                           count: 10,
-                          selectedIndex: formData.cylinderHeadSelectedIndex ?? -1,
+                          selectedValue: formData.cylinderHeadSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateCylinderHeadSelectedIndex(index);
                           },
@@ -328,7 +328,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Oli Mesin',
                           count: 10,
-                          selectedIndex: formData.oliMesinSelectedIndex ?? -1,
+                          selectedValue: formData.oliMesinSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateOliMesinSelectedIndex(index);
                           },
@@ -344,7 +344,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Air Radiator',
                           count: 10,
-                          selectedIndex: formData.airRadiatorSelectedIndex ?? -1,
+                          selectedValue: formData.airRadiatorSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateAirRadiatorSelectedIndex(index);
                           },
@@ -360,7 +360,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Cover Klep',
                           count: 10,
-                          selectedIndex: formData.coverKlepSelectedIndex ?? -1,
+                          selectedValue: formData.coverKlepSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateCoverKlepSelectedIndex(index);
                           },
@@ -376,7 +376,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Alternator',
                           count: 10,
-                          selectedIndex: formData.alternatorSelectedIndex ?? -1,
+                          selectedValue: formData.alternatorSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateAlternatorSelectedIndex(index);
                           },
@@ -392,7 +392,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Water Pump',
                           count: 10,
-                          selectedIndex: formData.waterPumpSelectedIndex ?? -1,
+                          selectedValue: formData.waterPumpSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateWaterPumpSelectedIndex(index);
                           },
@@ -408,7 +408,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Belt',
                           count: 10,
-                          selectedIndex: formData.beltSelectedIndex ?? -1,
+                          selectedValue: formData.beltSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateBeltSelectedIndex(index);
                           },
@@ -424,7 +424,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Oli Transmisi',
                           count: 10,
-                          selectedIndex: formData.oliTransmisiSelectedIndex ?? -1,
+                          selectedValue: formData.oliTransmisiSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateOliTransmisiSelectedIndex(index);
                           },
@@ -440,7 +440,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Cylinder Block',
                           count: 10,
-                          selectedIndex: formData.cylinderBlockSelectedIndex ?? -1,
+                          selectedValue: formData.cylinderBlockSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateCylinderBlockSelectedIndex(index);
                           },
@@ -456,7 +456,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Bushing Besar',
                           count: 10,
-                          selectedIndex: formData.bushingBesarSelectedIndex ?? -1,
+                          selectedValue: formData.bushingBesarSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateBushingBesarSelectedIndex(index);
                           },
@@ -472,7 +472,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Bushing Kecil',
                           count: 10,
-                          selectedIndex: formData.bushingKecilSelectedIndex ?? -1,
+                          selectedValue: formData.bushingKecilSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateBushingKecilSelectedIndex(index);
                           },
@@ -488,7 +488,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                         ToggleableNumberedButtonList(
                           label: 'Tutup Radiator',
                           count: 10,
-                          selectedIndex: formData.tutupRadiatorSelectedIndex ?? -1,
+                          selectedValue: formData.tutupRadiatorSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateTutupRadiatorSelectedIndex(index);
                           },

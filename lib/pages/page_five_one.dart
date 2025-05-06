@@ -70,7 +70,7 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
                         ToggleableNumberedButtonList(
                           label: 'Airbag',
                           count: 10,
-                          selectedIndex: formData.airbagSelectedIndex ?? -1,
+                          selectedValue: formData.airbagSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateAirbagSelectedIndex(index);
                           },
@@ -86,7 +86,7 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
                         ToggleableNumberedButtonList(
                           label: 'Sistem Audio',
                           count: 10,
-                          selectedIndex: formData.sistemAudioSelectedIndex ?? -1,
+                          selectedValue: formData.sistemAudioSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateSistemAudioSelectedIndex(index);
                           },
@@ -102,7 +102,7 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
                         ToggleableNumberedButtonList(
                           label: 'Power Window',
                           count: 10,
-                          selectedIndex: formData.powerWindowSelectedIndex ?? -1,
+                          selectedValue: formData.powerWindowSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updatePowerWindowSelectedIndex(index);
                           },
@@ -118,7 +118,7 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
                         ToggleableNumberedButtonList(
                           label: 'Sistem AC',
                           count: 10,
-                          selectedIndex: formData.sistemAcSelectedIndex ?? -1,
+                          selectedValue: formData.sistemAcSelectedIndex ?? -1,
                           onItemSelected: (index) {
                             formNotifier.updateSistemAcSelectedIndex(index);
                           },
