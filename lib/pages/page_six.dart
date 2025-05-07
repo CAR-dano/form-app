@@ -44,7 +44,7 @@ class PageSix extends ConsumerWidget {
        // If imageFile is null, remove the ImageData with the corresponding label
       imageDataListNotifier.removeImageDataByLabel(label);
     }
-    print('Image picked for $label: ${imageFile?.path}');
+    //print('Image picked for $label: ${imageFile?.path}');
   }
 
   @override
@@ -73,15 +73,15 @@ class PageSix extends ConsumerWidget {
                         _handleImagePicked(label, imageFile, ref); // Pass ref
                       },
                     ),
-                  )).toList(),
+                  )),
               
                   const SizedBox(height: 32.0),
                   NavigationButtonRow(
                     onBackPressed: () => Navigator.pop(context),
                     onNextPressed: () {
                       // TODO: Pass the _pickedImages data to the next page or form data
-                      final imageDataList = ref.read(imageDataListProvider); // Access image data list
-                      print('Picked Images: $imageDataList');
+                      // Access image data list
+                      //print('Picked Images: $imageDataList');
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const PageSeven()),
