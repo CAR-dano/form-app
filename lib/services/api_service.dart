@@ -11,60 +11,62 @@ class ApiService {
       final response = await _dio.post(
         _baseUrl,
         data: {
-          "vehiclePlateNumber": "B 0 LEH",
-          "inspectionDate": "2025-04-05T14:30:00Z",
-          "overallRating": "8",
+          "vehiclePlateNumber": formData.platNomor,
+          "inspectionDate": formData.tanggalInspeksi?.toIso8601String(),
+          "overallRating": formData.penilaianKeseluruhanSelectedValue,
           "identityDetails": {
-            "namaInspektor": "Totok",
-            "namaCustomer": "Prabowo",
-            "cabangInspeksi": "Semarang",
+            "namaInspektor": formData.namaInspektor,
+            "namaCustomer": formData.namaCustomer,
+            "cabangInspeksi": formData.cabangInspeksi,
           },
           "vehicleData": {
-            "merekKendaraan": "Hyundai",
-            "tipeKendaraan": "Ioniq 5",
-            "tahun": 2023,
-            "transmisi": "Automatic",
-            "warnaKendaraan": "Silver",
-            "odometer": 15000,
-            "kepemilikan": "Tangan Pertama",
-            "platNomor": "B 1 JR",
-            "pajak1Tahun": "2025-10-15",
-            "pajak5Tahun": "2028-10-15",
-            "biayaPajak": 3500000,
+            "merekKendaraan": formData.merekKendaraan,
+            "tipeKendaraan": formData.tipeKendaraan,
+            "tahun": formData.tahun,
+            "transmisi": formData.transmisi,
+            "warnaKendaraan": formData.warnaKendaraan,
+            "odometer": formData.odometer,
+            "kepemilikan": formData.kepemilikan,
+            "platNomor": formData.platNomor,
+            "pajak1Tahun": formData.pajak1TahunDate?.toIso8601String(),
+            "pajak5Tahun": formData.pajak5TahunDate?.toIso8601String(),
+            "biayaPajak": formData.biayaPajak,
           },
           "equipmentChecklist": {
-            "bukuService": true,
-            "kunciSerep": false,
-            "bukuManual": true,
-            "banSerep": true,
-            "bpkb": true,
-            "dongkrak": true,
-            "toolkit": true,
-            "noRangka": true,
-            "noMesin": true,
+            "bukuService": formData.bukuService,
+            "kunciSerep": formData.kunciSerep,
+            "bukuManual": formData.bukuManual,
+            "banSerep": formData.banSerep,
+            "bpkb": formData.bpkb,
+            "dongkrak": formData.dongkrak,
+            "toolkit": formData.toolkit,
+            "noRangka":  formData.noRangka,
+            "noMesin": formData.noMesin,
           },
           "inspectionSummary": {
-            "interiorScore": 9,
-            "interiorNotes": "Bersih terawat",
-            "eksteriorScore": 8,
-            "eksteriorNotes": "Baret halus pintu kanan",
-            "kakiKakiScore": 10,
-            "kakiKakiNotes": "Aman",
-            "mesinScore": 9,
-            "mesinNotes": "Suara halus",
-            "penilaianKeseluruhanScore": 9,
-            "deskripsiKeseluruhan": ["Kondisi sangat baik", "Ada baret halus"],
-            "indikasiTabrakan": false,
-            "indikasiBanjir": false,
-            "indikasiOdometerReset": false,
-            "posisiBan": "Bridgestone",
-            "merkban": "Bridgestone",
-            "tipeVelg": "Original",
-            "ketebalanBan": "80%",
-            "estimasiPerbaikan": [
-              {"namaPart": "Tie Rod Kanan Kiri", "harga": 700000},
-              {"namaPart": "Spooring", "harga": 300000},
-            ],
+            "interiorScore": formData.interiorSelectedValue,
+            "interiorNotes": formData.keteranganInterior,
+            "eksteriorScore": formData.eksteriorSelectedValue,
+            "eksteriorNotes": formData.keteranganEksterior,
+            "kakiKakiScore": formData.kakiKakiSelectedValue,
+            "kakiKakiNotes": formData.keteranganKakiKaki,
+            "mesinScore": formData.mesinSelectedValue,
+            "mesinNotes": formData.keteranganMesin,
+            "penilaianKeseluruhanScore": formData.penilaianKeseluruhanSelectedValue,
+            "deskripsiKeseluruhan": formData.deskripsiKeseluruhan,
+            "indikasiTabrakan": formData.indikasiTabrakan,
+            "indikasiBanjir": formData.indikasiBanjir,
+            "indikasiOdometerReset": formData.indikasiOdometerReset,
+            "posisiBan": formData.posisiBan,
+            "merkban": formData.merk,
+            "tipeVelg": formData.tipeVelg,
+            "ketebalanBan": formData.ketebalan,
+            "estimasiPerbaikan": formData.repairEstimations.map((estimation) {
+              return {
+                "namaPart": estimation['repair'],
+                "harga": estimation['price'],
+              };
+            }).toList(),
           },
           "detailedAssessment": {
             "testDrive": {
@@ -230,14 +232,14 @@ class ApiService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        //print('Form data submitted successfully!');
+        print('Form data submitted successfully!');
         // TODO: Handle success (e.g., show a success message)
       } else {
-        //print('Failed to submit form data: ${response.statusCode}');
+        print('Failed to submit form data: ${response.statusCode}');
         // TODO: Handle errors (e.g., show an error message)
       }
     } catch (e) {
-      //print('Error submitting form data: $e');
+      print('Error submitting form data: $e');
       // TODO: Handle network errors or exceptions (e.g., show an error message)
     }
   }

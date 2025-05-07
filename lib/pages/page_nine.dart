@@ -21,7 +21,6 @@ class PageNine extends ConsumerStatefulWidget {
 
 class _PageNineState extends ConsumerState<PageNine> {
   bool _isChecked = false;
-  bool _isLoading = false;
 
   Future<void> _submitForm() async {
     if (!_isChecked) {
@@ -33,10 +32,6 @@ class _PageNineState extends ConsumerState<PageNine> {
       );
       return;
     }
-
-    setState(() {
-      _isLoading = true;
-    });
 
     try {
       final formData = ref.read(formProvider);
@@ -58,9 +53,7 @@ class _PageNineState extends ConsumerState<PageNine> {
         ),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      // Removed loading state reset
     }
   }
 
@@ -97,12 +90,9 @@ class _PageNineState extends ConsumerState<PageNine> {
                     onBackPressed: () => Navigator.pop(context),
                     isLastPage: true,
                     onNextPressed: _submitForm,
-                    isLoading: _isLoading, // Pass the loading state
+                    // Removed isLoading parameter
                   ),
-                  if (_isLoading) ...[
-                    const SizedBox(height: 16),
-                    const Center(child: CircularProgressIndicator()),
-                  ],
+                  // Removed loading indicator
                   const SizedBox(
                     height: 32.0,
                   ), // Optional spacing below the content
