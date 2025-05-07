@@ -86,15 +86,15 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                         ToggleableNumberedButtonList(
                           label: 'Rem Tangan',
                           count: 10,
-                          selectedValue: formData.remTonganSelectedValue ?? -1,
+                          selectedValue: formData.remTanganSelectedValue ?? -1,
                           onItemSelected: (value) {
-                            formNotifier.updateRemTonganSelectedValue(value);
+                            formNotifier.updateRemTanganSelectedValue(value);
                           },
-                          initialEnabled: formData.remTonganIsEnabled ?? true,
+                          initialEnabled: formData.remTanganIsEnabled ?? true,
                           onEnabledChanged: (enabled) {
-                            formNotifier.updateRemTonganIsEnabled(enabled);
+                            formNotifier.updateRemTanganIsEnabled(enabled);
                             if (!enabled) {
-                              formNotifier.updateRemTonganSelectedValue(-1);
+                              formNotifier.updateRemTanganSelectedValue(-1);
                             }
                           },
                         ),
