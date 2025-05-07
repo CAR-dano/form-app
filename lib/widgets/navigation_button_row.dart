@@ -7,6 +7,7 @@ class NavigationButtonRow extends StatelessWidget {
   final String nextButtonText;
   final bool isBackButtonEnabled;
   final bool isLastPage;
+  final bool isFormConfirmed;
   // Optional: Add isLoading state for the next button later if needed for submission
   final bool isLoading;
 
@@ -19,6 +20,7 @@ class NavigationButtonRow extends StatelessWidget {
     this.nextButtonText = 'Next', // Default text
     this.isBackButtonEnabled = true, // Default to enabled
     this.isLastPage = false, // Default to not the last page
+    this.isFormConfirmed = true, // Default to true
     this.isLoading = false,
   });
 
@@ -75,9 +77,9 @@ class NavigationButtonRow extends StatelessWidget {
             onPressed: isLoading ? null : onNextPressed, // Disable button when loading
             // Apply base style and override background/foreground explicitly for clarity
             style: baseButtonStyle.copyWith(
-               backgroundColor: WidgetStateProperty.all(isLastPage ? toggleOptionSelectedLengkapColor : buttonColor), // Blue if last page, else orange
+               backgroundColor: WidgetStateProperty.all(isLastPage && !isFormConfirmed ? const Color(0xffcacaca) : (isLastPage ? toggleOptionSelectedLengkapColor : buttonColor)), // Grey if last page and not confirmed, Blue if last page and confirmed, else orange
                foregroundColor: WidgetStateProperty.all(buttonTextColor), // Always white when enabled
-               shadowColor: WidgetStateProperty.all(isLastPage ? toggleOptionSelectedLengkapColor.withAlpha(102) : buttonColor.withAlpha(102)), // Adjust shadow color
+               shadowColor: WidgetStateProperty.all(isLastPage && !isFormConfirmed ? const Color(0xffcacaca).withAlpha(102) : (isLastPage ? toggleOptionSelectedLengkapColor.withAlpha(102) : buttonColor.withAlpha(102))), // Adjust shadow color
             ),
             child: isLoading
                 ? SizedBox(

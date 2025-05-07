@@ -90,6 +90,7 @@ class _PageNineState extends ConsumerState<PageNine> {
                     onBackPressed: () => Navigator.pop(context),
                     isLastPage: true,
                     onNextPressed: _submitForm,
+                    isFormConfirmed: _isChecked,
                     // Removed isLoading parameter
                   ),
                   // Removed loading indicator
