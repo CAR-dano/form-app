@@ -1,23 +1,38 @@
-name: Flutter Build
+name: Flutter Build and Release APK on Merge
 
 on:
-  push:
-    branches: [ main, master ] # or your main branch
   pull_request:
-    branches: [ main, master ]
+    types: [closed]
+    branches: [ main ]
 
 jobs:
-  build:
+  build_and_release:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # --- Get Semantic Version from pubspec.yaml ---
+      - name: Read pubspec.yaml semantic version
+        id: pubspec # Give step an ID
+        run: |
+          # Read the line starting with 'version:', extract the value, and remove everything from '+' onwards
+          VERSION_LINE=$(grep '^version:' pubspec.yaml)
+          SEMANTIC_VERSION=$(echo "$VERSION_LINE" | sed 's/version: //g' | sed 's/+\.*//g' | tr -d '[:space:]')
+          echo "semantic_version=$SEMANTIC_VERSION" >> $GITHUB_OUTPUT
+          echo "Full version line from pubspec: $VERSION_LINE" # For debugging
+          echo "Extracted semantic version: $SEMANTIC_VERSION" # For debugging
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.3' # or whatever version you're using
+          flutter-version: '3.29.3' # Your Flutter version
 
       - name: Install dependencies
         run: flutter pub get
@@ -28,12 +43,46 @@ jobs:
       - name: Run tests
         run: flutter test
 
+      # --- Build APK with Overridden Version ---
       - name: Build APK
-        run: flutter build apk --release
+        run: flutter build apk --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ github.run_number }}
 
-      # Optional: Upload the APK as an artifact
-      - name: Upload APK
+      # --- Release Steps (using the version info) ---
+      - name: Create Release Tag Name
+        id: create_tag
+        run: echo "tag_name=v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.create_tag.outputs.tag_name }}
+          release_name: "Release v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}"
+          body: |
+            Automated release triggered by merge of PR #${{ github.event.pull_request.number }}:
+            **Version:** v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}
+            **Title:** ${{ github.event.pull_request.title }}
+            **Author:** ${{ github.event.pull_request.user.login }}
+            **Link:** ${{ github.event.pull_request.html_url }}
+
+            ${{ github.event.pull_request.body }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release APK Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/flutter-apk/app-release.apk
+          asset_name: app-release-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}.apk
+          asset_content_type: application/vnd.android.package-archive
+
+      - name: Upload Build Artifact (Optional)
         uses: actions/upload-artifact@v4
         with:
-          name: release-apk
+          name: release-apk-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}
           path: build/app/outputs/flutter-apk/app-release.apk
