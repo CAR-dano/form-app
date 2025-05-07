@@ -23,7 +23,7 @@ class FormData {
   String? kunciSerep;
   String? bukuManual;
   String? banSerep;
-  String? bpkp;
+  String? bpkb;
   String? dongkrak;
   String? toolkit;
   String? noRangka;
@@ -333,7 +333,7 @@ class FormData {
     this.kunciSerep,
     this.bukuManual,
     this.banSerep,
-    this.bpkp,
+    this.bpkb,
     this.dongkrak,
     this.toolkit,
     this.noRangka,

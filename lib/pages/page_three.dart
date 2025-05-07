@@ -59,10 +59,10 @@ class PageThree extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16.0),
                 ToggleOption(
-                  label: 'BPKP',
+                  label: 'BPKB',
                   toggleValues: ['Lengkap', 'Tidak'],
-                  initialValue: formData.bpkp,
-                  onChanged: (value) => formNotifier.updateBpkp(value),
+                  initialValue: formData.bpkb,
+                  onChanged: (value) => formNotifier.updateBpkb(value),
                 ),
                 const SizedBox(height: 16.0),
                 ToggleOption(

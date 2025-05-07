@@ -81,8 +81,8 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(banSerep: value);
   }
 
-  void updateBpkp(String? value) {
-    state = state.copyWith(bpkp: value);
+  void updateBpkb(String? value) {
+    state = state.copyWith(bpkb: value);
   }
 
   void updateDongkrak(String? value) {
@@ -1177,7 +1177,7 @@ extension on FormData {
     String? kunciSerep,
     String? bukuManual,
     String? banSerep,
-    String? bpkp,
+    String? bpkb,
     String? dongkrak,
     String? toolkit,
     String? noRangka,
@@ -1462,7 +1462,7 @@ extension on FormData {
       kunciSerep: kunciSerep ?? this.kunciSerep,
       bukuManual: bukuManual ?? this.bukuManual,
       banSerep: banSerep ?? this.banSerep,
-      bpkp: bpkp ?? this.bpkp,
+      bpkb: bpkb ?? this.bpkb,
       dongkrak: dongkrak ?? this.dongkrak,
       toolkit: toolkit ?? this.toolkit,
       noRangka: noRangka ?? this.noRangka,
