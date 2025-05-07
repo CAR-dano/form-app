@@ -26,7 +26,7 @@ class PageSeven extends StatelessWidget {
                   const SizedBox(height: 8.0),
                   PageTitle(data: 'Page Seven Title'), // Placeholder Title
                   const SizedBox(height: 24.0),
-                  const Center(child: Text('Page Seven Content Goes Here')),
+                  const Center(child: Text('Masih On Progress')),
                   const SizedBox(height: 32.0),
                   NavigationButtonRow(
                     onBackPressed: () => Navigator.pop(context),

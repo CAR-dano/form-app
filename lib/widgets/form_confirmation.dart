@@ -28,42 +28,50 @@ class _CustomCheckboxTileState extends State<FormConfirmation> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 24,
-          height: 24,
-          alignment: Alignment.center,
-          child: SizedBox(
-            width: 18,
-            height: 18,
-            child: Checkbox(
-              value: _isChecked,
-              onChanged: (bool? newValue) {
-                setState(() {
-                  _isChecked = newValue ?? false;
-                });
-                widget.onChanged(_isChecked);
-              },
-              activeColor: toggleOptionSelectedLengkapColor,
-              materialTapTargetSize: MaterialTapTargetSize.padded, // Changed to padded
-              visualDensity: VisualDensity.compact,
-              side: BorderSide(
-                color: toggleOptionSelectedLengkapColor,
-                width: 2,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _isChecked = !_isChecked;
+        });
+        widget.onChanged(_isChecked);
+      },
+      child: Row(
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            alignment: Alignment.center,
+            child: SizedBox(
+              width: 18,
+              height: 18,
+              child: Checkbox(
+                value: _isChecked,
+                onChanged: (bool? newValue) {
+                  setState(() {
+                    _isChecked = newValue ?? false;
+                  });
+                  widget.onChanged(_isChecked);
+                },
+                activeColor: toggleOptionSelectedLengkapColor,
+                materialTapTargetSize: MaterialTapTargetSize.padded, // Changed to padded
+                visualDensity: VisualDensity.compact,
+                side: BorderSide(
+                  color: toggleOptionSelectedLengkapColor,
+                  width: 2,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 4),
-        Text(
-          widget.label,
-          style: labelStyle.copyWith(fontWeight: FontWeight.w500),
-        ),
-      ],
+          const SizedBox(width: 4),
+          Text(
+            widget.label,
+            style: labelStyle.copyWith(fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
     );
   }
 }

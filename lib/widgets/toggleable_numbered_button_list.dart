@@ -70,33 +70,42 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
         // --- Row for Checkbox and Label ---
         Row(
           children: [
-            Container(
-              width: 24,
-              height: 24,
-              alignment: Alignment.center,
-              child: SizedBox(
-                width: 18,
-                height: 18,
-                child: Checkbox(
-                  value: _isEnabled,
-                  onChanged: _handleCheckboxChange,
-                  activeColor: toggleOptionSelectedLengkapColor,
-                  materialTapTargetSize: MaterialTapTargetSize.padded, // Changed to padded
-                  visualDensity: VisualDensity.compact,
-                  side: BorderSide(
-                    color: toggleOptionSelectedLengkapColor,
-                    width: 2,
+            GestureDetector(
+              onTap: () {
+                _handleCheckboxChange(!_isEnabled);
+              },
+              child: Row( // Wrap checkbox, sizedbox, and text in a new Row for GestureDetector
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: Checkbox(
+                        value: _isEnabled,
+                        onChanged: _handleCheckboxChange,
+                        activeColor: toggleOptionSelectedLengkapColor,
+                        materialTapTargetSize: MaterialTapTargetSize.padded, // Changed to padded
+                        visualDensity: VisualDensity.compact,
+                        side: BorderSide(
+                          color: toggleOptionSelectedLengkapColor,
+                          width: 2,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
+                  const SizedBox(width: 8),
+                  Text(
+                    widget.label,
+                    style: labelStyle.copyWith(color: currentLabelColor),
                   ),
-                ),
+                ],
               ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              widget.label,
-              style: labelStyle.copyWith(color: currentLabelColor),
             ),
             const Spacer(),
              if (!_isEnabled)
