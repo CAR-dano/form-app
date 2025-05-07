@@ -87,6 +87,15 @@ final TextStyle buttonTextStyle = GoogleFonts.rubik(
   color: buttonTextColor,
 );
 
+final ButtonStyle baseButtonStyle = ElevatedButton.styleFrom(
+  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 32.0),
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(8.0),
+  ),
+  elevation: 5, // Base elevation for enabled state
+  shadowColor: buttonColor.withAlpha(102),
+);
+
 final TextStyle selectedDateTextStyle = GoogleFonts.rubik(
   fontSize: 16.0,
   color: selectedDateColor,
