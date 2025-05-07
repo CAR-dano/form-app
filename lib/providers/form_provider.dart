@@ -439,12 +439,12 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(stirIsEnabled: enabled);
   }
 
-  void updateRemTonganSelectedValue(int? value) {
-    state = state.copyWith(remTonganSelectedValue: (value == null || value <= 0) ? 0 : value);
+  void updateRemTanganSelectedValue(int? value) {
+    state = state.copyWith(remTanganSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateRemTonganIsEnabled(bool? enabled) {
-    state = state.copyWith(remTonganIsEnabled: enabled);
+  void updateRemTanganIsEnabled(bool? enabled) {
+    state = state.copyWith(remTanganIsEnabled: enabled);
   }
 
   void updatePedalSelectedValue(int? value) {
@@ -1146,6 +1146,10 @@ class FormNotifier extends StateNotifier<FormData> {
   void updateToolsTestCatatanList(List<String> lines) {
     state = state.copyWith(toolsTestCatatanList: lines);
   }
+
+  void resetFormData() {
+    state = FormData();
+  }
 }
 
 final formProvider = StateNotifierProvider<FormNotifier, FormData>((ref) {
@@ -1262,8 +1266,8 @@ extension on FormData {
     List<String>? mesinCatatanList,
     int? stirSelectedValue,
     bool? stirIsEnabled,
-    int? remTonganSelectedValue,
-    bool? remTonganIsEnabled,
+    int? remTanganSelectedValue,
+    bool? remTanganIsEnabled,
     int? pedalSelectedValue,
     bool? pedalIsEnabled,
     int? switchWiperSelectedValue,
@@ -1547,8 +1551,8 @@ extension on FormData {
       mesinCatatanList: mesinCatatanList ?? this.mesinCatatanList,
       stirSelectedValue: stirSelectedValue ?? this.stirSelectedValue,
       stirIsEnabled: stirIsEnabled ?? this.stirIsEnabled,
-      remTonganSelectedValue: remTonganSelectedValue ?? this.remTonganSelectedValue,
-      remTonganIsEnabled: remTonganIsEnabled ?? this.remTonganIsEnabled,
+      remTanganSelectedValue: remTanganSelectedValue ?? this.remTanganSelectedValue,
+      remTanganIsEnabled: remTanganIsEnabled ?? this.remTanganIsEnabled,
       pedalSelectedValue: pedalSelectedValue ?? this.pedalSelectedValue,
       pedalIsEnabled: pedalIsEnabled ?? this.pedalIsEnabled,
       switchWiperSelectedValue: switchWiperSelectedValue ?? this.switchWiperSelectedValue,

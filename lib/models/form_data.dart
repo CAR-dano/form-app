@@ -125,8 +125,8 @@ class FormData {
   // New fields for Page Five Three
   int? stirSelectedValue;
   bool? stirIsEnabled;
-  int? remTonganSelectedValue;
-  bool? remTonganIsEnabled;
+  int? remTanganSelectedValue;
+  bool? remTanganIsEnabled;
   int? pedalSelectedValue;
   bool? pedalIsEnabled;
   int? switchWiperSelectedValue;
@@ -422,8 +422,8 @@ class FormData {
     List<String>? mesinCatatanList,
     this.stirSelectedValue,
     this.stirIsEnabled,
-    this.remTonganSelectedValue,
-    this.remTonganIsEnabled,
+    this.remTanganSelectedValue,
+    this.remTanganIsEnabled,
     this.pedalSelectedValue,
     this.pedalIsEnabled,
     this.switchWiperSelectedValue,
