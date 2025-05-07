@@ -3,8 +3,11 @@ import 'package:flutter_svg/flutter_svg.dart'; // Import flutter_svg
 import 'package:form_app/statics/app_styles.dart';
 import 'dart:io'; // Required for File
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import flutter_riverpod
+import 'package:form_app/providers/image_data_provider.dart'; // Import image_data_provider
+import 'package:form_app/models/image_data.dart'; // Import image_data model
 
-class ImageInputWidget extends StatefulWidget {
+class ImageInputWidget extends ConsumerStatefulWidget { // Change to ConsumerStatefulWidget
   final String label;
   final ValueChanged<File?>? onImagePicked; // Callback to return the picked image file
 
@@ -15,11 +18,10 @@ class ImageInputWidget extends StatefulWidget {
   });
 
   @override
-  State<ImageInputWidget> createState() => _ImageInputWidgetState();
+  ConsumerState<ImageInputWidget> createState() => _ImageInputWidgetState(); // Change to ConsumerState
 }
 
-class _ImageInputWidgetState extends State<ImageInputWidget> {
-  File? _storedImage; // To store the selected image file
+class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> { // Change to ConsumerState
 
   // Method to handle image picking
   Future<void> _takePicture() async {
@@ -27,18 +29,18 @@ class _ImageInputWidgetState extends State<ImageInputWidget> {
     final pickedImage = await picker.pickImage(source: ImageSource.gallery); // Use gallery for picking from files
 
     if (pickedImage != null) {
-      setState(() {
-        _storedImage = File(pickedImage.path);
-      });
-      widget.onImagePicked?.call(_storedImage); // Call the callback with the image file
+      widget.onImagePicked?.call(File(pickedImage.path)); // Call the callback with the image file
+      // Update the image data provider
+      ref.read(imageDataListProvider.notifier).updateImageDataByLabel(
+        widget.label,
+        imagePath: pickedImage.path,
+      );
     }
   }
 
   // Method to view the selected image
-  void _viewImage() {
-    if (_storedImage != null) {
-      _showImagePreview(context, _storedImage!);
-    }
+  void _viewImage(File imageFile) {
+    _showImagePreview(context, imageFile);
   }
 
   // Method to show image preview in a dialog
@@ -64,34 +66,45 @@ class _ImageInputWidgetState extends State<ImageInputWidget> {
 
   // Method to delete the selected image
   void _deleteImage() {
-    setState(() {
-      _storedImage = null;
-    });
     widget.onImagePicked?.call(null); // Call the callback with null to indicate deletion
+    // Update the image data provider
+    ref.read(imageDataListProvider.notifier).updateImageDataByLabel(
+      widget.label,
+      imagePath: '', // Set imagePath to empty string when deleted
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    // Watch the image data provider
+    final imageDataList = ref.watch(imageDataListProvider);
+    final imageData = imageDataList.firstWhere(
+      (img) => img.label == widget.label,
+      orElse: () => ImageData(label: widget.label, imagePath: ''), // Provide a default if not found
+    );
+
+    final storedImage = imageData.imagePath.isNotEmpty ? File(imageData.imagePath) : null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(bottom: _storedImage == null ? 8.0 : 4.0), // Conditional bottom padding
+          padding: EdgeInsets.only(bottom: storedImage == null ? 8.0 : 4.0), // Conditional bottom padding
           child: Text(
             widget.label,
             style: labelStyle, // Using the style from app_styles.dart
           ),
         ),
         GestureDetector(
-          onTap: _storedImage == null ? _takePicture : null, // Only tap to pick if no image
+          onTap: storedImage == null ? _takePicture : null, // Only tap to pick if no image
           child: Container(
             width: double.infinity, // Make the container take full width
             padding: const EdgeInsets.symmetric(vertical: 12.0),
             decoration: BoxDecoration(
-              color: _storedImage == null ? toggleOptionSelectedLengkapColor : Colors.transparent, // Use toggleOptionSelectedLengkapColor for button, transparent when image is shown
+              color: storedImage == null ? toggleOptionSelectedLengkapColor : Colors.transparent, // Use toggleOptionSelectedLengkapColor for button, transparent when image is shown
               borderRadius: BorderRadius.circular(8.0),
             ),
-            child: _storedImage == null
+            child: storedImage == null
                 ? Center(
                     child: Text(
                       'Ambil Gambar',
@@ -104,19 +117,18 @@ class _ImageInputWidgetState extends State<ImageInputWidget> {
                         'assets/images/galeri.svg', // Gallery icon
                         width: 22,
                         height: 22,
-                        colorFilter: ColorFilter.mode(toggleOptionSelectedLengkapColor, BlendMode.srcIn), // Use toggleOptionSelectedLengkapColor
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          _storedImage!.path.split('/').last, // Display file name
+                          storedImage.path.split('/').last, // Display file name
                           style: inputTextStyling.copyWith(fontWeight: FontWeight.w300), // Using input text style
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       const SizedBox(width: 8),
                       GestureDetector(
-                        onTap: _viewImage, // Tap to view image
+                        onTap: () => _viewImage(storedImage), // Tap to view image, pass the file
                         child: Text(
                           'Lihat Gambar',
                           style: TextStyle( // Style for "Lihat Gambar"
