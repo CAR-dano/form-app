@@ -9,6 +9,7 @@ import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
+import 'package:form_app/pages/finished.dart';
 
 // Placeholder for Page Nine
 class PageNine extends ConsumerStatefulWidget {
@@ -41,19 +42,13 @@ class _PageNineState extends ConsumerState<PageNine> {
       final formData = ref.read(formProvider);
       final apiService = ApiService(); // Consider providing ApiService via Riverpod as well
 
-      // TODO: Before calling submitFormData, ensure all TODOs within ApiService.submitFormData are addressed
-      // For now, we call it as is.
-      await apiService.submitFormData(formData);
+       await apiService.submitFormData(formData, context);
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Formulir berhasil dikirim!'),
-          backgroundColor: Colors.green,
-        ),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => FinishedPage()),
       );
-      // Optionally, navigate to a success page or clear the form
-      // Navigator.of(context).popUntil((route) => route.isFirst); // Example: Pop to first page
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -101,8 +96,8 @@ class _PageNineState extends ConsumerState<PageNine> {
                   NavigationButtonRow(
                     onBackPressed: () => Navigator.pop(context),
                     isLastPage: true,
-                    onNextPressed: _isLoading ? () {} : _submitForm, // Disable button when loading
-                    // TODO: Pass _isLoading to NavigationButtonRow if it supports a loading state for the button
+                    onNextPressed: _submitForm,
+                    isLoading: _isLoading, // Pass the loading state
                   ),
                   if (_isLoading) ...[
                     const SizedBox(height: 16),

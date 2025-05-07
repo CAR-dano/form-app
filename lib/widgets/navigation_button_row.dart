@@ -8,16 +8,8 @@ class NavigationButtonRow extends StatelessWidget {
   final bool isBackButtonEnabled;
   final bool isLastPage;
   // Optional: Add isLoading state for the next button later if needed for submission
-  // final bool isLoading;
+  final bool isLoading;
 
-  static final ButtonStyle _baseButtonStyle = ElevatedButton.styleFrom(
-    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 32.0),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8.0),
-    ),
-    elevation: 5, // Base elevation for enabled state
-    shadowColor: buttonColor.withAlpha(102),
-  );
   // --- End Constants ---
 
   const NavigationButtonRow({
@@ -27,7 +19,7 @@ class NavigationButtonRow extends StatelessWidget {
     this.nextButtonText = 'Next', // Default text
     this.isBackButtonEnabled = true, // Default to enabled
     this.isLastPage = false, // Default to not the last page
-    // this.isLoading = false,
+    this.isLoading = false,
   });
 
   @override
@@ -42,7 +34,7 @@ class NavigationButtonRow extends StatelessWidget {
             child: ElevatedButton(
               // Use the provided callback
               onPressed: onBackPressed, // No need for ternary here as it won't render if disabled
-              style: _baseButtonStyle.copyWith(
+              style: baseButtonStyle.copyWith(
                 // Override specific properties for enabled/disabled state
                 backgroundColor: WidgetStateProperty.resolveWith<Color>(
                 (Set<WidgetState> states) {
@@ -80,25 +72,23 @@ class NavigationButtonRow extends StatelessWidget {
         // Removed Expanded wrapper to keep button's natural width
         Expanded(
           child: ElevatedButton(
-            onPressed: onNextPressed, // Always use the provided callback
+            onPressed: isLoading ? null : onNextPressed, // Disable button when loading
             // Apply base style and override background/foreground explicitly for clarity
-            style: _baseButtonStyle.copyWith(
+            style: baseButtonStyle.copyWith(
                backgroundColor: WidgetStateProperty.all(isLastPage ? toggleOptionSelectedLengkapColor : buttonColor), // Blue if last page, else orange
                foregroundColor: WidgetStateProperty.all(buttonTextColor), // Always white when enabled
                shadowColor: WidgetStateProperty.all(isLastPage ? toggleOptionSelectedLengkapColor.withAlpha(102) : buttonColor.withAlpha(102)), // Adjust shadow color
             ),
-            // TODO: Handle isLoading state here later if needed
-            // child: isLoading
-            //     ? SizedBox(
-            //         width: 20,
-            //         height: 20,
-            //         child: CircularProgressIndicator(
-            //           color: buttonTextColor,
-            //           strokeWidth: 2,
-            //         ),
-            //       )
-            //     : Text(nextButtonText, style: buttonTextStyle),
-              child: Text(isLastPage ? 'Kirim' : nextButtonText, style: buttonTextStyle),
+            child: isLoading
+                ? SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: buttonTextColor,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : Text(isLastPage ? 'Kirim' : nextButtonText, style: buttonTextStyle),
           ),
         ),
       ],
