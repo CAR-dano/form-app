@@ -63,18 +63,18 @@ class _FinishedPageState extends ConsumerState<FinishedPage> {
             text: 'Buat Laporan lagi',
           ),
           ),
-          const SizedBox(height: 8.0), // Added spacing
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => PageNine()),
-                );
-              },
-              child: const Text('Go to Page Nine'),
-            ),
-          ),
+          // const SizedBox(height: 8.0), // Added spacing
+          // SizedBox(
+          //   width: double.infinity,
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       Navigator.of(context).pushReplacement(
+          //         MaterialPageRoute(builder: (context) => PageNine()),
+          //       );
+          //     },
+          //     child: const Text('Go to Page Nine'),
+          //   ),
+          // ),
           const SizedBox(height: 16.0),
           const Footer(),
         ],
