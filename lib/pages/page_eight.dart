@@ -23,9 +23,9 @@ class PageEight extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   PageNumber(data: '8/9'),
-                  const SizedBox(height: 8.0),
+                  const SizedBox(height: 4),
                   PageTitle(data: 'Page Eight Title'), // Placeholder Title
-                  const SizedBox(height: 24.0),
+                  const SizedBox(height: 6.0),
                   const Center(child: Text('Masih On Progress')),
                   const SizedBox(height: 32.0),
                   NavigationButtonRow(

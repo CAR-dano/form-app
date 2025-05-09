@@ -61,10 +61,10 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        PageNumber(data: '5/9'), // Assuming this page is still 5/9 or needs adjustment
-                        const SizedBox(height: 8.0),
+                        PageNumber(data: '5/9'),
+                        const SizedBox(height: 4),
                         PageTitle(data: 'Penilaian (2)'),
-                        const SizedBox(height: 24.0),
+                        const SizedBox(height: 6.0),
                         const HeadingOne(text: 'Hasil Inspeksi Mesin'),
                         const SizedBox(height: 16.0),
 

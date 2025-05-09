@@ -94,9 +94,9 @@ class _PageOneState extends ConsumerState<PageOne> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         PageNumber(data: '1/9'),
-                        const SizedBox(height: 8.0),
+                        const SizedBox(height: 4),
                         PageTitle(data: 'Identitas'),
-                        const SizedBox(height: 24.0), // Keep internal spacing
+                        const SizedBox(height: 6.0),
                         LabeledTextField(
                           label: 'Nama Inspektor',
                           hintText: 'Masukkan nama inspektor',

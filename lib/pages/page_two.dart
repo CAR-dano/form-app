@@ -94,9 +94,9 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         PageNumber(data: '2/9'), // Updated Page Number
-                        const SizedBox(height: 8.0),
+                        const SizedBox(height: 4),
                         PageTitle(data: 'Data Kendaraan'), // Updated Title
-                        const SizedBox(height: 24.0),
+                        const SizedBox(height: 6.0),
 
                         // Input Fields based on user request
                         LabeledTextField(

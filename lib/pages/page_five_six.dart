@@ -58,10 +58,10 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        PageNumber(data: '6/9'), // Updated page number
-                        const SizedBox(height: 8.0),
+                        PageNumber(data: '6/9'),
+                        const SizedBox(height: 4),
                         PageTitle(data: 'Penilaian (6)'),
-                        const SizedBox(height: 24.0),
+                        const SizedBox(height: 6.0),
                         const HeadingOne(text: 'Test Drive'),
                         const SizedBox(height: 16.0),
                         ToggleableNumberedButtonList(

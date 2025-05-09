@@ -29,7 +29,7 @@ class _NumberedButtonListState extends State<NumberedButtonList> {
           widget.label,
           style: labelStyle,
         ),
-        const SizedBox(height: 8.0),
+        const SizedBox(height: 4.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround, // Distribute space around the buttons
           children: List.generate(widget.count, (value) {

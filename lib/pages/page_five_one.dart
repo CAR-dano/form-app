@@ -62,9 +62,9 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         PageNumber(data: '5/9'),
-                        const SizedBox(height: 8.0),
+                        const SizedBox(height: 4),
                         PageTitle(data: 'Penilaian (1)'),
-                        const SizedBox(height: 24.0),
+                        const SizedBox(height: 6.0),
                         HeadingOne(text: 'Fitur'),
                         const SizedBox(height: 16.0),
                         ToggleableNumberedButtonList(

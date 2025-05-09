@@ -60,9 +60,9 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         PageNumber(data: '5/9'),
-                        const SizedBox(height: 8.0),
+                        const SizedBox(height: 4),
                         PageTitle(data: 'Penilaian (3)'),
-                        const SizedBox(height: 24.0),
+                        const SizedBox(height: 6.0),
                         const HeadingOne(text: 'Hasil Inspeksi Interior'),
                         const SizedBox(height: 16.0),
 

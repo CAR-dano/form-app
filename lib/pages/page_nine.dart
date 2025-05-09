@@ -68,9 +68,9 @@ class _PageNineState extends ConsumerState<PageNine> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   PageNumber(data: '9/9'),
-                  const SizedBox(height: 8.0),
+                  const SizedBox(height: 4),
                   PageTitle(data: 'Finalisasi'), // Placeholder Title
-                  const SizedBox(height: 16.0),
+                  const SizedBox(height: 6.0),
                   Text(
                     'Pastikan data yang telah diisi telah sesuai dengan yang sebenarnya dan memenuhi SOP PT Inspeksi Mobil Jogja',
                     style: labelStyle.copyWith(fontWeight: FontWeight.w300), // Corrected font weight

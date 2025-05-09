@@ -67,9 +67,9 @@ class _PageFourState extends ConsumerState<PageFour> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         PageNumber(data: '4/9'),
-                        const SizedBox(height: 8.0),
+                        const SizedBox(height: 4),
                         PageTitle(data: 'Hasil Inspeksi'), // Placeholder Title
-                        const SizedBox(height: 24.0),
+                        const SizedBox(height: 6.0),
                         NumberedButtonList(
                           label: 'Interior',
                           count: 10, // Assuming 10 options based on the image
@@ -79,7 +79,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                             formNotifier.updateInteriorSelectedValue(value == formData.interiorSelectedValue ? -1 : value);
                           },
                         ),
-                        const SizedBox(height: 24.0),
+                        const SizedBox(height: 12.0),
                         ExpandableTextField(
                           label: 'Keterangan Interior', // Placeholder label
                           hintText:
@@ -89,7 +89,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                             formNotifier.updateKeteranganInterior(lines);
                           },
                         ),
-                        const SizedBox(height: 32.0),
+                        const SizedBox(height: 24.0),
                         NumberedButtonList(
                           label: 'Eksterior',
                           count: 10, // Assuming 10 options based on the image
@@ -99,7 +99,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                             formNotifier.updateEksteriorSelectedValue(value == formData.eksteriorSelectedValue ? -1 : value);
                           },
                         ),
-                        const SizedBox(height: 24.0),
+                        const SizedBox(height: 12.0),
                         ExpandableTextField(
                           label: 'Keterangan Eksterior', // Placeholder label
                           hintText:
@@ -109,7 +109,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                             formNotifier.updateKeteranganEksterior(lines);
                           },
                         ),
-                        const SizedBox(height: 32.0),
+                        const SizedBox(height: 24.0),
                         NumberedButtonList(
                           label: 'Kaki-kaki',
                           count: 10, // Assuming 10 options based on the image
@@ -119,7 +119,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                             formNotifier.updateKakiKakiSelectedValue(value == formData.kakiKakiSelectedValue ? -1 : value);
                           },
                         ),
-                        const SizedBox(height: 24.0),
+                        const SizedBox(height: 12.0),
                         ExpandableTextField(
                           label: 'Keterangan Kaki-kaki', // Placeholder label
                           hintText:
@@ -129,7 +129,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                             formNotifier.updateKeteranganKakiKaki(lines);
                           },
                         ),
-                        const SizedBox(height: 32.0),
+                        const SizedBox(height: 24.0),
                         NumberedButtonList(
                           label: 'Mesin',
                           count: 10, // Assuming 10 options based on the image
@@ -139,7 +139,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                             formNotifier.updateMesinSelectedValue(value == formData.mesinSelectedValue ? -1 : value);
                           },
                         ),
-                        const SizedBox(height: 24.0),
+                        const SizedBox(height: 12.0),
                         ExpandableTextField(
                           label: 'Keterangan Mesin', // Placeholder label
                           hintText:
@@ -149,7 +149,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                             formNotifier.updateKeteranganMesin(lines);
                           },
                         ),
-                        const SizedBox(height: 32.0),
+                        const SizedBox(height: 24.0),
                         NumberedButtonList(
                           label: 'Penilaian Keseluruhan',
                           count: 10, // Assuming 10 options based on the image
@@ -159,7 +159,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                             formNotifier.updatePenilaianKeseluruhanSelectedValue(value == formData.penilaianKeseluruhanSelectedValue ? -1 : value);
                           },
                         ),
-                        const SizedBox(height: 24.0),
+                        const SizedBox(height: 12.0),
                         ExpandableTextField(
                           label: 'Deskripsi Keseluruhan', // Placeholder label
                           hintText:
@@ -169,7 +169,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                             formNotifier.updateDeskripsiKeseluruhan(lines);
                           },
                         ),
-                        const SizedBox(height: 32.0), // Spacing before new toggle options
+                        const SizedBox(height: 24.0), // Spacing before new toggle options
                         ToggleOption(
                           label: 'Indikasi Tabrakan',
                           toggleValues: ['Tidak ada', 'Terindikasi'],
@@ -190,7 +190,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                           initialValue: formData.indikasiOdometerReset,
                           onChanged: (value) => formNotifier.updateIndikasiOdometerReset(value),
                         ),
-                        const SizedBox(height: 32.0), // Spacing before new text fields
+                        const SizedBox(height: 24.0), // Spacing before new text fields
                         LabeledTextField(
                           label: 'Posisi Ban',
                           hintText: 'Misal : Ban agak miring ke kanan',
@@ -232,7 +232,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                           initialEstimations: formData.repairEstimations,
                           onChanged: (estimations) => formNotifier.updateRepairEstimations(estimations),
                         ),
-                        const SizedBox(height: 32.0), // Spacing before navigation buttons
+                        const SizedBox(height: 24.0), // Spacing before navigation buttons
                         NavigationButtonRow(
                           onBackPressed: () => Navigator.pop(context),
                           onNextPressed: () {
@@ -243,7 +243,7 @@ class _PageFourState extends ConsumerState<PageFour> {
                           },                          
                         ),
                         SizedBox(
-                          height: 32.0,
+                          height: 24.0,
                         ), // Optional spacing below the content
                         // Footer
                         Footer(),

@@ -99,7 +99,7 @@ class _RepairEstimationState extends State<RepairEstimation> {
             final bool priceHasText = _priceControllers[index].text.isNotEmpty;
 
             return Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
+              padding: const EdgeInsets.only(bottom: 4.0),
               child: Container( // Wrap with Container for border
                 decoration: BoxDecoration(
                   border: Border.all(

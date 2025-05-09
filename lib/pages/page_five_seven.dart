@@ -6,7 +6,7 @@ import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
-import 'package:form_app/pages/page_six.dart'; // Import PageSix
+import 'package:form_app/pages/page_six_general_wajib.dart';
 import 'package:form_app/providers/form_provider.dart';
 import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
 import 'package:form_app/widgets/expandable_text_field.dart';
@@ -59,9 +59,9 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         PageNumber(data: '5/9'),
-                        const SizedBox(height: 8.0),
+                        const SizedBox(height: 4),
                         PageTitle(data: 'Penilaian'),
-                        const SizedBox(height: 24.0),
+                        const SizedBox(height: 6.0),
                         const HeadingOne(text: 'Tools Test (7)'),
                         const SizedBox(height: 16.0),
                         ToggleableNumberedButtonList(
@@ -206,7 +206,7 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> {
                           onNextPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const PageSix()),
+                              MaterialPageRoute(builder: (context) => const PageSixGeneralWajib()),
                             );
                           },
                         ),
