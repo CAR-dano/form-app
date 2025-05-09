@@ -1,22 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import flutter_riverpod
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/widgets/common_layout.dart';
+import 'package:form_app/widgets/heading_one.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
-import 'package:form_app/widgets/image_input_widget.dart'; // Import ImageInputWidget
-import 'dart:io'; // Import File
-import 'package:form_app/models/image_data.dart'; // Import ImageData
-import 'package:form_app/providers/image_data_provider.dart'; // Import ImageDataProvider
-import 'package:form_app/pages/page_eight.dart'; // Import PageEight
+import 'package:form_app/widgets/image_input_widget.dart'; // Keep import in case needed later
+import 'dart:io'; // Keep import in case needed later
+import 'package:form_app/models/image_data.dart'; // Keep import in case needed later
+import 'package:form_app/providers/image_data_provider.dart'; // Keep import in case needed later
+import 'package:form_app/pages/page_six_mesin_tambahan.dart'; // Import the next page
 
-// Foto Dokumen Page (formerly Page Seven)
-class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
-  const PageSeven({super.key});
+class PageSixMesinWajib extends ConsumerWidget {
+  const PageSixMesinWajib({super.key});
 
-  // Image input labels will go here later
-  final List<String> imageInputLabels = const [];
+  final List<String> imageInputLabels = const [
+    'Sealer Kap Mesin',
+    'Support bumper',
+    'Dashboard Mobil',
+    'Celah Kap Mesin',
+    'Baut Kap Mesin',
+    'Rangka Mesin Mobil',
+    'Las Listrik',
+    'Bulatan Pada Rangka',
+    'Radiator (Penyok/Tidak)',
+    'Dip Stick Oli Mesin',
+    'Kondisi Oli dari Tutup',
+    'Cover Valve',
+    'Cover Timing Chain',
+    'Seal Crankshaft Depan',
+    'Seal Crankshaft Belakang',
+    'Carter',
+    'V Belt',
+    'Turbo (jika ada)',
+    'Selang-selang',
+    'Kipas Radiator',
+    'Motor Fan',
+    'Minyak Rem',
+    'Support Shock',
+    'Engine Mounting',
+    'Aki',
+    'Alternator',
+    'Tutup Radiator Dibuka',
+    'Sambungan Radiator (assembly)',
+    'Reservoir Radiator',
+    'Compressor AC',
+  ];
 
   void _handleImagePicked(String label, File? imageFile, WidgetRef ref) {
     final imageDataListNotifier = ref.read(imageDataListProvider.notifier);
@@ -35,7 +65,7 @@ class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) { // Add WidgetRef ref
+  Widget build(BuildContext context, WidgetRef ref) {
     return CommonLayout(
       child: Column(
         children: [
@@ -44,12 +74,14 @@ class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(data: '7/9'), // Update page number
+                  PageNumber(data: '6.7/x'), // Placeholder page number
                   const SizedBox(height: 8.0),
-                  PageTitle(data: 'Foto Dokumen'), // Update Title
+                  PageTitle(data: 'Foto Mesin'),
                   const SizedBox(height: 24.0),
+                  HeadingOne(text: 'Wajib'),
+                  const SizedBox(height: 16.0),
 
-                  // Image inputs will go here later
+                  // Wajib image inputs will go here later
                    ...imageInputLabels.map((label) => Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: ImageInputWidget(
@@ -66,7 +98,7 @@ class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
                     onNextPressed: () {
                        Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const PageEight()),
+                        MaterialPageRoute(builder: (context) => const PageSixMesinTambahan()),
                       );
                     },
                   ),

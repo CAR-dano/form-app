@@ -1,22 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import flutter_riverpod
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/widgets/common_layout.dart';
+import 'package:form_app/widgets/heading_one.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
-import 'package:form_app/widgets/image_input_widget.dart'; // Import ImageInputWidget
-import 'dart:io'; // Import File
-import 'package:form_app/models/image_data.dart'; // Import ImageData
-import 'package:form_app/providers/image_data_provider.dart'; // Import ImageDataProvider
-import 'package:form_app/pages/page_eight.dart'; // Import PageEight
+import 'package:form_app/widgets/image_input_widget.dart'; // Keep import in case needed later
+import 'dart:io'; // Keep import in case needed later
+import 'package:form_app/models/image_data.dart'; // Keep import in case needed later
+import 'package:form_app/providers/image_data_provider.dart'; // Keep import in case needed later
+import 'package:form_app/pages/page_six_kaki_kaki_tambahan.dart'; // Import the next page
 
-// Foto Dokumen Page (formerly Page Seven)
-class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
-  const PageSeven({super.key});
+class PageSixKakiKakiWajib extends ConsumerWidget {
+  const PageSixKakiKakiWajib({super.key});
 
-  // Image input labels will go here later
-  final List<String> imageInputLabels = const [];
+  final List<String> imageInputLabels = const [
+    'Cakram',
+    'Kampas rem',
+    'Celah Antara Roda dan Fender',
+    'Ulir Ban',
+    'Usia Ban',
+    'Tie Rod',
+    'Link Stabilizer',
+    'Balljoint',
+    'Shock Breaker',
+    'As Roda Depan',
+    'Kabel Ties',
+    'Lower Arm',
+    'Crossmember',
+    'Chassis',
+  ];
 
   void _handleImagePicked(String label, File? imageFile, WidgetRef ref) {
     final imageDataListNotifier = ref.read(imageDataListProvider.notifier);
@@ -35,7 +49,7 @@ class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) { // Add WidgetRef ref
+  Widget build(BuildContext context, WidgetRef ref) {
     return CommonLayout(
       child: Column(
         children: [
@@ -44,12 +58,14 @@ class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(data: '7/9'), // Update page number
+                  PageNumber(data: '6.9/x'), // Placeholder page number
                   const SizedBox(height: 8.0),
-                  PageTitle(data: 'Foto Dokumen'), // Update Title
+                  PageTitle(data: 'Foto Kaki-kaki'),
                   const SizedBox(height: 24.0),
+                  HeadingOne(text: 'Wajib'),
+                  const SizedBox(height: 16.0),
 
-                  // Image inputs will go here later
+                  // Wajib image inputs will go here later
                    ...imageInputLabels.map((label) => Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: ImageInputWidget(
@@ -66,7 +82,7 @@ class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
                     onNextPressed: () {
                        Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const PageEight()),
+                        MaterialPageRoute(builder: (context) => const PageSixKakiKakiTambahan()),
                       );
                     },
                   ),
