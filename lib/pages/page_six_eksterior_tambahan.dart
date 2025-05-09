@@ -25,7 +25,7 @@ class PageSixEksteriorTambahan extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(data: '6.4/x'),
+                  PageNumber(data: '6/9'),
                   const SizedBox(height: 4),
                   PageTitle(data: 'Foto Eksterior'),
                   const SizedBox(height: 6.0),

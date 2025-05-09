@@ -50,7 +50,7 @@ class PageSixAlatAlatWajib extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(data: '6.11/x'),
+                  PageNumber(data: '6/9'),
                   const SizedBox(height: 4),
                   PageTitle(data: 'Foto Alat-alat'),
                   const SizedBox(height: 6.0),

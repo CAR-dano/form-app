@@ -25,7 +25,7 @@ class PageSixMesinTambahan extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(data: '6.8/x'),
+                  PageNumber(data: '6/9'),
                   const SizedBox(height: 4),
                   PageTitle(data: 'Foto Mesin'),
                   const SizedBox(height: 6.0),
