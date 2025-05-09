@@ -25,10 +25,10 @@ class PageSixKakiKakiTambahan extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(data: '6.10/x'), // Placeholder page number
-                  const SizedBox(height: 8.0),
+                  PageNumber(data: '6.10/x'),
+                  const SizedBox(height: 4),
                   PageTitle(data: 'Foto Kaki-kaki'),
-                  const SizedBox(height: 24.0),
+                  const SizedBox(height: 6.0),
                   HeadingOne(text: 'Tambahan'),
                   const SizedBox(height: 16.0),
 

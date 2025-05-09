@@ -66,7 +66,7 @@ class _LabeledTextFieldState extends State<LabeledTextField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(widget.label, style: labelStyle),
-        const SizedBox(height: 8.0), // Consistent spacing
+        const SizedBox(height: 4.0), // Consistent spacing
         TextFormField( // Use TextFormField for validation integration
           key: _formFieldKey, // Assign the key
           controller: _internalController, // Use the internal controller

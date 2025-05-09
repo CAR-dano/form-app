@@ -27,9 +27,9 @@ class PageThree extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 PageNumber(data: '3/9'),
-                const SizedBox(height: 8.0),
+                const SizedBox(height: 4),
                 PageTitle(data: 'Kelengkapan'),
-                const SizedBox(height: 24.0),
+                const SizedBox(height: 6.0),
                 ToggleOption(
                   toggleValues: ['Lengkap', 'Tidak'],
                   label: 'Buku Service',

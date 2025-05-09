@@ -67,9 +67,9 @@ class _PageFourState extends ConsumerState<PageFour> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         PageNumber(data: '4/9'),
-                        const SizedBox(height: 8.0),
+                        const SizedBox(height: 4),
                         PageTitle(data: 'Hasil Inspeksi'), // Placeholder Title
-                        const SizedBox(height: 24.0),
+                        const SizedBox(height: 6.0),
                         NumberedButtonList(
                           label: 'Interior',
                           count: 10, // Assuming 10 options based on the image

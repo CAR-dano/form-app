@@ -89,7 +89,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> { // Change
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(bottom: storedImage == null ? 8.0 : 4.0), // Conditional bottom padding
+          padding: EdgeInsets.only(bottom: storedImage == null ? 4.0 : 2.0), // Conditional bottom padding
           child: Text(
             widget.label,
             style: labelStyle, // Using the style from app_styles.dart

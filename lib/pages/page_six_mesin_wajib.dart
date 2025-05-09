@@ -74,10 +74,10 @@ class PageSixMesinWajib extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(data: '6.7/x'), // Placeholder page number
-                  const SizedBox(height: 8.0),
+                  PageNumber(data: '6.7/x'),
+                  const SizedBox(height: 4),
                   PageTitle(data: 'Foto Mesin'),
-                  const SizedBox(height: 24.0),
+                  const SizedBox(height: 6.0),
                   HeadingOne(text: 'Wajib'),
                   const SizedBox(height: 16.0),
 

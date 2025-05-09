@@ -44,10 +44,10 @@ class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(data: '7/9'), // Update page number
-                  const SizedBox(height: 8.0),
+                  PageNumber(data: '7/9'),
+                  const SizedBox(height: 4),
                   PageTitle(data: 'Foto Dokumen'), // Update Title
-                  const SizedBox(height: 24.0),
+                  const SizedBox(height: 6.0),
 
                   // Image inputs will go here later
                    ...imageInputLabels.map((label) => Padding(

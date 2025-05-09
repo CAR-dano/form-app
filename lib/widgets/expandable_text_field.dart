@@ -192,7 +192,7 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(widget.label, style: labelStyle),
-        const SizedBox(height: 8.0),
+        const SizedBox(height: 4.0),
         Focus(
           focusNode: _focusNode,
           onKeyEvent: _handleKeyEvent,

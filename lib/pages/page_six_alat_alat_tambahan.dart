@@ -25,10 +25,10 @@ class PageSixAlatAlatTambahan extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(data: '6.12/x'), // Placeholder page number
-                  const SizedBox(height: 8.0),
+                  PageNumber(data: '6.12/x'),
+                  const SizedBox(height: 4),
                   PageTitle(data: 'Foto Alat-alat'),
-                  const SizedBox(height: 24.0),
+                  const SizedBox(height: 6.0),
                   HeadingOne(text: 'Tambahan'),
                   const SizedBox(height: 16.0),
 

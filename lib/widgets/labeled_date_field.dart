@@ -121,7 +121,7 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
       children: [
         // --- Label ---
         Text(widget.label, style: labelStyle), // Access labelStyle from AppStyles
-        const SizedBox(height: 8.0),
+        const SizedBox(height: 4.0),
 
         // --- Tappable Date Input Area ---
         // Use FormField to integrate with Form and provide validation

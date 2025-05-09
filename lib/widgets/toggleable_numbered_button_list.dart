@@ -122,7 +122,7 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
                 ),
           ],
         ),
-        const SizedBox(height: 10.0),
+        const SizedBox(height: 4.0),
 
         // --- Row for Numbered Buttons ---
         Row(
