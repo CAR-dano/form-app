@@ -43,7 +43,7 @@ class _LabeledDropdownFieldState<T> extends State<LabeledDropdownField<T>> {
           child: DropdownButtonFormField<T>(
             key: _formFieldKey, // Assign the key
             value: widget.value,
-            hint: Text(widget.hintText!, style: hintTextStyling.copyWith(color: hintTextColor)),
+            hint: Text(widget.hintText!, style: hintTextStyling),
             items: widget.items,
             onChanged: (newValue) {
               widget.onChanged?.call(newValue);
