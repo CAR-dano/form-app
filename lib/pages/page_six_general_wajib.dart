@@ -25,50 +25,64 @@ class PageSixGeneralWajib extends ConsumerWidget {
     final imageDataListNotifier = ref.read(imageDataListProvider.notifier);
 
     if (imageFile != null) {
-      int existingIndex = ref.read(imageDataListProvider).indexWhere((img) => img.label == label);
+      int existingIndex = ref
+          .read(imageDataListProvider)
+          .indexWhere((img) => img.label == label);
 
       if (existingIndex != -1) {
-        imageDataListNotifier.updateImageDataByLabel(label, imagePath: imageFile.path);
+        imageDataListNotifier.updateImageDataByLabel(
+          label,
+          imagePath: imageFile.path,
+        );
       } else {
-        imageDataListNotifier.addImageData(ImageData(label: label, imagePath: imageFile.path));
+        imageDataListNotifier.addImageData(
+          ImageData(label: label, imagePath: imageFile.path),
+        );
       }
     } else {
-       imageDataListNotifier.removeImageDataByLabel(label);
+      imageDataListNotifier.removeImageDataByLabel(label);
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          PageNumber(data: '6/9'),
-          const SizedBox(height: 4),
-          PageTitle(data: 'Foto General'),
-          const SizedBox(height: 6.0),
-          HeadingOne(text: 'Wajib'),
-          const SizedBox(height: 16.0),
-      
-          ...imageInputLabels.map((label) => Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: ImageInputWidget(
-              label: label,
-              onImagePicked: (imageFile) {
-                _handleImagePicked(label, imageFile, ref);
-              },
-            ),
-          )),
-      
-          const SizedBox(height: 32.0),
-          NavigationButtonRow(
-            onBackPressed: () => ref.read(formStepProvider.notifier).state--,
-            onNextPressed: () => ref.read(formStepProvider.notifier).state++,
+    return Column(
+      children: [
+        SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              PageNumber(data: '6/9'),
+              const SizedBox(height: 4),
+              PageTitle(data: 'Foto General'),
+              const SizedBox(height: 6.0),
+              HeadingOne(text: 'Wajib'),
+              const SizedBox(height: 16.0),
+
+              ...imageInputLabels.map(
+                (label) => Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: ImageInputWidget(
+                    label: label,
+                    onImagePicked: (imageFile) {
+                      _handleImagePicked(label, imageFile, ref);
+                    },
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 32.0),
+            ],
           ),
-          const SizedBox(height: 32.0),
-          Footer(),
-        ],
-      ),
+        ),
+        Spacer(),
+        NavigationButtonRow(
+          onBackPressed: () => ref.read(formStepProvider.notifier).state--,
+          onNextPressed: () => ref.read(formStepProvider.notifier).state++,
+        ),
+        const SizedBox(height: 32.0),
+        Footer(),
+      ],
     );
   }
 }

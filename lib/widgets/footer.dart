@@ -9,7 +9,7 @@ class Footer extends StatelessWidget {
     return Center(
       
       child: Padding(
-        padding: EdgeInsets.only(bottom: 20),
+        padding: EdgeInsets.only(bottom: 4),
         child: Text(
           'copyright by Inspeksi Mobil Jogja',
           style: GoogleFonts.rubik(

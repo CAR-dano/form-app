@@ -5,10 +5,10 @@ import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
-import 'package:form_app/widgets/image_input_widget.dart'; // Keep import in case needed later
-import 'dart:io'; // Keep import in case needed later
-import 'package:form_app/models/image_data.dart'; // Keep import in case needed later
-import 'package:form_app/providers/image_data_provider.dart'; // Keep import in case needed later
+// Keep import in case needed later
+// Keep import in case needed later
+// Keep import in case needed later
+// Keep import in case needed later
 // import 'package:form_app/pages/page_six_eksterior_wajib.dart'; // No longer directly navigating
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 
