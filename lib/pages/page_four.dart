@@ -58,6 +58,7 @@ class _PageFourState extends ConsumerState<PageFour> {
             _focusScopeNode.unfocus(); // Unfocus on tap outside text fields
           },
           child: SingleChildScrollView(
+            key: const PageStorageKey<String>('pageFourScrollKey'), // Add PageStorageKey here
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

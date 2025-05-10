@@ -37,6 +37,7 @@ class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
   @override
   Widget build(BuildContext context, WidgetRef ref) { // Add WidgetRef ref
     return SingleChildScrollView(
+      key: const PageStorageKey<String>('pageSevenScrollKey'), // Add PageStorageKey here
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

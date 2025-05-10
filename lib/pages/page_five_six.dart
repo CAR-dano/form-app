@@ -51,6 +51,7 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> {
             _focusScopeNode.unfocus();
           },
           child: SingleChildScrollView(
+            key: const PageStorageKey<String>('pageFiveSixScrollKey'), // Add PageStorageKey here
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

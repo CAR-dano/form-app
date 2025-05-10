@@ -47,10 +47,15 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   ];
 
   late final List<Widget> _formPages;
+  // int _previousStep = 0; // Removed as it's no longer used with default FadeTransition
 
   @override
   void initState() {
     super.initState();
+    // Initialize _previousStep with the initial step from the provider
+    // However, ref is not available in initState directly for listeners in the same way.
+    // We will use ref.listen in the build method or another lifecycle method where ref is available.
+    // For now, _formPages initialization remains here.
     _formPages = [
       PageOne(formKey: _formKeys[0]),
       PageTwo(formKey: _formKeys[1]),
@@ -87,11 +92,26 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     final currentStep = ref.watch(formStepProvider);
     //final totalSteps = _formPages.length;
 
+    // Removed ref.listen for _previousStep as it's no longer used.
+
     return Scaffold(
       body: CommonLayout(
-        child: IndexedStack(
-          index: currentStep,
-          children: _formPages,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300), // You can adjust the duration
+          layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
+            return Stack(
+              alignment: Alignment.topCenter, // Align children to the top center
+              children: <Widget>[
+                ...previousChildren,
+                if (currentChild != null) currentChild,
+              ],
+            );
+          },
+          // No transitionBuilder specified, so it defaults to FadeTransition
+          child: Container( 
+            key: ValueKey<int>(currentStep), // Crucial for AnimatedSwitcher to detect change
+            child: _formPages[currentStep],
+          ),
         ),
       ),
     );

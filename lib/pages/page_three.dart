@@ -20,6 +20,7 @@ class PageThree extends ConsumerWidget {
 
     // Basic structure, replace with actual content later
     return SingleChildScrollView(
+      key: const PageStorageKey<String>('pageThreeScrollKey'), // Add PageStorageKey here
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

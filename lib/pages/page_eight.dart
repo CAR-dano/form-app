@@ -16,6 +16,7 @@ class PageEight extends ConsumerWidget { // Change to ConsumerWidget
   Widget build(BuildContext context, WidgetRef ref) { // Add WidgetRef ref
     // Basic structure, replace with actual content later
     return SingleChildScrollView(
+      key: const PageStorageKey<String>('pageEightScrollKey'), // Add PageStorageKey here
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

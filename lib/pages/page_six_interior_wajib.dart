@@ -49,6 +49,7 @@ class PageSixInteriorWajib extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
+      key: const PageStorageKey<String>('pageSixInteriorWajibScrollKey'), // Add PageStorageKey here
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

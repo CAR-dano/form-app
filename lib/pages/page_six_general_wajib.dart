@@ -49,6 +49,7 @@ class PageSixGeneralWajib extends ConsumerWidget {
     return Column(
       children: [
         SingleChildScrollView(
+          key: const PageStorageKey<String>('pageSixGeneralWajibScrollKey'), // Add PageStorageKey here
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
