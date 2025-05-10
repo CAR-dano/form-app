@@ -52,109 +52,103 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> {
           onTap: () {
             _focusScopeNode.unfocus(); // Unfocus on tap outside text fields
           },
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      PageNumber(data: '5/9'),
-                      const SizedBox(height: 4),
-                      PageTitle(data: 'Penilaian (1)'),
-                      const SizedBox(height: 6.0),
-                      HeadingOne(text: 'Fitur'),
-                      const SizedBox(height: 16.0),
-                      ToggleableNumberedButtonList(
-                        label: 'Airbag',
-                        count: 10,
-                        selectedValue: formData.airbagSelectedValue ?? -1,
-                        onItemSelected: (value) {
-                          formNotifier.updateAirbagSelectedValue(value);
-                        },
-                        initialEnabled: formData.airbagIsEnabled ?? true,
-                        onEnabledChanged: (enabled) {
-                          formNotifier.updateAirbagIsEnabled(enabled);
-                          if (!enabled) {
-                            formNotifier.updateAirbagSelectedValue(-1);
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 16.0),
-                      ToggleableNumberedButtonList(
-                        label: 'Sistem Audio',
-                        count: 10,
-                        selectedValue: formData.sistemAudioSelectedValue ?? -1,
-                        onItemSelected: (value) {
-                          formNotifier.updateSistemAudioSelectedValue(value);
-                        },
-                        initialEnabled: formData.sistemAudioIsEnabled ?? true,
-                        onEnabledChanged: (enabled) {
-                          formNotifier.updateSistemAudioIsEnabled(enabled);
-                          if (!enabled) {
-                            formNotifier.updateSistemAudioSelectedValue(-1);
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 16.0),
-                      ToggleableNumberedButtonList(
-                        label: 'Power Window',
-                        count: 10,
-                        selectedValue: formData.powerWindowSelectedValue ?? -1,
-                        onItemSelected: (value) {
-                          formNotifier.updatePowerWindowSelectedValue(value);
-                        },
-                        initialEnabled: formData.powerWindowIsEnabled ?? true,
-                        onEnabledChanged: (enabled) {
-                          formNotifier.updatePowerWindowIsEnabled(enabled);
-                          if (!enabled) {
-                            formNotifier.updatePowerWindowSelectedValue(-1);
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 16.0),
-                      ToggleableNumberedButtonList(
-                        label: 'Sistem AC',
-                        count: 10,
-                        selectedValue: formData.sistemAcSelectedValue ?? -1,
-                        onItemSelected: (value) {
-                          formNotifier.updateSistemAcSelectedValue(value);
-                        },
-                        initialEnabled: formData.sistemAcIsEnabled ?? true,
-                        onEnabledChanged: (enabled) {
-                          formNotifier.updateSistemAcIsEnabled(enabled);
-                          if (!enabled) {
-                            formNotifier.updateSistemAcSelectedValue(-1);
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 16.0),
-                      ExpandableTextField(
-                        label: 'Catatan',
-                        hintText: 'Masukkan catatan di sini',
-                        initialLines: formData.fiturCatatanList,
-                        onChangedList: (lines) {
-                          formNotifier.updateFiturCatatanList(lines);
-                        },
-                      ),
-                      const SizedBox(height: 32.0),
-                      NavigationButtonRow(
-                        onBackPressed: () {
-                          _focusScopeNode.unfocus();
-                          ref.read(formStepProvider.notifier).state--;
-                        },
-                        onNextPressed: () {
-                          _focusScopeNode.unfocus();
-                          ref.read(formStepProvider.notifier).state++;
-                        },
-                      ),
-                      const SizedBox(height: 32.0),
-                      Footer(),
-                    ],
-                  ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                PageNumber(data: '5/9'),
+                const SizedBox(height: 4),
+                PageTitle(data: 'Penilaian (1)'),
+                const SizedBox(height: 6.0),
+                HeadingOne(text: 'Fitur'),
+                const SizedBox(height: 16.0),
+                ToggleableNumberedButtonList(
+                  label: 'Airbag',
+                  count: 10,
+                  selectedValue: formData.airbagSelectedValue ?? -1,
+                  onItemSelected: (value) {
+                    formNotifier.updateAirbagSelectedValue(value);
+                  },
+                  initialEnabled: formData.airbagIsEnabled ?? true,
+                  onEnabledChanged: (enabled) {
+                    formNotifier.updateAirbagIsEnabled(enabled);
+                    if (!enabled) {
+                      formNotifier.updateAirbagSelectedValue(-1);
+                    }
+                  },
                 ),
-              ),
-            ],
+                const SizedBox(height: 16.0),
+                ToggleableNumberedButtonList(
+                  label: 'Sistem Audio',
+                  count: 10,
+                  selectedValue: formData.sistemAudioSelectedValue ?? -1,
+                  onItemSelected: (value) {
+                    formNotifier.updateSistemAudioSelectedValue(value);
+                  },
+                  initialEnabled: formData.sistemAudioIsEnabled ?? true,
+                  onEnabledChanged: (enabled) {
+                    formNotifier.updateSistemAudioIsEnabled(enabled);
+                    if (!enabled) {
+                      formNotifier.updateSistemAudioSelectedValue(-1);
+                    }
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                ToggleableNumberedButtonList(
+                  label: 'Power Window',
+                  count: 10,
+                  selectedValue: formData.powerWindowSelectedValue ?? -1,
+                  onItemSelected: (value) {
+                    formNotifier.updatePowerWindowSelectedValue(value);
+                  },
+                  initialEnabled: formData.powerWindowIsEnabled ?? true,
+                  onEnabledChanged: (enabled) {
+                    formNotifier.updatePowerWindowIsEnabled(enabled);
+                    if (!enabled) {
+                      formNotifier.updatePowerWindowSelectedValue(-1);
+                    }
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                ToggleableNumberedButtonList(
+                  label: 'Sistem AC',
+                  count: 10,
+                  selectedValue: formData.sistemAcSelectedValue ?? -1,
+                  onItemSelected: (value) {
+                    formNotifier.updateSistemAcSelectedValue(value);
+                  },
+                  initialEnabled: formData.sistemAcIsEnabled ?? true,
+                  onEnabledChanged: (enabled) {
+                    formNotifier.updateSistemAcIsEnabled(enabled);
+                    if (!enabled) {
+                      formNotifier.updateSistemAcSelectedValue(-1);
+                    }
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                ExpandableTextField(
+                  label: 'Catatan',
+                  hintText: 'Masukkan catatan di sini',
+                  initialLines: formData.fiturCatatanList,
+                  onChangedList: (lines) {
+                    formNotifier.updateFiturCatatanList(lines);
+                  },
+                ),
+                const SizedBox(height: 32.0),
+                NavigationButtonRow(
+                  onBackPressed: () {
+                    _focusScopeNode.unfocus();
+                    ref.read(formStepProvider.notifier).state--;
+                  },
+                  onNextPressed: () {
+                    _focusScopeNode.unfocus();
+                    ref.read(formStepProvider.notifier).state++;
+                  },
+                ),
+                const SizedBox(height: 32.0),
+                Footer(),
+              ],
+            ),
           ),
         ),
       ),

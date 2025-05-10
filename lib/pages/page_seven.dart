@@ -37,41 +37,33 @@ class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
 
   @override
   Widget build(BuildContext context, WidgetRef ref) { // Add WidgetRef ref
-    return CommonLayout(
+    return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  PageNumber(data: '7/9'),
-                  const SizedBox(height: 4),
-                  PageTitle(data: 'Foto Dokumen'), // Update Title
-                  const SizedBox(height: 6.0),
-
-                  // Image inputs will go here later
-                   ...imageInputLabels.map((label) => Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: ImageInputWidget(
-                      label: label,
-                      onImagePicked: (imageFile) {
-                        _handleImagePicked(label, imageFile, ref);
-                      },
-                    ),
-                  )),
-
-                  const SizedBox(height: 32.0),
-                  NavigationButtonRow(
-                    onBackPressed: () => ref.read(formStepProvider.notifier).state--,
-                    onNextPressed: () => ref.read(formStepProvider.notifier).state++,
-                  ),
-                  const SizedBox(height: 32.0),
-                  Footer(),
-                ],
-              ),
+          PageNumber(data: '7/9'),
+          const SizedBox(height: 4),
+          PageTitle(data: 'Foto Dokumen'), // Update Title
+          const SizedBox(height: 6.0),
+      
+          // Image inputs will go here later
+           ...imageInputLabels.map((label) => Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: ImageInputWidget(
+              label: label,
+              onImagePicked: (imageFile) {
+                _handleImagePicked(label, imageFile, ref);
+              },
             ),
+          )),
+      
+          const SizedBox(height: 32.0),
+          NavigationButtonRow(
+            onBackPressed: () => ref.read(formStepProvider.notifier).state--,
+            onNextPressed: () => ref.read(formStepProvider.notifier).state++,
           ),
+          const SizedBox(height: 32.0),
+          Footer(),
         ],
       ),
     );

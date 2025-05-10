@@ -19,92 +19,86 @@ class PageThree extends ConsumerWidget {
     final formNotifier = ref.read(formProvider.notifier); // Read the notifier
 
     // Basic structure, replace with actual content later
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                PageNumber(data: '3/9'),
-                const SizedBox(height: 4),
-                PageTitle(data: 'Kelengkapan'),
-                const SizedBox(height: 6.0),
-                ToggleOption(
-                  toggleValues: ['Lengkap', 'Tidak'],
-                  label: 'Buku Service',
-                  initialValue: formData.bukuService,
-                  onChanged: (value) => formNotifier.updateBukuService(value),
-                ),
-                const SizedBox(height: 16.0),
-                ToggleOption(
-                  toggleValues: ['Lengkap', 'Tidak'],
-                  label: 'Kunci Serep',
-                  initialValue: formData.kunciSerep,
-                  onChanged: (value) => formNotifier.updateKunciSerep(value),
-                ),
-                const SizedBox(height: 16.0),
-                ToggleOption(
-                  toggleValues: ['Lengkap', 'Tidak'],
-                  label: 'Buku Manual',
-                  initialValue: formData.bukuManual,
-                  onChanged: (value) => formNotifier.updateBukuManual(value),
-                ),
-                const SizedBox(height: 16.0),
-                ToggleOption(
-                  label: 'Ban Serep',
-                  toggleValues: ['Lengkap', 'Tidak'],
-                  initialValue: formData.banSerep,
-                  onChanged: (value) => formNotifier.updateBanSerep(value),
-                ),
-                const SizedBox(height: 16.0),
-                ToggleOption(
-                  label: 'BPKB',
-                  toggleValues: ['Lengkap', 'Tidak'],
-                  initialValue: formData.bpkb,
-                  onChanged: (value) => formNotifier.updateBpkb(value),
-                ),
-                const SizedBox(height: 16.0),
-                ToggleOption(
-                  label: 'Dongkrak',
-                  toggleValues: ['Lengkap', 'Tidak'],
-                  initialValue: formData.dongkrak,
-                  onChanged: (value) => formNotifier.updateDongkrak(value),
-                ),
-                const SizedBox(height: 16.0),
-                ToggleOption(
-                  label: 'Toolkit',
-                  toggleValues: ['Lengkap', 'Tidak'],
-                  initialValue: formData.toolkit,
-                  onChanged: (value) => formNotifier.updateToolkit(value),
-                ),
-                const SizedBox(height: 16.0),
-                ToggleOption(
-                  label: 'No Rangka',
-                  toggleValues: ['Lengkap', 'Tidak'],
-                  initialValue: formData.noRangka,
-                  onChanged: (value) => formNotifier.updateNoRangka(value),
-                ),
-                const SizedBox(height: 16.0),
-                ToggleOption(
-                  label: 'No Mesin',
-                  toggleValues: ['Lengkap', 'Tidak'],
-                  initialValue: formData.noMesin,
-                  onChanged: (value) => formNotifier.updateNoMesin(value),
-                ),
-                const SizedBox(height: 32.0),
-                NavigationButtonRow(
-                  onBackPressed: () => ref.read(formStepProvider.notifier).state--,
-                  onNextPressed: () => ref.read(formStepProvider.notifier).state++,
-                ),
-                const SizedBox(height: 32.0), // Optional spacing below the content
-                // Footer
-                Footer(),
-              ],
-            ),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          PageNumber(data: '3/9'),
+          const SizedBox(height: 4),
+          PageTitle(data: 'Kelengkapan'),
+          const SizedBox(height: 6.0),
+          ToggleOption(
+            toggleValues: ['Lengkap', 'Tidak'],
+            label: 'Buku Service',
+            initialValue: formData.bukuService,
+            onChanged: (value) => formNotifier.updateBukuService(value),
           ),
-        ),
-      ],
+          const SizedBox(height: 16.0),
+          ToggleOption(
+            toggleValues: ['Lengkap', 'Tidak'],
+            label: 'Kunci Serep',
+            initialValue: formData.kunciSerep,
+            onChanged: (value) => formNotifier.updateKunciSerep(value),
+          ),
+          const SizedBox(height: 16.0),
+          ToggleOption(
+            toggleValues: ['Lengkap', 'Tidak'],
+            label: 'Buku Manual',
+            initialValue: formData.bukuManual,
+            onChanged: (value) => formNotifier.updateBukuManual(value),
+          ),
+          const SizedBox(height: 16.0),
+          ToggleOption(
+            label: 'Ban Serep',
+            toggleValues: ['Lengkap', 'Tidak'],
+            initialValue: formData.banSerep,
+            onChanged: (value) => formNotifier.updateBanSerep(value),
+          ),
+          const SizedBox(height: 16.0),
+          ToggleOption(
+            label: 'BPKB',
+            toggleValues: ['Lengkap', 'Tidak'],
+            initialValue: formData.bpkb,
+            onChanged: (value) => formNotifier.updateBpkb(value),
+          ),
+          const SizedBox(height: 16.0),
+          ToggleOption(
+            label: 'Dongkrak',
+            toggleValues: ['Lengkap', 'Tidak'],
+            initialValue: formData.dongkrak,
+            onChanged: (value) => formNotifier.updateDongkrak(value),
+          ),
+          const SizedBox(height: 16.0),
+          ToggleOption(
+            label: 'Toolkit',
+            toggleValues: ['Lengkap', 'Tidak'],
+            initialValue: formData.toolkit,
+            onChanged: (value) => formNotifier.updateToolkit(value),
+          ),
+          const SizedBox(height: 16.0),
+          ToggleOption(
+            label: 'No Rangka',
+            toggleValues: ['Lengkap', 'Tidak'],
+            initialValue: formData.noRangka,
+            onChanged: (value) => formNotifier.updateNoRangka(value),
+          ),
+          const SizedBox(height: 16.0),
+          ToggleOption(
+            label: 'No Mesin',
+            toggleValues: ['Lengkap', 'Tidak'],
+            initialValue: formData.noMesin,
+            onChanged: (value) => formNotifier.updateNoMesin(value),
+          ),
+          const SizedBox(height: 32.0),
+          NavigationButtonRow(
+            onBackPressed: () => ref.read(formStepProvider.notifier).state--,
+            onNextPressed: () => ref.read(formStepProvider.notifier).state++,
+          ),
+          const SizedBox(height: 32.0), // Optional spacing below the content
+          // Footer
+          Footer(),
+        ],
+      ),
     );
   }
 }

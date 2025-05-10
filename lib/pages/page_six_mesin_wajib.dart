@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_app/widgets/common_layout.dart';
 import 'package:form_app/widgets/heading_one.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
@@ -67,43 +66,37 @@ class PageSixMesinWajib extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                PageNumber(data: '6/9'),
-                const SizedBox(height: 4),
-                PageTitle(data: 'Foto Mesin'),
-                const SizedBox(height: 6.0),
-                HeadingOne(text: 'Wajib'),
-                const SizedBox(height: 16.0),
-    
-                // Wajib image inputs will go here later
-                 ...imageInputLabels.map((label) => Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: ImageInputWidget(
-                    label: label,
-                    onImagePicked: (imageFile) {
-                      _handleImagePicked(label, imageFile, ref);
-                    },
-                  ),
-                )),
-    
-                const SizedBox(height: 32.0),
-                NavigationButtonRow(
-                  onBackPressed: () => ref.read(formStepProvider.notifier).state--,
-                  onNextPressed: () => ref.read(formStepProvider.notifier).state++,
-                ),
-                const SizedBox(height: 32.0),
-                Footer(),
-              ],
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          PageNumber(data: '6/9'),
+          const SizedBox(height: 4),
+          PageTitle(data: 'Foto Mesin'),
+          const SizedBox(height: 6.0),
+          HeadingOne(text: 'Wajib'),
+          const SizedBox(height: 16.0),
+      
+          // Wajib image inputs will go here later
+           ...imageInputLabels.map((label) => Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: ImageInputWidget(
+              label: label,
+              onImagePicked: (imageFile) {
+                _handleImagePicked(label, imageFile, ref);
+              },
             ),
+          )),
+      
+          const SizedBox(height: 32.0),
+          NavigationButtonRow(
+            onBackPressed: () => ref.read(formStepProvider.notifier).state--,
+            onNextPressed: () => ref.read(formStepProvider.notifier).state++,
           ),
-        ),
-      ],
+          const SizedBox(height: 32.0),
+          Footer(),
+        ],
+      ),
     );
   }
 }

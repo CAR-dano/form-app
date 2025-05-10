@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import ConsumerWidget
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
-import 'package:form_app/widgets/common_layout.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
@@ -16,31 +15,25 @@ class PageEight extends ConsumerWidget { // Change to ConsumerWidget
   @override
   Widget build(BuildContext context, WidgetRef ref) { // Add WidgetRef ref
     // Basic structure, replace with actual content later
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                PageNumber(data: '8/9'),
-                const SizedBox(height: 4),
-                PageTitle(data: 'Page Eight Title'), // Placeholder Title
-                const SizedBox(height: 6.0),
-                const Center(child: Text('Masih On Progress')),
-                const SizedBox(height: 32.0),
-                NavigationButtonRow(
-                  onBackPressed: () => ref.read(formStepProvider.notifier).state--,
-                  onNextPressed: () => ref.read(formStepProvider.notifier).state++,
-                ),
-                const SizedBox(height: 32.0), // Optional spacing below the content
-                // Footer
-                Footer(),
-              ],
-            ),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          PageNumber(data: '8/9'),
+          const SizedBox(height: 4),
+          PageTitle(data: 'Page Eight Title'), // Placeholder Title
+          const SizedBox(height: 6.0),
+          const Center(child: Text('Masih On Progress')),
+          const SizedBox(height: 32.0),
+          NavigationButtonRow(
+            onBackPressed: () => ref.read(formStepProvider.notifier).state--,
+            onNextPressed: () => ref.read(formStepProvider.notifier).state++,
           ),
-        ),
-      ],
+          const SizedBox(height: 32.0), // Optional spacing below the content
+          // Footer
+          Footer(),
+        ],
+      ),
     );
   }
 }

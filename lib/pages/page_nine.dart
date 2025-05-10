@@ -58,50 +58,42 @@ class _PageNineState extends ConsumerState<PageNine> {
 
   @override
   Widget build(BuildContext context) {
-    return CommonLayout(
+    return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  PageNumber(data: '9/9'),
-                  const SizedBox(height: 4),
-                  PageTitle(data: 'Finalisasi'), // Placeholder Title
-                  const SizedBox(height: 6.0),
-                  Text(
-                    'Pastikan data yang telah diisi telah sesuai dengan yang sebenarnya dan memenuhi SOP PT Inspeksi Mobil Jogja',
-                    style: labelStyle.copyWith(fontWeight: FontWeight.w300), // Corrected font weight
-                  ),
-                  const SizedBox(height: 16.0), // Added spacing
-                  FormConfirmation(
-                    label: 'Data yang saya isi telah sesuai',
-                    initialValue: _isChecked,
-                    onChanged: (bool newValue) {
-                      setState(() {
-                        _isChecked = newValue;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 32.0),
-                  NavigationButtonRow(
-                    onBackPressed: () => ref.read(formStepProvider.notifier).state--,
-                    isLastPage: true, // This will make the button text "Selesai" or similar
-                    onNextPressed: _submitForm, // _submitForm will now update formStepProvider on success
-                    isFormConfirmed: _isChecked,
-                    // Removed isLoading parameter
-                  ),
-                  // Removed loading indicator
-                  const SizedBox(
-                    height: 32.0,
-                  ), // Optional spacing below the content
-                  // Footer
-                  Footer(),
-                ],
-              ),
-            ),
+          PageNumber(data: '9/9'),
+          const SizedBox(height: 4),
+          PageTitle(data: 'Finalisasi'), // Placeholder Title
+          const SizedBox(height: 6.0),
+          Text(
+            'Pastikan data yang telah diisi telah sesuai dengan yang sebenarnya dan memenuhi SOP PT Inspeksi Mobil Jogja',
+            style: labelStyle.copyWith(fontWeight: FontWeight.w300), // Corrected font weight
           ),
+          const SizedBox(height: 16.0), // Added spacing
+          FormConfirmation(
+            label: 'Data yang saya isi telah sesuai',
+            initialValue: _isChecked,
+            onChanged: (bool newValue) {
+              setState(() {
+                _isChecked = newValue;
+              });
+            },
+          ),
+          const SizedBox(height: 32.0),
+          NavigationButtonRow(
+            onBackPressed: () => ref.read(formStepProvider.notifier).state--,
+            isLastPage: true, // This will make the button text "Selesai" or similar
+            onNextPressed: _submitForm, // _submitForm will now update formStepProvider on success
+            isFormConfirmed: _isChecked,
+            // Removed isLoading parameter
+          ),
+          // Removed loading indicator
+          const SizedBox(
+            height: 32.0,
+          ), // Optional spacing below the content
+          // Footer
+          Footer(),
         ],
       ),
     );
