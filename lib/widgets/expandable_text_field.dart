@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:form_app/statics/app_styles.dart'; // Re-enabled your original styles import
+import 'package:form_app/statics/app_styles.dart'; // Assuming these exist
 import 'dart:math'; // Import math for min function
 
 class ExpandableTextField extends StatefulWidget {
@@ -35,24 +35,18 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
   late FocusNode _focusNode;
   List<String> _lines = [];
 
-  // Store previous text and selection to analyze changes in onChanged
   String _previousText = '';
   TextSelection _previousSelection = const TextSelection.collapsed(offset: 0);
 
   @override
   void initState() {
     super.initState();
-
     _lines = List<String>.from(widget.initialLines ?? []);
     _internalController = widget.controller ?? TextEditingController(text: _lines.join('\n'));
-
-    // Initialize previous state
     _updatePreviousState();
-
     if (widget.controller != null) {
       widget.controller!.addListener(_handleExternalControllerChange);
     }
-
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_handleFocusChange);
   }
@@ -60,20 +54,13 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
   @override
   void didUpdateWidget(covariant ExpandableTextField oldWidget) {
     super.didUpdateWidget(oldWidget);
-
     if (widget.controller != oldWidget.controller) {
-      if (oldWidget.controller != null) {
-        oldWidget.controller!.removeListener(_handleExternalControllerChange);
-      }
-      if (widget.controller != null) {
-        widget.controller!.addListener(_handleExternalControllerChange);
-        if (_internalController.text != widget.controller!.text) {
-          _internalController.text = widget.controller!.text; // Triggers onChanged
-        }
+      oldWidget.controller?.removeListener(_handleExternalControllerChange);
+      widget.controller?.addListener(_handleExternalControllerChange);
+      if (widget.controller != null && _internalController.text != widget.controller!.text) {
+        _internalController.text = widget.controller!.text;
       }
     }
-
-
     if (widget.initialLines != oldWidget.initialLines && widget.controller == null) {
       final oldInitialTextJoined = (oldWidget.initialLines ?? []).join('\n');
       if (_internalController.text == oldInitialTextJoined ||
@@ -83,7 +70,7 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
         final newText = _lines.join('\n');
         if (_internalController.text != newText) {
           final currentSelection = _internalController.selection;
-          _internalController.text = newText; // This will trigger onChanged
+          _internalController.text = newText;
           try {
             _internalController.selection = currentSelection.copyWith(
               baseOffset: min(currentSelection.baseOffset, _internalController.text.length),
@@ -95,7 +82,6 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
         }
       }
     }
-    
     if (widget.focusNode != oldWidget.focusNode) {
       _focusNode.removeListener(_handleFocusChange);
       _focusNode = widget.focusNode ?? FocusNode();
@@ -106,15 +92,9 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
   @override
   void dispose() {
     _focusNode.removeListener(_handleFocusChange);
-    if (widget.controller != null) {
-      widget.controller!.removeListener(_handleExternalControllerChange);
-    }
-    if (widget.controller == null) {
-      _internalController.dispose();
-    }
-    if (widget.focusNode == null) {
-      _focusNode.dispose();
-    }
+    widget.controller?.removeListener(_handleExternalControllerChange);
+    if (widget.controller == null) _internalController.dispose();
+    if (widget.focusNode == null) _focusNode.dispose();
     super.dispose();
   }
 
@@ -126,54 +106,67 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
 
   void _handleExternalControllerChange() {
     if (_internalController.text != widget.controller!.text) {
-      _internalController.text = widget.controller!.text; // This triggers onChanged
+      _internalController.text = widget.controller!.text;
     }
   }
 
   void _handleFocusChange() {
     if (!mounted) return;
-
     if (_focusNode.hasFocus && _internalController.text.isEmpty) {
       _internalController.text = '• ';
       _internalController.selection = TextSelection.collapsed(offset: _internalController.text.length);
-      // onChanged will be triggered by text change.
     } else if (!_focusNode.hasFocus && _internalController.text == '• ') {
       _internalController.clear();
-      // onChanged will be triggered by text change.
     }
-    setState(() {}); // To update hint visibility
+    setState(() {});
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is KeyDownEvent) {
-      final currentText = _internalController.text;
-      final currentSelection = _internalController.selection;
+      final text = _internalController.text;
+      final selection = _internalController.selection;
 
       if (event.logicalKey == LogicalKeyboardKey.enter) {
-        if (currentSelection.isValid) {
-          final newText = currentText.replaceRange(currentSelection.start, currentSelection.end, '\n• ');
+        if (selection.isValid) {
+          final newText = text.replaceRange(selection.start, selection.end, '\n• ');
           _internalController.value = TextEditingValue(
             text: newText,
-            selection: TextSelection.fromPosition(
-              TextPosition(offset: currentSelection.start + 3),
-            ),
+            selection: TextSelection.fromPosition(TextPosition(offset: selection.start + 3)),
           );
           return KeyEventResult.handled;
         }
       } else if (event.logicalKey == LogicalKeyboardKey.backspace) {
-        if (currentSelection.isCollapsed &&
-            currentSelection.start > 2 &&
-            currentText.length >= currentSelection.start &&
-            currentText.substring(currentSelection.start - 3, currentSelection.start) == '\n• ') {
-          final newText = currentText.substring(0, currentSelection.start - 3) +
-                          currentText.substring(currentSelection.start);
-          _internalController.value = TextEditingValue(
-            text: newText,
-            selection: TextSelection.fromPosition(
-              TextPosition(offset: currentSelection.start - 3),
-            ),
-          );
-          return KeyEventResult.handled;
+        if (selection.isCollapsed && selection.baseOffset > 0) {
+          final offset = selection.baseOffset;
+
+          // Case 1: Cursor is *immediately after* "• " from an empty bullet line.
+          // Handles "...\n• |" -> "..."
+          // Handles "• |" (at start) -> ""
+          if (offset >= 2 && text.substring(offset - 2, offset) == '• ') {
+            if (offset >= 3 && text[offset - 3] == '\n') { // Ends in "\n• "
+              _internalController.value = TextEditingValue(
+                text: text.substring(0, offset - 3), // Remove \n•
+                selection: TextSelection.collapsed(offset: offset - 3),
+              );
+              return KeyEventResult.handled;
+            } else if (offset == 2) { // Is "• " at the very start of the field
+              _internalController.value = TextEditingValue(
+                text: "", // Remove •
+                selection: TextSelection.collapsed(offset: 0),
+              );
+              return KeyEventResult.handled;
+            }
+            // If "XYZ• ", this case is not met, falls through.
+          }
+          // Case 2: Cursor is at the start of a bulleted line's *content* (e.g., "...\n• |CONTENT")
+          // This will remove the "\n• " prefix.
+          else if (offset >= 3 && text.substring(offset - 3, offset) == '\n• ') {
+            _internalController.value = TextEditingValue(
+              text: text.substring(0, offset - 3) + text.substring(offset),
+              selection: TextSelection.collapsed(offset: offset - 3),
+            );
+            return KeyEventResult.handled;
+          }
         }
       }
     }
@@ -202,45 +195,65 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
                 maxLines: null,
                 minLines: 3,
                 onChanged: (currentValueFromFramework) {
-                  String newText = currentValueFromFramework;
-                  TextSelection newSelection = _internalController.selection;
+                  String currentText = _internalController.text; // Text after potential HW key event or IME action
+                  TextSelection currentSelection = _internalController.selection;
 
-                  if (newText.length == _previousText.length + 1 &&
+                  String newText = currentText; // Start with current text
+                  TextSelection newSelection = currentSelection; // Start with current selection
+
+                  bool textModifiedByOnChangeLogic = false;
+
+                  // --- Enter key press (newline insertion) detection for soft keyboards ---
+                  if (currentText.length == _previousText.length + 1 &&
                       _previousSelection.isValid &&
-                      newSelection.isValid && newSelection.isCollapsed &&
-                      newSelection.baseOffset > 0 &&
-                      newText[newSelection.baseOffset - 1] == '\n' &&
+                      currentSelection.isValid && currentSelection.isCollapsed &&
+                      currentSelection.baseOffset > 0 &&
+                      currentText[currentSelection.baseOffset - 1] == '\n' &&
                       _previousSelection.baseOffset <= _previousText.length &&
-                      newText.substring(0, newSelection.baseOffset - 1) == _previousText.substring(0, _previousSelection.baseOffset) &&
-                      newText.substring(newSelection.baseOffset) == _previousText.substring(_previousSelection.baseOffset)
-                    ) {
-                    final beforeNewline = newText.substring(0, newSelection.baseOffset);
-                    final afterNewlineContent = newText.substring(newSelection.baseOffset);
+                      currentText.substring(0, currentSelection.baseOffset - 1) == _previousText.substring(0, _previousSelection.baseOffset) &&
+                      currentText.substring(currentSelection.baseOffset) == _previousText.substring(_previousSelection.baseOffset)) {
+                    final beforeNewline = currentText.substring(0, currentSelection.baseOffset);
+                    final afterNewlineContent = currentText.substring(currentSelection.baseOffset);
                     newText = '$beforeNewline• $afterNewlineContent';
-                    newSelection = TextSelection.collapsed(offset: newSelection.baseOffset + 2);
+                    newSelection = TextSelection.collapsed(offset: currentSelection.baseOffset + 2);
+                    textModifiedByOnChangeLogic = true;
                   }
-                  else if (newText.length == _previousText.length - 1 &&
-                           _previousSelection.isValid && _previousSelection.isCollapsed &&
-                           newSelection.isValid && newSelection.isCollapsed &&
-                           _previousText.length > newSelection.baseOffset &&
-                           _previousText[newSelection.baseOffset] == '\n' &&
-                           newText.length >= newSelection.baseOffset + 2 &&
-                           newText.substring(newSelection.baseOffset, newSelection.baseOffset + 2) == '• ' &&
-                           _previousText.substring(0, newSelection.baseOffset) == newText.substring(0, newSelection.baseOffset) &&
-                           _previousText.substring(newSelection.baseOffset + 1).startsWith(newText.substring(newSelection.baseOffset))
-                          ) {
-                      newText = newText.substring(0, newSelection.baseOffset) +
-                                newText.substring(newSelection.baseOffset + 2);
-                      newSelection = TextSelection.collapsed(offset: newSelection.baseOffset);
+                  // --- Soft keyboard backspace correction for empty bullet lines ---
+                  // This handles when an IME (like Gboard) deletes the space from "• ", leaving "•".
+                  else if (
+                      currentText.length == _previousText.length - 1 && // Exactly one char (space) deleted
+                      _previousSelection.isCollapsed &&
+                      _previousSelection.baseOffset == _previousText.length && // Cursor was at the end of old text
+                      _previousText.endsWith('• ') && // Old text ended with "• "
+                      ( // And it was a proper empty bullet line
+                        _previousText == '• ' || // was "• " at start
+                        _previousText.endsWith('\n• ') // was "...\n• "
+                      )
+                    ) {
+                      // At this point, currentText is _previousText minus the trailing space.
+                      // So, currentText ends with "•".
+                      if (currentText.endsWith('\n•')) { // Previous was "...\n• ", current is "...\n•"
+                          newText = currentText.substring(0, currentText.length - 2); // Remove "\n•" -> "..."
+                          newSelection = TextSelection.collapsed(offset: newText.length);
+                          textModifiedByOnChangeLogic = true;
+                      } else if (currentText == '•') { // Previous was "• ", current is "•"
+                          newText = ""; // Remove "•" -> ""
+                          newSelection = const TextSelection.collapsed(offset: 0);
+                          textModifiedByOnChangeLogic = true;
+                      }
                   }
 
-                  if (newText != _internalController.text || newSelection != _internalController.selection) {
+                  // If our onChanged logic modified text/selection, update the controller
+                  if (textModifiedByOnChangeLogic) {
+                    if (newText != _internalController.text || newSelection != _internalController.selection) {
                       _internalController.value = TextEditingValue(
-                          text: newText,
-                          selection: newSelection,
+                        text: newText,
+                        selection: newSelection,
                       );
+                    }
                   }
 
+                  // Common updates (always use the potentially modified text from _internalController)
                   _lines = _internalController.text.split('\n');
                   widget.onChangedList?.call(_lines);
 
@@ -251,34 +264,34 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
                   if (widget.formSubmitted) {
                     _formFieldKey.currentState?.validate();
                   }
-                  _updatePreviousState();
+                  _updatePreviousState(); // CRITICAL: Update for the *next* event
                 },
                 validator: widget.validator,
-                style: inputTextStyling, // Uses inputTextStyling from app_styles.dart
+                style: inputTextStyling,
                 decoration: InputDecoration(
                   hintText: null,
-                  hintStyle: hintTextStyling, // Uses hintTextStyling from app_styles.dart
+                  hintStyle: hintTextStyling,
                   contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                   isDense: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(color: toggleOptionSelectedLengkapColor, width: 1.5), // Uses color from app_styles.dart
+                    borderSide: const BorderSide(color: toggleOptionSelectedLengkapColor, width: 1.5),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(color: toggleOptionSelectedLengkapColor, width: 1.5), // Uses color from app_styles.dart
+                    borderSide: const BorderSide(color: toggleOptionSelectedLengkapColor, width: 1.5),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(color: toggleOptionSelectedLengkapColor, width: 2.0), // Uses color from app_styles.dart
+                    borderSide: const BorderSide(color: toggleOptionSelectedLengkapColor, width: 2.0),
                   ),
                   errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(color: errorBorderColor, width: 1.5), // Uses color from app_styles.dart
+                    borderSide: const BorderSide(color: errorBorderColor, width: 1.5),
                   ),
                   focusedErrorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
-                    borderSide: const BorderSide(color: errorBorderColor, width: 2.0), // Uses color from app_styles.dart
+                    borderSide: const BorderSide(color: errorBorderColor, width: 2.0),
                   ),
                 ),
               ),
@@ -289,7 +302,7 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
                   child: IgnorePointer(
                     child: Text(
                       formattedHintText,
-                      style: hintTextStyling, // Uses hintTextStyling from app_styles.dart
+                      style: hintTextStyling,
                     ),
                   ),
                 ),
