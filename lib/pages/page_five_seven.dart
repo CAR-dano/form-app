@@ -6,8 +6,9 @@ import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
-import 'package:form_app/pages/page_six_general_wajib.dart';
+// import 'package:form_app/pages/page_six_general_wajib.dart'; // No longer directly navigating
 import 'package:form_app/providers/form_provider.dart';
+import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
 import 'package:form_app/widgets/expandable_text_field.dart';
 
@@ -202,12 +203,13 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> {
                         ),
                         const SizedBox(height: 32.0),
                         NavigationButtonRow(
-                          onBackPressed: () => Navigator.pop(context),
+                          onBackPressed: () {
+                            _focusScopeNode.unfocus();
+                            ref.read(formStepProvider.notifier).state--;
+                          },
                           onNextPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const PageSixGeneralWajib()),
-                            );
+                            _focusScopeNode.unfocus();
+                            ref.read(formStepProvider.notifier).state++;
                           },
                         ),
                         const SizedBox(height: 32.0),

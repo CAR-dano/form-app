@@ -1,9 +1,8 @@
 // page_one.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_app/pages/page_two.dart';
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
-import 'package:form_app/widgets/common_layout.dart'; // Import CommonLayout
+import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/labeled_date_field.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
@@ -13,7 +12,9 @@ import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/labeled_dropdown_field.dart';
 
 class PageOne extends ConsumerStatefulWidget {
-  const PageOne({super.key});
+  final GlobalKey<FormState> formKey; // Add formKey parameter
+
+  const PageOne({super.key, required this.formKey}); // Update constructor
 
   @override
   ConsumerState<PageOne> createState() => _PageOneState();
@@ -22,7 +23,7 @@ class PageOne extends ConsumerStatefulWidget {
 class _PageOneState extends ConsumerState<PageOne> {
   late FocusScopeNode _focusScopeNode;
 
-  final _formKey = GlobalKey<FormState>(); // GlobalKey for the form
+  // final _formKey = GlobalKey<FormState>(); // GlobalKey for the form - now passed as a parameter
   bool _formSubmitted = false; // Track if the form has been submitted
 
   @override
@@ -35,29 +36,6 @@ class _PageOneState extends ConsumerState<PageOne> {
   void dispose() {
     _focusScopeNode.dispose();
     super.dispose();
-  }
-
-  moveToNextPage() {
-    // Wrap the next page with CommonLayout as well
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) => const CommonLayout(child: PageTwo()), // Wrap PageTwo
-      ),
-    );
-  }
-
-  void validateAndMoveToNextPage() {
-    setState(() {
-      _formSubmitted = true; // Mark the form as submitted
-    });
-    if (_formKey.currentState!.validate()) {
-      // If the form is valid, display a snackbar. In a real app,
-      // you would save the data and navigate to the next page.
-      _focusScopeNode.unfocus(); // Unfocus any focused text field
-      moveToNextPage(); // Move to the next page if validation passes
-    }
   }
 
   @override
@@ -78,7 +56,7 @@ class _PageOneState extends ConsumerState<PageOne> {
         node: _focusScopeNode,
         child: Form(
           // Wrap with Form widget
-          key: _formKey, // Assign the form key
+          key: widget.formKey, // Use the passed formKey
           child: GestureDetector(
             // Wrap with GestureDetector
             onTap: () {
@@ -165,7 +143,7 @@ class _PageOneState extends ConsumerState<PageOne> {
                               newValue,
                             ); // Update data in provider
                             if (_formSubmitted) { // Trigger validation if form was submitted
-                               _formKey.currentState?.validate();
+                               widget.formKey.currentState?.validate();
                             }
                           },
                            validator: (value) {
@@ -197,18 +175,20 @@ class _PageOneState extends ConsumerState<PageOne> {
                               _formSubmitted, // Pass the formSubmitted flag
                         ),
                         const SizedBox(height: 32.0), // Keep internal spacing
-                        // Pass isBackButtonEnabled: false for PageOne
                         NavigationButtonRow(
-                          onNextPressed:
-                              validateAndMoveToNextPage, // Call validation function
-                          isBackButtonEnabled:
-                              false, // Hide back button on page 1
-                          // Add onBackPressed: null explicitly if needed, though it won't be used when hidden
-                          // onBackPressed: null,
+                          isBackButtonEnabled: false, // PageOne has no back button
+                          onNextPressed: () {
+                            setState(() {
+                              _formSubmitted = true;
+                            });
+                            if (widget.formKey.currentState?.validate() ?? false) {
+                              _focusScopeNode.unfocus();
+                              ref.read(formStepProvider.notifier).state++;
+                            }
+                          },
+                          // onBackPressed will be null due to isBackButtonEnabled: false
                         ),
-                        SizedBox(
-                          height: 32.0,
-                        ), // Optional spacing below the content
+                        const SizedBox(height: 32.0), // Optional spacing below the content
                         // Footer
                         Footer(),
                       ],

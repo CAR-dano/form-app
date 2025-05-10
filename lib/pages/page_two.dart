@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_app/pages/page_three.dart'; // Assuming PageThree exists or will be created
+// import 'package:form_app/pages/page_three.dart'; // No longer directly navigating
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
-import 'package:form_app/widgets/common_layout.dart';
+import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/labeled_date_field.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
@@ -11,7 +11,9 @@ import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 
 class PageTwo extends ConsumerStatefulWidget {
-  const PageTwo({super.key});
+  final GlobalKey<FormState> formKey; // Add formKey parameter
+
+  const PageTwo({super.key, required this.formKey}); // Update constructor
 
   @override
   ConsumerState<PageTwo> createState() => _PageTwoState();
@@ -20,7 +22,7 @@ class PageTwo extends ConsumerStatefulWidget {
 class _PageTwoState extends ConsumerState<PageTwo> {
   late FocusScopeNode _focusScopeNode;
 
-  final _formKey = GlobalKey<FormState>(); // GlobalKey for the form
+  // final _formKey = GlobalKey<FormState>(); // GlobalKey for the form - now passed as a parameter
   bool _formSubmitted = false; // Track if the form has been submitted
 
   @override
@@ -35,33 +37,22 @@ class _PageTwoState extends ConsumerState<PageTwo> {
     super.dispose();
   }
 
-  void moveToNextPage() {
-    // Navigate to Page Three, wrapped in CommonLayout
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) =>
-                const CommonLayout(child: PageThree()), // Wrap PageThree
-      ),
-    );
-  }
+  // void moveToNextPage() {
+  //   // Navigation is now handled by MultiStepFormScreen
+  // }
 
-  void moveToPreviousPage() {
-    Navigator.pop(
-      context,
-    ); // Simple pop to go back to the previous page (PageOne)
-  }
+  // void moveToPreviousPage() {
+  //   // Navigation is now handled by MultiStepFormScreen
+  // }
 
-  void validateAndMoveToNextPage() {
-    setState(() {
-      _formSubmitted = true; // Mark the form as submitted
-    });
-    if (_formKey.currentState!.validate()) {
-      // If the form is valid, navigate to the next page.
-      moveToNextPage(); // Move to the next page if validation passes
-    }
-  }
+  // void validateAndMoveToNextPage() { // Keep validation logic, but remove navigation
+  //   setState(() {
+  //     _formSubmitted = true; // Mark the form as submitted
+  //   });
+  //   if (widget.formKey.currentState!.validate()) { // Use widget.formKey
+  //     // Navigation is now handled by MultiStepFormScreen
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +71,7 @@ class _PageTwoState extends ConsumerState<PageTwo> {
         node: _focusScopeNode,
         child: Form(
           // Wrap with Form widget
-          key: _formKey, // Assign the form key
+          key: widget.formKey, // Use the passed formKey
           child: GestureDetector(
             // Wrap with GestureDetector
             onTap: () {
@@ -341,15 +332,22 @@ class _PageTwoState extends ConsumerState<PageTwo> {
                         ),
 
                         const SizedBox(height: 32.0), // Spacing before buttons
-                        // Navigation Row - Back button is enabled here
                         NavigationButtonRow(
-                          onBackPressed:
-                              moveToPreviousPage, // Enable back navigation
-                          onNextPressed:
-                              validateAndMoveToNextPage, // Call validation function
-                          // isBackButtonEnabled: true, // Default is true, so can be omitted
+                          onBackPressed: () {
+                            _focusScopeNode.unfocus();
+                            ref.read(formStepProvider.notifier).state--;
+                          },
+                          onNextPressed: () {
+                            setState(() {
+                              _formSubmitted = true;
+                            });
+                            if (widget.formKey.currentState?.validate() ?? false) {
+                              _focusScopeNode.unfocus();
+                              ref.read(formStepProvider.notifier).state++;
+                            }
+                          },
                         ),
-                        SizedBox(height: 32.0),
+                        const SizedBox(height: 32.0),
                         Footer(),
                       ],
                     ),

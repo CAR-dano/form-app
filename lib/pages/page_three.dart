@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
+import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/toggle_option_widget.dart';
-import 'package:form_app/pages/page_four.dart';
 // Import other necessary widgets like CommonLayout if you plan to use it here
 
 // Placeholder for Page Three
@@ -94,15 +94,10 @@ class PageThree extends ConsumerWidget {
                 ),
                 const SizedBox(height: 32.0),
                 NavigationButtonRow(
-                  onBackPressed: () => Navigator.pop(context),
-                  onNextPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const PageFour()),
-                    );
-                  },
+                  onBackPressed: () => ref.read(formStepProvider.notifier).state--,
+                  onNextPressed: () => ref.read(formStepProvider.notifier).state++,
                 ),
-                SizedBox(height: 32.0), // Optional spacing below the content
+                const SizedBox(height: 32.0), // Optional spacing below the content
                 // Footer
                 Footer(),
               ],

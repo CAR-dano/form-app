@@ -9,7 +9,8 @@ import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
-import 'package:form_app/pages/finished.dart';
+// import 'package:form_app/pages/finished.dart'; // FinishedPage is handled by MultiStepFormScreen
+import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 
 // Placeholder for Page Nine
 class PageNine extends ConsumerStatefulWidget {
@@ -40,10 +41,8 @@ class _PageNineState extends ConsumerState<PageNine> {
        await apiService.submitFormData(formData);
 
       if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => FinishedPage()),
-      );
+      // Navigate to the FinishedPage by updating the form step
+      ref.read(formStepProvider.notifier).state++; 
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -87,9 +86,9 @@ class _PageNineState extends ConsumerState<PageNine> {
                   ),
                   const SizedBox(height: 32.0),
                   NavigationButtonRow(
-                    onBackPressed: () => Navigator.pop(context),
-                    isLastPage: true,
-                    onNextPressed: _submitForm,
+                    onBackPressed: () => ref.read(formStepProvider.notifier).state--,
+                    isLastPage: true, // This will make the button text "Selesai" or similar
+                    onNextPressed: _submitForm, // _submitForm will now update formStepProvider on success
                     isFormConfirmed: _isChecked,
                     // Removed isLoading parameter
                   ),

@@ -9,7 +9,8 @@ import 'package:form_app/widgets/image_input_widget.dart'; // Import ImageInputW
 import 'dart:io'; // Import File
 import 'package:form_app/models/image_data.dart'; // Import ImageData
 import 'package:form_app/providers/image_data_provider.dart'; // Import ImageDataProvider
-import 'package:form_app/pages/page_eight.dart'; // Import PageEight
+// import 'package:form_app/pages/page_eight.dart'; // No longer directly navigating
+import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 
 // Foto Dokumen Page (formerly Page Seven)
 class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
@@ -62,13 +63,8 @@ class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
 
                   const SizedBox(height: 32.0),
                   NavigationButtonRow(
-                    onBackPressed: () => Navigator.pop(context),
-                    onNextPressed: () {
-                       Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const PageEight()),
-                      );
-                    },
+                    onBackPressed: () => ref.read(formStepProvider.notifier).state--,
+                    onNextPressed: () => ref.read(formStepProvider.notifier).state++,
                   ),
                   const SizedBox(height: 32.0),
                   Footer(),

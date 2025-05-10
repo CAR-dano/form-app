@@ -10,48 +10,42 @@ import 'package:form_app/widgets/image_input_widget.dart'; // Keep import in cas
 import 'dart:io'; // Keep import in case needed later
 import 'package:form_app/models/image_data.dart'; // Keep import in case needed later
 import 'package:form_app/providers/image_data_provider.dart'; // Keep import in case needed later
-import 'package:form_app/pages/page_six_eksterior_wajib.dart'; // Import the next page
+// import 'package:form_app/pages/page_six_eksterior_wajib.dart'; // No longer directly navigating
+import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 
 class PageSixGeneralTambahan extends ConsumerWidget {
   const PageSixGeneralTambahan({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CommonLayout(
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  PageNumber(data: '6/9'),
-                  const SizedBox(height: 4),
-                  PageTitle(data: 'Foto General'),
-                  const SizedBox(height: 6.0),
-                  HeadingOne(text: 'Tambahan'),
-                  const SizedBox(height: 16.0),
-
-                  // Tambahan image inputs will go here later
-
-                  const SizedBox(height: 32.0),
-                  NavigationButtonRow(
-                    onBackPressed: () => Navigator.pop(context),
-                    onNextPressed: () {
-                       Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const PageSixEksteriorWajib()),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 32.0),
-                  Footer(),
-                ],
-              ),
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                PageNumber(data: '6/9'),
+                const SizedBox(height: 4),
+                PageTitle(data: 'Foto General'),
+                const SizedBox(height: 6.0),
+                HeadingOne(text: 'Tambahan'),
+                const SizedBox(height: 16.0),
+    
+                // Tambahan image inputs will go here later
+    
+                const SizedBox(height: 32.0),
+                NavigationButtonRow(
+                  onBackPressed: () => ref.read(formStepProvider.notifier).state--,
+                  onNextPressed: () => ref.read(formStepProvider.notifier).state++,
+                ),
+                const SizedBox(height: 32.0),
+                Footer(),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

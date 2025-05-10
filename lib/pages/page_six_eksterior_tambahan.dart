@@ -10,7 +10,8 @@ import 'package:form_app/widgets/image_input_widget.dart'; // Keep import in cas
 import 'dart:io'; // Keep import in case needed later
 import 'package:form_app/models/image_data.dart'; // Keep import in case needed later
 import 'package:form_app/providers/image_data_provider.dart'; // Keep import in case needed later
-import 'package:form_app/pages/page_six_interior_wajib.dart'; // Import the next page
+// import 'package:form_app/pages/page_six_interior_wajib.dart'; // No longer directly navigating
+import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 
 class PageSixEksteriorTambahan extends ConsumerWidget {
   const PageSixEksteriorTambahan({super.key});
@@ -36,13 +37,8 @@ class PageSixEksteriorTambahan extends ConsumerWidget {
 
                   const SizedBox(height: 32.0),
                   NavigationButtonRow(
-                    onBackPressed: () => Navigator.pop(context),
-                    onNextPressed: () {
-                       Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const PageSixInteriorWajib()),
-                      );
-                    },
+                    onBackPressed: () => ref.read(formStepProvider.notifier).state--,
+                    onNextPressed: () => ref.read(formStepProvider.notifier).state++,
                   ),
                   const SizedBox(height: 32.0),
                   Footer(),
