@@ -10,6 +10,7 @@ import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
+import 'package:form_app/widgets/labeled_dropdown_field.dart';
 
 class PageOne extends ConsumerStatefulWidget {
   const PageOne({super.key});
@@ -141,26 +142,38 @@ class _PageOneState extends ConsumerState<PageOne> {
                               _formSubmitted, // Pass the formSubmitted flag
                         ),
                         const SizedBox(height: 16.0), // Keep internal spacing
-                        LabeledTextField(
+                        LabeledDropdownField<String>(
                           label: 'Cabang Inspeksi',
-                          hintText: 'Contoh: Yogyakarta / Semarang',
-                          initialValue:
-                              formData
-                                  .cabangInspeksi, // Initialize with data from provider
-                          onChanged: (value) {
+                          hintText: 'Contoh: Yogyakarta / Semarang', // Add hint text
+                          value: formData.cabangInspeksi, // Use data from provider
+                          items: const [ // Define dropdown items
+                            DropdownMenuItem(
+                              value: 'Yogyakarta',
+                              child: Text('Yogyakarta'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Solo',
+                              child: Text('Solo'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Semarang',
+                              child: Text('Semarang'),
+                            ),
+                          ],
+                          onChanged: (newValue) {
                             formNotifier.updateCabangInspeksi(
-                              value,
+                              newValue,
                             ); // Update data in provider
+                            if (_formSubmitted) { // Trigger validation if form was submitted
+                               _formKey.currentState?.validate();
+                            }
                           },
-                          validator: (value) {
-                            if (_formSubmitted &&
-                                (value == null || value.isEmpty)) {
+                           validator: (value) {
+                            if (_formSubmitted && value == null) {
                               return 'Cabang Inspeksi belum terisi'; // Validation message
                             }
                             return null; // Return null if valid
                           },
-                          formSubmitted:
-                              _formSubmitted, // Pass the formSubmitted flag
                         ),
                         const SizedBox(height: 16.0), // Keep internal spacing
                         LabeledDateField(

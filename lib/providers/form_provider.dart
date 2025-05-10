@@ -12,7 +12,7 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(namaCustomer: name);
   }
 
-  void updateCabangInspeksi(String cabang) {
+  void updateCabangInspeksi(String? cabang) {
     state = state.copyWith(cabangInspeksi: cabang);
   }
 

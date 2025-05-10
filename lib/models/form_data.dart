@@ -2,7 +2,7 @@ class FormData {
   // Page One Data
   String namaInspektor;
   String namaCustomer;
-  String cabangInspeksi;
+  String? cabangInspeksi;
   DateTime? tanggalInspeksi;
 
   // Page Two Data
@@ -316,7 +316,7 @@ class FormData {
   FormData({
     this.namaInspektor = '',
     this.namaCustomer = '',
-    this.cabangInspeksi = '',
+    this.cabangInspeksi,
     this.tanggalInspeksi,
     this.merekKendaraan = '',
     this.tipeKendaraan = '',
