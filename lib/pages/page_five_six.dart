@@ -72,7 +72,6 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateBunyiGetaranSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -82,7 +81,6 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updatePerformaStirSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -92,7 +90,6 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updatePerpindahanTransmisiSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -102,7 +99,6 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateStirBalanceSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -112,7 +108,6 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updatePerformaSuspensiSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -122,7 +117,6 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updatePerformaKoplingSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -132,7 +126,6 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateRpmSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ExpandableTextField(

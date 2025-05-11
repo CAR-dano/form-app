@@ -76,7 +76,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateGetaranMesinSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -86,7 +85,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateSuaraMesinSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -96,7 +94,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateTransmisiSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -106,7 +103,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updatePompaPowerSteeringSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -116,7 +112,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateCoverTimingChainSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -126,7 +121,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateOliPowerSteeringSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -136,7 +130,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateAccuSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -146,7 +139,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateKompressorAcSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -156,7 +148,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateFanSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -166,7 +157,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateSelangSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -176,7 +166,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateKarterOliSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -186,7 +175,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateOilRemSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -196,7 +184,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateKabelSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -206,7 +193,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateKondensorSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -216,7 +202,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateRadiatorSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -226,7 +211,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateCylinderHeadSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -236,7 +220,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateOliMesinSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -246,7 +229,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateAirRadiatorSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -256,7 +238,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateCoverKlepSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -266,7 +247,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateAlternatorSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -276,7 +256,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateWaterPumpSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -286,7 +265,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateBeltSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -296,7 +274,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateOliTransmisiSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -306,7 +283,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateCylinderBlockSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -316,7 +292,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateBushingBesarSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -326,7 +301,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateBushingKecilSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -336,7 +310,6 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateTutupRadiatorSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 

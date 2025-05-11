@@ -75,7 +75,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateStirSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -85,7 +84,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateRemTanganSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -95,7 +93,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updatePedalSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -105,7 +102,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateSwitchWiperSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -115,7 +111,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateLampuHazardSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -125,7 +120,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updatePanelDashboardSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -135,7 +129,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updatePembukaKapMesinSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -145,7 +138,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updatePembukaBagasiSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -155,7 +147,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateJokDepanSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -165,7 +156,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateAromaInteriorSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -175,7 +165,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateHandlePintuSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -185,7 +174,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateConsoleBoxSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -195,7 +183,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateSpionTengahSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -205,7 +192,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateTuasPersnelingSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -215,7 +201,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateJokBelakangSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -225,7 +210,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updatePanelIndikatorSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -235,7 +219,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateSwitchLampuSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -245,7 +228,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateKarpetDasarSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -255,7 +237,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateKlaksonSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -265,7 +246,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateSunVisorSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -275,7 +255,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateTuasTangkiBensinSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -285,7 +264,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateSabukPengamanSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -295,7 +273,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateTrimInteriorSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -305,7 +282,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updatePlafonSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                       

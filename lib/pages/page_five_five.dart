@@ -72,7 +72,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateBanDepanSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -82,7 +81,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateVelgDepanSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -92,7 +90,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateDiscBrakeSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -102,7 +99,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateMasterRemSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -112,7 +108,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateTieRodSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -122,7 +117,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateGardanSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -132,7 +126,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateBanBelakangSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -142,7 +135,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateVelgBelakangSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -152,7 +144,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateBrakePadSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -162,7 +153,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateCrossmemberSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -172,7 +162,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateKnalpotSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -182,7 +171,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateBalljointSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -192,7 +180,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateRocksteerSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -202,7 +189,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateKaretBootSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -212,7 +198,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateUpperLowerArmSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -222,7 +207,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateShockBreakerSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -232,7 +216,6 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateLinkStabilizerSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ExpandableTextField(

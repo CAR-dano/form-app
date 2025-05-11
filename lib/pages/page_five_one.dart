@@ -74,7 +74,6 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateAirbagSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -84,7 +83,6 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateSistemAudioSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -94,7 +92,6 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updatePowerWindowSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -104,7 +101,6 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateSistemAcSelectedValue(value);
                   },
-                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ExpandableTextField(
