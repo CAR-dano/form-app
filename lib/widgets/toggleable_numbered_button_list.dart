@@ -68,44 +68,53 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
       children: [
         Row(
           children: [
-            GestureDetector(
-              onTap: () {
-                _handleCheckboxChange(!_isEnabled);
-              },
-              child: Row(
-                children: [
-                  Container(
-                    width: 24,
-                    height: 24,
-                    alignment: Alignment.center,
-                    child: SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: Checkbox(
-                        value: _isEnabled,
-                        onChanged: _handleCheckboxChange,
-                        activeColor: toggleOptionSelectedLengkapColor,
-                        materialTapTargetSize: MaterialTapTargetSize.padded,
-                        visualDensity: VisualDensity.compact,
-                        side: BorderSide(
-                          color: toggleOptionSelectedLengkapColor,
-                          width: 2,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
+            Expanded( // This Expanded now wraps the Row directly for layout
+              child: Row( // The GestureDetector that made the whole area clickable is removed from here
+                  children: [
+                    Container( // Checkbox container - Checkbox itself is clickable via onChanged
+                      width: 24,
+                      height: 24,
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: Checkbox(
+                          value: _isEnabled,
+                          onChanged: _handleCheckboxChange,
+                          activeColor: toggleOptionSelectedLengkapColor,
+                          materialTapTargetSize: MaterialTapTargetSize.padded,
+                          visualDensity: VisualDensity.compact,
+                          side: BorderSide(
+                            color: toggleOptionSelectedLengkapColor,
+                            width: 2,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    widget.label,
-                    style: labelStyle.copyWith(color: currentLabelColor),
-                  ),
-                ],
-              ),
+                    const SizedBox(width: 8),
+                    Expanded( // This Expanded ensures the label text area can grow
+                      child: Align( // NEW: Align the GestureDetector to control its size and position
+                        alignment: Alignment.centerLeft, // Align to the start of the available space
+                        child: GestureDetector(
+                          onTap: () {
+                            _handleCheckboxChange(!_isEnabled); // Logic to toggle the state
+                          },
+                          child: Text(
+                            widget.label,
+                            style: labelStyle.copyWith(color: currentLabelColor),
+                            // You might want to add overflow handling for the label itself if it can be very long
+                            // overflow: TextOverflow.ellipsis, // Example
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
             ),
-            const Spacer(),
+            // const Spacer(), // Removed Spacer, Expanded will manage space
              if (!_isEnabled)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
