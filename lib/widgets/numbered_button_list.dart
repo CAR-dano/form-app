@@ -31,35 +31,35 @@ class _NumberedButtonListState extends State<NumberedButtonList> {
         ),
         const SizedBox(height: 4.0),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround, // Distribute space around the buttons
+          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Distribute space between buttons
           children: List.generate(widget.count, (value) {
             final itemNumber = value + 1;
             final isSelected = itemNumber == widget.selectedValue;
-            return Expanded( // Use Expanded to make buttons take equal space
-              child: GestureDetector(
-                onTap: () => widget.onItemSelected(value + 1),
-                child: Container(
-                  height: 35, // Maintain height
-                  width: 35, // Set a fixed width for the button
-                  // No margin here, Expanded will handle spacing
-                  decoration: BoxDecoration(
-                    color: isSelected ? numberedButtonColors[itemNumber] : Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: widget.selectedValue != -1 && widget.selectedValue <= numberedButtonColors.length
-                          ? numberedButtonColors[widget.selectedValue]!
-                          : toggleOptionSelectedLengkapColor, // Default color if no button is selected or value is out of bounds
-                      width: 2,
-                    ),
+            // REMOVE Expanded
+            return GestureDetector( // GestureDetector is now the direct child of Row's list
+              onTap: () => widget.onItemSelected(value + 1),
+              child: Container(
+                height: 35,
+                width: 35, // This width will now be respected
+                // Add margin if spaceAround/spaceBetween is not enough, or if you use MainAxisAlignment.start
+                // margin: const EdgeInsets.symmetric(horizontal: 4.0), // Example margin
+                decoration: BoxDecoration(
+                  color: isSelected ? numberedButtonColors[itemNumber] : Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: widget.selectedValue != -1 && widget.selectedValue <= numberedButtonColors.length
+                        ? numberedButtonColors[widget.selectedValue]!
+                        : toggleOptionSelectedLengkapColor,
+                    width: 2,
                   ),
-                  child: Center(
-                    child: Text(
-                      itemNumber.toString(),
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                ),
+                child: Center(
+                  child: Text(
+                    itemNumber.toString(),
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
                   ),
                 ),

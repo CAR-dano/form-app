@@ -61,20 +61,18 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
     }
     final Color currentButtonTextColor = _isEnabled ? Colors.black : Colors.grey.shade400;
 
-    // Use the same fixed size as NumberedButtonList
     const double buttonSize = 35.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // --- Row for Checkbox and Label ---
         Row(
           children: [
             GestureDetector(
               onTap: () {
                 _handleCheckboxChange(!_isEnabled);
               },
-              child: Row( // Wrap checkbox, sizedbox, and text in a new Row for GestureDetector
+              child: Row(
                 children: [
                   Container(
                     width: 24,
@@ -87,7 +85,7 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
                         value: _isEnabled,
                         onChanged: _handleCheckboxChange,
                         activeColor: toggleOptionSelectedLengkapColor,
-                        materialTapTargetSize: MaterialTapTargetSize.padded, // Changed to padded
+                        materialTapTargetSize: MaterialTapTargetSize.padded,
                         visualDensity: VisualDensity.compact,
                         side: BorderSide(
                           color: toggleOptionSelectedLengkapColor,
@@ -123,11 +121,8 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
           ],
         ),
         const SizedBox(height: 4.0),
-
-        // --- Row for Numbered Buttons ---
         Row(
-           // Use spaceAround like in NumberedButtonList
-           mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(widget.count, (index) {
             final itemNumber = index + 1;
             final isSelected = _isEnabled && (itemNumber == widget.selectedValue);
@@ -140,31 +135,26 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
              }
             final Color buttonTextColor = isSelected ? Colors.white : currentButtonTextColor;
 
-            // --- Wrap with Expanded ---
-            return Expanded(
-              child: GestureDetector(
-                onTap: _isEnabled
+            return GestureDetector(
+              onTap: _isEnabled
                   ? () => widget.onItemSelected(itemNumber == widget.selectedValue ? -1 : itemNumber)
                   : null,
-                // --- Container INSIDE Expanded with fixed size ---
-                child: Container(
-                  height: buttonSize, // Fixed height
-                  width: buttonSize,  // Fixed width (RE-ADDED)
-                  // No margin needed here, Expanded + spaceAround handles spacing
-                  decoration: BoxDecoration(
-                    color: buttonBackgroundColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: effectiveBorderColor,
-                      width: 2, // Use 1.5 or 2 based on desired look
-                    ),
+              child: Container(
+                height: buttonSize,
+                width: buttonSize,
+                decoration: BoxDecoration(
+                  color: buttonBackgroundColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: effectiveBorderColor,
+                    width: 2,
                   ),
-                  child: Center( // Center the text within the fixed-size container
-                    child: Text(
-                      itemNumber.toString(),
-                      style: toggleOptionTextStyle.copyWith(
-                        color: buttonTextColor,
-                      ),
+                ),
+                child: Center(
+                  child: Text(
+                    itemNumber.toString(),
+                    style: toggleOptionTextStyle.copyWith(
+                      color: buttonTextColor,
                     ),
                   ),
                 ),
