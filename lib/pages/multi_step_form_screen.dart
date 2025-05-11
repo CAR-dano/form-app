@@ -57,33 +57,33 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     // We will use ref.listen in the build method or another lifecycle method where ref is available.
     // For now, _formPages initialization remains here.
     _formPages = [
-      PageOne(formKey: _formKeys[0]),
-      PageTwo(formKey: _formKeys[1]),
-      const PageThree(),
-      const PageFour(),
-      const PageFiveOne(),
-      const PageFiveTwo(),
-      const PageFiveThree(),
-      const PageFiveFour(),
-      const PageFiveFive(),
-      const PageFiveSix(),
-      const PageFiveSeven(),
-      const PageSixGeneralWajib(),
-      const PageSixGeneralTambahan(),
-      const PageSixEksteriorWajib(),
-      const PageSixEksteriorTambahan(),
-      const PageSixInteriorWajib(),
-      const PageSixInteriorTambahan(),
-      const PageSixMesinWajib(),
-      const PageSixMesinTambahan(),
-      const PageSixKakiKakiWajib(),
-      const PageSixKakiKakiTambahan(),
-      const PageSixAlatAlatWajib(),
-      const PageSixAlatAlatTambahan(),
-      const PageSeven(),
-      const PageEight(),
-      const PageNine(),
-      const FinishedPage(),
+      PageOne(key: const PageStorageKey('pageOne'), formKey: _formKeys[0]),
+      PageTwo(key: const PageStorageKey('pageTwo'), formKey: _formKeys[1]),
+      const PageThree(key: PageStorageKey('pageThree')),
+      const PageFour(key: PageStorageKey('pageFour')),
+      const PageFiveOne(key: PageStorageKey('pageFiveOne')),
+      const PageFiveTwo(key: PageStorageKey('pageFiveTwo')),
+      const PageFiveThree(key: PageStorageKey('pageFiveThree')),
+      const PageFiveFour(key: PageStorageKey('pageFiveFour')),
+      const PageFiveFive(key: PageStorageKey('pageFiveFive')),
+      const PageFiveSix(key: PageStorageKey('pageFiveSix')),
+      const PageFiveSeven(key: PageStorageKey('pageFiveSeven')),
+      const PageSixGeneralWajib(key: PageStorageKey('pageSixGeneralWajib')),
+      const PageSixGeneralTambahan(key: PageStorageKey('pageSixGeneralTambahan')),
+      const PageSixEksteriorWajib(key: PageStorageKey('pageSixEksteriorWajib')),
+      const PageSixEksteriorTambahan(key: PageStorageKey('pageSixEksteriorTambahan')),
+      const PageSixInteriorWajib(key: PageStorageKey('pageSixInteriorWajib')),
+      const PageSixInteriorTambahan(key: PageStorageKey('pageSixInteriorTambahan')),
+      const PageSixMesinWajib(key: PageStorageKey('pageSixMesinWajib')),
+      const PageSixMesinTambahan(key: PageStorageKey('pageSixMesinTambahan')),
+      const PageSixKakiKakiWajib(key: PageStorageKey('pageSixKakiKakiWajib')),
+      const PageSixKakiKakiTambahan(key: PageStorageKey('pageSixKakiKakiTambahan')),
+      const PageSixAlatAlatWajib(key: PageStorageKey('pageSixAlatAlatWajib')),
+      const PageSixAlatAlatTambahan(key: PageStorageKey('pageSixAlatAlatTambahan')),
+      const PageSeven(key: PageStorageKey('pageSeven')),
+      const PageEight(key: PageStorageKey('pageEight')),
+      const PageNine(key: PageStorageKey('pageNine')),
+      const FinishedPage(key: PageStorageKey('finishedPage')),
     ];
   }
 
@@ -97,7 +97,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     return Scaffold(
       body: CommonLayout(
         child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300), // You can adjust the duration
+          duration: const Duration(milliseconds: 150), // You can adjust the duration
           layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
             return Stack(
               alignment: Alignment.topCenter, // Align children to the top center
