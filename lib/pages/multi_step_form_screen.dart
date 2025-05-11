@@ -17,7 +17,6 @@ import 'package:form_app/pages/page_five_six.dart';
 import 'package:form_app/pages/page_five_seven.dart';
 import 'package:form_app/pages/page_six_general_wajib.dart';
 import 'package:form_app/pages/page_six_general_tambahan.dart';
-// import 'package:form_app/pages/page_six_dokumen.dart'; // Removed as per user feedback
 import 'package:form_app/pages/page_six_eksterior_wajib.dart';
 import 'package:form_app/pages/page_six_eksterior_tambahan.dart';
 import 'package:form_app/pages/page_six_interior_wajib.dart';
@@ -44,75 +43,86 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   final List<GlobalKey<FormState>> _formKeys = [
     GlobalKey<FormState>(), // For PageOne
     GlobalKey<FormState>(), // For PageTwo
+    // Add more GlobalKeys if other pages have forms needing them
   ];
 
   late final List<Widget> _formPages;
-  // int _previousStep = 0; // Removed as it's no longer used with default FadeTransition
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-    // Initialize _previousStep with the initial step from the provider
-    // However, ref is not available in initState directly for listeners in the same way.
-    // We will use ref.listen in the build method or another lifecycle method where ref is available.
-    // For now, _formPages initialization remains here.
+    // Initialize PageController with the initial step from the provider
+    // Note: ref.read is safe here as initState is called once.
+    _pageController = PageController(initialPage: ref.read(formStepProvider));
+
+    // Initialize _formPages:
+    // PageStorageKey on the page widgets themselves is not strictly needed
+    // when using PageView with AutomaticKeepAliveClientMixin on each page's state.
+    // The key on the scrollable child INSIDE the page remains important.
     _formPages = [
-      PageOne(key: const PageStorageKey('pageOne'), formKey: _formKeys[0]),
-      PageTwo(key: const PageStorageKey('pageTwo'), formKey: _formKeys[1]),
-      const PageThree(key: PageStorageKey('pageThree')),
-      const PageFour(key: PageStorageKey('pageFour')),
-      const PageFiveOne(key: PageStorageKey('pageFiveOne')),
-      const PageFiveTwo(key: PageStorageKey('pageFiveTwo')),
-      const PageFiveThree(key: PageStorageKey('pageFiveThree')),
-      const PageFiveFour(key: PageStorageKey('pageFiveFour')),
-      const PageFiveFive(key: PageStorageKey('pageFiveFive')),
-      const PageFiveSix(key: PageStorageKey('pageFiveSix')),
-      const PageFiveSeven(key: PageStorageKey('pageFiveSeven')),
-      const PageSixGeneralWajib(key: PageStorageKey('pageSixGeneralWajib')),
-      const PageSixGeneralTambahan(key: PageStorageKey('pageSixGeneralTambahan')),
-      const PageSixEksteriorWajib(key: PageStorageKey('pageSixEksteriorWajib')),
-      const PageSixEksteriorTambahan(key: PageStorageKey('pageSixEksteriorTambahan')),
-      const PageSixInteriorWajib(key: PageStorageKey('pageSixInteriorWajib')),
-      const PageSixInteriorTambahan(key: PageStorageKey('pageSixInteriorTambahan')),
-      const PageSixMesinWajib(key: PageStorageKey('pageSixMesinWajib')),
-      const PageSixMesinTambahan(key: PageStorageKey('pageSixMesinTambahan')),
-      const PageSixKakiKakiWajib(key: PageStorageKey('pageSixKakiKakiWajib')),
-      const PageSixKakiKakiTambahan(key: PageStorageKey('pageSixKakiKakiTambahan')),
-      const PageSixAlatAlatWajib(key: PageStorageKey('pageSixAlatAlatWajib')),
-      const PageSixAlatAlatTambahan(key: PageStorageKey('pageSixAlatAlatTambahan')),
-      const PageSeven(key: PageStorageKey('pageSeven')),
-      const PageEight(key: PageStorageKey('pageEight')),
-      const PageNine(key: PageStorageKey('pageNine')),
-      const FinishedPage(key: PageStorageKey('finishedPage')),
+      PageOne(formKey: _formKeys[0]), // Removed PageStorageKey from here
+      PageTwo(formKey: _formKeys[1]), // Removed PageStorageKey from here
+      const PageThree(),              // Removed PageStorageKey from here
+      const PageFour(),
+      const PageFiveOne(),
+      const PageFiveTwo(),
+      const PageFiveThree(),
+      const PageFiveFour(),
+      const PageFiveFive(),
+      const PageFiveSix(),
+      const PageFiveSeven(),
+      const PageSixGeneralWajib(),
+      const PageSixGeneralTambahan(),
+      const PageSixEksteriorWajib(),
+      const PageSixEksteriorTambahan(),
+      const PageSixInteriorWajib(),
+      const PageSixInteriorTambahan(),
+      const PageSixMesinWajib(),
+      const PageSixMesinTambahan(),
+      const PageSixKakiKakiWajib(),
+      const PageSixKakiKakiTambahan(),
+      const PageSixAlatAlatWajib(),
+      const PageSixAlatAlatTambahan(),
+      const PageSeven(),
+      const PageEight(),
+      const PageNine(),
+      const FinishedPage(),
     ];
   }
 
   @override
-  Widget build(BuildContext context) {
-    final currentStep = ref.watch(formStepProvider);
-    //final totalSteps = _formPages.length;
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
-    // Removed ref.listen for _previousStep as it's no longer used.
+  @override
+  Widget build(BuildContext context) {
+    // Listen to formStepProvider changes to control PageView
+    ref.listen<int>(formStepProvider, (previous, next) {
+      if (_pageController.hasClients && _pageController.page?.round() != next) {
+        _pageController.animateToPage(
+          next,
+          duration: const Duration(milliseconds: 150), // Standard page transition duration
+          curve: Curves.easeInOut,
+        );
+      }
+    });
 
     return Scaffold(
-      body: CommonLayout(
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 150), // You can adjust the duration
-          layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
-            return Stack(
-              alignment: Alignment.topCenter, // Align children to the top center
-              children: <Widget>[
-                ...previousChildren,
-                if (currentChild != null) currentChild,
-              ],
-            );
-          },
-          // No transitionBuilder specified, so it defaults to FadeTransition
-          child: Container( 
-            key: ValueKey<int>(currentStep), // Crucial for AnimatedSwitcher to detect change
-            child: _formPages[currentStep],
-          ),
-        ),
+      // The PageView becomes the direct body of this Scaffold.
+      // Each child of PageView will be a CommonLayout wrapping a page from _formPages.
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(), // Disable manual swiping by user
+        children: _formPages.map((pageContent) {
+          return CommonLayout(child: pageContent);
+        }).toList(),
+        // If you want to update formStepProvider when PageView swipes (if not disabled):
+        // onPageChanged: (index) {
+        //   ref.read(formStepProvider.notifier).state = index;
+        // },
       ),
     );
   }

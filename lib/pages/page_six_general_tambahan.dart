@@ -12,13 +12,23 @@ import 'package:form_app/widgets/footer.dart';
 // import 'package:form_app/pages/page_six_eksterior_wajib.dart'; // No longer directly navigating
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 
-class PageSixGeneralTambahan extends ConsumerWidget {
+class PageSixGeneralTambahan extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
   const PageSixGeneralTambahan({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PageSixGeneralTambahan> createState() => _PageSixGeneralTambahanState();
+}
+
+class _PageSixGeneralTambahanState extends ConsumerState<PageSixGeneralTambahan> with AutomaticKeepAliveClientMixin { // Add mixin
+  @override
+  bool get wantKeepAlive => true; // Override wantKeepAlive
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
+    // ref is available directly in ConsumerStatefulWidget state classes
     return SingleChildScrollView(
-      key: const PageStorageKey<String>('pageSixGeneralTambahanScrollKey'), // Add PageStorageKey here
+      key: const PageStorageKey<String>('pageSixGeneralTambahanScrollKey'), // This key remains important
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

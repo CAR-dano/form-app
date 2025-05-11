@@ -10,17 +10,26 @@ import 'package:form_app/widgets/toggle_option_widget.dart';
 // Import other necessary widgets like CommonLayout if you plan to use it here
 
 // Placeholder for Page Three
-class PageThree extends ConsumerWidget {
+class PageThree extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
   const PageThree({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PageThree> createState() => _PageThreeState(); // Create state
+}
+
+class _PageThreeState extends ConsumerState<PageThree> with AutomaticKeepAliveClientMixin { // Add mixin
+  @override
+  bool get wantKeepAlive => true; // Override wantKeepAlive
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
     final formData = ref.watch(formProvider); // Watch the form data
     final formNotifier = ref.read(formProvider.notifier); // Read the notifier
 
     // Basic structure, replace with actual content later
     return SingleChildScrollView(
-      key: const PageStorageKey<String>('pageThreeScrollKey'), // Add PageStorageKey here
+      key: const PageStorageKey<String>('pageThreeScrollKey'), // This key remains important
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

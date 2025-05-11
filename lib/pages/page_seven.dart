@@ -12,13 +12,21 @@ import 'package:form_app/providers/image_data_provider.dart'; // Import ImageDat
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 
 // Foto Dokumen Page (formerly Page Seven)
-class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
+class PageSeven extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
   const PageSeven({super.key});
 
   // Image input labels will go here later
   final List<String> imageInputLabels = const [];
 
-  void _handleImagePicked(String label, File? imageFile, WidgetRef ref) {
+  @override
+  ConsumerState<PageSeven> createState() => _PageSevenState();
+}
+
+class _PageSevenState extends ConsumerState<PageSeven> with AutomaticKeepAliveClientMixin { // Add mixin
+  @override
+  bool get wantKeepAlive => true; // Override wantKeepAlive
+
+  void _handleImagePicked(String label, File? imageFile) { // ref is available via this.ref
     final imageDataListNotifier = ref.read(imageDataListProvider.notifier);
 
     if (imageFile != null) {
@@ -35,9 +43,11 @@ class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) { // Add WidgetRef ref
+  Widget build(BuildContext context) {
+    super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
+    // ref is available directly in ConsumerStatefulWidget state classes
     return SingleChildScrollView(
-      key: const PageStorageKey<String>('pageSevenScrollKey'), // Add PageStorageKey here
+      key: const PageStorageKey<String>('pageSevenScrollKey'), // This key remains important
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -47,12 +57,12 @@ class PageSeven extends ConsumerWidget { // Change to ConsumerWidget
           const SizedBox(height: 6.0),
       
           // Image inputs will go here later
-           ...imageInputLabels.map((label) => Padding(
+           ...widget.imageInputLabels.map((label) => Padding( // Access imageInputLabels via widget.
             padding: const EdgeInsets.only(bottom: 16.0),
             child: ImageInputWidget(
               label: label,
               onImagePicked: (imageFile) {
-                _handleImagePicked(label, imageFile, ref);
+                _handleImagePicked(label, imageFile); // Call state's method
               },
             ),
           )),

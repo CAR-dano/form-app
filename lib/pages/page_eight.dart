@@ -9,14 +9,24 @@ import 'package:form_app/widgets/footer.dart';
 // Import other necessary widgets like CommonLayout if you plan to use it here
 
 // Placeholder for Page Eight
-class PageEight extends ConsumerWidget { // Change to ConsumerWidget
+class PageEight extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
   const PageEight({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) { // Add WidgetRef ref
+  ConsumerState<PageEight> createState() => _PageEightState();
+}
+
+class _PageEightState extends ConsumerState<PageEight> with AutomaticKeepAliveClientMixin { // Add mixin
+  @override
+  bool get wantKeepAlive => true; // Override wantKeepAlive
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
+    // ref is available directly in ConsumerStatefulWidget state classes
     // Basic structure, replace with actual content later
     return SingleChildScrollView(
-      key: const PageStorageKey<String>('pageEightScrollKey'), // Add PageStorageKey here
+      key: const PageStorageKey<String>('pageEightScrollKey'), // This key remains important
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

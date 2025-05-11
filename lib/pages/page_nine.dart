@@ -19,8 +19,11 @@ class PageNine extends ConsumerStatefulWidget {
   ConsumerState<PageNine> createState() => _PageNineState();
 }
 
-class _PageNineState extends ConsumerState<PageNine> {
+class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClientMixin { // Add mixin
   bool _isChecked = false;
+
+  @override
+  bool get wantKeepAlive => true; // Override wantKeepAlive
 
   Future<void> _submitForm() async {
     if (!_isChecked) {
@@ -58,6 +61,7 @@ class _PageNineState extends ConsumerState<PageNine> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
     return Column(
       children: [
         SingleChildScrollView(
