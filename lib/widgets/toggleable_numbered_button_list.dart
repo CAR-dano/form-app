@@ -121,46 +121,63 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
           ],
         ),
         const SizedBox(height: 4.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: List.generate(widget.count, (index) {
-            final itemNumber = index + 1;
-            final isSelected = _isEnabled && (itemNumber == widget.selectedValue);
+        LayoutBuilder(
+          builder: (context, constraints) {
+            double availableWidth = constraints.maxWidth;
+            double preferredButtonWidth = buttonSize; // buttonSize is 35.0
+            int numberOfButtons = widget.count;
 
-            final Color buttonBackgroundColor;
-             if (isSelected) {
-               buttonBackgroundColor = numberedButtonColors[itemNumber]!;
-             } else {
-               buttonBackgroundColor = Colors.white;
-             }
-            final Color buttonTextColor = isSelected ? Colors.white : currentButtonTextColor;
+            double totalPreferredWidthWithoutSpacing = numberOfButtons * preferredButtonWidth;
+            double actualButtonWidth;
 
-            return GestureDetector(
-              onTap: _isEnabled
-                  ? () => widget.onItemSelected(itemNumber == widget.selectedValue ? -1 : itemNumber)
-                  : null,
-              child: Container(
-                height: buttonSize,
-                width: buttonSize,
-                decoration: BoxDecoration(
-                  color: buttonBackgroundColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: effectiveBorderColor,
-                    width: 2,
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    itemNumber.toString(),
-                    style: toggleOptionTextStyle.copyWith(
-                      color: buttonTextColor,
+            if (availableWidth < totalPreferredWidthWithoutSpacing) {
+              actualButtonWidth = availableWidth / numberOfButtons;
+            } else {
+              actualButtonWidth = preferredButtonWidth;
+            }
+
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(numberOfButtons, (index) {
+                final itemNumber = index + 1;
+                final isSelected = _isEnabled && (itemNumber == widget.selectedValue);
+
+                final Color buttonBackgroundColor;
+                if (isSelected) {
+                  buttonBackgroundColor = numberedButtonColors[itemNumber]!;
+                } else {
+                  buttonBackgroundColor = Colors.white;
+                }
+                final Color buttonTextColor = isSelected ? Colors.white : currentButtonTextColor;
+
+                return GestureDetector(
+                  onTap: _isEnabled
+                      ? () => widget.onItemSelected(itemNumber == widget.selectedValue ? -1 : itemNumber)
+                      : null,
+                  child: Container(
+                    height: buttonSize,
+                    width: actualButtonWidth, // Apply the calculated width
+                    decoration: BoxDecoration(
+                      color: buttonBackgroundColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: effectiveBorderColor,
+                        width: 2,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        itemNumber.toString(),
+                        style: toggleOptionTextStyle.copyWith(
+                          color: buttonTextColor,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
+                );
+              }),
             );
-          }),
+          },
         ),
       ],
     );
