@@ -177,32 +177,16 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(airbagSelectedValue: value);
   }
 
-  void updateAirbagIsEnabled(bool? enabled) {
-    state = state.copyWith(airbagIsEnabled: enabled);
-  }
-
   void updateSistemAudioSelectedValue(int? value) {
     state = state.copyWith(sistemAudioSelectedValue: value);
-  }
-
-  void updateSistemAudioIsEnabled(bool? enabled) {
-    state = state.copyWith(sistemAudioIsEnabled: enabled);
   }
 
   void updatePowerWindowSelectedValue(int? value) {
     state = state.copyWith(powerWindowSelectedValue: value);
   }
 
-  void updatePowerWindowIsEnabled(bool? enabled) {
-    state = state.copyWith(powerWindowIsEnabled: enabled);
-  }
-
   void updateSistemAcSelectedValue(int? value) {
     state = state.copyWith(sistemAcSelectedValue: value);
-  }
-
-  void updateSistemAcIsEnabled(bool? enabled) {
-    state = state.copyWith(sistemAcIsEnabled: enabled);
   }
 
   void updateFiturCatatanList(List<String> lines) {
@@ -214,217 +198,163 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(getaranMesinSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateGetaranMesinIsEnabled(bool? enabled) {
-    state = state.copyWith(getaranMesinIsEnabled: enabled);
-  }
+  // Removed updateGetaranMesinIsEnabled
 
   void updateSuaraMesinSelectedValue(int? value) {
     state = state.copyWith(suaraMesinSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateSuaraMesinIsEnabled(bool? enabled) {
-    state = state.copyWith(suaraMesinIsEnabled: enabled);
-  }
+  // Removed updateSuaraMesinIsEnabled
 
   void updateTransmisiSelectedValue(int? value) {
     state = state.copyWith(transmisiSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateTransmisiIsEnabled(bool? enabled) {
-    state = state.copyWith(transmisiIsEnabled: enabled);
-  }
+  // Removed updateTransmisiIsEnabled
 
   void updatePompaPowerSteeringSelectedValue(int? value) {
     state = state.copyWith(pompaPowerSteeringSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePompaPowerSteeringIsEnabled(bool? enabled) {
-    state = state.copyWith(pompaPowerSteeringIsEnabled: enabled);
-  }
+  // Removed updatePompaPowerSteeringIsEnabled
 
   void updateCoverTimingChainSelectedValue(int? value) {
     state = state.copyWith(coverTimingChainSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateCoverTimingChainIsEnabled(bool? enabled) {
-    state = state.copyWith(coverTimingChainIsEnabled: enabled);
-  }
+  // Removed updateCoverTimingChainIsEnabled
 
   void updateOliPowerSteeringSelectedValue(int? value) {
     state = state.copyWith(oliPowerSteeringSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateOliPowerSteeringIsEnabled(bool? enabled) {
-    state = state.copyWith(oliPowerSteeringIsEnabled: enabled);
-  }
+  // Removed updateOliPowerSteeringIsEnabled
 
   void updateAccuSelectedValue(int? value) {
     state = state.copyWith(accuSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateAccuIsEnabled(bool? enabled) {
-    state = state.copyWith(accuIsEnabled: enabled);
-  }
+  // Removed updateAccuIsEnabled
 
   void updateKompressorAcSelectedValue(int? value) {
     state = state.copyWith(kompressorAcSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateKompressorAcIsEnabled(bool? enabled) {
-    state = state.copyWith(kompressorAcIsEnabled: enabled);
-  }
+  // Removed updateKompressorAcIsEnabled
 
   void updateFanSelectedValue(int? value) {
     state = state.copyWith(fanSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateFanIsEnabled(bool? enabled) {
-    state = state.copyWith(fanIsEnabled: enabled);
-  }
+  // Removed updateFanIsEnabled
 
   void updateSelangSelectedValue(int? value) {
     state = state.copyWith(selangSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateSelangIsEnabled(bool? enabled) {
-    state = state.copyWith(selangIsEnabled: enabled);
-  }
+  // Removed updateSelangIsEnabled
 
   void updateKarterOliSelectedValue(int? value) {
     state = state.copyWith(karterOliSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateKarterOliIsEnabled(bool? enabled) {
-    state = state.copyWith(karterOliIsEnabled: enabled);
-  }
+  // Removed updateKarterOliIsEnabled
 
   void updateOilRemSelectedValue(int? value) {
     state = state.copyWith(oilRemSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateOilRemIsEnabled(bool? enabled) {
-    state = state.copyWith(oilRemIsEnabled: enabled);
-  }
+  // Removed updateOilRemIsEnabled
 
   void updateKabelSelectedValue(int? value) {
     state = state.copyWith(kabelSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateKabelIsEnabled(bool? enabled) {
-    state = state.copyWith(kabelIsEnabled: enabled);
-  }
+  // Removed updateKabelIsEnabled
 
   void updateKondensorSelectedValue(int? value) {
     state = state.copyWith(kondensorSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateKondensorIsEnabled(bool? enabled) {
-    state = state.copyWith(kondensorIsEnabled: enabled);
-  }
+  // Removed updateKondensorIsEnabled
 
   void updateRadiatorSelectedValue(int? value) {
     state = state.copyWith(radiatorSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateRadiatorIsEnabled(bool? enabled) {
-    state = state.copyWith(radiatorIsEnabled: enabled);
-  }
+  // Removed updateRadiatorIsEnabled
 
   void updateCylinderHeadSelectedValue(int? value) {
     state = state.copyWith(cylinderHeadSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateCylinderHeadIsEnabled(bool? enabled) {
-    state = state.copyWith(cylinderHeadIsEnabled: enabled);
-  }
+  // Removed updateCylinderHeadIsEnabled
 
   void updateOliMesinSelectedValue(int? value) {
     state = state.copyWith(oliMesinSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateOliMesinIsEnabled(bool? enabled) {
-    state = state.copyWith(oliMesinIsEnabled: enabled);
-  }
+  // Removed updateOliMesinIsEnabled
 
   void updateAirRadiatorSelectedValue(int? value) {
     state = state.copyWith(airRadiatorSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateAirRadiatorIsEnabled(bool? enabled) {
-    state = state.copyWith(airRadiatorIsEnabled: enabled);
-  }
+  // Removed updateAirRadiatorIsEnabled
 
   void updateCoverKlepSelectedValue(int? value) {
     state = state.copyWith(coverKlepSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateCoverKlepIsEnabled(bool? enabled) {
-    state = state.copyWith(coverKlepIsEnabled: enabled);
-  }
+  // Removed updateCoverKlepIsEnabled
 
   void updateAlternatorSelectedValue(int? value) {
     state = state.copyWith(alternatorSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateAlternatorIsEnabled(bool? enabled) {
-    state = state.copyWith(alternatorIsEnabled: enabled);
-  }
+  // Removed updateAlternatorIsEnabled
 
   void updateWaterPumpSelectedValue(int? value) {
     state = state.copyWith(waterPumpSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateWaterPumpIsEnabled(bool? enabled) {
-    state = state.copyWith(waterPumpIsEnabled: enabled);
-  }
+  // Removed updateWaterPumpIsEnabled
 
   void updateBeltSelectedValue(int? value) {
     state = state.copyWith(beltSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateBeltIsEnabled(bool? enabled) {
-    state = state.copyWith(beltIsEnabled: enabled);
-  }
+  // Removed updateBeltIsEnabled
 
   void updateOliTransmisiSelectedValue(int? value) {
     state = state.copyWith(oliTransmisiSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateOliTransmisiIsEnabled(bool? enabled) {
-    state = state.copyWith(oliTransmisiIsEnabled: enabled);
-  }
+  // Removed updateOliTransmisiIsEnabled
 
   void updateCylinderBlockSelectedValue(int? value) {
     state = state.copyWith(cylinderBlockSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateCylinderBlockIsEnabled(bool? enabled) {
-    state = state.copyWith(cylinderBlockIsEnabled: enabled);
-  }
+  // Removed updateCylinderBlockIsEnabled
 
   void updateBushingBesarSelectedValue(int? value) {
     state = state.copyWith(bushingBesarSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateBushingBesarIsEnabled(bool? enabled) {
-    state = state.copyWith(bushingBesarIsEnabled: enabled);
-  }
+  // Removed updateBushingBesarIsEnabled
 
   void updateBushingKecilSelectedValue(int? value) {
     state = state.copyWith(bushingKecilSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateBushingKecilIsEnabled(bool? enabled) {
-    state = state.copyWith(bushingKecilIsEnabled: enabled);
-  }
+  // Removed updateBushingKecilIsEnabled
 
   void updateTutupRadiatorSelectedValue(int? value) {
     state = state.copyWith(tutupRadiatorSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateTutupRadiatorIsEnabled(bool? enabled) {
-    state = state.copyWith(tutupRadiatorIsEnabled: enabled);
-  }
+  // Removed updateTutupRadiatorIsEnabled
 
   void updateMesinCatatanList(List<String> lines) {
     state = state.copyWith(mesinCatatanList: lines);
@@ -435,193 +365,145 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(stirSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateStirIsEnabled(bool? enabled) {
-    state = state.copyWith(stirIsEnabled: enabled);
-  }
+  // Removed updateStirIsEnabled
 
   void updateRemTanganSelectedValue(int? value) {
     state = state.copyWith(remTanganSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateRemTanganIsEnabled(bool? enabled) {
-    state = state.copyWith(remTanganIsEnabled: enabled);
-  }
+  // Removed updateRemTanganIsEnabled
 
   void updatePedalSelectedValue(int? value) {
     state = state.copyWith(pedalSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePedalIsEnabled(bool? enabled) {
-    state = state.copyWith(pedalIsEnabled: enabled);
-  }
+  // Removed updatePedalIsEnabled
 
   void updateSwitchWiperSelectedValue(int? value) {
     state = state.copyWith(switchWiperSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateSwitchWiperIsEnabled(bool? enabled) {
-    state = state.copyWith(switchWiperIsEnabled: enabled);
-  }
+  // Removed updateSwitchWiperIsEnabled
 
   void updateLampuHazardSelectedValue(int? value) {
     state = state.copyWith(lampuHazardSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateLampuHazardIsEnabled(bool? enabled) {
-    state = state.copyWith(lampuHazardIsEnabled: enabled);
-  }
+  // Removed updateLampuHazardIsEnabled
 
   void updatePanelDashboardSelectedValue(int? value) {
     state = state.copyWith(panelDashboardSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePanelDashboardIsEnabled(bool? enabled) {
-    state = state.copyWith(panelDashboardIsEnabled: enabled);
-  }
+  // Removed updatePanelDashboardIsEnabled
 
   void updatePembukaKapMesinSelectedValue(int? value) {
     state = state.copyWith(pembukaKapMesinSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePembukaKapMesinIsEnabled(bool? enabled) {
-    state = state.copyWith(pembukaKapMesinIsEnabled: enabled);
-  }
+  // Removed updatePembukaKapMesinIsEnabled
 
   void updatePembukaBagasiSelectedValue(int? value) {
     state = state.copyWith(pembukaBagasiSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePembukaBagasiIsEnabled(bool? enabled) {
-    state = state.copyWith(pembukaBagasiIsEnabled: enabled);
-  }
+  // Removed updatePembukaBagasiIsEnabled
 
   void updateJokDepanSelectedValue(int? value) {
     state = state.copyWith(jokDepanSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateJokDepanIsEnabled(bool? enabled) {
-    state = state.copyWith(jokDepanIsEnabled: enabled);
-  }
+  // Removed updateJokDepanIsEnabled
 
   void updateAromaInteriorSelectedValue(int? value) {
     state = state.copyWith(aromaInteriorSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateAromaInteriorIsEnabled(bool? enabled) {
-    state = state.copyWith(aromaInteriorIsEnabled: enabled);
-  }
+  // Removed updateAromaInteriorIsEnabled
 
   void updateHandlePintuSelectedValue(int? value) {
     state = state.copyWith(handlePintuSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateHandlePintuIsEnabled(bool? enabled) {
-    state = state.copyWith(handlePintuIsEnabled: enabled);
-  }
+  // Removed updateHandlePintuIsEnabled
 
   void updateConsoleBoxSelectedValue(int? value) {
     state = state.copyWith(consoleBoxSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateConsoleBoxIsEnabled(bool? enabled) {
-    state = state.copyWith(consoleBoxIsEnabled: enabled);
-  }
+  // Removed updateConsoleBoxIsEnabled
 
   void updateSpionTengahSelectedValue(int? value) {
     state = state.copyWith(spionTengahSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateSpionTengahIsEnabled(bool? enabled) {
-    state = state.copyWith(spionTengahIsEnabled: enabled);
-  }
+  // Removed updateSpionTengahIsEnabled
 
   void updateTuasPersnelingSelectedValue(int? value) {
     state = state.copyWith(tuasPersnelingSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateTuasPersnelingIsEnabled(bool? enabled) {
-    state = state.copyWith(tuasPersnelingIsEnabled: enabled);
-  }
+  // Removed updateTuasPersnelingIsEnabled
 
   void updateJokBelakangSelectedValue(int? value) {
     state = state.copyWith(jokBelakangSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateJokBelakangIsEnabled(bool? enabled) {
-    state = state.copyWith(jokBelakangIsEnabled: enabled);
-  }
+  // Removed updateJokBelakangIsEnabled
 
   void updatePanelIndikatorSelectedValue(int? value) {
     state = state.copyWith(panelIndikatorSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePanelIndikatorIsEnabled(bool? enabled) {
-    state = state.copyWith(panelIndikatorIsEnabled: enabled);
-  }
+  // Removed updatePanelIndikatorIsEnabled
 
   void updateSwitchLampuSelectedValue(int? value) {
     state = state.copyWith(switchLampuSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateSwitchLampuIsEnabled(bool? enabled) {
-    state = state.copyWith(switchLampuIsEnabled: enabled);
-  }
+  // Removed updateSwitchLampuIsEnabled
 
   void updateKarpetDasarSelectedValue(int? value) {
     state = state.copyWith(karpetDasarSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateKarpetDasarIsEnabled(bool? enabled) {
-    state = state.copyWith(karpetDasarIsEnabled: enabled);
-  }
+  // Removed updateKarpetDasarIsEnabled
 
   void updateKlaksonSelectedValue(int? value) {
     state = state.copyWith(klaksonSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateKlaksonIsEnabled(bool? enabled) {
-    state = state.copyWith(klaksonIsEnabled: enabled);
-  }
+  // Removed updateKlaksonIsEnabled
 
   void updateSunVisorSelectedValue(int? value) {
     state = state.copyWith(sunVisorSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateSunVisorIsEnabled(bool? enabled) {
-    state = state.copyWith(sunVisorIsEnabled: enabled);
-  }
+  // Removed updateSunVisorIsEnabled
 
   void updateTuasTangkiBensinSelectedValue(int? value) {
     state = state.copyWith(tuasTangkiBensinSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateTuasTangkiBensinIsEnabled(bool? enabled) {
-    state = state.copyWith(tuasTangkiBensinIsEnabled: enabled);
-  }
+  // Removed updateTuasTangkiBensinIsEnabled
 
   void updateSabukPengamanSelectedValue(int? value) {
     state = state.copyWith(sabukPengamanSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateSabukPengamanIsEnabled(bool? enabled) {
-    state = state.copyWith(sabukPengamanIsEnabled: enabled);
-  }
+  // Removed updateSabukPengamanIsEnabled
 
   void updateTrimInteriorSelectedValue(int? value) {
     state = state.copyWith(trimInteriorSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateTrimInteriorIsEnabled(bool? enabled) {
-    state = state.copyWith(trimInteriorIsEnabled: enabled);
-  }
+  // Removed updateTrimInteriorIsEnabled
 
   void updatePlafonSelectedValue(int? value) {
     state = state.copyWith(plafonSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePlafonIsEnabled(bool? enabled) {
-    state = state.copyWith(plafonIsEnabled: enabled);
-  }
+  // Removed updatePlafonIsEnabled
 
   void updateInteriorCatatanList(List<String> lines) {
     state = state.copyWith(interiorCatatanList: lines);
@@ -632,241 +514,181 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(bumperDepanSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateBumperDepanIsEnabled(bool? enabled) {
-    state = state.copyWith(bumperDepanIsEnabled: enabled);
-  }
+  // Removed updateBumperDepanIsEnabled
 
   void updateKapMesinSelectedValue(int? value) {
     state = state.copyWith(kapMesinSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateKapMesinIsEnabled(bool? enabled) {
-    state = state.copyWith(kapMesinIsEnabled: enabled);
-  }
+  // Removed updateKapMesinIsEnabled
 
   void updateLampuUtamaSelectedValue(int? value) {
     state = state.copyWith(lampuUtamaSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateLampuUtamaIsEnabled(bool? enabled) {
-    state = state.copyWith(lampuUtamaIsEnabled: enabled);
-  }
+  // Removed updateLampuUtamaIsEnabled
 
   void updatePanelAtapSelectedValue(int? value) {
     state = state.copyWith(panelAtapSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePanelAtapIsEnabled(bool? enabled) {
-    state = state.copyWith(panelAtapIsEnabled: enabled);
-  }
+  // Removed updatePanelAtapIsEnabled
 
   void updateGrillSelectedValue(int? value) {
     state = state.copyWith(grillSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateGrillIsEnabled(bool? enabled) {
-    state = state.copyWith(grillIsEnabled: enabled);
-  }
+  // Removed updateGrillIsEnabled
 
   void updateLampuFoglampSelectedValue(int? value) {
     state = state.copyWith(lampuFoglampSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateLampuFoglampIsEnabled(bool? enabled) {
-    state = state.copyWith(lampuFoglampIsEnabled: enabled);
-  }
+  // Removed updateLampuFoglampIsEnabled
 
   void updateKacaBeningSelectedValue(int? value) {
     state = state.copyWith(kacaBeningSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateKacaBeningIsEnabled(bool? enabled) {
-    state = state.copyWith(kacaBeningIsEnabled: enabled);
-  }
+  // Removed updateKacaBeningIsEnabled
 
   void updateWiperBelakangSelectedValue(int? value) {
     state = state.copyWith(wiperBelakangSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateWiperBelakangIsEnabled(bool? enabled) {
-    state = state.copyWith(wiperBelakangIsEnabled: enabled);
-  }
+  // Removed updateWiperBelakangIsEnabled
 
   void updateBumperBelakangSelectedValue(int? value) {
     state = state.copyWith(bumperBelakangSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateBumperBelakangIsEnabled(bool? enabled) {
-    state = state.copyWith(bumperBelakangIsEnabled: enabled);
-  }
+  // Removed updateBumperBelakangIsEnabled
 
   void updateLampuBelakangSelectedValue(int? value) {
     state = state.copyWith(lampuBelakangSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateLampuBelakangIsEnabled(bool? enabled) {
-    state = state.copyWith(lampuBelakangIsEnabled: enabled);
-  }
+  // Removed updateLampuBelakangIsEnabled
 
   void updateTrunklidSelectedValue(int? value) {
     state = state.copyWith(trunklidSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateTrunklidIsEnabled(bool? enabled) {
-    state = state.copyWith(trunklidIsEnabled: enabled);
-  }
+  // Removed updateTrunklidIsEnabled
 
   void updateKacaDepanSelectedValue(int? value) {
     state = state.copyWith(kacaDepanSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateKacaDepanIsEnabled(bool? enabled) {
-    state = state.copyWith(kacaDepanIsEnabled: enabled);
-  }
+  // Removed updateKacaDepanIsEnabled
 
   void updateFenderKananSelectedValue(int? value) {
     state = state.copyWith(fenderKananSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateFenderKananIsEnabled(bool? enabled) {
-    state = state.copyWith(fenderKananIsEnabled: enabled);
-  }
+  // Removed updateFenderKananIsEnabled
 
   void updateQuarterPanelKananSelectedValue(int? value) {
     state = state.copyWith(quarterPanelKananSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateQuarterPanelKananIsEnabled(bool? enabled) {
-    state = state.copyWith(quarterPanelKananIsEnabled: enabled);
-  }
+  // Removed updateQuarterPanelKananIsEnabled
 
   void updatePintuBelakangKananSelectedValue(int? value) {
     state = state.copyWith(pintuBelakangKananSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePintuBelakangKananIsEnabled(bool? enabled) {
-    state = state.copyWith(pintuBelakangKananIsEnabled: enabled);
-  }
+  // Removed updatePintuBelakangKananIsEnabled
 
   void updateSpionKananSelectedValue(int? value) {
     state = state.copyWith(spionKananSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateSpionKananIsEnabled(bool? enabled) {
-    state = state.copyWith(spionKananIsEnabled: enabled);
-  }
+  // Removed updateSpionKananIsEnabled
 
   void updateLisplangKananSelectedValue(int? value) {
     state = state.copyWith(lisplangKananSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateLisplangKananIsEnabled(bool? enabled) {
-    state = state.copyWith(lisplangKananIsEnabled: enabled);
-  }
+  // Removed updateLisplangKananIsEnabled
 
   void updateSideSkirtKananSelectedValue(int? value) {
     state = state.copyWith(sideSkirtKananSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateSideSkirtKananIsEnabled(bool? enabled) {
-    state = state.copyWith(sideSkirtKananIsEnabled: enabled);
-  }
+  // Removed updateSideSkirtKananIsEnabled
 
   void updateDaunWiperSelectedValue(int? value) {
     state = state.copyWith(daunWiperSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateDaunWiperIsEnabled(bool? enabled) {
-    state = state.copyWith(daunWiperIsEnabled: enabled);
-  }
+  // Removed updateDaunWiperIsEnabled
 
   void updatePintuBelakangSelectedValue(int? value) {
     state = state.copyWith(pintuBelakangSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePintuBelakangIsEnabled(bool? enabled) {
-    state = state.copyWith(pintuBelakangIsEnabled: enabled);
-  }
+  // Removed updatePintuBelakangIsEnabled
 
   void updateFenderKiriSelectedValue(int? value) {
     state = state.copyWith(fenderKiriSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateFenderKiriIsEnabled(bool? enabled) {
-    state = state.copyWith(fenderKiriIsEnabled: enabled);
-  }
+  // Removed updateFenderKiriIsEnabled
 
   void updateQuarterPanelKiriSelectedValue(int? value) {
     state = state.copyWith(quarterPanelKiriSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateQuarterPanelKiriIsEnabled(bool? enabled) {
-    state = state.copyWith(quarterPanelKiriIsEnabled: enabled);
-  }
+  // Removed updateQuarterPanelKiriIsEnabled
 
   void updatePintuDepanSelectedValue(int? value) {
     state = state.copyWith(pintuDepanSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePintuDepanIsEnabled(bool? enabled) {
-    state = state.copyWith(pintuDepanIsEnabled: enabled);
-  }
+  // Removed updatePintuDepanIsEnabled
 
   void updateKacaJendelaKananSelectedValue(int? value) {
     state = state.copyWith(kacaJendelaKananSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateKacaJendelaKananIsEnabled(bool? enabled) {
-    state = state.copyWith(kacaJendelaKananIsEnabled: enabled);
-  }
+  // Removed updateKacaJendelaKananIsEnabled
 
   void updatePintuBelakangKiriSelectedValue(int? value) {
     state = state.copyWith(pintuBelakangKiriSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePintuBelakangKiriIsEnabled(bool? enabled) {
-    state = state.copyWith(pintuBelakangKiriIsEnabled: enabled);
-  }
+  // Removed updatePintuBelakangKiriIsEnabled
 
   void updateSpionKiriSelectedValue(int? value) {
     state = state.copyWith(spionKiriSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateSpionKiriIsEnabled(bool? enabled) {
-    state = state.copyWith(spionKiriIsEnabled: enabled);
-  }
+  // Removed updateSpionKiriIsEnabled
 
   void updatePintuDepanKiriSelectedValue(int? value) {
     state = state.copyWith(pintuDepanKiriSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePintuDepanKiriIsEnabled(bool? enabled) {
-    state = state.copyWith(pintuDepanKiriIsEnabled: enabled);
-  }
+  // Removed updatePintuDepanKiriIsEnabled
 
   void updateKacaJendelaKiriSelectedValue(int? value) {
     state = state.copyWith(kacaJendelaKiriSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateKacaJendelaKiriIsEnabled(bool? enabled) {
-    state = state.copyWith(kacaJendelaKiriIsEnabled: enabled);
-  }
+  // Removed updateKacaJendelaKiriIsEnabled
 
   void updateLisplangKiriSelectedValue(int? value) {
     state = state.copyWith(lisplangKiriSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateLisplangKiriIsEnabled(bool? enabled) {
-    state = state.copyWith(lisplangKiriIsEnabled: enabled);
-  }
+  // Removed updateLisplangKiriIsEnabled
 
   void updateSideSkirtKiriSelectedValue(int? value) {
     state = state.copyWith(sideSkirtKiriSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateSideSkirtKiriIsEnabled(bool? enabled) {
-    state = state.copyWith(sideSkirtKiriIsEnabled: enabled);
-  }
+  // Removed updateSideSkirtKiriIsEnabled
 
   void updateEksteriorCatatanList(List<String> lines) {
     state = state.copyWith(eksteriorCatatanList: lines);
@@ -881,137 +703,103 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(banDepanSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateBanDepanIsEnabled(bool? enabled) {
-    state = state.copyWith(banDepanIsEnabled: enabled);
-  }
+  // Removed updateBanDepanIsEnabled
 
   void updateVelgDepanSelectedValue(int? value) {
     state = state.copyWith(velgDepanSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateVelgDepanIsEnabled(bool? enabled) {
-    state = state.copyWith(velgDepanIsEnabled: enabled);
-  }
+  // Removed updateVelgDepanIsEnabled
 
   void updateDiscBrakeSelectedValue(int? value) {
     state = state.copyWith(discBrakeSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateDiscBrakeIsEnabled(bool? enabled) {
-    state = state.copyWith(discBrakeIsEnabled: enabled);
-  }
+  // Removed updateDiscBrakeIsEnabled
 
   void updateMasterRemSelectedValue(int? value) {
     state = state.copyWith(masterRemSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateMasterRemIsEnabled(bool? enabled) {
-    state = state.copyWith(masterRemIsEnabled: enabled);
-  }
+  // Removed updateMasterRemIsEnabled
 
   void updateTieRodSelectedValue(int? value) {
     state = state.copyWith(tieRodSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateTieRodIsEnabled(bool? enabled) {
-    state = state.copyWith(tieRodIsEnabled: enabled);
-  }
+  // Removed updateTieRodIsEnabled
 
   void updateGardanSelectedValue(int? value) {
     state = state.copyWith(gardanSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateGardanIsEnabled(bool? enabled) {
-    state = state.copyWith(gardanIsEnabled: enabled);
-  }
+  // Removed updateGardanIsEnabled
 
   void updateBanBelakangSelectedValue(int? value) {
     state = state.copyWith(banBelakangSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateBanBelakangIsEnabled(bool? enabled) {
-    state = state.copyWith(banBelakangIsEnabled: enabled);
-  }
+  // Removed updateBanBelakangIsEnabled
 
   void updateVelgBelakangSelectedValue(int? value) {
     state = state.copyWith(velgBelakangSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateVelgBelakangIsEnabled(bool? enabled) {
-    state = state.copyWith(velgBelakangIsEnabled: enabled);
-  }
+  // Removed updateVelgBelakangIsEnabled
 
   void updateBrakePadSelectedValue(int? value) {
     state = state.copyWith(brakePadSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateBrakePadIsEnabled(bool? enabled) {
-    state = state.copyWith(brakePadIsEnabled: enabled);
-  }
+  // Removed updateBrakePadIsEnabled
 
   void updateCrossmemberSelectedValue(int? value) {
     state = state.copyWith(crossmemberSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateCrossmemberIsEnabled(bool? enabled) {
-    state = state.copyWith(crossmemberIsEnabled: enabled);
-  }
+  // Removed updateCrossmemberIsEnabled
 
   void updateKnalpotSelectedValue(int? value) {
     state = state.copyWith(knalpotSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateKnalpotIsEnabled(bool? enabled) {
-    state = state.copyWith(knalpotIsEnabled: enabled);
-  }
+  // Removed updateKnalpotIsEnabled
 
   void updateBalljointSelectedValue(int? value) {
     state = state.copyWith(balljointSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateBalljointIsEnabled(bool? enabled) {
-    state = state.copyWith(balljointIsEnabled: enabled);
-  }
+  // Removed updateBalljointIsEnabled
 
   void updateRocksteerSelectedValue(int? value) {
     state = state.copyWith(rocksteerSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateRocksteerIsEnabled(bool? enabled) {
-    state = state.copyWith(rocksteerIsEnabled: enabled);
-  }
+  // Removed updateRocksteerIsEnabled
 
   void updateKaretBootSelectedValue(int? value) {
     state = state.copyWith(karetBootSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateKaretBootIsEnabled(bool? enabled) {
-    state = state.copyWith(karetBootIsEnabled: enabled);
-  }
+  // Removed updateKaretBootIsEnabled
 
   void updateUpperLowerArmSelectedValue(int? value) {
     state = state.copyWith(upperLowerArmSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateUpperLowerArmIsEnabled(bool? enabled) {
-    state = state.copyWith(upperLowerArmIsEnabled: enabled);
-  }
+  // Removed updateUpperLowerArmIsEnabled
 
   void updateShockBreakerSelectedValue(int? value) {
     state = state.copyWith(shockBreakerSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateShockBreakerIsEnabled(bool? enabled) {
-    state = state.copyWith(shockBreakerIsEnabled: enabled);
-  }
+  // Removed updateShockBreakerIsEnabled
 
   void updateLinkStabilizerSelectedValue(int? value) {
     state = state.copyWith(linkStabilizerSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateLinkStabilizerIsEnabled(bool? enabled) {
-    state = state.copyWith(linkStabilizerIsEnabled: enabled);
-  }
+  // Removed updateLinkStabilizerIsEnabled
 
   void updateBanDanKakiKakiCatatanList(List<String> lines) {
     state = state.copyWith(banDanKakiKakiCatatanList: lines);
@@ -1022,57 +810,43 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(bunyiGetaranSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateBunyiGetaranIsEnabled(bool? enabled) {
-    state = state.copyWith(bunyiGetaranIsEnabled: enabled);
-  }
+  // Removed updateBunyiGetaranIsEnabled
 
   void updatePerformaStirSelectedValue(int? value) {
     state = state.copyWith(performaStirSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePerformaStirIsEnabled(bool? enabled) {
-    state = state.copyWith(performaStirIsEnabled: enabled);
-  }
+  // Removed updatePerformaStirIsEnabled
 
   void updatePerpindahanTransmisiSelectedValue(int? value) {
     state = state.copyWith(perpindahanTransmisiSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePerpindahanTransmisiIsEnabled(bool? enabled) {
-    state = state.copyWith(perpindahanTransmisiIsEnabled: enabled);
-  }
+  // Removed updatePerpindahanTransmisiIsEnabled
 
   void updateStirBalanceSelectedValue(int? value) {
     state = state.copyWith(stirBalanceSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateStirBalanceIsEnabled(bool? enabled) {
-    state = state.copyWith(stirBalanceIsEnabled: enabled);
-  }
+  // Removed updateStirBalanceIsEnabled
 
   void updatePerformaSuspensiSelectedValue(int? value) {
     state = state.copyWith(performaSuspensiSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePerformaSuspensiIsEnabled(bool? enabled) {
-    state = state.copyWith(performaSuspensiIsEnabled: enabled);
-  }
+  // Removed updatePerformaSuspensiIsEnabled
 
   void updatePerformaKoplingSelectedValue(int? value) {
     state = state.copyWith(performaKoplingSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updatePerformaKoplingIsEnabled(bool? enabled) {
-    state = state.copyWith(performaKoplingIsEnabled: enabled);
-  }
+  // Removed updatePerformaKoplingIsEnabled
 
   void updateRpmSelectedValue(int? value) {
     state = state.copyWith(rpmSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateRpmIsEnabled(bool? enabled) {
-    state = state.copyWith(rpmIsEnabled: enabled);
-  }
+  // Removed updateRpmIsEnabled
 
   void updateTestDriveCatatanList(List<String> lines) {
     state = state.copyWith(testDriveCatatanList: lines);
@@ -1083,65 +857,49 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(tebalCatBodyDepanSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateTebalCatBodyDepanIsEnabled(bool? enabled) {
-    state = state.copyWith(tebalCatBodyDepanIsEnabled: enabled);
-  }
+  // Removed updateTebalCatBodyDepanIsEnabled
 
   void updateTebalCatBodyKiriSelectedValue(int? value) {
     state = state.copyWith(tebalCatBodyKiriSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateTebalCatBodyKiriIsEnabled(bool? enabled) {
-    state = state.copyWith(tebalCatBodyKiriIsEnabled: enabled);
-  }
+  // Removed updateTebalCatBodyKiriIsEnabled
 
   void updateTemperatureAcMobilSelectedValue(int? value) {
     state = state.copyWith(temperatureAcMobilSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateTemperatureAcMobilIsEnabled(bool? enabled) {
-    state = state.copyWith(temperatureAcMobilIsEnabled: enabled);
-  }
+  // Removed updateTemperatureAcMobilIsEnabled
 
   void updateTebalCatBodyKananSelectedValue(int? value) {
     state = state.copyWith(tebalCatBodyKananSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateTebalCatBodyKananIsEnabled(bool? enabled) {
-    state = state.copyWith(tebalCatBodyKananIsEnabled: enabled);
-  }
+  // Removed updateTebalCatBodyKananIsEnabled
 
   void updateTebalCatBodyBelakangSelectedValue(int? value) {
     state = state.copyWith(tebalCatBodyBelakangSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateTebalCatBodyBelakangIsEnabled(bool? enabled) {
-    state = state.copyWith(tebalCatBodyBelakangIsEnabled: enabled);
-  }
+  // Removed updateTebalCatBodyBelakangIsEnabled
 
   void updateObdScannerSelectedValue(int? value) {
     state = state.copyWith(obdScannerSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateObdScannerIsEnabled(bool? enabled) {
-    state = state.copyWith(obdScannerIsEnabled: enabled);
-  }
+  // Removed updateObdScannerIsEnabled
 
   void updateTebalCatBodyAtapSelectedValue(int? value) {
     state = state.copyWith(tebalCatBodyAtapSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateTebalCatBodyAtapIsEnabled(bool? enabled) {
-    state = state.copyWith(tebalCatBodyAtapIsEnabled: enabled);
-  }
+  // Removed updateTebalCatBodyAtapIsEnabled
 
   void updateTestAccuSelectedValue(int? value) {
     state = state.copyWith(testAccuSelectedValue: (value == null || value <= 0) ? 0 : value);
   }
 
-  void updateTestAccuIsEnabled(bool? enabled) {
-    state = state.copyWith(testAccuIsEnabled: enabled);
-  }
+  // Removed updateTestAccuIsEnabled
 
   void updateToolsTestCatatanList(List<String> lines) {
     state = state.copyWith(toolsTestCatatanList: lines);
@@ -1201,245 +959,241 @@ extension on FormData {
     List<String>? deskripsiKeseluruhan,
     List<Map<String, String>>? repairEstimations,
     int? airbagSelectedValue,
-    bool? airbagIsEnabled,
     int? sistemAudioSelectedValue,
-    bool? sistemAudioIsEnabled,
     int? powerWindowSelectedValue,
-    bool? powerWindowIsEnabled,
     int? sistemAcSelectedValue,
-    bool? sistemAcIsEnabled,
     List<String>? fiturCatatanList,
     int? getaranMesinSelectedValue,
-    bool? getaranMesinIsEnabled,
+    // bool? getaranMesinIsEnabled, // Removed
     int? suaraMesinSelectedValue,
-    bool? suaraMesinIsEnabled,
+    // bool? suaraMesinIsEnabled, // Removed
     int? transmisiSelectedValue,
-    bool? transmisiIsEnabled,
+    // bool? transmisiIsEnabled, // Removed
     int? pompaPowerSteeringSelectedValue,
-    bool? pompaPowerSteeringIsEnabled,
+    // bool? pompaPowerSteeringIsEnabled, // Removed
     int? coverTimingChainSelectedValue,
-    bool? coverTimingChainIsEnabled,
+    // bool? coverTimingChainIsEnabled, // Removed
     int? oliPowerSteeringSelectedValue,
-    bool? oliPowerSteeringIsEnabled,
+    // bool? oliPowerSteeringIsEnabled, // Removed
     int? accuSelectedValue,
-    bool? accuIsEnabled,
+    // bool? accuIsEnabled, // Removed
     int? kompressorAcSelectedValue,
-    bool? kompressorAcIsEnabled,
+    // bool? kompressorAcIsEnabled, // Removed
     int? fanSelectedValue,
-    bool? fanIsEnabled,
+    // bool? fanIsEnabled, // Removed
     int? selangSelectedValue,
-    bool? selangIsEnabled,
+    // bool? selangIsEnabled, // Removed
     int? karterOliSelectedValue,
-    bool? karterOliIsEnabled,
+    // bool? karterOliIsEnabled, // Removed
     int? oilRemSelectedValue,
-    bool? oilRemIsEnabled,
+    // bool? oilRemIsEnabled, // Removed
     int? kabelSelectedValue,
-    bool? kabelIsEnabled,
+    // bool? kabelIsEnabled, // Removed
     int? kondensorSelectedValue,
-    bool? kondensorIsEnabled,
+    // bool? kondensorIsEnabled, // Removed
     int? radiatorSelectedValue,
-    bool? radiatorIsEnabled,
+    // bool? radiatorIsEnabled, // Removed
     int? cylinderHeadSelectedValue,
-    bool? cylinderHeadIsEnabled,
+    // bool? cylinderHeadIsEnabled, // Removed
     int? oliMesinSelectedValue,
-    bool? oliMesinIsEnabled,
+    // bool? oliMesinIsEnabled, // Removed
     int? airRadiatorSelectedValue,
-    bool? airRadiatorIsEnabled,
+    // bool? airRadiatorIsEnabled, // Removed
     int? coverKlepSelectedValue,
-    bool? coverKlepIsEnabled,
+    // bool? coverKlepIsEnabled, // Removed
     int? alternatorSelectedValue,
-    bool? alternatorIsEnabled,
+    // bool? alternatorIsEnabled, // Removed
     int? waterPumpSelectedValue,
-    bool? waterPumpIsEnabled,
+    // bool? waterPumpIsEnabled, // Removed
     int? beltSelectedValue,
-    bool? beltIsEnabled,
+    // bool? beltIsEnabled, // Removed
     int? oliTransmisiSelectedValue,
-    bool? oliTransmisiIsEnabled,
+    // bool? oliTransmisiIsEnabled, // Removed
     int? cylinderBlockSelectedValue,
-    bool? cylinderBlockIsEnabled,
+    // bool? cylinderBlockIsEnabled, // Removed
     int? bushingBesarSelectedValue,
-    bool? bushingBesarIsEnabled,
+    // bool? bushingBesarIsEnabled, // Removed
     int? bushingKecilSelectedValue,
-    bool? bushingKecilIsEnabled,
+    // bool? bushingKecilIsEnabled, // Removed
     int? tutupRadiatorSelectedValue,
-    bool? tutupRadiatorIsEnabled,
+    // bool? tutupRadiatorIsEnabled, // Removed
     List<String>? mesinCatatanList,
     int? stirSelectedValue,
-    bool? stirIsEnabled,
+    // bool? stirIsEnabled, // Removed
     int? remTanganSelectedValue,
-    bool? remTanganIsEnabled,
+    // bool? remTanganIsEnabled, // Removed
     int? pedalSelectedValue,
-    bool? pedalIsEnabled,
+    // bool? pedalIsEnabled, // Removed
     int? switchWiperSelectedValue,
-    bool? switchWiperIsEnabled,
+    // bool? switchWiperIsEnabled, // Removed
     int? lampuHazardSelectedValue,
-    bool? lampuHazardIsEnabled,
+    // bool? lampuHazardIsEnabled, // Removed
     int? panelDashboardSelectedValue,
-    bool? panelDashboardIsEnabled,
+    // bool? panelDashboardIsEnabled, // Removed
     int? pembukaKapMesinSelectedValue,
-    bool? pembukaKapMesinIsEnabled,
+    // bool? pembukaKapMesinIsEnabled, // Removed
     int? pembukaBagasiSelectedValue,
-    bool? pembukaBagasiIsEnabled,
+    // bool? pembukaBagasiIsEnabled, // Removed
     int? jokDepanSelectedValue,
-    bool? jokDepanIsEnabled,
+    // bool? jokDepanIsEnabled, // Removed
     int? aromaInteriorSelectedValue,
-    bool? aromaInteriorIsEnabled,
+    // bool? aromaInteriorIsEnabled, // Removed
     int? handlePintuSelectedValue,
-    bool? handlePintuIsEnabled,
+    // bool? handlePintuIsEnabled, // Removed
     int? consoleBoxSelectedValue,
-    bool? consoleBoxIsEnabled,
+    // bool? consoleBoxIsEnabled, // Removed
     int? spionTengahSelectedValue,
-    bool? spionTengahIsEnabled,
+    // bool? spionTengahIsEnabled, // Removed
     int? tuasPersnelingSelectedValue,
-    bool? tuasPersnelingIsEnabled,
+    // bool? tuasPersnelingIsEnabled, // Removed
     int? jokBelakangSelectedValue,
-    bool? jokBelakangIsEnabled,
+    // bool? jokBelakangIsEnabled, // Removed
     int? panelIndikatorSelectedValue,
-    bool? panelIndikatorIsEnabled,
+    // bool? panelIndikatorIsEnabled, // Removed
     int? switchLampuSelectedValue,
-    bool? switchLampuIsEnabled,
+    // bool? switchLampuIsEnabled, // Removed
     int? karpetDasarSelectedValue,
-    bool? karpetDasarIsEnabled,
+    // bool? karpetDasarIsEnabled, // Removed
     int? klaksonSelectedValue,
-    bool? klaksonIsEnabled,
+    // bool? klaksonIsEnabled, // Removed
     int? sunVisorSelectedValue,
-    bool? sunVisorIsEnabled,
+    // bool? sunVisorIsEnabled, // Removed
     int? tuasTangkiBensinSelectedValue,
-    bool? tuasTangkiBensinIsEnabled,
+    // bool? tuasTangkiBensinIsEnabled, // Removed
     int? sabukPengamanSelectedValue,
-    bool? sabukPengamanIsEnabled,
+    // bool? sabukPengamanIsEnabled, // Removed
     int? trimInteriorSelectedValue,
-    bool? trimInteriorIsEnabled,
+    // bool? trimInteriorIsEnabled, // Removed
     int? plafonSelectedValue,
-    bool? plafonIsEnabled,
+    // bool? plafonIsEnabled, // Removed
     List<String>? interiorCatatanList,
     int? bumperDepanSelectedValue,
-    bool? bumperDepanIsEnabled,
+    // bool? bumperDepanIsEnabled, // Removed
     int? kapMesinSelectedValue,
-    bool? kapMesinIsEnabled,
+    // bool? kapMesinIsEnabled, // Removed
     int? lampuUtamaSelectedValue,
-    bool? lampuUtamaIsEnabled,
+    // bool? lampuUtamaIsEnabled, // Removed
     int? panelAtapSelectedValue,
-    bool? panelAtapIsEnabled,
+    // bool? panelAtapIsEnabled, // Removed
     int? grillSelectedValue,
-    bool? grillIsEnabled,
+    // bool? grillIsEnabled, // Removed
     int? lampuFoglampSelectedValue,
-    bool? lampuFoglampIsEnabled,
+    // bool? lampuFoglampIsEnabled, // Removed
     int? kacaBeningSelectedValue,
-    bool? kacaBeningIsEnabled,
+    // bool? kacaBeningIsEnabled, // Removed
     int? wiperBelakangSelectedValue,
-    bool? wiperBelakangIsEnabled,
+    // bool? wiperBelakangIsEnabled, // Removed
     int? bumperBelakangSelectedValue,
-    bool? bumperBelakangIsEnabled,
+    // bool? bumperBelakangIsEnabled, // Removed
     int? lampuBelakangSelectedValue,
-    bool? lampuBelakangIsEnabled,
+    // bool? lampuBelakangIsEnabled, // Removed
     int? trunklidSelectedValue,
-    bool? trunklidIsEnabled,
+    // bool? trunklidIsEnabled, // Removed
     int? kacaDepanSelectedValue,
-    bool? kacaDepanIsEnabled,
+    // bool? kacaDepanIsEnabled, // Removed
     int? fenderKananSelectedValue,
-    bool? fenderKananIsEnabled,
+    // bool? fenderKananIsEnabled, // Removed
     int? quarterPanelKananSelectedValue,
-    bool? quarterPanelKananIsEnabled,
+    // bool? quarterPanelKananIsEnabled, // Removed
     int? pintuBelakangKananSelectedValue,
-    bool? pintuBelakangKananIsEnabled,
+    // bool? pintuBelakangKananIsEnabled, // Removed
     int? spionKananSelectedValue,
-    bool? spionKananIsEnabled,
+    // bool? spionKananIsEnabled, // Removed
     int? lisplangKananSelectedValue,
-    bool? lisplangKananIsEnabled,
+    // bool? lisplangKananIsEnabled, // Removed
     int? sideSkirtKananSelectedValue,
-    bool? sideSkirtKananIsEnabled,
+    // bool? sideSkirtKananIsEnabled, // Removed
     int? daunWiperSelectedValue,
-    bool? daunWiperIsEnabled,
+    // bool? daunWiperIsEnabled, // Removed
     int? pintuBelakangSelectedValue,
-    bool? pintuBelakangIsEnabled,
+    // bool? pintuBelakangIsEnabled, // Removed
     int? fenderKiriSelectedValue,
-    bool? fenderKiriIsEnabled,
+    // bool? fenderKiriIsEnabled, // Removed
     int? quarterPanelKiriSelectedValue,
-    bool? quarterPanelKiriIsEnabled,
+    // bool? quarterPanelKiriIsEnabled, // Removed
     int? pintuDepanSelectedValue,
-    bool? pintuDepanIsEnabled,
+    // bool? pintuDepanIsEnabled, // Removed
     int? kacaJendelaKananSelectedValue,
-    bool? kacaJendelaKananIsEnabled,
+    // bool? kacaJendelaKananIsEnabled, // Removed
     int? pintuBelakangKiriSelectedValue,
-    bool? pintuBelakangKiriIsEnabled,
+    // bool? pintuBelakangKiriIsEnabled, // Removed
     int? spionKiriSelectedValue,
-    bool? spionKiriIsEnabled,
+    // bool? spionKiriIsEnabled, // Removed
     int? pintuDepanKiriSelectedValue,
-    bool? pintuDepanKiriIsEnabled,
+    // bool? pintuDepanKiriIsEnabled, // Removed
     int? kacaJendelaKiriSelectedValue,
-    bool? kacaJendelaKiriIsEnabled,
+    // bool? kacaJendelaKiriIsEnabled, // Removed
     int? lisplangKiriSelectedValue,
-    bool? lisplangKiriIsEnabled,
+    // bool? lisplangKiriIsEnabled, // Removed
     int? sideSkirtKiriSelectedValue,
-    bool? sideSkirtKiriIsEnabled,
+    // bool? sideSkirtKiriIsEnabled, // Removed
     List<String>? eksteriorCatatanList,
     int? banDepanSelectedValue,
-    bool? banDepanIsEnabled,
+    // bool? banDepanIsEnabled, // Removed
     int? velgDepanSelectedValue,
-    bool? velgDepanIsEnabled,
+    // bool? velgDepanIsEnabled, // Removed
     int? discBrakeSelectedValue,
-    bool? discBrakeIsEnabled,
+    // bool? discBrakeIsEnabled, // Removed
     int? masterRemSelectedValue,
-    bool? masterRemIsEnabled,
+    // bool? masterRemIsEnabled, // Removed
     int? tieRodSelectedValue,
-    bool? tieRodIsEnabled,
+    // bool? tieRodIsEnabled, // Removed
     int? gardanSelectedValue,
-    bool? gardanIsEnabled,
+    // bool? gardanIsEnabled, // Removed
     int? banBelakangSelectedValue,
-    bool? banBelakangIsEnabled,
+    // bool? banBelakangIsEnabled, // Removed
     int? velgBelakangSelectedValue,
-    bool? velgBelakangIsEnabled,
+    // bool? velgBelakangIsEnabled, // Removed
     int? brakePadSelectedValue,
-    bool? brakePadIsEnabled,
+    // bool? brakePadIsEnabled, // Removed
     int? crossmemberSelectedValue,
-    bool? crossmemberIsEnabled,
+    // bool? crossmemberIsEnabled, // Removed
     int? knalpotSelectedValue,
-    bool? knalpotIsEnabled,
+    // bool? knalpotIsEnabled, // Removed
     int? balljointSelectedValue,
-    bool? balljointIsEnabled,
+    // bool? balljointIsEnabled, // Removed
     int? rocksteerSelectedValue,
-    bool? rocksteerIsEnabled,
+    // bool? rocksteerIsEnabled, // Removed
     int? karetBootSelectedValue,
-    bool? karetBootIsEnabled,
+    // bool? karetBootIsEnabled, // Removed
     int? upperLowerArmSelectedValue,
-    bool? upperLowerArmIsEnabled,
+    // bool? upperLowerArmIsEnabled, // Removed
     int? shockBreakerSelectedValue,
-    bool? shockBreakerIsEnabled,
+    // bool? shockBreakerIsEnabled, // Removed
     int? linkStabilizerSelectedValue,
-    bool? linkStabilizerIsEnabled,
+    // bool? linkStabilizerIsEnabled, // Removed
     List<String>? banDanKakiKakiCatatanList,
     int? bunyiGetaranSelectedValue,
-    bool? bunyiGetaranIsEnabled,
+    // bool? bunyiGetaranIsEnabled, // Removed
     int? performaStirSelectedValue,
-    bool? performaStirIsEnabled,
+    // bool? performaStirIsEnabled, // Removed
     int? perpindahanTransmisiSelectedValue,
-    bool? perpindahanTransmisiIsEnabled,
+    // bool? perpindahanTransmisiIsEnabled, // Removed
     int? stirBalanceSelectedValue,
-    bool? stirBalanceIsEnabled,
+    // bool? stirBalanceIsEnabled, // Removed
     int? performaSuspensiSelectedValue,
-    bool? performaSuspensiIsEnabled,
+    // bool? performaSuspensiIsEnabled, // Removed
     int? performaKoplingSelectedValue,
-    bool? performaKoplingIsEnabled,
+    // bool? performaKoplingIsEnabled, // Removed
     int? rpmSelectedValue,
-    bool? rpmIsEnabled,
+    // bool? rpmIsEnabled, // Removed
     List<String>? testDriveCatatanList,
     int? tebalCatBodyDepanSelectedValue,
-    bool? tebalCatBodyDepanIsEnabled,
+    // bool? tebalCatBodyDepanIsEnabled, // Removed
     int? tebalCatBodyKiriSelectedValue,
-    bool? tebalCatBodyKiriIsEnabled,
+    // bool? tebalCatBodyKiriIsEnabled, // Removed
     int? temperatureAcMobilSelectedValue,
-    bool? temperatureAcMobilIsEnabled,
+    // bool? temperatureAcMobilIsEnabled, // Removed
     int? tebalCatBodyKananSelectedValue,
-    bool? tebalCatBodyKananIsEnabled,
+    // bool? tebalCatBodyKananIsEnabled, // Removed
     int? tebalCatBodyBelakangSelectedValue,
-    bool? tebalCatBodyBelakangIsEnabled,
+    // bool? tebalCatBodyBelakangIsEnabled, // Removed
     int? obdScannerSelectedValue,
-    bool? obdScannerIsEnabled,
+    // bool? obdScannerIsEnabled, // Removed
     int? tebalCatBodyAtapSelectedValue,
-    bool? tebalCatBodyAtapIsEnabled,
+    // bool? tebalCatBodyAtapIsEnabled, // Removed
     int? testAccuSelectedValue,
-    bool? testAccuIsEnabled,
+    // bool? testAccuIsEnabled, // Removed
     List<String>? toolsTestCatatanList,
   }) {
     return FormData(
@@ -1486,246 +1240,242 @@ extension on FormData {
       deskripsiKeseluruhan: deskripsiKeseluruhan ?? this.deskripsiKeseluruhan,
       repairEstimations: repairEstimations ?? this.repairEstimations,
       airbagSelectedValue: airbagSelectedValue ?? this.airbagSelectedValue,
-      airbagIsEnabled: airbagIsEnabled ?? this.airbagIsEnabled,
       sistemAudioSelectedValue: sistemAudioSelectedValue ?? this.sistemAudioSelectedValue,
-      sistemAudioIsEnabled: sistemAudioIsEnabled ?? this.sistemAudioIsEnabled,
       powerWindowSelectedValue: powerWindowSelectedValue ?? this.powerWindowSelectedValue,
-      powerWindowIsEnabled: powerWindowIsEnabled ?? this.powerWindowIsEnabled,
       sistemAcSelectedValue: sistemAcSelectedValue ?? this.sistemAcSelectedValue,
-      sistemAcIsEnabled: sistemAcIsEnabled ?? this.sistemAcIsEnabled,
       fiturCatatanList: fiturCatatanList ?? this.fiturCatatanList,
       getaranMesinSelectedValue: getaranMesinSelectedValue ?? this.getaranMesinSelectedValue,
-      getaranMesinIsEnabled: getaranMesinIsEnabled ?? this.getaranMesinIsEnabled,
+      // getaranMesinIsEnabled: getaranMesinIsEnabled ?? this.getaranMesinIsEnabled, // Removed
       suaraMesinSelectedValue: suaraMesinSelectedValue ?? this.suaraMesinSelectedValue,
-      suaraMesinIsEnabled: suaraMesinIsEnabled ?? this.suaraMesinIsEnabled,
+      // suaraMesinIsEnabled: suaraMesinIsEnabled ?? this.suaraMesinIsEnabled, // Removed
       transmisiSelectedValue: transmisiSelectedValue ?? this.transmisiSelectedValue,
-      transmisiIsEnabled: transmisiIsEnabled ?? this.transmisiIsEnabled,
+      // transmisiIsEnabled: transmisiIsEnabled ?? this.transmisiIsEnabled, // Removed
       pompaPowerSteeringSelectedValue: pompaPowerSteeringSelectedValue ?? this.pompaPowerSteeringSelectedValue,
-      pompaPowerSteeringIsEnabled: pompaPowerSteeringIsEnabled ?? this.pompaPowerSteeringIsEnabled,
+      // pompaPowerSteeringIsEnabled: pompaPowerSteeringIsEnabled ?? this.pompaPowerSteeringIsEnabled, // Removed
       coverTimingChainSelectedValue: coverTimingChainSelectedValue ?? this.coverTimingChainSelectedValue,
-      coverTimingChainIsEnabled: coverTimingChainIsEnabled ?? this.coverTimingChainIsEnabled,
+      // coverTimingChainIsEnabled: coverTimingChainIsEnabled ?? this.coverTimingChainIsEnabled, // Removed
       oliPowerSteeringSelectedValue: oliPowerSteeringSelectedValue ?? this.oliPowerSteeringSelectedValue,
-      oliPowerSteeringIsEnabled: oliPowerSteeringIsEnabled ?? this.oliPowerSteeringIsEnabled,
+      // oliPowerSteeringIsEnabled: oliPowerSteeringIsEnabled ?? this.oliPowerSteeringIsEnabled, // Removed
       accuSelectedValue: accuSelectedValue ?? this.accuSelectedValue,
-      accuIsEnabled: accuIsEnabled ?? this.accuIsEnabled,
+      // accuIsEnabled: accuIsEnabled ?? this.accuIsEnabled, // Removed
       kompressorAcSelectedValue: kompressorAcSelectedValue ?? this.kompressorAcSelectedValue,
-      kompressorAcIsEnabled: kompressorAcIsEnabled ?? this.kompressorAcIsEnabled,
+      // kompressorAcIsEnabled: kompressorAcIsEnabled ?? this.kompressorAcIsEnabled, // Removed
       fanSelectedValue: fanSelectedValue ?? this.fanSelectedValue,
-      fanIsEnabled: fanIsEnabled ?? this.fanIsEnabled,
+      // fanIsEnabled: fanIsEnabled ?? this.fanIsEnabled, // Removed
       selangSelectedValue: selangSelectedValue ?? this.selangSelectedValue,
-      selangIsEnabled: selangIsEnabled ?? this.selangIsEnabled,
+      // selangIsEnabled: selangIsEnabled ?? this.selangIsEnabled, // Removed
       karterOliSelectedValue: karterOliSelectedValue ?? this.karterOliSelectedValue,
-      karterOliIsEnabled: karterOliIsEnabled ?? this.karterOliIsEnabled,
+      // karterOliIsEnabled: karterOliIsEnabled ?? this.karterOliIsEnabled, // Removed
       oilRemSelectedValue: oilRemSelectedValue ?? this.oilRemSelectedValue,
-      oilRemIsEnabled: oilRemIsEnabled ?? this.oilRemIsEnabled,
+      // oilRemIsEnabled: oilRemIsEnabled ?? this.oilRemIsEnabled, // Removed
       kabelSelectedValue: kabelSelectedValue ?? this.kabelSelectedValue,
-      kabelIsEnabled: kabelIsEnabled ?? this.kabelIsEnabled,
+      // kabelIsEnabled: kabelIsEnabled ?? this.kabelIsEnabled, // Removed
       kondensorSelectedValue: kondensorSelectedValue ?? this.kondensorSelectedValue,
-      kondensorIsEnabled: kondensorIsEnabled ?? this.kondensorIsEnabled,
+      // kondensorIsEnabled: kondensorIsEnabled ?? this.kondensorIsEnabled, // Removed
       radiatorSelectedValue: radiatorSelectedValue ?? this.radiatorSelectedValue,
-      radiatorIsEnabled: radiatorIsEnabled ?? this.radiatorIsEnabled,
+      // radiatorIsEnabled: radiatorIsEnabled ?? this.radiatorIsEnabled, // Removed
       cylinderHeadSelectedValue: cylinderHeadSelectedValue ?? this.cylinderHeadSelectedValue,
-      cylinderHeadIsEnabled: cylinderHeadIsEnabled ?? this.cylinderHeadIsEnabled,
+      // cylinderHeadIsEnabled: cylinderHeadIsEnabled ?? this.cylinderHeadIsEnabled, // Removed
       oliMesinSelectedValue: oliMesinSelectedValue ?? this.oliMesinSelectedValue,
-      oliMesinIsEnabled: oliMesinIsEnabled ?? this.oliMesinIsEnabled,
+      // oliMesinIsEnabled: oliMesinIsEnabled ?? this.oliMesinIsEnabled, // Removed
       airRadiatorSelectedValue: airRadiatorSelectedValue ?? this.airRadiatorSelectedValue,
-      airRadiatorIsEnabled: airRadiatorIsEnabled ?? this.airRadiatorIsEnabled,
+      // airRadiatorIsEnabled: airRadiatorIsEnabled ?? this.airRadiatorIsEnabled, // Removed
       coverKlepSelectedValue: coverKlepSelectedValue ?? this.coverKlepSelectedValue,
-      coverKlepIsEnabled: coverKlepIsEnabled ?? this.coverKlepIsEnabled,
+      // coverKlepIsEnabled: coverKlepIsEnabled ?? this.coverKlepIsEnabled, // Removed
       alternatorSelectedValue: alternatorSelectedValue ?? this.alternatorSelectedValue,
-      alternatorIsEnabled: alternatorIsEnabled ?? this.alternatorIsEnabled,
+      // alternatorIsEnabled: alternatorIsEnabled ?? this.alternatorIsEnabled, // Removed
       waterPumpSelectedValue: waterPumpSelectedValue ?? this.waterPumpSelectedValue,
-      waterPumpIsEnabled: waterPumpIsEnabled ?? this.waterPumpIsEnabled,
+      // waterPumpIsEnabled: waterPumpIsEnabled ?? this.waterPumpIsEnabled, // Removed
       beltSelectedValue: beltSelectedValue ?? this.beltSelectedValue,
-      beltIsEnabled: beltIsEnabled ?? this.beltIsEnabled,
+      // beltIsEnabled: beltIsEnabled ?? this.beltIsEnabled, // Removed
       oliTransmisiSelectedValue: oliTransmisiSelectedValue ?? this.oliTransmisiSelectedValue,
-      oliTransmisiIsEnabled: oliTransmisiIsEnabled ?? this.oliTransmisiIsEnabled,
+      // oliTransmisiIsEnabled: oliTransmisiIsEnabled ?? this.oliTransmisiIsEnabled, // Removed
       cylinderBlockSelectedValue: cylinderBlockSelectedValue ?? this.cylinderBlockSelectedValue,
-      cylinderBlockIsEnabled: cylinderBlockIsEnabled ?? this.cylinderBlockIsEnabled,
+      // cylinderBlockIsEnabled: cylinderBlockIsEnabled ?? this.cylinderBlockIsEnabled, // Removed
       bushingBesarSelectedValue: bushingBesarSelectedValue ?? this.bushingBesarSelectedValue,
-      bushingBesarIsEnabled: bushingBesarIsEnabled ?? this.bushingBesarIsEnabled,
+      // bushingBesarIsEnabled: bushingBesarIsEnabled ?? this.bushingBesarIsEnabled, // Removed
       bushingKecilSelectedValue: bushingKecilSelectedValue ?? this.bushingKecilSelectedValue,
-      bushingKecilIsEnabled: bushingKecilIsEnabled ?? this.bushingKecilIsEnabled,
+      // bushingKecilIsEnabled: bushingKecilIsEnabled ?? this.bushingKecilIsEnabled, // Removed
       tutupRadiatorSelectedValue: tutupRadiatorSelectedValue ?? this.tutupRadiatorSelectedValue,
-      tutupRadiatorIsEnabled: tutupRadiatorIsEnabled ?? this.tutupRadiatorIsEnabled,
+      // tutupRadiatorIsEnabled: tutupRadiatorIsEnabled ?? this.tutupRadiatorIsEnabled, // Removed
       mesinCatatanList: mesinCatatanList ?? this.mesinCatatanList,
       stirSelectedValue: stirSelectedValue ?? this.stirSelectedValue,
-      stirIsEnabled: stirIsEnabled ?? this.stirIsEnabled,
+      // stirIsEnabled: stirIsEnabled ?? this.stirIsEnabled, // Removed
       remTanganSelectedValue: remTanganSelectedValue ?? this.remTanganSelectedValue,
-      remTanganIsEnabled: remTanganIsEnabled ?? this.remTanganIsEnabled,
+      // remTanganIsEnabled: remTanganIsEnabled ?? this.remTanganIsEnabled, // Removed
       pedalSelectedValue: pedalSelectedValue ?? this.pedalSelectedValue,
-      pedalIsEnabled: pedalIsEnabled ?? this.pedalIsEnabled,
+      // pedalIsEnabled: pedalIsEnabled ?? this.pedalIsEnabled, // Removed
       switchWiperSelectedValue: switchWiperSelectedValue ?? this.switchWiperSelectedValue,
-      switchWiperIsEnabled: switchWiperIsEnabled ?? this.switchWiperIsEnabled,
+      // switchWiperIsEnabled: switchWiperIsEnabled ?? this.switchWiperIsEnabled, // Removed
       lampuHazardSelectedValue: lampuHazardSelectedValue ?? this.lampuHazardSelectedValue,
-      lampuHazardIsEnabled: lampuHazardIsEnabled ?? this.lampuHazardIsEnabled,
+      // lampuHazardIsEnabled: lampuHazardIsEnabled ?? this.lampuHazardIsEnabled, // Removed
       panelDashboardSelectedValue: panelDashboardSelectedValue ?? this.panelDashboardSelectedValue,
-      panelDashboardIsEnabled: panelDashboardIsEnabled ?? this.panelDashboardIsEnabled,
+      // panelDashboardIsEnabled: panelDashboardIsEnabled ?? this.panelDashboardIsEnabled, // Removed
       pembukaKapMesinSelectedValue: pembukaKapMesinSelectedValue ?? this.pembukaKapMesinSelectedValue,
-      pembukaKapMesinIsEnabled: pembukaKapMesinIsEnabled ?? this.pembukaKapMesinIsEnabled,
+      // pembukaKapMesinIsEnabled: pembukaKapMesinIsEnabled ?? this.pembukaKapMesinIsEnabled, // Removed
       pembukaBagasiSelectedValue: pembukaBagasiSelectedValue ?? this.pembukaBagasiSelectedValue,
-      pembukaBagasiIsEnabled: pembukaBagasiIsEnabled ?? this.pembukaBagasiIsEnabled,
+      // pembukaBagasiIsEnabled: pembukaBagasiIsEnabled ?? this.pembukaBagasiIsEnabled, // Removed
       jokDepanSelectedValue: jokDepanSelectedValue ?? this.jokDepanSelectedValue,
-      jokDepanIsEnabled: jokDepanIsEnabled ?? this.jokDepanIsEnabled,
+      // jokDepanIsEnabled: jokDepanIsEnabled ?? this.jokDepanIsEnabled, // Removed
       aromaInteriorSelectedValue: aromaInteriorSelectedValue ?? this.aromaInteriorSelectedValue,
-      aromaInteriorIsEnabled: aromaInteriorIsEnabled ?? this.aromaInteriorIsEnabled,
+      // aromaInteriorIsEnabled: aromaInteriorIsEnabled ?? this.aromaInteriorIsEnabled, // Removed
       handlePintuSelectedValue: handlePintuSelectedValue ?? this.handlePintuSelectedValue,
-      handlePintuIsEnabled: handlePintuIsEnabled ?? this.handlePintuIsEnabled,
+      // handlePintuIsEnabled: handlePintuIsEnabled ?? this.handlePintuIsEnabled, // Removed
       consoleBoxSelectedValue: consoleBoxSelectedValue ?? this.consoleBoxSelectedValue,
-      consoleBoxIsEnabled: consoleBoxIsEnabled ?? this.consoleBoxIsEnabled,
+      // consoleBoxIsEnabled: consoleBoxIsEnabled ?? this.consoleBoxIsEnabled, // Removed
       spionTengahSelectedValue: spionTengahSelectedValue ?? this.spionTengahSelectedValue,
-      spionTengahIsEnabled: spionTengahIsEnabled ?? this.spionTengahIsEnabled,
+      // spionTengahIsEnabled: spionTengahIsEnabled ?? this.spionTengahIsEnabled, // Removed
       tuasPersnelingSelectedValue: tuasPersnelingSelectedValue ?? this.tuasPersnelingSelectedValue,
-      tuasPersnelingIsEnabled: tuasPersnelingIsEnabled ?? this.tuasPersnelingIsEnabled,
+      // tuasPersnelingIsEnabled: tuasPersnelingIsEnabled ?? this.tuasPersnelingIsEnabled, // Removed
       jokBelakangSelectedValue: jokBelakangSelectedValue ?? this.jokBelakangSelectedValue,
-      jokBelakangIsEnabled: jokBelakangIsEnabled ?? this.jokBelakangIsEnabled,
+      // jokBelakangIsEnabled: jokBelakangIsEnabled ?? this.jokBelakangIsEnabled, // Removed
       panelIndikatorSelectedValue: panelIndikatorSelectedValue ?? this.panelIndikatorSelectedValue,
-      panelIndikatorIsEnabled: panelIndikatorIsEnabled ?? this.panelIndikatorIsEnabled,
+      // panelIndikatorIsEnabled: panelIndikatorIsEnabled ?? this.panelIndikatorIsEnabled, // Removed
       switchLampuSelectedValue: switchLampuSelectedValue ?? this.switchLampuSelectedValue,
-      switchLampuIsEnabled: switchLampuIsEnabled ?? this.switchLampuIsEnabled,
+      // switchLampuIsEnabled: switchLampuIsEnabled ?? this.switchLampuIsEnabled, // Removed
       karpetDasarSelectedValue: karpetDasarSelectedValue ?? this.karpetDasarSelectedValue,
-      karpetDasarIsEnabled: karpetDasarIsEnabled ?? this.karpetDasarIsEnabled,
+      // karpetDasarIsEnabled: karpetDasarIsEnabled ?? this.karpetDasarIsEnabled, // Removed
       klaksonSelectedValue: klaksonSelectedValue ?? this.klaksonSelectedValue,
-      klaksonIsEnabled: klaksonIsEnabled ?? this.klaksonIsEnabled,
+      // klaksonIsEnabled: klaksonIsEnabled ?? this.klaksonIsEnabled, // Removed
       sunVisorSelectedValue: sunVisorSelectedValue ?? this.sunVisorSelectedValue,
-      sunVisorIsEnabled: sunVisorIsEnabled ?? this.sunVisorIsEnabled,
+      // sunVisorIsEnabled: sunVisorIsEnabled ?? this.sunVisorIsEnabled, // Removed
       tuasTangkiBensinSelectedValue: tuasTangkiBensinSelectedValue ?? this.tuasTangkiBensinSelectedValue,
-      tuasTangkiBensinIsEnabled: tuasTangkiBensinIsEnabled ?? this.tuasTangkiBensinIsEnabled,
+      // tuasTangkiBensinIsEnabled: tuasTangkiBensinIsEnabled ?? this.tuasTangkiBensinIsEnabled, // Removed
       sabukPengamanSelectedValue: sabukPengamanSelectedValue ?? this.sabukPengamanSelectedValue,
-      sabukPengamanIsEnabled: sabukPengamanIsEnabled ?? this.sabukPengamanIsEnabled,
+      // sabukPengamanIsEnabled: sabukPengamanIsEnabled ?? this.sabukPengamanIsEnabled, // Removed
       trimInteriorSelectedValue: trimInteriorSelectedValue ?? this.trimInteriorSelectedValue,
-      trimInteriorIsEnabled: trimInteriorIsEnabled ?? this.trimInteriorIsEnabled,
+      // trimInteriorIsEnabled: trimInteriorIsEnabled ?? this.trimInteriorIsEnabled, // Removed
       plafonSelectedValue: plafonSelectedValue ?? this.plafonSelectedValue,
-      plafonIsEnabled: plafonIsEnabled ?? this.plafonIsEnabled,
+      // plafonIsEnabled: plafonIsEnabled ?? this.plafonIsEnabled, // Removed
       interiorCatatanList: interiorCatatanList ?? this.interiorCatatanList,
       bumperDepanSelectedValue: bumperDepanSelectedValue ?? this.bumperDepanSelectedValue,
-      bumperDepanIsEnabled: bumperDepanIsEnabled ?? this.bumperDepanIsEnabled,
+      // bumperDepanIsEnabled: bumperDepanIsEnabled ?? this.bumperDepanIsEnabled, // Removed
       kapMesinSelectedValue: kapMesinSelectedValue ?? this.kapMesinSelectedValue,
-      kapMesinIsEnabled: kapMesinIsEnabled ?? this.kapMesinIsEnabled,
+      // kapMesinIsEnabled: kapMesinIsEnabled ?? this.kapMesinIsEnabled, // Removed
       lampuUtamaSelectedValue: lampuUtamaSelectedValue ?? this.lampuUtamaSelectedValue,
-      lampuUtamaIsEnabled: lampuUtamaIsEnabled ?? this.lampuUtamaIsEnabled,
+      // lampuUtamaIsEnabled: lampuUtamaIsEnabled ?? this.lampuUtamaIsEnabled, // Removed
       panelAtapSelectedValue: panelAtapSelectedValue ?? this.panelAtapSelectedValue,
-      panelAtapIsEnabled: panelAtapIsEnabled ?? this.panelAtapIsEnabled,
+      // panelAtapIsEnabled: panelAtapIsEnabled ?? this.panelAtapIsEnabled, // Removed
       grillSelectedValue: grillSelectedValue ?? this.grillSelectedValue,
-      grillIsEnabled: grillIsEnabled ?? this.grillIsEnabled,
+      // grillIsEnabled: grillIsEnabled ?? this.grillIsEnabled, // Removed
       lampuFoglampSelectedValue: lampuFoglampSelectedValue ?? this.lampuFoglampSelectedValue,
-      lampuFoglampIsEnabled: lampuFoglampIsEnabled ?? this.lampuFoglampIsEnabled,
+      // lampuFoglampIsEnabled: lampuFoglampIsEnabled ?? this.lampuFoglampIsEnabled, // Removed
       kacaBeningSelectedValue: kacaBeningSelectedValue ?? this.kacaBeningSelectedValue,
-      kacaBeningIsEnabled: kacaBeningIsEnabled ?? this.kacaBeningIsEnabled,
+      // kacaBeningIsEnabled: kacaBeningIsEnabled ?? this.kacaBeningIsEnabled, // Removed
       wiperBelakangSelectedValue: wiperBelakangSelectedValue ?? this.wiperBelakangSelectedValue,
-      wiperBelakangIsEnabled: wiperBelakangIsEnabled ?? this.wiperBelakangIsEnabled,
+      // wiperBelakangIsEnabled: wiperBelakangIsEnabled ?? this.wiperBelakangIsEnabled, // Removed
       bumperBelakangSelectedValue: bumperBelakangSelectedValue ?? this.bumperBelakangSelectedValue,
-      bumperBelakangIsEnabled: bumperBelakangIsEnabled ?? this.bumperBelakangIsEnabled,
+      // bumperBelakangIsEnabled: bumperBelakangIsEnabled ?? this.bumperBelakangIsEnabled, // Removed
       lampuBelakangSelectedValue: lampuBelakangSelectedValue ?? this.lampuBelakangSelectedValue,
-      lampuBelakangIsEnabled: lampuBelakangIsEnabled ?? this.lampuBelakangIsEnabled,
+      // lampuBelakangIsEnabled: lampuBelakangIsEnabled ?? this.lampuBelakangIsEnabled, // Removed
       trunklidSelectedValue: trunklidSelectedValue ?? this.trunklidSelectedValue,
-      trunklidIsEnabled: trunklidIsEnabled ?? this.trunklidIsEnabled,
+      // trunklidIsEnabled: trunklidIsEnabled ?? this.trunklidIsEnabled, // Removed
       kacaDepanSelectedValue: kacaDepanSelectedValue ?? this.kacaDepanSelectedValue,
-      kacaDepanIsEnabled: kacaDepanIsEnabled ?? this.kacaDepanIsEnabled,
+      // kacaDepanIsEnabled: kacaDepanIsEnabled ?? this.kacaDepanIsEnabled, // Removed
       fenderKananSelectedValue: fenderKananSelectedValue ?? this.fenderKananSelectedValue,
-      fenderKananIsEnabled: fenderKananIsEnabled ?? this.fenderKananIsEnabled,
+      // fenderKananIsEnabled: fenderKananIsEnabled ?? this.fenderKananIsEnabled, // Removed
       quarterPanelKananSelectedValue: quarterPanelKananSelectedValue ?? this.quarterPanelKananSelectedValue,
-      quarterPanelKananIsEnabled: quarterPanelKananIsEnabled ?? this.quarterPanelKananIsEnabled,
+      // quarterPanelKananIsEnabled: quarterPanelKananIsEnabled ?? this.quarterPanelKananIsEnabled, // Removed
       pintuBelakangKananSelectedValue: pintuBelakangKananSelectedValue ?? this.pintuBelakangKananSelectedValue,
-      pintuBelakangKananIsEnabled: pintuBelakangKananIsEnabled ?? this.pintuBelakangKananIsEnabled,
+      // pintuBelakangKananIsEnabled: pintuBelakangKananIsEnabled ?? this.pintuBelakangKananIsEnabled, // Removed
       spionKananSelectedValue: spionKananSelectedValue ?? this.spionKananSelectedValue,
-      spionKananIsEnabled: spionKananIsEnabled ?? this.spionKananIsEnabled,
+      // spionKananIsEnabled: spionKananIsEnabled ?? this.spionKananIsEnabled, // Removed
       lisplangKananSelectedValue: lisplangKananSelectedValue ?? this.lisplangKananSelectedValue,
-      lisplangKananIsEnabled: lisplangKananIsEnabled ?? this.lisplangKananIsEnabled,
+      // lisplangKananIsEnabled: lisplangKananIsEnabled ?? this.lisplangKananIsEnabled, // Removed
       sideSkirtKananSelectedValue: sideSkirtKananSelectedValue ?? this.sideSkirtKananSelectedValue,
-      sideSkirtKananIsEnabled: sideSkirtKananIsEnabled ?? this.sideSkirtKananIsEnabled,
+      // sideSkirtKananIsEnabled: sideSkirtKananIsEnabled ?? this.sideSkirtKananIsEnabled, // Removed
       daunWiperSelectedValue: daunWiperSelectedValue ?? this.daunWiperSelectedValue,
-      daunWiperIsEnabled: daunWiperIsEnabled ?? this.daunWiperIsEnabled,
+      // daunWiperIsEnabled: daunWiperIsEnabled ?? this.daunWiperIsEnabled, // Removed
       pintuBelakangSelectedValue: pintuBelakangSelectedValue ?? this.pintuBelakangSelectedValue,
-      pintuBelakangIsEnabled: pintuBelakangIsEnabled ?? this.pintuBelakangIsEnabled,
+      // pintuBelakangIsEnabled: pintuBelakangIsEnabled ?? this.pintuBelakangIsEnabled, // Removed
       fenderKiriSelectedValue: fenderKiriSelectedValue ?? this.fenderKiriSelectedValue,
-      fenderKiriIsEnabled: fenderKiriIsEnabled ?? this.fenderKiriIsEnabled,
+      // fenderKiriIsEnabled: fenderKiriIsEnabled ?? this.fenderKiriIsEnabled, // Removed
       quarterPanelKiriSelectedValue: quarterPanelKiriSelectedValue ?? this.quarterPanelKiriSelectedValue,
-      quarterPanelKiriIsEnabled: quarterPanelKiriIsEnabled ?? this.quarterPanelKiriIsEnabled,
+      // quarterPanelKiriIsEnabled: quarterPanelKiriIsEnabled ?? this.quarterPanelKiriIsEnabled, // Removed
       pintuDepanSelectedValue: pintuDepanSelectedValue ?? this.pintuDepanSelectedValue,
-      pintuDepanIsEnabled: pintuDepanIsEnabled ?? this.pintuDepanIsEnabled,
+      // pintuDepanIsEnabled: pintuDepanIsEnabled ?? this.pintuDepanIsEnabled, // Removed
       kacaJendelaKananSelectedValue: kacaJendelaKananSelectedValue ?? this.kacaJendelaKananSelectedValue,
-      kacaJendelaKananIsEnabled: kacaJendelaKananIsEnabled ?? this.kacaJendelaKananIsEnabled,
+      // kacaJendelaKananIsEnabled: kacaJendelaKananIsEnabled ?? this.kacaJendelaKananIsEnabled, // Removed
       pintuBelakangKiriSelectedValue: pintuBelakangKiriSelectedValue ?? this.pintuBelakangKiriSelectedValue,
-      pintuBelakangKiriIsEnabled: pintuBelakangKiriIsEnabled ?? this.pintuBelakangKiriIsEnabled,
+      // pintuBelakangKiriIsEnabled: pintuBelakangKiriIsEnabled ?? this.pintuBelakangKiriIsEnabled, // Removed
       spionKiriSelectedValue: spionKiriSelectedValue ?? this.spionKiriSelectedValue,
-      spionKiriIsEnabled: spionKiriIsEnabled ?? this.spionKiriIsEnabled,
+      // spionKiriIsEnabled: spionKiriIsEnabled ?? this.spionKiriIsEnabled, // Removed
       pintuDepanKiriSelectedValue: pintuDepanKiriSelectedValue ?? this.pintuDepanKiriSelectedValue,
-      pintuDepanKiriIsEnabled: pintuDepanKiriIsEnabled ?? this.pintuDepanKiriIsEnabled,
+      // pintuDepanKiriIsEnabled: pintuDepanKiriIsEnabled ?? this.pintuDepanKiriIsEnabled, // Removed
       kacaJendelaKiriSelectedValue: kacaJendelaKiriSelectedValue ?? this.kacaJendelaKiriSelectedValue,
-      kacaJendelaKiriIsEnabled: kacaJendelaKiriIsEnabled ?? this.kacaJendelaKiriIsEnabled,
+      // kacaJendelaKiriIsEnabled: kacaJendelaKiriIsEnabled ?? this.kacaJendelaKiriIsEnabled, // Removed
       lisplangKiriSelectedValue: lisplangKiriSelectedValue ?? this.lisplangKiriSelectedValue,
-      lisplangKiriIsEnabled: lisplangKiriIsEnabled ?? this.lisplangKiriIsEnabled,
+      // lisplangKiriIsEnabled: lisplangKiriIsEnabled ?? this.lisplangKiriIsEnabled, // Removed
       sideSkirtKiriSelectedValue: sideSkirtKiriSelectedValue ?? this.sideSkirtKiriSelectedValue,
-      sideSkirtKiriIsEnabled: sideSkirtKiriIsEnabled ?? this.sideSkirtKiriIsEnabled,
+      // sideSkirtKiriIsEnabled: sideSkirtKiriIsEnabled ?? this.sideSkirtKiriIsEnabled, // Removed
       eksteriorCatatanList: eksteriorCatatanList ?? this.eksteriorCatatanList,
       banDepanSelectedValue: banDepanSelectedValue ?? this.banDepanSelectedValue,
-      banDepanIsEnabled: banDepanIsEnabled ?? this.banDepanIsEnabled,
+      // banDepanIsEnabled: banDepanIsEnabled ?? this.banDepanIsEnabled, // Removed
       velgDepanSelectedValue: velgDepanSelectedValue ?? this.velgDepanSelectedValue,
-      velgDepanIsEnabled: velgDepanIsEnabled ?? this.velgDepanIsEnabled,
+      // velgDepanIsEnabled: velgDepanIsEnabled ?? this.velgDepanIsEnabled, // Removed
       discBrakeSelectedValue: discBrakeSelectedValue ?? this.discBrakeSelectedValue,
-      discBrakeIsEnabled: discBrakeIsEnabled ?? this.discBrakeIsEnabled,
+      // discBrakeIsEnabled: discBrakeIsEnabled ?? this.discBrakeIsEnabled, // Removed
       masterRemSelectedValue: masterRemSelectedValue ?? this.masterRemSelectedValue,
-      masterRemIsEnabled: masterRemIsEnabled ?? this.masterRemIsEnabled,
+      // masterRemIsEnabled: masterRemIsEnabled ?? this.masterRemIsEnabled, // Removed
       tieRodSelectedValue: tieRodSelectedValue ?? this.tieRodSelectedValue,
-      tieRodIsEnabled: tieRodIsEnabled ?? this.tieRodIsEnabled,
+      // tieRodIsEnabled: tieRodIsEnabled ?? this.tieRodIsEnabled, // Removed
       gardanSelectedValue: gardanSelectedValue ?? this.gardanSelectedValue,
-      gardanIsEnabled: gardanIsEnabled ?? this.gardanIsEnabled,
+      // gardanIsEnabled: gardanIsEnabled ?? this.gardanIsEnabled, // Removed
       banBelakangSelectedValue: banBelakangSelectedValue ?? this.banBelakangSelectedValue,
-      banBelakangIsEnabled: banBelakangIsEnabled ?? this.banBelakangIsEnabled,
+      // banBelakangIsEnabled: banBelakangIsEnabled ?? this.banBelakangIsEnabled, // Removed
       velgBelakangSelectedValue: velgBelakangSelectedValue ?? this.velgBelakangSelectedValue,
-      velgBelakangIsEnabled: velgBelakangIsEnabled ?? this.velgBelakangIsEnabled,
+      // velgBelakangIsEnabled: velgBelakangIsEnabled ?? this.velgBelakangIsEnabled, // Removed
       brakePadSelectedValue: brakePadSelectedValue ?? this.brakePadSelectedValue,
-      brakePadIsEnabled: brakePadIsEnabled ?? this.brakePadIsEnabled,
+      // brakePadIsEnabled: brakePadIsEnabled ?? this.brakePadIsEnabled, // Removed
       crossmemberSelectedValue: crossmemberSelectedValue ?? this.crossmemberSelectedValue,
-      crossmemberIsEnabled: crossmemberIsEnabled ?? this.crossmemberIsEnabled,
+      // crossmemberIsEnabled: crossmemberIsEnabled ?? this.crossmemberIsEnabled, // Removed
       knalpotSelectedValue: knalpotSelectedValue ?? this.knalpotSelectedValue,
-      knalpotIsEnabled: knalpotIsEnabled ?? this.knalpotIsEnabled,
+      // knalpotIsEnabled: knalpotIsEnabled ?? this.knalpotIsEnabled, // Removed
       balljointSelectedValue: balljointSelectedValue ?? this.balljointSelectedValue,
-      balljointIsEnabled: balljointIsEnabled ?? this.balljointIsEnabled,
+      // balljointIsEnabled: balljointIsEnabled ?? this.balljointIsEnabled, // Removed
       rocksteerSelectedValue: rocksteerSelectedValue ?? this.rocksteerSelectedValue,
-      rocksteerIsEnabled: rocksteerIsEnabled ?? this.rocksteerIsEnabled,
+      // rocksteerIsEnabled: rocksteerIsEnabled ?? this.rocksteerIsEnabled, // Removed
       karetBootSelectedValue: karetBootSelectedValue ?? this.karetBootSelectedValue,
-      karetBootIsEnabled: karetBootIsEnabled ?? this.karetBootIsEnabled,
+      // karetBootIsEnabled: karetBootIsEnabled ?? this.karetBootIsEnabled, // Removed
       upperLowerArmSelectedValue: upperLowerArmSelectedValue ?? this.upperLowerArmSelectedValue,
-      upperLowerArmIsEnabled: upperLowerArmIsEnabled ?? this.upperLowerArmIsEnabled,
+      // upperLowerArmIsEnabled: upperLowerArmIsEnabled ?? this.upperLowerArmIsEnabled, // Removed
       shockBreakerSelectedValue: shockBreakerSelectedValue ?? this.shockBreakerSelectedValue,
-      shockBreakerIsEnabled: shockBreakerIsEnabled ?? this.shockBreakerIsEnabled,
+      // shockBreakerIsEnabled: shockBreakerIsEnabled ?? this.shockBreakerIsEnabled, // Removed
       linkStabilizerSelectedValue: linkStabilizerSelectedValue ?? this.linkStabilizerSelectedValue,
-      linkStabilizerIsEnabled: linkStabilizerIsEnabled ?? this.linkStabilizerIsEnabled,
+      // linkStabilizerIsEnabled: linkStabilizerIsEnabled ?? this.linkStabilizerIsEnabled, // Removed
       banDanKakiKakiCatatanList: banDanKakiKakiCatatanList ?? this.banDanKakiKakiCatatanList,
       bunyiGetaranSelectedValue: bunyiGetaranSelectedValue ?? this.bunyiGetaranSelectedValue,
-      bunyiGetaranIsEnabled: bunyiGetaranIsEnabled ?? this.bunyiGetaranIsEnabled,
+      // bunyiGetaranIsEnabled: bunyiGetaranIsEnabled ?? this.bunyiGetaranIsEnabled, // Removed
       performaStirSelectedValue: performaStirSelectedValue ?? this.performaStirSelectedValue,
-      performaStirIsEnabled: performaStirIsEnabled ?? this.performaStirIsEnabled,
+      // performaStirIsEnabled: performaStirIsEnabled ?? this.performaStirIsEnabled, // Removed
       perpindahanTransmisiSelectedValue: perpindahanTransmisiSelectedValue ?? this.perpindahanTransmisiSelectedValue,
-      perpindahanTransmisiIsEnabled: perpindahanTransmisiIsEnabled ?? this.perpindahanTransmisiIsEnabled,
+      // perpindahanTransmisiIsEnabled: perpindahanTransmisiIsEnabled ?? this.perpindahanTransmisiIsEnabled, // Removed
       stirBalanceSelectedValue: stirBalanceSelectedValue ?? this.stirBalanceSelectedValue,
-      stirBalanceIsEnabled: stirBalanceIsEnabled ?? this.stirBalanceIsEnabled,
+      // stirBalanceIsEnabled: stirBalanceIsEnabled ?? this.stirBalanceIsEnabled, // Removed
       performaSuspensiSelectedValue: performaSuspensiSelectedValue ?? this.performaSuspensiSelectedValue,
-      performaSuspensiIsEnabled: performaSuspensiIsEnabled ?? this.performaSuspensiIsEnabled,
+      // performaSuspensiIsEnabled: performaSuspensiIsEnabled ?? this.performaSuspensiIsEnabled, // Removed
       performaKoplingSelectedValue: performaKoplingSelectedValue ?? this.performaKoplingSelectedValue,
-      performaKoplingIsEnabled: performaKoplingIsEnabled ?? this.performaKoplingIsEnabled,
+      // performaKoplingIsEnabled: performaKoplingIsEnabled ?? this.performaKoplingIsEnabled, // Removed
       rpmSelectedValue: rpmSelectedValue ?? this.rpmSelectedValue,
-      rpmIsEnabled: rpmIsEnabled ?? this.rpmIsEnabled,
+      // rpmIsEnabled: rpmIsEnabled ?? this.rpmIsEnabled, // Removed
       testDriveCatatanList: testDriveCatatanList ?? this.testDriveCatatanList,
       // New fields for Page Five Seven (Tools Test)
       tebalCatBodyDepanSelectedValue: tebalCatBodyDepanSelectedValue ?? this.tebalCatBodyDepanSelectedValue,
-      tebalCatBodyDepanIsEnabled: tebalCatBodyDepanIsEnabled ?? this.tebalCatBodyDepanIsEnabled,
+      // tebalCatBodyDepanIsEnabled: tebalCatBodyDepanIsEnabled ?? this.tebalCatBodyDepanIsEnabled, // Removed
       tebalCatBodyKiriSelectedValue: tebalCatBodyKiriSelectedValue ?? this.tebalCatBodyKiriSelectedValue,
-      tebalCatBodyKiriIsEnabled: tebalCatBodyKiriIsEnabled ?? this.tebalCatBodyKiriIsEnabled,
+      // tebalCatBodyKiriIsEnabled: tebalCatBodyKiriIsEnabled ?? this.tebalCatBodyKiriIsEnabled, // Removed
       temperatureAcMobilSelectedValue: temperatureAcMobilSelectedValue ?? this.temperatureAcMobilSelectedValue,
-      temperatureAcMobilIsEnabled: temperatureAcMobilIsEnabled ?? this.temperatureAcMobilIsEnabled,
+      // temperatureAcMobilIsEnabled: temperatureAcMobilIsEnabled ?? this.temperatureAcMobilIsEnabled, // Removed
       tebalCatBodyKananSelectedValue: tebalCatBodyKananSelectedValue ?? this.tebalCatBodyKananSelectedValue,
-      tebalCatBodyKananIsEnabled: tebalCatBodyKananIsEnabled ?? this.tebalCatBodyKananIsEnabled,
+      // tebalCatBodyKananIsEnabled: tebalCatBodyKananIsEnabled ?? this.tebalCatBodyKananIsEnabled, // Removed
       tebalCatBodyBelakangSelectedValue: tebalCatBodyBelakangSelectedValue ?? this.tebalCatBodyBelakangSelectedValue,
-      tebalCatBodyBelakangIsEnabled: tebalCatBodyBelakangIsEnabled ?? this.tebalCatBodyBelakangIsEnabled,
+      // tebalCatBodyBelakangIsEnabled: tebalCatBodyBelakangIsEnabled ?? this.tebalCatBodyBelakangIsEnabled, // Removed
       obdScannerSelectedValue: obdScannerSelectedValue ?? this.obdScannerSelectedValue,
-      obdScannerIsEnabled: obdScannerIsEnabled ?? this.obdScannerIsEnabled,
+      // obdScannerIsEnabled: obdScannerIsEnabled ?? this.obdScannerIsEnabled, // Removed
       tebalCatBodyAtapSelectedValue: tebalCatBodyAtapSelectedValue ?? this.tebalCatBodyAtapSelectedValue,
-      tebalCatBodyAtapIsEnabled: tebalCatBodyAtapIsEnabled ?? this.tebalCatBodyAtapIsEnabled,
+      // tebalCatBodyAtapIsEnabled: tebalCatBodyAtapIsEnabled ?? this.tebalCatBodyAtapIsEnabled, // Removed
       testAccuSelectedValue: testAccuSelectedValue ?? this.testAccuSelectedValue,
-      testAccuIsEnabled: testAccuIsEnabled ?? this.testAccuIsEnabled,
+      // testAccuIsEnabled: testAccuIsEnabled ?? this.testAccuIsEnabled, // Removed
       toolsTestCatatanList: toolsTestCatatanList ?? this.toolsTestCatatanList,
     );
   }

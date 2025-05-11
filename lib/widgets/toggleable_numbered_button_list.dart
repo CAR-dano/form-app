@@ -5,10 +5,8 @@ import 'package:form_app/statics/app_styles.dart';
 class ToggleableNumberedButtonList extends StatefulWidget {
   final String label;
   final int count;
-  final int selectedValue; // Represents 1-based number (1-10) or <= 0 if none/disabled
-  final ValueChanged<int> onItemSelected; // Passes 1-based number or <= 0
-  final bool initialEnabled;
-  final ValueChanged<bool> onEnabledChanged;
+  final int selectedValue;
+  final ValueChanged<int> onItemSelected;
   final int valueWhenDisabled;
 
   const ToggleableNumberedButtonList({
@@ -17,8 +15,6 @@ class ToggleableNumberedButtonList extends StatefulWidget {
     required this.count,
     required this.selectedValue,
     required this.onItemSelected,
-    this.initialEnabled = true,
-    required this.onEnabledChanged,
     this.valueWhenDisabled = 0,
   });
 
@@ -27,70 +23,60 @@ class ToggleableNumberedButtonList extends StatefulWidget {
 }
 
 class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonList> {
-  late bool _isEnabled;
-  late int _persistedSelection;
+  late int _persistedSelection; // Remembers the last active selection (1-10)
 
   @override
   void initState() {
     super.initState();
-    _isEnabled = widget.initialEnabled;
-    _persistedSelection = widget.selectedValue;
-    if (!_isEnabled && widget.selectedValue != widget.valueWhenDisabled) {
-      // _persistedSelection holds the parent's initial value if widget starts disabled.
-    }
+    // Initialize _persistedSelection: if selectedValue is active, use it, else default to 1.
+    _persistedSelection = (widget.selectedValue != widget.valueWhenDisabled)
+        ? widget.selectedValue
+        : 1; // Default to 1 if initially "off"
   }
 
   @override
   void didUpdateWidget(ToggleableNumberedButtonList oldWidget) {
     super.didUpdateWidget(oldWidget);
-    bool needsSetState = false;
-    
     if (widget.selectedValue != oldWidget.selectedValue) {
-      if (_isEnabled) {
-        if (_persistedSelection != widget.selectedValue) {
-          _persistedSelection = widget.selectedValue;
-          needsSetState = true; 
-        }
-      } else { 
-        if (widget.selectedValue != widget.valueWhenDisabled) {
-          _persistedSelection = widget.selectedValue;
-        }
+      // If parent changes selectedValue to an active one, update our memory.
+      if (widget.selectedValue != widget.valueWhenDisabled) {
+        _persistedSelection = widget.selectedValue;
       }
-    }
-
-    if (needsSetState) {
-      setState(() {});
+      // We need to rebuild if selectedValue changes as it drives the UI.
+      setState(() {}); 
     }
   }
 
-  void _handleCheckboxChange(bool? newValue) {
-    final bool newEnabledState = newValue ?? false;
-    if (_isEnabled != newEnabledState) {
-      setState(() {
-        _isEnabled = newEnabledState;
-      });
-      widget.onEnabledChanged(_isEnabled);
+  void _handleCheckboxOrLabelClick() {
+    final bool isCurrentlyEffectivelyOn = widget.selectedValue != widget.valueWhenDisabled;
 
-      if (!_isEnabled) { 
-        widget.onItemSelected(widget.valueWhenDisabled);
-      } else { 
-        widget.onItemSelected(_persistedSelection);
-      }
+    if (isCurrentlyEffectivelyOn) { // Currently ON, user wants to turn OFF
+      // _persistedSelection already holds the value that was active.
+      widget.onItemSelected(widget.valueWhenDisabled);
+    } else { // Currently OFF, user wants to turn ON
+      // Restore the remembered _persistedSelection.
+      // If _persistedSelection somehow became valueWhenDisabled (e.g. initial state), default to 1.
+      int valueToRestore = (_persistedSelection != widget.valueWhenDisabled) ? _persistedSelection : 1;
+      widget.onItemSelected(valueToRestore);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final Color currentLabelColor = _isEnabled ? labelTextColor : Colors.grey.shade400;
+    final bool isEffectivelyEnabled = widget.selectedValue != widget.valueWhenDisabled;
+
+    final Color currentLabelColor = isEffectivelyEnabled ? labelTextColor : Colors.grey.shade400;
+    final Color currentButtonTextColor = isEffectivelyEnabled ? Colors.black : Colors.grey.shade400;
+    
     final Color effectiveBorderColor;
-    if (!_isEnabled) {
+    if (!isEffectivelyEnabled) {
       effectiveBorderColor = Colors.grey.shade300;
-    } else if (_persistedSelection > 0 && numberedButtonColors.containsKey(_persistedSelection)) {
-      effectiveBorderColor = numberedButtonColors[_persistedSelection]!;
     } else {
-      effectiveBorderColor = toggleOptionSelectedLengkapColor; 
+      // If enabled, border color is based on the currently selected value (if any)
+      effectiveBorderColor = numberedButtonColors.containsKey(widget.selectedValue)
+          ? numberedButtonColors[widget.selectedValue]!
+          : toggleOptionSelectedLengkapColor; // Default if no specific button is selected but enabled
     }
-    final Color currentButtonTextColor = _isEnabled ? Colors.black : Colors.grey.shade400;
 
     const double buttonSize = 35.0;
 
@@ -110,8 +96,10 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
                         width: 18,
                         height: 18,
                         child: Checkbox(
-                          value: _isEnabled,
-                          onChanged: _handleCheckboxChange,
+                          value: isEffectivelyEnabled, // Driven by selectedValue
+                          onChanged: (bool? newValue) { // newValue is the new state of the checkbox
+                            _handleCheckboxOrLabelClick();
+                          },
                           activeColor: toggleOptionSelectedLengkapColor,
                           materialTapTargetSize: MaterialTapTargetSize.padded,
                           visualDensity: VisualDensity.compact,
@@ -130,13 +118,10 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: GestureDetector(
-                          onTap: () {
-                            _handleCheckboxChange(!_isEnabled);
-                          },
+                          onTap: _handleCheckboxOrLabelClick,
                           child: Text(
                             widget.label,
                             style: labelStyle.copyWith(color: currentLabelColor),
-                            // overflow: TextOverflow.ellipsis, // Example
                           ),
                         ),
                       ),
@@ -144,7 +129,7 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
                   ],
                 ),
             ),
-             if (!_isEnabled)
+             if (!isEffectivelyEnabled) // Show "Tidak ada" if not effectively enabled
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   decoration: BoxDecoration(
@@ -178,34 +163,31 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: List.generate(numberOfButtons, (index) {
                 final itemNumber = index + 1;
-                final isSelected = _isEnabled && (itemNumber == _persistedSelection);
+                // A button is selected if the widget is effectively enabled AND its number matches selectedValue
+                final bool isButtonSelected = isEffectivelyEnabled && (itemNumber == widget.selectedValue);
 
                 final Color buttonBackgroundColor;
-                if (isSelected) {
+                if (isButtonSelected) {
                   buttonBackgroundColor = numberedButtonColors[itemNumber]!;
                 } else {
                   buttonBackgroundColor = Colors.white;
                 }
-                final Color buttonTextColor = isSelected ? Colors.white : currentButtonTextColor;
+                final Color buttonTextColor = isButtonSelected ? Colors.white : currentButtonTextColor;
 
                 return GestureDetector(
-                  onTap: _isEnabled
+                  onTap: isEffectivelyEnabled // Buttons are only tappable if the whole widget is enabled
                       ? () {
-                          int newSelectionToPersist;
-                          if (itemNumber == _persistedSelection) {
-                            newSelectionToPersist = widget.valueWhenDisabled;
-                          } else {
-                            newSelectionToPersist = itemNumber;
+                          if (itemNumber == widget.selectedValue) { // Tapping the currently selected button
+                            // This action effectively "turns off" the selection.
+                            // _persistedSelection should remember this itemNumber.
+                            _persistedSelection = itemNumber; 
+                            widget.onItemSelected(widget.valueWhenDisabled);
+                          } else { // Tapping a new or different button
+                            _persistedSelection = itemNumber; // Remember this new choice
+                            widget.onItemSelected(itemNumber);
                           }
-                          
-                          if (_persistedSelection != newSelectionToPersist) {
-                            setState(() {
-                              _persistedSelection = newSelectionToPersist;
-                            });
-                          }
-                          widget.onItemSelected(newSelectionToPersist);
                         }
-                      : null,
+                      : null, // Not tappable if not effectively enabled
                   child: Container(
                     height: buttonSize,
                     width: actualButtonWidth, // Apply the calculated width

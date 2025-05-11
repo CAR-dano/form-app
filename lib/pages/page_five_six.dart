@@ -72,13 +72,7 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateBunyiGetaranSelectedValue(value);
                   },
-                  initialEnabled: formData.bunyiGetaranIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateBunyiGetaranIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateBunyiGetaranSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -88,13 +82,7 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updatePerformaStirSelectedValue(value);
                   },
-                  initialEnabled: formData.performaStirIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updatePerformaStirIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updatePerformaStirSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -104,13 +92,7 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updatePerpindahanTransmisiSelectedValue(value);
                   },
-                  initialEnabled: formData.perpindahanTransmisiIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updatePerpindahanTransmisiIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updatePerpindahanTransmisiSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -120,13 +102,7 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateStirBalanceSelectedValue(value);
                   },
-                  initialEnabled: formData.stirBalanceIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateStirBalanceIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateStirBalanceSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -136,13 +112,7 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updatePerformaSuspensiSelectedValue(value);
                   },
-                  initialEnabled: formData.performaSuspensiIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updatePerformaSuspensiIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updatePerformaSuspensiSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -152,13 +122,7 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updatePerformaKoplingSelectedValue(value);
                   },
-                  initialEnabled: formData.performaKoplingIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updatePerformaKoplingIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updatePerformaKoplingSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -168,13 +132,7 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateRpmSelectedValue(value);
                   },
-                  initialEnabled: formData.rpmIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateRpmIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateRpmSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ExpandableTextField(

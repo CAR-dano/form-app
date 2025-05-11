@@ -74,13 +74,7 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateAirbagSelectedValue(value);
                   },
-                  initialEnabled: formData.airbagIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateAirbagIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateAirbagSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -90,13 +84,7 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateSistemAudioSelectedValue(value);
                   },
-                  initialEnabled: formData.sistemAudioIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateSistemAudioIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateSistemAudioSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -106,13 +94,7 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updatePowerWindowSelectedValue(value);
                   },
-                  initialEnabled: formData.powerWindowIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updatePowerWindowIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updatePowerWindowSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -122,13 +104,7 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAli
                   onItemSelected: (value) {
                     formNotifier.updateSistemAcSelectedValue(value);
                   },
-                  initialEnabled: formData.sistemAcIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateSistemAcIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateSistemAcSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ExpandableTextField(

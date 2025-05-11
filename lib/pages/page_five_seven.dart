@@ -72,13 +72,7 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateTebalCatBodyDepanSelectedValue(value);
                   },
-                  initialEnabled: formData.tebalCatBodyDepanIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateTebalCatBodyDepanIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateTebalCatBodyDepanSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -88,13 +82,7 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateTebalCatBodyKiriSelectedValue(value);
                   },
-                  initialEnabled: formData.tebalCatBodyKiriIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateTebalCatBodyKiriIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateTebalCatBodyKiriSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -104,13 +92,7 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateTemperatureAcMobilSelectedValue(value);
                   },
-                  initialEnabled: formData.temperatureAcMobilIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateTemperatureAcMobilIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateTemperatureAcMobilSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -120,13 +102,7 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateTebalCatBodyKananSelectedValue(value);
                   },
-                  initialEnabled: formData.tebalCatBodyKananIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateTebalCatBodyKananIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateTebalCatBodyKananSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -136,13 +112,7 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateTebalCatBodyBelakangSelectedValue(value);
                   },
-                  initialEnabled: formData.tebalCatBodyBelakangIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateTebalCatBodyBelakangIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateTebalCatBodyBelakangSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -152,13 +122,7 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateObdScannerSelectedValue(value);
                   },
-                  initialEnabled: formData.obdScannerIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateObdScannerIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateObdScannerSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -168,13 +132,7 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateTebalCatBodyAtapSelectedValue(value);
                   },
-                  initialEnabled: formData.tebalCatBodyAtapIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateTebalCatBodyAtapIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateTebalCatBodyAtapSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -184,13 +142,7 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> with AutomaticKee
                   onItemSelected: (value) {
                     formNotifier.updateTestAccuSelectedValue(value);
                   },
-                  initialEnabled: formData.testAccuIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateTestAccuIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateTestAccuSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ExpandableTextField(

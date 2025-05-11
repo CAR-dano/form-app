@@ -72,13 +72,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateBanDepanSelectedValue(value);
                   },
-                  initialEnabled: formData.banDepanIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateBanDepanIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateBanDepanSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -88,13 +82,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateVelgDepanSelectedValue(value);
                   },
-                  initialEnabled: formData.velgDepanIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateVelgDepanIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateVelgDepanSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -104,13 +92,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateDiscBrakeSelectedValue(value);
                   },
-                  initialEnabled: formData.discBrakeIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateDiscBrakeIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateDiscBrakeSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -120,13 +102,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateMasterRemSelectedValue(value);
                   },
-                  initialEnabled: formData.masterRemIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateMasterRemIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateMasterRemSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -136,13 +112,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateTieRodSelectedValue(value);
                   },
-                  initialEnabled: formData.tieRodIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateTieRodIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateTieRodSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -152,13 +122,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateGardanSelectedValue(value);
                   },
-                  initialEnabled: formData.gardanIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateGardanIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateGardanSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -168,13 +132,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateBanBelakangSelectedValue(value);
                   },
-                  initialEnabled: formData.banBelakangIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateBanBelakangIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateBanBelakangSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -184,13 +142,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateVelgBelakangSelectedValue(value);
                   },
-                  initialEnabled: formData.velgBelakangIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateVelgBelakangIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateVelgBelakangSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -200,13 +152,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateBrakePadSelectedValue(value);
                   },
-                  initialEnabled: formData.brakePadIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateBrakePadIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateBrakePadSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -216,13 +162,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateCrossmemberSelectedValue(value);
                   },
-                  initialEnabled: formData.crossmemberIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateCrossmemberIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateCrossmemberSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -232,13 +172,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateKnalpotSelectedValue(value);
                   },
-                  initialEnabled: formData.knalpotIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateKnalpotIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateKnalpotSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -248,13 +182,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateBalljointSelectedValue(value);
                   },
-                  initialEnabled: formData.balljointIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateBalljointIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateBalljointSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -264,13 +192,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateRocksteerSelectedValue(value);
                   },
-                  initialEnabled: formData.rocksteerIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateRocksteerIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateRocksteerSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -280,13 +202,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateKaretBootSelectedValue(value);
                   },
-                  initialEnabled: formData.karetBootIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateKaretBootIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateKaretBootSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -296,13 +212,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateUpperLowerArmSelectedValue(value);
                   },
-                  initialEnabled: formData.upperLowerArmIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateUpperLowerArmIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateUpperLowerArmSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -312,13 +222,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateShockBreakerSelectedValue(value);
                   },
-                  initialEnabled: formData.shockBreakerIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateShockBreakerIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateShockBreakerSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -328,13 +232,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateLinkStabilizerSelectedValue(value);
                   },
-                  initialEnabled: formData.linkStabilizerIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateLinkStabilizerIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateLinkStabilizerSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ExpandableTextField(

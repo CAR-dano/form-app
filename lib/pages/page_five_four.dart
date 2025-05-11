@@ -75,13 +75,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateBumperDepanSelectedValue(value);
                   },
-                  initialEnabled: formData.bumperDepanIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateBumperDepanIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateBumperDepanSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -91,13 +85,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateKapMesinSelectedValue(value);
                   },
-                  initialEnabled: formData.kapMesinIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateKapMesinIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateKapMesinSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -107,13 +95,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateLampuUtamaSelectedValue(value);
                   },
-                  initialEnabled: formData.lampuUtamaIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateLampuUtamaIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateLampuUtamaSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -123,13 +105,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updatePanelAtapSelectedValue(value);
                   },
-                  initialEnabled: formData.panelAtapIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updatePanelAtapIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updatePanelAtapSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -139,13 +115,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateGrillSelectedValue(value);
                   },
-                  initialEnabled: formData.grillIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateGrillIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateGrillSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -155,13 +125,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateLampuFoglampSelectedValue(value);
                   },
-                  initialEnabled: formData.lampuFoglampIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateLampuFoglampIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateLampuFoglampSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -171,13 +135,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateKacaBeningSelectedValue(value);
                   },
-                  initialEnabled: formData.kacaBeningIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateKacaBeningIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateKacaBeningSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -187,13 +145,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateWiperBelakangSelectedValue(value);
                   },
-                  initialEnabled: formData.wiperBelakangIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateWiperBelakangIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateWiperBelakangSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -203,13 +155,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateBumperBelakangSelectedValue(value);
                   },
-                  initialEnabled: formData.bumperBelakangIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateBumperBelakangIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateBumperBelakangSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -219,13 +165,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateLampuBelakangSelectedValue(value);
                   },
-                  initialEnabled: formData.lampuBelakangIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateLampuBelakangIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateLampuBelakangSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -235,13 +175,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateTrunklidSelectedValue(value);
                   },
-                  initialEnabled: formData.trunklidIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateTrunklidIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateTrunklidSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -251,13 +185,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateKacaDepanSelectedValue(value);
                   },
-                  initialEnabled: formData.kacaDepanIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateKacaDepanIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateKacaDepanSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -267,13 +195,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateFenderKananSelectedValue(value);
                   },
-                  initialEnabled: formData.fenderKananIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateFenderKananIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateFenderKananSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -283,13 +205,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateQuarterPanelKananSelectedValue(value);
                   },
-                  initialEnabled: formData.quarterPanelKananIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateQuarterPanelKananIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateQuarterPanelKananSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -299,13 +215,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updatePintuBelakangKananSelectedValue(value);
                   },
-                  initialEnabled: formData.pintuBelakangKananIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updatePintuBelakangKananIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updatePintuBelakangKananSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -315,13 +225,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateSpionKananSelectedValue(value);
                   },
-                  initialEnabled: formData.spionKananIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateSpionKananIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateSpionKananSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -331,13 +235,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateLisplangKananSelectedValue(value);
                   },
-                  initialEnabled: formData.lisplangKananIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateLisplangKananIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateLisplangKananSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -347,13 +245,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateSideSkirtKananSelectedValue(value);
                   },
-                  initialEnabled: formData.sideSkirtKananIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateSideSkirtKananIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateSideSkirtKananSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -363,13 +255,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateDaunWiperSelectedValue(value);
                   },
-                  initialEnabled: formData.daunWiperIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateDaunWiperIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateDaunWiperSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -379,13 +265,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updatePintuBelakangSelectedValue(value);
                   },
-                  initialEnabled: formData.pintuBelakangIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updatePintuBelakangIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updatePintuBelakangSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -395,13 +275,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateFenderKiriSelectedValue(value);
                   },
-                  initialEnabled: formData.fenderKiriIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateFenderKiriIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateFenderKiriSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -411,13 +285,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateQuarterPanelKiriSelectedValue(value);
                   },
-                  initialEnabled: formData.quarterPanelKiriIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateQuarterPanelKiriIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateQuarterPanelKiriSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -427,13 +295,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updatePintuDepanSelectedValue(value);
                   },
-                  initialEnabled: formData.pintuDepanIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updatePintuDepanIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updatePintuDepanSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -443,13 +305,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateKacaJendelaKananSelectedValue(value);
                   },
-                  initialEnabled: formData.kacaJendelaKananIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateKacaJendelaKananIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateKacaJendelaKananSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -459,13 +315,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updatePintuBelakangKiriSelectedValue(value);
                   },
-                  initialEnabled: formData.pintuBelakangKiriIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updatePintuBelakangKiriIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updatePintuBelakangKiriSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -475,13 +325,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateSpionKiriSelectedValue(value);
                   },
-                  initialEnabled: formData.spionKiriIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateSpionKiriIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateSpionKiriSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -491,13 +335,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updatePintuDepanKiriSelectedValue(value);
                   },
-                  initialEnabled: formData.pintuDepanKiriIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updatePintuDepanKiriIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updatePintuDepanKiriSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -507,13 +345,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateKacaJendelaKiriSelectedValue(value);
                   },
-                  initialEnabled: formData.kacaJendelaKiriIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateKacaJendelaKiriIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateKacaJendelaKiriSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -523,13 +355,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateLisplangKiriSelectedValue(value);
                   },
-                  initialEnabled: formData.lisplangKiriIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateLisplangKiriIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateLisplangKiriSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
@@ -539,13 +365,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   onItemSelected: (value) {
                     formNotifier.updateSideSkirtKiriSelectedValue(value);
                   },
-                  initialEnabled: formData.sideSkirtKiriIsEnabled ?? true,
-                  onEnabledChanged: (enabled) {
-                    formNotifier.updateSideSkirtKiriIsEnabled(enabled);
-                    if (!enabled) {
-                      formNotifier.updateSideSkirtKiriSelectedValue(-1);
-                    }
-                  },
+                  // initialEnabled and onEnabledChanged removed
                 ),
                 const SizedBox(height: 16.0),
                 
