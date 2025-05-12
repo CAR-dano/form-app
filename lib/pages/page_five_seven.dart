@@ -61,9 +61,9 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> with AutomaticKee
               children: [
                 PageNumber(data: '5/9'),
                 const SizedBox(height: 4),
-                PageTitle(data: 'Penilaian'),
+                PageTitle(data: 'Penilaian (7)'),
                 const SizedBox(height: 6.0),
-                const HeadingOne(text: 'Tools Test (7)'),
+                const HeadingOne(text: 'Tools Test'),
                 const SizedBox(height: 16.0),
                 ToggleableNumberedButtonList(
                   label: 'Tebal Cat Body Depan',
