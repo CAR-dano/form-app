@@ -3,13 +3,31 @@ import 'package:form_app/models/form_data.dart';
 
 class ApiService {
   final dio.Dio _dio = dio.Dio(); // Use prefix
-  final String _baseUrl =
-      'http://31.220.81.182/api/v1/inspections'; // Your API endpoint
+  static const String _baseApiUrl = 'http://31.220.81.182/api/v1'; // Base API URL
+  final String _inspectionsUrl = '$_baseApiUrl/inspections'; // Inspections endpoint
+  final String _inspectionBranchesUrl = '$_baseApiUrl/inspection-branches'; // Inspection branches endpoint
+
+  Future<List<String>> getInspectionBranches() async {
+    try {
+      final response = await _dio.get(_inspectionBranchesUrl);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        return data.map((branch) => branch['city'] as String).toList();
+      } else {
+        // Handle error, perhaps return an empty list or throw an exception
+        //print('Failed to load inspection branches: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      //print('Error fetching inspection branches: $e');
+      return [];
+    }
+  }
 
   Future<void> submitFormData(FormData formData) async {
     try {
       final response = await _dio.post(
-        _baseUrl,
+        _inspectionsUrl,
         data: {
           "vehiclePlateNumber": formData.platNomor,
           "inspectionDate": formData.tanggalInspeksi?.toIso8601String(),

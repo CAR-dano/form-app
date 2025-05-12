@@ -1,15 +1,15 @@
-// page_one.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
+import 'package:form_app/providers/inspection_branches_provider.dart'; // Import the provider for branches
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/labeled_date_field.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
-import 'package:form_app/widgets/labeled_dropdown_field.dart';
+import 'package:form_app/widgets/labeled_dropdown_field.dart'; // Use the refactored generic LabeledDropdownField
 
 class PageOne extends ConsumerStatefulWidget {
   final GlobalKey<FormState> formKey; // Add formKey parameter
@@ -22,17 +22,18 @@ class PageOne extends ConsumerStatefulWidget {
 
 class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClientMixin { // Add mixin
   late FocusScopeNode _focusScopeNode;
+  // Removed local state for branches, loading, and error
 
   @override
   bool get wantKeepAlive => true; // Override wantKeepAlive
 
-  // final _formKey = GlobalKey<FormState>(); // GlobalKey for the form - now passed as a parameter
   bool _formSubmitted = false; // Track if the form has been submitted
 
   @override
   void initState() {
     super.initState();
     _focusScopeNode = FocusScopeNode();
+    // Fetching is handled by FutureProvider, no need to call _fetchBranches here
   }
 
   @override
@@ -43,11 +44,12 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
-    final formData = ref.watch(formProvider); // Watch the form data
-    final formNotifier = ref.read(formProvider.notifier); // Read the notifier
+    super.build(context);
+    final formData = ref.watch(formProvider);
+    final formNotifier = ref.read(formProvider.notifier);
+    // No longer need to watch inspectionBranchesProvider directly here for the UI part of the dropdown.
+    // LabeledBranchesDropdownField will handle it.
 
-    // Return the core content Column directly. Scaffold/SafeArea are in CommonLayout.
     // The GestureDetector for unfocus is removed; can be added to CommonLayout if needed globally.
     return PopScope(
       // Wrap with PopScope
@@ -119,38 +121,28 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                         _formSubmitted, // Pass the formSubmitted flag
                   ),
                   const SizedBox(height: 16.0), // Keep internal spacing
-                  LabeledDropdownField<String>(
+                  LabeledDropdownField<String>( // Use the refactored LabeledDropdownField
                     label: 'Cabang Inspeksi',
-                    hintText: 'Contoh: Yogyakarta / Semarang', // Add hint text
-                    value: formData.cabangInspeksi, // Use data from provider
-                    items: const [ // Define dropdown items
-                      DropdownMenuItem(
-                        value: 'Yogyakarta',
-                        child: Text('Yogyakarta'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Solo',
-                        child: Text('Solo'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Semarang',
-                        child: Text('Semarang'),
-                      ),
-                    ],
+                    itemsProvider: inspectionBranchesProvider, // Pass the provider
+                    value: formData.cabangInspeksi,
                     onChanged: (newValue) {
-                      formNotifier.updateCabangInspeksi(
-                        newValue,
-                      ); // Update data in provider
-                      if (_formSubmitted) { // Trigger validation if form was submitted
-                         widget.formKey.currentState?.validate();
+                      formNotifier.updateCabangInspeksi(newValue);
+                      if (_formSubmitted) {
+                        widget.formKey.currentState?.validate();
                       }
                     },
-                     validator: (value) {
-                      if (_formSubmitted && value == null) {
-                        return 'Cabang Inspeksi belum terisi'; // Validation message
+                    validator: (value) {
+                      final branchesState = ref.read(inspectionBranchesProvider);
+                      // Only validate if branches are loaded and not empty
+                      if (_formSubmitted && value == null && branchesState is AsyncData<List<String>> && branchesState.value.isNotEmpty) {
+                        return 'Cabang Inspeksi belum terisi';
                       }
-                      return null; // Return null if valid
+                      return null;
                     },
+                    initialHintText: 'Pilih cabang inspeksi',
+                    loadingHintText: 'Memuat cabang...',
+                    emptyDataHintText: 'Tidak ada cabang tersedia',
+                    errorHintText: 'Gagal memuat cabang',
                   ),
                   const SizedBox(height: 16.0), // Keep internal spacing
                   LabeledDateField(

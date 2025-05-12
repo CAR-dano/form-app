@@ -1,0 +1,5 @@
+GET http://31.220.81.182/api/v1/inspections
+
+###
+
+GET http://31.220.81.182/api/v1/user
