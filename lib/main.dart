@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_app/pages/page_one.dart';
-import 'package:form_app/widgets/common_layout.dart'; // Import the new layout
+import 'package:form_app/pages/multi_step_form_screen.dart'; // Import MultiStepFormScreen
 
 
 void main() {
@@ -19,9 +18,7 @@ class FormApp extends ConsumerWidget {
       theme: ThemeData(),
 
       debugShowCheckedModeBanner: false,
-      // Wrap PageOne with CommonLayout
-      // You can optionally pass a title here if needed for PageOne's AppBar
-      home: const CommonLayout(child: PageOne()),
+      home: const MultiStepFormScreen(), // Set MultiStepFormScreen as home
     );
   }
 }

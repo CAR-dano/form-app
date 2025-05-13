@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:form_app/statics/app_styles.dart';
-import 'dart:math'; // Import math for min function
+import 'package:form_app/statics/app_styles.dart'; // Your project's style definitions.
+import 'dart:math'; // Used for the min function.
+import 'package:form_app/formatters/bullet_list_input_formatter.dart'; // Custom formatter for bullet lists.
 
+// A text field that expands and supports bulleted list formatting.
 class ExpandableTextField extends StatefulWidget {
   final String label;
   final String hintText;
@@ -13,6 +15,7 @@ class ExpandableTextField extends StatefulWidget {
   final bool formSubmitted;
   final List<String>? initialLines;
 
+  // Constructor for the ExpandableTextField.
   const ExpandableTextField({
     super.key,
     required this.label,
@@ -25,201 +28,179 @@ class ExpandableTextField extends StatefulWidget {
     this.initialLines,
   });
 
+  // Creates the mutable state for this widget.
   @override
   State<ExpandableTextField> createState() => _ExpandableTextFieldState();
 }
 
+// Manages the state for ExpandableTextField.
 class _ExpandableTextFieldState extends State<ExpandableTextField> {
+  // Key to manage FormField state (e.g., validation).
   final _formFieldKey = GlobalKey<FormFieldState>();
+  // Internal controller if an external one isn't provided.
   late TextEditingController _internalController;
+  // Internal focus node if an external one isn't provided.
   late FocusNode _focusNode;
+  // Internal list of text lines.
   List<String> _lines = [];
 
+  // Initializes state when the widget is first created.
   @override
   void initState() {
     super.initState();
-
-    // Initialize _lines directly from initialLines or empty list
-    // DON'T add the bullet point here initially.
     _lines = List<String>.from(widget.initialLines ?? []);
-
-    // Initialize controller with joined lines (might be empty)
     _internalController = widget.controller ?? TextEditingController(text: _lines.join('\n'));
-
     if (widget.controller != null) {
       widget.controller!.addListener(_handleExternalControllerChange);
     }
-
     _focusNode = widget.focusNode ?? FocusNode();
-    // Add the listener *after* initializing _internalController
     _focusNode.addListener(_handleFocusChange);
   }
 
+  // Called when the widget configuration changes.
   @override
   void didUpdateWidget(covariant ExpandableTextField oldWidget) {
     super.didUpdateWidget(oldWidget);
-     // Handle external changes if necessary, ensuring not to overwrite user input without care
-    if (widget.initialLines != oldWidget.initialLines && widget.controller == null) {
-      //final newInitialText = (widget.initialLines ?? []).join('\n');
-      // Only update if the initial text changed AND the current text matches the OLD initial text
-      // OR if the current text is empty/just the placeholder bullet (safer update)
-      final oldInitialText = (oldWidget.initialLines ?? []).join('\n');
-      if (_internalController.text == oldInitialText || _internalController.text.isEmpty || _internalController.text == '• ') {
-         _lines = List<String>.from(widget.initialLines ?? []);
-         final currentSelection = _internalController.selection;
-         _internalController.text = _lines.join('\n');
-         // Try to restore selection
-         try {
-          _internalController.selection = currentSelection.copyWith(
-            baseOffset: min(currentSelection.baseOffset, _internalController.text.length),
-            extentOffset: min(currentSelection.extentOffset, _internalController.text.length),
-          );
-         } catch (e) {
-            // Selection restoration might fail if text length changes drastically
-            _internalController.selection = TextSelection.collapsed(offset: _internalController.text.length);
-         }
+    // Updates listeners if the external controller changes.
+    if (widget.controller != oldWidget.controller) {
+      oldWidget.controller?.removeListener(_handleExternalControllerChange);
+      widget.controller?.addListener(_handleExternalControllerChange);
+      if (widget.controller != null && _internalController.text != widget.controller!.text) {
+        _internalController.text = widget.controller!.text;
       }
+    }
+    // Updates internal text if initial lines change and no external controller is used.
+    if (widget.initialLines != oldWidget.initialLines && widget.controller == null) {
+      final oldInitialTextJoined = (oldWidget.initialLines ?? []).join('\n');
+      if (_internalController.text == oldInitialTextJoined ||
+          _internalController.text.isEmpty ||
+          _internalController.text == '• ') {
+        _lines = List<String>.from(widget.initialLines ?? []);
+        final newText = _lines.join('\n');
+        if (_internalController.text != newText) {
+          final currentSelection = _internalController.selection;
+          _internalController.text = newText;
+          try {
+            _internalController.selection = currentSelection.copyWith(
+              baseOffset: min(currentSelection.baseOffset, _internalController.text.length),
+              extentOffset: min(currentSelection.extentOffset, _internalController.text.length),
+            );
+          } catch (e) {
+            _internalController.selection = TextSelection.collapsed(offset: _internalController.text.length);
+          }
+        }
+      }
+    }
+    // Updates listeners if the external focus node changes.
+    if (widget.focusNode != oldWidget.focusNode) {
+      _focusNode.removeListener(_handleFocusChange);
+      _focusNode = widget.focusNode ?? FocusNode();
+      _focusNode.addListener(_handleFocusChange);
     }
   }
 
+  // Cleans up resources when the widget is removed from the tree.
   @override
   void dispose() {
-    // Important: Remove listener before disposing focus node
     _focusNode.removeListener(_handleFocusChange);
-    if (widget.controller != null) {
-      widget.controller!.removeListener(_handleExternalControllerChange);
-    }
-    // Dispose internal controller only if it was created internally
-    if (widget.controller == null) {
-      _internalController.dispose();
-    }
-    // Dispose focus node only if it was created internally
-    if (widget.focusNode == null) {
-      _focusNode.dispose();
-    }
+    widget.controller?.removeListener(_handleExternalControllerChange);
+    if (widget.controller == null) _internalController.dispose();
+    if (widget.focusNode == null) _focusNode.dispose();
     super.dispose();
   }
 
+  // Handles changes from an external TextEditingController.
   void _handleExternalControllerChange() {
     if (_internalController.text != widget.controller!.text) {
-        _internalController.text = widget.controller!.text;
-        _lines = _internalController.text.split('\n');
-        // Usually, external controller changes shouldn't auto-trigger onChangedList
-        // unless that's the desired behavior for your specific use case.
-        // widget.onChangedList?.call(_lines);
+      _internalController.text = widget.controller!.text;
     }
   }
 
+  // Handles focus changes to add/remove initial bullet point.
   void _handleFocusChange() {
-     if (!mounted) return; // Ensure widget is still in the tree
-
-     // Use setState to ensure the UI rebuilds correctly for hint visibility
-     setState(() {
-        if (_focusNode.hasFocus && _internalController.text.isEmpty) {
-          // === GAINED FOCUS and EMPTY: Add bullet point ===
-          _lines = ['• '];
-          _internalController.text = _lines.join('\n');
-          // Position cursor *after* the bullet point and space
-          _internalController.selection = TextSelection.fromPosition(
-              TextPosition(offset: _internalController.text.length));
-          // Notify parent that the content changed programmatically
-          widget.onChangedList?.call(_lines);
-        } else if (!_focusNode.hasFocus && _internalController.text == '• ') {
-           // === LOST FOCUS and ONLY BULLET REMAINS: Clear it ===
-           _lines = []; // Clear internal state list
-           _internalController.clear(); // Clear the controller text
-           // Notify parent about the clearance
-           widget.onChangedList?.call(_lines);
-        }
-     });
+    if (!mounted) return;
+    if (_focusNode.hasFocus && _internalController.text.isEmpty) {
+      _internalController.text = '• ';
+      _internalController.selection = TextSelection.collapsed(offset: _internalController.text.length);
+    } else if (!_focusNode.hasFocus && _internalController.text == '• ') {
+      _internalController.clear();
+    }
+    setState(() {}); // Rebuilds for hint visibility or other focus-related UI.
   }
 
+  // Handles specific key events, like backspacing before bulleted content.
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is KeyDownEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.enter) {
-        final text = _internalController.text;
-        final selection = _internalController.selection;
-        if (selection.isValid) {
-          final newText = text.replaceRange(selection.start, selection.end, '\n• ');
-          setState(() { // Keep setState if key events directly impact build state
-            _lines = newText.split('\n');
+      final text = _internalController.text;
+      final selection = _internalController.selection;
+
+      // Handles backspace at the start of bulleted line content (e.g., "...\n• |Content").
+      if (event.logicalKey == LogicalKeyboardKey.backspace) {
+        if (selection.isCollapsed && selection.baseOffset > 0) {
+          final offset = selection.baseOffset;
+          if (offset >= 3 && text.substring(offset - 3, offset) == '\n• ') {
             _internalController.value = TextEditingValue(
-              text: newText,
-              selection: TextSelection.fromPosition(
-                TextPosition(offset: selection.start + 3),
-              ),
+              text: text.substring(0, offset - 3) + text.substring(offset),
+              selection: TextSelection.collapsed(offset: offset - 3),
             );
-            widget.onChangedList?.call(_lines);
-            if (widget.controller != null) {
-                widget.controller!.text = _internalController.text;
-            }
-          });
-          return KeyEventResult.handled;
-        }
-      } else if (event.logicalKey == LogicalKeyboardKey.backspace) {
-          final text = _internalController.text;
-          final selection = _internalController.selection;
-          // Handle backspace at the beginning of a bulleted line (except the first '• ')
-          if (selection.isCollapsed && selection.start > 2 && // Ensure we don't delete the very first bullet this way
-              text.substring(selection.start - 3, selection.start) == '\n• ')
-           {
-             final newText = text.substring(0, selection.start - 3) + text.substring(selection.start);
-             setState(() { // Keep setState
-                _lines = newText.split('\n');
-                 _internalController.value = TextEditingValue(
-                   text: newText,
-                   selection: TextSelection.fromPosition(
-                     TextPosition(offset: selection.start - 3),
-                   ),
-                 );
-                 widget.onChangedList?.call(_lines);
-                 if (widget.controller != null) {
-                   widget.controller!.text = _internalController.text;
-                 }
-             });
-              return KeyEventResult.handled;
+            return KeyEventResult.handled; // Indicates the event was handled.
           }
+        }
       }
     }
-    return KeyEventResult.ignored;
+    return KeyEventResult.ignored; // Ignores other key events or unhandled ones.
   }
 
+  // Builds the UI for the ExpandableTextField.
   @override
   Widget build(BuildContext context) {
+    // Formats hint text to also show bullets for consistency.
     final formattedHintText = widget.hintText.split('\n').map((line) => '• $line').join('\n');
 
+    // Arranges label and text field vertically.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(widget.label, style: labelStyle),
         const SizedBox(height: 4.0),
+        // Manages focus and key events for the text field.
         Focus(
           focusNode: _focusNode,
           onKeyEvent: _handleKeyEvent,
+          // Stacks TextFormField and custom hint text.
           child: Stack(
             children: [
+              // The actual text input field.
               TextFormField(
                 key: _formFieldKey,
                 controller: _internalController,
                 keyboardType: TextInputType.multiline,
-                maxLines: null,
-                minLines: 3,
-                onChanged: (value) {
-                    _lines = value.split('\n');
-                    widget.onChangedList?.call(_lines);
-                    if (widget.controller != null && widget.controller!.text != value) {
-                        widget.controller!.text = value;
-                    }
-                    if (widget.formSubmitted) {
-                        _formFieldKey.currentState?.validate();
-                    }
-                    // No setState needed here usually, as text changes handled by controller
+                textInputAction: TextInputAction.newline, // Suggests newline action for Enter key.
+                maxLines: null, // Allows unlimited lines.
+                minLines: 3, // Default minimum height.
+                // Applies the custom bullet list formatter.
+                inputFormatters: [
+                  BulletListInputFormatter(),
+                ],
+                // Called when the text changes (after formatters run).
+                onChanged: (currentValueFromFramework) {
+                  // Updates internal lines list and notifies parent.
+                  _lines = _internalController.text.split('\n');
+                  widget.onChangedList?.call(_lines);
+                  // Syncs with external controller if provided.
+                  if (widget.controller != null && widget.controller!.text != _internalController.text) {
+                    widget.controller!.text = _internalController.text;
+                  }
+                  // Triggers validation if form has been submitted.
+                  if (widget.formSubmitted) {
+                    _formFieldKey.currentState?.validate();
+                  }
                 },
                 validator: widget.validator,
                 style: inputTextStyling,
+                // Defines the appearance (decoration) of the text field.
                 decoration: InputDecoration(
-                  // Hint text is now handled by the Positioned widget below
-                  hintText: null, // Don't use TextFormField's hint
+                  hintText: null, // Custom hint is handled by the Positioned widget.
                   hintStyle: hintTextStyling,
                   contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                   isDense: true,
@@ -239,19 +220,18 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
                     borderRadius: BorderRadius.circular(8.0),
                     borderSide: const BorderSide(color: errorBorderColor, width: 1.5),
                   ),
-                   focusedErrorBorder: OutlineInputBorder(
+                  focusedErrorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                     borderSide: const BorderSide(color: errorBorderColor, width: 2.0),
                   ),
                 ),
               ),
-              // === Conditional Hint Text ===
-              // Show if controller is empty AND the field does NOT have focus
+              // Displays custom bulleted hint text when field is empty and not focused.
               if (_internalController.text.isEmpty && !_focusNode.hasFocus)
                 Positioned(
                   top: 12.0,
                   left: 16.0,
-                  child: IgnorePointer(
+                  child: IgnorePointer( // Prevents interaction with the hint text overlay.
                     child: Text(
                       formattedHintText,
                       style: hintTextStyling,

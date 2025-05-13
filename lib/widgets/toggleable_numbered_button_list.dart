@@ -5,10 +5,8 @@ import 'package:form_app/statics/app_styles.dart';
 class ToggleableNumberedButtonList extends StatefulWidget {
   final String label;
   final int count;
-  final int selectedValue; // Represents 1-based number (1-10) or <= 0 if none/disabled
-  final ValueChanged<int> onItemSelected; // Passes 1-based number or <= 0
-  final bool initialEnabled;
-  final ValueChanged<bool> onEnabledChanged;
+  final int selectedValue;
+  final ValueChanged<int> onItemSelected;
   final int valueWhenDisabled;
 
   const ToggleableNumberedButtonList({
@@ -17,8 +15,6 @@ class ToggleableNumberedButtonList extends StatefulWidget {
     required this.count,
     required this.selectedValue,
     required this.onItemSelected,
-    this.initialEnabled = true,
-    required this.onEnabledChanged,
     this.valueWhenDisabled = 0,
   });
 
@@ -27,88 +23,113 @@ class ToggleableNumberedButtonList extends StatefulWidget {
 }
 
 class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonList> {
-  late bool _isEnabled;
+  late int _persistedSelection; // Remembers the last active selection (1-10)
 
   @override
   void initState() {
     super.initState();
-    _isEnabled = widget.initialEnabled;
+    // Initialize _persistedSelection: if selectedValue is active, use it, else default to 1.
+    _persistedSelection = (widget.selectedValue != widget.valueWhenDisabled)
+        ? widget.selectedValue
+        : 1; // Default to 1 if initially "off"
   }
 
-  void _handleCheckboxChange(bool? newValue) {
-    final bool newEnabledState = newValue ?? false;
-    if (_isEnabled != newEnabledState) {
-      setState(() {
-        _isEnabled = newEnabledState;
-      });
-      widget.onEnabledChanged(_isEnabled);
-      if (!_isEnabled) {
-        widget.onItemSelected(widget.valueWhenDisabled); // Use the valueWhenDisabled property
+  @override
+  void didUpdateWidget(ToggleableNumberedButtonList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedValue != oldWidget.selectedValue) {
+      // If parent changes selectedValue to an active one, update our memory.
+      if (widget.selectedValue != widget.valueWhenDisabled) {
+        _persistedSelection = widget.selectedValue;
       }
+      // We need to rebuild if selectedValue changes as it drives the UI.
+      setState(() {}); 
+    }
+  }
+
+  void _handleCheckboxOrLabelClick() {
+    final bool isCurrentlyEffectivelyOn = widget.selectedValue != widget.valueWhenDisabled;
+
+    if (isCurrentlyEffectivelyOn) { // Currently ON, user wants to turn OFF
+      // _persistedSelection already holds the value that was active.
+      widget.onItemSelected(widget.valueWhenDisabled);
+    } else { // Currently OFF, user wants to turn ON
+      // Restore the remembered _persistedSelection.
+      // If _persistedSelection somehow became valueWhenDisabled (e.g. initial state), default to 1.
+      int valueToRestore = (_persistedSelection != widget.valueWhenDisabled) ? _persistedSelection : 1;
+      widget.onItemSelected(valueToRestore);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final Color currentLabelColor = _isEnabled ? labelTextColor : Colors.grey.shade400;
-    final Color effectiveBorderColor;
-    if (!_isEnabled) {
-      effectiveBorderColor = Colors.grey.shade300;
-    } else if (widget.selectedValue > 0 && numberedButtonColors.containsKey(widget.selectedValue)) {
-      effectiveBorderColor = numberedButtonColors[widget.selectedValue]!;
-    } else {
-      effectiveBorderColor = toggleOptionSelectedLengkapColor;
-    }
-    final Color currentButtonTextColor = _isEnabled ? Colors.black : Colors.grey.shade400;
+    final bool isEffectivelyEnabled = widget.selectedValue != widget.valueWhenDisabled;
 
-    // Use the same fixed size as NumberedButtonList
+    final Color currentLabelColor = isEffectivelyEnabled ? labelTextColor : Colors.grey.shade400;
+    final Color currentButtonTextColor = isEffectivelyEnabled ? Colors.black : Colors.grey.shade400;
+    
+    final Color effectiveBorderColor;
+    if (!isEffectivelyEnabled) {
+      effectiveBorderColor = Colors.grey.shade300;
+    } else {
+      // If enabled, border color is based on the currently selected value (if any)
+      effectiveBorderColor = numberedButtonColors.containsKey(widget.selectedValue)
+          ? numberedButtonColors[widget.selectedValue]!
+          : toggleOptionSelectedLengkapColor; // Default if no specific button is selected but enabled
+    }
+
     const double buttonSize = 35.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // --- Row for Checkbox and Label ---
         Row(
           children: [
-            GestureDetector(
-              onTap: () {
-                _handleCheckboxChange(!_isEnabled);
-              },
-              child: Row( // Wrap checkbox, sizedbox, and text in a new Row for GestureDetector
-                children: [
-                  Container(
-                    width: 24,
-                    height: 24,
-                    alignment: Alignment.center,
-                    child: SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: Checkbox(
-                        value: _isEnabled,
-                        onChanged: _handleCheckboxChange,
-                        activeColor: toggleOptionSelectedLengkapColor,
-                        materialTapTargetSize: MaterialTapTargetSize.padded, // Changed to padded
-                        visualDensity: VisualDensity.compact,
-                        side: BorderSide(
-                          color: toggleOptionSelectedLengkapColor,
-                          width: 2,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
+            Expanded(
+              child: Row(
+                  children: [
+                    Container(
+                      width: 24,
+                      height: 24,
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: Checkbox(
+                          value: isEffectivelyEnabled, // Driven by selectedValue
+                          onChanged: (bool? newValue) { // newValue is the new state of the checkbox
+                            _handleCheckboxOrLabelClick();
+                          },
+                          activeColor: toggleOptionSelectedLengkapColor,
+                          materialTapTargetSize: MaterialTapTargetSize.padded,
+                          visualDensity: VisualDensity.compact,
+                          side: BorderSide(
+                            color: toggleOptionSelectedLengkapColor,
+                            width: 2,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    widget.label,
-                    style: labelStyle.copyWith(color: currentLabelColor),
-                  ),
-                ],
-              ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: GestureDetector(
+                          onTap: _handleCheckboxOrLabelClick,
+                          child: Text(
+                            widget.label,
+                            style: labelStyle.copyWith(color: currentLabelColor),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
             ),
-            const Spacer(),
-             if (!_isEnabled)
+             if (!isEffectivelyEnabled) // Show "Tidak ada" if not effectively enabled
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   decoration: BoxDecoration(
@@ -123,54 +144,74 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
           ],
         ),
         const SizedBox(height: 4.0),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            double availableWidth = constraints.maxWidth;
+            double preferredButtonWidth = buttonSize;
+            int numberOfButtons = widget.count;
 
-        // --- Row for Numbered Buttons ---
-        Row(
-           // Use spaceAround like in NumberedButtonList
-           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(widget.count, (index) {
-            final itemNumber = index + 1;
-            final isSelected = _isEnabled && (itemNumber == widget.selectedValue);
+            double totalPreferredWidthWithoutSpacing = numberOfButtons * preferredButtonWidth;
+            double actualButtonWidth;
 
-            final Color buttonBackgroundColor;
-             if (isSelected) {
-               buttonBackgroundColor = numberedButtonColors[itemNumber]!;
-             } else {
-               buttonBackgroundColor = Colors.white;
-             }
-            final Color buttonTextColor = isSelected ? Colors.white : currentButtonTextColor;
+            if (availableWidth < totalPreferredWidthWithoutSpacing) {
+              actualButtonWidth = availableWidth / numberOfButtons;
+            } else {
+              actualButtonWidth = preferredButtonWidth;
+            }
 
-            // --- Wrap with Expanded ---
-            return Expanded(
-              child: GestureDetector(
-                onTap: _isEnabled
-                  ? () => widget.onItemSelected(itemNumber == widget.selectedValue ? -1 : itemNumber)
-                  : null,
-                // --- Container INSIDE Expanded with fixed size ---
-                child: Container(
-                  height: buttonSize, // Fixed height
-                  width: buttonSize,  // Fixed width (RE-ADDED)
-                  // No margin needed here, Expanded + spaceAround handles spacing
-                  decoration: BoxDecoration(
-                    color: buttonBackgroundColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: effectiveBorderColor,
-                      width: 2, // Use 1.5 or 2 based on desired look
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(numberOfButtons, (index) {
+                final itemNumber = index + 1;
+                // A button is selected if the widget is effectively enabled AND its number matches selectedValue
+                final bool isButtonSelected = isEffectivelyEnabled && (itemNumber == widget.selectedValue);
+
+                final Color buttonBackgroundColor;
+                if (isButtonSelected) {
+                  buttonBackgroundColor = numberedButtonColors[itemNumber]!;
+                } else {
+                  buttonBackgroundColor = Colors.white;
+                }
+                final Color buttonTextColor = isButtonSelected ? Colors.white : currentButtonTextColor;
+
+                return GestureDetector(
+                  onTap: isEffectivelyEnabled // Buttons are only tappable if the whole widget is enabled
+                      ? () {
+                          if (itemNumber == widget.selectedValue) { // Tapping the currently selected button
+                            // This action effectively "turns off" the selection.
+                            // _persistedSelection should remember this itemNumber.
+                            _persistedSelection = itemNumber; 
+                            widget.onItemSelected(widget.valueWhenDisabled);
+                          } else { // Tapping a new or different button
+                            _persistedSelection = itemNumber; // Remember this new choice
+                            widget.onItemSelected(itemNumber);
+                          }
+                        }
+                      : null, // Not tappable if not effectively enabled
+                  child: Container(
+                    height: buttonSize,
+                    width: actualButtonWidth, // Apply the calculated width
+                    decoration: BoxDecoration(
+                      color: buttonBackgroundColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: effectiveBorderColor,
+                        width: 2,
+                      ),
                     ),
-                  ),
-                  child: Center( // Center the text within the fixed-size container
-                    child: Text(
-                      itemNumber.toString(),
-                      style: toggleOptionTextStyle.copyWith(
-                        color: buttonTextColor,
+                    child: Center(
+                      child: Text(
+                        itemNumber.toString(),
+                        style: toggleOptionTextStyle.copyWith(
+                          color: buttonTextColor,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
+                );
+              }),
             );
-          }),
+          },
         ),
       ],
     );

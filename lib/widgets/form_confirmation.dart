@@ -66,9 +66,12 @@ class _CustomCheckboxTileState extends State<FormConfirmation> {
             ),
           ),
           const SizedBox(width: 4),
-          Text(
-            widget.label,
-            style: labelStyle.copyWith(fontWeight: FontWeight.w500),
+          Expanded(
+            child: Text(
+              widget.label,
+              style: labelStyle.copyWith(fontWeight: FontWeight.w500),
+              softWrap: true,
+            ),
           ),
         ],
       ),
