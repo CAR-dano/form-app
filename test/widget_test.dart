@@ -19,6 +19,9 @@ void main() {
       ),
     );
 
+    // Wait for futures to complete
+    await tester.pumpAndSettle();
+
     // Verify that the app renders a MaterialApp
     expect(find.byType(MaterialApp), findsOneWidget);
   });
