@@ -103,7 +103,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
           isFormConfirmed: _isChecked,
           // Removed isLoading parameter
         ),
-        const SizedBox(height: 32.0), // Optional spacing below the content
+        const SizedBox(height: 24.0), // Optional spacing below the content
         // Footer
         Footer(),
       ],

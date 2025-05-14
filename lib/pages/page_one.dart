@@ -179,7 +179,7 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                     },
                     // onBackPressed will be null due to isBackButtonEnabled: false
                   ),
-                  const SizedBox(height: 32.0), // Optional spacing below the content
+                  const SizedBox(height: 24.0), // Optional spacing below the content
                   // Footer
                   Footer(),
                 ],

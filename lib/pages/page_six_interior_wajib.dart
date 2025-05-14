@@ -86,7 +86,7 @@ class _PageSixInteriorWajibState extends ConsumerState<PageSixInteriorWajib> wit
             onBackPressed: () => ref.read(formStepProvider.notifier).state--,
             onNextPressed: () => ref.read(formStepProvider.notifier).state++,
           ),
-          const SizedBox(height: 32.0),
+          const SizedBox(height: 24.0),
           Footer(),
         ],
       ),

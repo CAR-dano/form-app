@@ -244,7 +244,7 @@ class _PageFourState extends ConsumerState<PageFour> with AutomaticKeepAliveClie
                   },
                 ),
                 SizedBox(
-                  height: 32.0,
+                  height: 24.0,
                 ), // Optional spacing below the content
                 // Footer
                 Footer(),
