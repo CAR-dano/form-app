@@ -62,7 +62,7 @@ class _NumberedButtonListState extends State<NumberedButtonList> {
                     height: 35,
                     width: actualButtonWidth, // Apply the calculated width
                     decoration: BoxDecoration(
-                      color: isSelected ? numberedButtonColors[itemNumber] : Colors.white,
+                      color: isSelected ? numberedButtonColors[itemNumber] : buttonTextColor,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         // Preserving original border color logic, assuming numberedButtonColors and selectedValue are handled correctly
@@ -75,10 +75,8 @@ class _NumberedButtonListState extends State<NumberedButtonList> {
                     child: Center(
                       child: Text(
                         itemNumber.toString(),
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                        style: toggleOptionTextStyle.copyWith(
+                          color: isSelected ? buttonTextColor : labelTextColor,
                         ),
                       ),
                     ),
