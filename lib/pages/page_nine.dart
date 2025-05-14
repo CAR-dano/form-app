@@ -8,7 +8,6 @@ import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
-// import 'package:form_app/pages/finished.dart'; // FinishedPage is handled by MultiStepFormScreen
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 
 // Placeholder for Page Nine

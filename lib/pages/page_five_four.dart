@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_app/models/form_data.dart'; // Import FormData
 import 'package:form_app/widgets/heading_one.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
-// import 'package:form_app/pages/page_five_five.dart'; // No longer directly navigating
 import 'package:form_app/providers/form_provider.dart';
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
 import 'package:form_app/widgets/expandable_text_field.dart';
-
 
 class PageFiveFour extends ConsumerStatefulWidget {
   const PageFiveFour({super.key});
@@ -66,280 +65,9 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                 const SizedBox(height: 6.0),
                 const HeadingOne(text: 'Hasil Inspeksi Eksterior'),
                 const SizedBox(height: 16.0),
-                
-                // ToggleableNumberedButtonList widgets
-                ToggleableNumberedButtonList(
-                  label: 'Bumper Depan',
-                  count: 10,
-                  selectedValue: formData.bumperDepanSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateBumperDepanSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Kap Mesin',
-                  count: 10,
-                  selectedValue: formData.kapMesinSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateKapMesinSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Lampu Utama',
-                  count: 10,
-                  selectedValue: formData.lampuUtamaSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateLampuUtamaSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Panel Atap',
-                  count: 10,
-                  selectedValue: formData.panelAtapSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePanelAtapSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Grill',
-                  count: 10,
-                  selectedValue: formData.grillSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateGrillSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Lampu Foglamp',
-                  count: 10,
-                  selectedValue: formData.lampuFoglampSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateLampuFoglampSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Kaca Bening',
-                  count: 10,
-                  selectedValue: formData.kacaBeningSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateKacaBeningSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Wiper Belakang',
-                  count: 10,
-                  selectedValue: formData.wiperBelakangSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateWiperBelakangSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Bumper Belakang',
-                  count: 10,
-                  selectedValue: formData.bumperBelakangSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateBumperBelakangSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Lampu Belakang',
-                  count: 10,
-                  selectedValue: formData.lampuBelakangSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateLampuBelakangSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Trunklid',
-                  count: 10,
-                  selectedValue: formData.trunklidSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateTrunklidSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Kaca Depan',
-                  count: 10,
-                  selectedValue: formData.kacaDepanSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateKacaDepanSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Fender Kanan',
-                  count: 10,
-                  selectedValue: formData.fenderKananSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateFenderKananSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Quarter Panel Kanan',
-                  count: 10,
-                  selectedValue: formData.quarterPanelKananSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateQuarterPanelKananSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Pintu Belakang Kanan',
-                  count: 10,
-                  selectedValue: formData.pintuBelakangKananSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePintuBelakangKananSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Spion Kanan',
-                  count: 10,
-                  selectedValue: formData.spionKananSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateSpionKananSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Lisplang Kanan',
-                  count: 10,
-                  selectedValue: formData.lisplangKananSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateLisplangKananSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Side Skirt Kanan',
-                  count: 10,
-                  selectedValue: formData.sideSkirtKananSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateSideSkirtKananSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Daun Wiper',
-                  count: 10,
-                  selectedValue: formData.daunWiperSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateDaunWiperSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Pintu Belakang',
-                  count: 10,
-                  selectedValue: formData.pintuBelakangSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePintuBelakangSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Fender Kiri',
-                  count: 10,
-                  selectedValue: formData.fenderKiriSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateFenderKiriSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Quarter Panel Kiri',
-                  count: 10,
-                  selectedValue: formData.quarterPanelKiriSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateQuarterPanelKiriSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Pintu Depan',
-                  count: 10,
-                  selectedValue: formData.pintuDepanSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePintuDepanSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Kaca Jendela Kanan',
-                  count: 10,
-                  selectedValue: formData.kacaJendelaKananSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateKacaJendelaKananSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Pintu Belakang Kiri',
-                  count: 10,
-                  selectedValue: formData.pintuBelakangKiriSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePintuBelakangKiriSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Spion Kiri',
-                  count: 10,
-                  selectedValue: formData.spionKiriSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateSpionKiriSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Pintu Depan Kiri',
-                  count: 10,
-                  selectedValue: formData.pintuDepanKiriSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePintuDepanKiriSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Kaca Jendela Kiri',
-                  count: 10,
-                  selectedValue: formData.kacaJendelaKiriSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateKacaJendelaKiriSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Lisplang Kiri',
-                  count: 10,
-                  selectedValue: formData.lisplangKiriSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateLisplangKiriSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Side Skirt Kiri',
-                  count: 10,
-                  selectedValue: formData.sideSkirtKiriSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateSideSkirtKiriSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                
-                // ExpandableTextField
+
+                ..._buildToggleableNumberedButtonLists(formData, formNotifier),
+
                 ExpandableTextField(
                   label: 'Catatan',
                   hintText: 'Masukkan catatan di sini',
@@ -349,7 +77,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   },
                 ),
                 const SizedBox(height: 32.0),
-                
+
                 NavigationButtonRow(
                   onBackPressed: () {
                     _focusScopeNode.unfocus();
@@ -360,8 +88,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                     ref.read(formStepProvider.notifier).state++;
                   },
                 ),
-                const SizedBox(height: 24.0), // Optional spacing below the content
-                // Footer
+                const SizedBox(height: 24.0),
                 Footer(),
               ],
             ),
@@ -369,5 +96,172 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
         ),
       ),
     );
+  }
+
+  List<Widget> _buildToggleableNumberedButtonLists(FormData formData, FormNotifier formNotifier) {
+    final List<Map<String, dynamic>> toggleableNumberedButtonListData = [
+      {
+        'label': 'Bumper Depan',
+        'selectedValue': formData.bumperDepanSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateBumperDepanSelectedValue(value),
+      },
+      {
+        'label': 'Kap Mesin',
+        'selectedValue': formData.kapMesinSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateKapMesinSelectedValue(value),
+      },
+      {
+        'label': 'Lampu Utama',
+        'selectedValue': formData.lampuUtamaSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateLampuUtamaSelectedValue(value),
+      },
+      {
+        'label': 'Panel Atap',
+        'selectedValue': formData.panelAtapSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePanelAtapSelectedValue(value),
+      },
+      {
+        'label': 'Grill',
+        'selectedValue': formData.grillSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateGrillSelectedValue(value),
+      },
+      {
+        'label': 'Lampu Foglamp',
+        'selectedValue': formData.lampuFoglampSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateLampuFoglampSelectedValue(value),
+      },
+      {
+        'label': 'Kaca Bening',
+        'selectedValue': formData.kacaBeningSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateKacaBeningSelectedValue(value),
+      },
+      {
+        'label': 'Wiper Belakang',
+        'selectedValue': formData.wiperBelakangSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateWiperBelakangSelectedValue(value),
+      },
+      {
+        'label': 'Bumper Belakang',
+        'selectedValue': formData.bumperBelakangSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateBumperBelakangSelectedValue(value),
+      },
+      {
+        'label': 'Lampu Belakang',
+        'selectedValue': formData.lampuBelakangSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateLampuBelakangSelectedValue(value),
+      },
+      {
+        'label': 'Trunklid',
+        'selectedValue': formData.trunklidSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTrunklidSelectedValue(value),
+      },
+      {
+        'label': 'Kaca Depan',
+        'selectedValue': formData.kacaDepanSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateKacaDepanSelectedValue(value),
+      },
+      {
+        'label': 'Fender Kanan',
+        'selectedValue': formData.fenderKananSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateFenderKananSelectedValue(value),
+      },
+      {
+        'label': 'Quarter Panel Kanan',
+        'selectedValue': formData.quarterPanelKananSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateQuarterPanelKananSelectedValue(value),
+      },
+      {
+        'label': 'Pintu Belakang Kanan',
+        'selectedValue': formData.pintuBelakangKananSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePintuBelakangKananSelectedValue(value),
+      },
+      {
+        'label': 'Spion Kanan',
+        'selectedValue': formData.spionKananSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateSpionKananSelectedValue(value),
+      },
+      {
+        'label': 'Lisplang Kanan',
+        'selectedValue': formData.lisplangKananSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateLisplangKananSelectedValue(value),
+      },
+      {
+        'label': 'Side Skirt Kanan',
+        'selectedValue': formData.sideSkirtKananSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateSideSkirtKananSelectedValue(value),
+      },
+      {
+        'label': 'Daun Wiper',
+        'selectedValue': formData.daunWiperSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateDaunWiperSelectedValue(value),
+      },
+      {
+        'label': 'Pintu Belakang',
+        'selectedValue': formData.pintuBelakangSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePintuBelakangSelectedValue(value),
+      },
+      {
+        'label': 'Fender Kiri',
+        'selectedValue': formData.fenderKiriSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateFenderKiriSelectedValue(value),
+      },
+      {
+        'label': 'Quarter Panel Kiri',
+        'selectedValue': formData.quarterPanelKiriSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateQuarterPanelKiriSelectedValue(value),
+      },
+      {
+        'label': 'Pintu Depan',
+        'selectedValue': formData.pintuDepanSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePintuDepanSelectedValue(value),
+      },
+      {
+        'label': 'Kaca Jendela Kanan',
+        'selectedValue': formData.kacaJendelaKananSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateKacaJendelaKananSelectedValue(value),
+      },
+      {
+        'label': 'Pintu Belakang Kiri',
+        'selectedValue': formData.pintuBelakangKiriSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePintuBelakangKiriSelectedValue(value),
+      },
+      {
+        'label': 'Spion Kiri',
+        'selectedValue': formData.spionKiriSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateSpionKiriSelectedValue(value),
+      },
+      {
+        'label': 'Pintu Depan Kiri',
+        'selectedValue': formData.pintuDepanKiriSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePintuDepanKiriSelectedValue(value),
+      },
+      {
+        'label': 'Kaca Jendela Kiri',
+        'selectedValue': formData.kacaJendelaKiriSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateKacaJendelaKiriSelectedValue(value),
+      },
+      {
+        'label': 'Lisplang Kiri',
+        'selectedValue': formData.lisplangKiriSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateLisplangKiriSelectedValue(value),
+      },
+      {
+        'label': 'Side Skirt Kiri',
+        'selectedValue': formData.sideSkirtKiriSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateSideSkirtKiriSelectedValue(value),
+      },
+    ];
+
+    return toggleableNumberedButtonListData.map<Widget>((itemData) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: ToggleableNumberedButtonList(
+          label: itemData['label'],
+          count: 10,
+          selectedValue: itemData['selectedValue'] ?? -1,
+          onItemSelected: itemData['onItemSelected'],
+        ),
+      );
+    }).toList();
   }
 }

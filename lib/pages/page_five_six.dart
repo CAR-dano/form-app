@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_app/models/form_data.dart'; // Import FormData
 import 'package:form_app/widgets/heading_one.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
-// import 'package:form_app/pages/page_five_seven.dart'; // No longer directly navigating
 import 'package:form_app/providers/form_provider.dart';
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
@@ -65,69 +65,9 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                 const SizedBox(height: 6.0),
                 const HeadingOne(text: 'Test Drive'),
                 const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Bunyi/Getaran',
-                  count: 10,
-                  selectedValue: formData.bunyiGetaranSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateBunyiGetaranSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Performa Stir',
-                  count: 10,
-                  selectedValue: formData.performaStirSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePerformaStirSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Perpindahan Transmisi',
-                  count: 10,
-                  selectedValue: formData.perpindahanTransmisiSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePerpindahanTransmisiSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Stir Balance',
-                  count: 10,
-                  selectedValue: formData.stirBalanceSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateStirBalanceSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Performa Suspensi',
-                  count: 10,
-                  selectedValue: formData.performaSuspensiSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePerformaSuspensiSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Performa Kopling',
-                  count: 10,
-                  selectedValue: formData.performaKoplingSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePerformaKoplingSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'RPM',
-                  count: 10,
-                  selectedValue: formData.rpmSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateRpmSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
+
+                ..._buildToggleableNumberedButtonLists(formData, formNotifier),
+
                 ExpandableTextField(
                   label: 'Catatan',
                   hintText: 'Masukkan catatan di sini',
@@ -137,6 +77,7 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                   },
                 ),
                 const SizedBox(height: 32.0),
+
                 NavigationButtonRow(
                   onBackPressed: () {
                     _focusScopeNode.unfocus();
@@ -155,5 +96,57 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
         ),
       ),
     );
+  }
+
+  List<Widget> _buildToggleableNumberedButtonLists(FormData formData, FormNotifier formNotifier) {
+    final List<Map<String, dynamic>> toggleableNumberedButtonListData = [
+      {
+        'label': 'Bunyi/Getaran',
+        'selectedValue': formData.bunyiGetaranSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateBunyiGetaranSelectedValue(value),
+      },
+      {
+        'label': 'Performa Stir',
+        'selectedValue': formData.performaStirSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePerformaStirSelectedValue(value),
+      },
+      {
+        'label': 'Perpindahan Transmisi',
+        'selectedValue': formData.perpindahanTransmisiSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePerpindahanTransmisiSelectedValue(value),
+      },
+      {
+        'label': 'Stir Balance',
+        'selectedValue': formData.stirBalanceSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateStirBalanceSelectedValue(value),
+      },
+      {
+        'label': 'Performa Suspensi',
+        'selectedValue': formData.performaSuspensiSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePerformaSuspensiSelectedValue(value),
+      },
+      {
+        'label': 'Performa Kopling',
+        'selectedValue': formData.performaKoplingSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePerformaKoplingSelectedValue(value),
+      },
+      {
+        'label': 'RPM',
+        'selectedValue': formData.rpmSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateRpmSelectedValue(value),
+      },
+    ];
+
+    return toggleableNumberedButtonListData.map<Widget>((itemData) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: ToggleableNumberedButtonList(
+          label: itemData['label'],
+          count: 10,
+          selectedValue: itemData['selectedValue'] ?? -1,
+          onItemSelected: itemData['onItemSelected'],
+        ),
+      );
+    }).toList();
   }
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_app/models/form_data.dart';
 import 'package:form_app/widgets/heading_one.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
-// import 'package:form_app/pages/page_five_four.dart'; // No longer directly navigating
 import 'package:form_app/providers/form_provider.dart';
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
@@ -66,226 +66,9 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                 const SizedBox(height: 6.0),
                 const HeadingOne(text: 'Hasil Inspeksi Interior'),
                 const SizedBox(height: 16.0),
-                      
-                // ToggleableNumberedButtonList widgets
-                ToggleableNumberedButtonList(
-                  label: 'Stir',
-                  count: 10,
-                  selectedValue: formData.stirSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateStirSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Rem Tangan',
-                  count: 10,
-                  selectedValue: formData.remTanganSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateRemTanganSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Pedal',
-                  count: 10,
-                  selectedValue: formData.pedalSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePedalSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Switch Wiper',
-                  count: 10,
-                  selectedValue: formData.switchWiperSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateSwitchWiperSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Lampu Hazard',
-                  count: 10,
-                  selectedValue: formData.lampuHazardSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateLampuHazardSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Panel Dashboard',
-                  count: 10,
-                  selectedValue: formData.panelDashboardSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePanelDashboardSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Pembuka Kap Mesin',
-                  count: 10,
-                  selectedValue: formData.pembukaKapMesinSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePembukaKapMesinSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Pembuka Bagasi',
-                  count: 10,
-                  selectedValue: formData.pembukaBagasiSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePembukaBagasiSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Jok Depan',
-                  count: 10,
-                  selectedValue: formData.jokDepanSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateJokDepanSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Aroma Interior',
-                  count: 10,
-                  selectedValue: formData.aromaInteriorSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateAromaInteriorSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Handle Pintu',
-                  count: 10,
-                  selectedValue: formData.handlePintuSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateHandlePintuSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Console Box',
-                  count: 10,
-                  selectedValue: formData.consoleBoxSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateConsoleBoxSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Spion Tengah',
-                  count: 10,
-                  selectedValue: formData.spionTengahSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateSpionTengahSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Tuas Persneling',
-                  count: 10,
-                  selectedValue: formData.tuasPersnelingSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateTuasPersnelingSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Jok Belakang',
-                  count: 10,
-                  selectedValue: formData.jokBelakangSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateJokBelakangSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Panel Indikator',
-                  count: 10,
-                  selectedValue: formData.panelIndikatorSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePanelIndikatorSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Switch Lampu',
-                  count: 10,
-                  selectedValue: formData.switchLampuSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateSwitchLampuSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Karpet Dasar',
-                  count: 10,
-                  selectedValue: formData.karpetDasarSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateKarpetDasarSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Klakson',
-                  count: 10,
-                  selectedValue: formData.klaksonSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateKlaksonSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Sun Visor',
-                  count: 10,
-                  selectedValue: formData.sunVisorSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateSunVisorSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Tuas Tangki Bensin',
-                  count: 10,
-                  selectedValue: formData.tuasTangkiBensinSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateTuasTangkiBensinSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Sabuk Pengaman',
-                  count: 10,
-                  selectedValue: formData.sabukPengamanSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateSabukPengamanSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Trim Interior',
-                  count: 10,
-                  selectedValue: formData.trimInteriorSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateTrimInteriorSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Plafon',
-                  count: 10,
-                  selectedValue: formData.plafonSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePlafonSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                      
-                // ExpandableTextField
+
+                ..._buildToggleableNumberedButtonLists(formData, formNotifier),
+
                 ExpandableTextField(
                   label: 'Catatan',
                   hintText: 'Masukkan catatan di sini',
@@ -295,7 +78,7 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                   },
                 ),
                 const SizedBox(height: 32.0),
-                      
+
                 NavigationButtonRow(
                   onBackPressed: () {
                     _focusScopeNode.unfocus();
@@ -315,5 +98,142 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
         ),
       ),
     );
+  }
+
+  List<Widget> _buildToggleableNumberedButtonLists(FormData formData, FormNotifier formNotifier) {
+    final List<Map<String, dynamic>> toggleableNumberedButtonListData = [
+      {
+        'label': 'Stir',
+        'selectedValue': formData.stirSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateStirSelectedValue(value),
+      },
+      {
+        'label': 'Rem Tangan',
+        'selectedValue': formData.remTanganSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateRemTanganSelectedValue(value),
+      },
+      {
+        'label': 'Pedal',
+        'selectedValue': formData.pedalSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePedalSelectedValue(value),
+      },
+      {
+        'label': 'Switch Wiper',
+        'selectedValue': formData.switchWiperSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateSwitchWiperSelectedValue(value),
+      },
+      {
+        'label': 'Lampu Hazard',
+        'selectedValue': formData.lampuHazardSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateLampuHazardSelectedValue(value),
+      },
+      {
+        'label': 'Panel Dashboard',
+        'selectedValue': formData.panelDashboardSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePanelDashboardSelectedValue(value),
+      },
+      {
+        'label': 'Pembuka Kap Mesin',
+        'selectedValue': formData.pembukaKapMesinSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePembukaKapMesinSelectedValue(value),
+      },
+      {
+        'label': 'Pembuka Bagasi',
+        'selectedValue': formData.pembukaBagasiSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePembukaBagasiSelectedValue(value),
+      },
+      {
+        'label': 'Jok Depan',
+        'selectedValue': formData.jokDepanSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateJokDepanSelectedValue(value),
+      },
+      {
+        'label': 'Aroma Interior',
+        'selectedValue': formData.aromaInteriorSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateAromaInteriorSelectedValue(value),
+      },
+      {
+        'label': 'Handle Pintu',
+        'selectedValue': formData.handlePintuSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateHandlePintuSelectedValue(value),
+      },
+      {
+        'label': 'Console Box',
+        'selectedValue': formData.consoleBoxSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateConsoleBoxSelectedValue(value),
+      },
+      {
+        'label': 'Spion Tengah',
+        'selectedValue': formData.spionTengahSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateSpionTengahSelectedValue(value),
+      },
+      {
+        'label': 'Tuas Persneling',
+        'selectedValue': formData.tuasPersnelingSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTuasPersnelingSelectedValue(value),
+      },
+      {
+        'label': 'Jok Belakang',
+        'selectedValue': formData.jokBelakangSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateJokBelakangSelectedValue(value),
+      },
+      {
+        'label': 'Panel Indikator',
+        'selectedValue': formData.panelIndikatorSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePanelIndikatorSelectedValue(value),
+      },
+      {
+        'label': 'Switch Lampu',
+        'selectedValue': formData.switchLampuSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateSwitchLampuSelectedValue(value),
+      },
+      {
+        'label': 'Karpet Dasar',
+        'selectedValue': formData.karpetDasarSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateKarpetDasarSelectedValue(value),
+      },
+      {
+        'label': 'Klakson',
+        'selectedValue': formData.klaksonSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateKlaksonSelectedValue(value),
+      },
+      {
+        'label': 'Sun Visor',
+        'selectedValue': formData.sunVisorSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateSunVisorSelectedValue(value),
+      },
+      {
+        'label': 'Tuas Tangki Bensin',
+        'selectedValue': formData.tuasTangkiBensinSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTuasTangkiBensinSelectedValue(value),
+      },
+      {
+        'label': 'Sabuk Pengaman',
+        'selectedValue': formData.sabukPengamanSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateSabukPengamanSelectedValue(value),
+      },
+      {
+        'label': 'Trim Interior',
+        'selectedValue': formData.trimInteriorSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTrimInteriorSelectedValue(value),
+      },
+      {
+        'label': 'Plafon',
+        'selectedValue': formData.plafonSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePlafonSelectedValue(value),
+      },
+    ];
+
+    return toggleableNumberedButtonListData.map<Widget>((itemData) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: ToggleableNumberedButtonList(
+          label: itemData['label'],
+          count: 10,
+          selectedValue: itemData['selectedValue'] ?? -1,
+          onItemSelected: itemData['onItemSelected'],
+        ),
+      );
+    }).toList();
   }
 }

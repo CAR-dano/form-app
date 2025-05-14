@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_app/models/form_data.dart'; // Import FormData
 import 'package:form_app/widgets/heading_one.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
@@ -67,253 +68,9 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                 const SizedBox(height: 6.0),
                 const HeadingOne(text: 'Hasil Inspeksi Mesin'),
                 const SizedBox(height: 16.0),
-                
-                // ToggleableNumberedButtonList widgets
-                ToggleableNumberedButtonList(
-                  label: 'Getaran Mesin',
-                  count: 10,
-                  selectedValue: formData.getaranMesinSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateGetaranMesinSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Suara Mesin',
-                  count: 10,
-                  selectedValue: formData.suaraMesinSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateSuaraMesinSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Transmisi',
-                  count: 10,
-                  selectedValue: formData.transmisiSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateTransmisiSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Pompa Power Steering',
-                  count: 10,
-                  selectedValue: formData.pompaPowerSteeringSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePompaPowerSteeringSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Cover Timing Chain',
-                  count: 10,
-                  selectedValue: formData.coverTimingChainSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateCoverTimingChainSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Oli Power Steering',
-                  count: 10,
-                  selectedValue: formData.oliPowerSteeringSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateOliPowerSteeringSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Accu',
-                  count: 10,
-                  selectedValue: formData.accuSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateAccuSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Kompressor AC',
-                  count: 10,
-                  selectedValue: formData.kompressorAcSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateKompressorAcSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Fan',
-                  count: 10,
-                  selectedValue: formData.fanSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateFanSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Selang',
-                  count: 10,
-                  selectedValue: formData.selangSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateSelangSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Karter Oli',
-                  count: 10,
-                  selectedValue: formData.karterOliSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateKarterOliSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Oil Rem',
-                  count: 10,
-                  selectedValue: formData.oilRemSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateOilRemSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Kabel',
-                  count: 10,
-                  selectedValue: formData.kabelSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateKabelSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Kondensor',
-                  count: 10,
-                  selectedValue: formData.kondensorSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateKondensorSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Radiator',
-                  count: 10,
-                  selectedValue: formData.radiatorSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateRadiatorSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Cylinder Head',
-                  count: 10,
-                  selectedValue: formData.cylinderHeadSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateCylinderHeadSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Oli Mesin',
-                  count: 10,
-                  selectedValue: formData.oliMesinSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateOliMesinSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Air Radiator',
-                  count: 10,
-                  selectedValue: formData.airRadiatorSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateAirRadiatorSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Cover Klep',
-                  count: 10,
-                  selectedValue: formData.coverKlepSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateCoverKlepSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Alternator',
-                  count: 10,
-                  selectedValue: formData.alternatorSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateAlternatorSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Water Pump',
-                  count: 10,
-                  selectedValue: formData.waterPumpSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateWaterPumpSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Belt',
-                  count: 10,
-                  selectedValue: formData.beltSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateBeltSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Oli Transmisi',
-                  count: 10,
-                  selectedValue: formData.oliTransmisiSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateOliTransmisiSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Cylinder Block',
-                  count: 10,
-                  selectedValue: formData.cylinderBlockSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateCylinderBlockSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Bushing Besar',
-                  count: 10,
-                  selectedValue: formData.bushingBesarSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateBushingBesarSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Bushing Kecil',
-                  count: 10,
-                  selectedValue: formData.bushingKecilSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateBushingKecilSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Tutup Radiator',
-                  count: 10,
-                  selectedValue: formData.tutupRadiatorSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateTutupRadiatorSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                
-                // ExpandableTextField
+
+                ..._buildToggleableNumberedButtonLists(formData, formNotifier),
+
                 ExpandableTextField(
                   label: 'Catatan',
                   hintText: 'Masukkan catatan di sini',
@@ -323,7 +80,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                   },
                 ),
                 const SizedBox(height: 32.0),
-                
+
                 NavigationButtonRow(
                   onBackPressed: () {
                     _focusScopeNode.unfocus();
@@ -342,5 +99,157 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
         ),
       ),
     );
+  }
+
+  List<Widget> _buildToggleableNumberedButtonLists(FormData formData, FormNotifier formNotifier) {
+    final List<Map<String, dynamic>> toggleableNumberedButtonListData = [
+      {
+        'label': 'Getaran Mesin',
+        'selectedValue': formData.getaranMesinSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateGetaranMesinSelectedValue(value),
+      },
+      {
+        'label': 'Suara Mesin',
+        'selectedValue': formData.suaraMesinSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateSuaraMesinSelectedValue(value),
+      },
+      {
+        'label': 'Transmisi',
+        'selectedValue': formData.transmisiSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTransmisiSelectedValue(value),
+      },
+      {
+        'label': 'Pompa Power Steering',
+        'selectedValue': formData.pompaPowerSteeringSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePompaPowerSteeringSelectedValue(value),
+      },
+      {
+        'label': 'Cover Timing Chain',
+        'selectedValue': formData.coverTimingChainSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateCoverTimingChainSelectedValue(value),
+      },
+      {
+        'label': 'Oli Power Steering',
+        'selectedValue': formData.oliPowerSteeringSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateOliPowerSteeringSelectedValue(value),
+      },
+      {
+        'label': 'Accu',
+        'selectedValue': formData.accuSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateAccuSelectedValue(value),
+      },
+      {
+        'label': 'Kompressor AC',
+        'selectedValue': formData.kompressorAcSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateKompressorAcSelectedValue(value),
+      },
+      {
+        'label': 'Fan',
+        'selectedValue': formData.fanSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateFanSelectedValue(value),
+      },
+      {
+        'label': 'Selang',
+        'selectedValue': formData.selangSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateSelangSelectedValue(value),
+      },
+      {
+        'label': 'Karter Oli',
+        'selectedValue': formData.karterOliSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateKarterOliSelectedValue(value),
+      },
+      {
+        'label': 'Oil Rem',
+        'selectedValue': formData.oilRemSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateOilRemSelectedValue(value),
+      },
+      {
+        'label': 'Kabel',
+        'selectedValue': formData.kabelSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateKabelSelectedValue(value),
+      },
+      {
+        'label': 'Kondensor',
+        'selectedValue': formData.kondensorSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateKondensorSelectedValue(value),
+      },
+      {
+        'label': 'Radiator',
+        'selectedValue': formData.radiatorSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateRadiatorSelectedValue(value),
+      },
+      {
+        'label': 'Cylinder Head',
+        'selectedValue': formData.cylinderHeadSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateCylinderHeadSelectedValue(value),
+      },
+      {
+        'label': 'Oli Mesin',
+        'selectedValue': formData.oliMesinSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateOliMesinSelectedValue(value),
+      },
+      {
+        'label': 'Air Radiator',
+        'selectedValue': formData.airRadiatorSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateAirRadiatorSelectedValue(value),
+      },
+      {
+        'label': 'Cover Klep',
+        'selectedValue': formData.coverKlepSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateCoverKlepSelectedValue(value),
+      },
+      {
+        'label': 'Alternator',
+        'selectedValue': formData.alternatorSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateAlternatorSelectedValue(value),
+      },
+      {
+        'label': 'Water Pump',
+        'selectedValue': formData.waterPumpSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateWaterPumpSelectedValue(value),
+      },
+      {
+        'label': 'Belt',
+        'selectedValue': formData.beltSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateBeltSelectedValue(value),
+      },
+      {
+        'label': 'Oli Transmisi',
+        'selectedValue': formData.oliTransmisiSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateOliTransmisiSelectedValue(value),
+      },
+      {
+        'label': 'Cylinder Block',
+        'selectedValue': formData.cylinderBlockSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateCylinderBlockSelectedValue(value),
+      },
+      {
+        'label': 'Bushing Besar',
+        'selectedValue': formData.bushingBesarSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateBushingBesarSelectedValue(value),
+      },
+      {
+        'label': 'Bushing Kecil',
+        'selectedValue': formData.bushingKecilSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateBushingKecilSelectedValue(value),
+      },
+      {
+        'label': 'Tutup Radiator',
+        'selectedValue': formData.tutupRadiatorSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTutupRadiatorSelectedValue(value),
+      },
+    ];
+
+    return toggleableNumberedButtonListData.map<Widget>((itemData) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: ToggleableNumberedButtonList(
+          label: itemData['label'],
+          count: 10,
+          selectedValue: itemData['selectedValue'] ?? -1,
+          onItemSelected: itemData['onItemSelected'],
+        ),
+      );
+    }).toList();
   }
 }

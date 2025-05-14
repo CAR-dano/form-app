@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_app/models/form_data.dart';
 import 'package:form_app/widgets/heading_one.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
@@ -67,42 +68,9 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAli
                 const SizedBox(height: 6.0),
                 HeadingOne(text: 'Fitur'),
                 const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Airbag',
-                  count: 10,
-                  selectedValue: formData.airbagSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateAirbagSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Sistem Audio',
-                  count: 10,
-                  selectedValue: formData.sistemAudioSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateSistemAudioSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Power Window',
-                  count: 10,
-                  selectedValue: formData.powerWindowSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updatePowerWindowSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Sistem AC',
-                  count: 10,
-                  selectedValue: formData.sistemAcSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateSistemAcSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
+
+                ..._buildToggleableNumberedButtonLists(formData, formNotifier),
+
                 ExpandableTextField(
                   label: 'Catatan',
                   hintText: 'Masukkan catatan di sini',
@@ -130,5 +98,42 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAli
         ),
       ),
     );
+  }
+
+  List<Widget> _buildToggleableNumberedButtonLists(FormData formData, FormNotifier formNotifier) {
+    final List<Map<String, dynamic>> toggleableNumberedButtonListData = [
+      {
+        'label': 'Airbag',
+        'selectedValue': formData.airbagSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateAirbagSelectedValue(value),
+      },
+      {
+        'label': 'Sistem Audio',
+        'selectedValue': formData.sistemAudioSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateSistemAudioSelectedValue(value),
+      },
+      {
+        'label': 'Power Window',
+        'selectedValue': formData.powerWindowSelectedValue,
+        'onItemSelected': (value) => formNotifier.updatePowerWindowSelectedValue(value),
+      },
+      {
+        'label': 'Sistem AC',
+        'selectedValue': formData.sistemAcSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateSistemAcSelectedValue(value),
+      },
+    ];
+
+    return toggleableNumberedButtonListData.map<Widget>((itemData) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: ToggleableNumberedButtonList(
+          label: itemData['label'],
+          count: 10,
+          selectedValue: itemData['selectedValue'] ?? -1,
+          onItemSelected: itemData['onItemSelected'],
+        ),
+      );
+    }).toList();
   }
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_app/models/form_data.dart'; // Import FormData
 import 'package:form_app/widgets/heading_one.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
-// import 'package:form_app/pages/page_six_general_wajib.dart'; // No longer directly navigating
 import 'package:form_app/providers/form_provider.dart';
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
@@ -65,78 +65,9 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> with AutomaticKee
                 const SizedBox(height: 6.0),
                 const HeadingOne(text: 'Tools Test'),
                 const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Tebal Cat Body Depan',
-                  count: 10,
-                  selectedValue: formData.tebalCatBodyDepanSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateTebalCatBodyDepanSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Tebal cat Body Kiri',
-                  count: 10,
-                  selectedValue: formData.tebalCatBodyKiriSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateTebalCatBodyKiriSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Temperature AC Mobil',
-                  count: 10,
-                  selectedValue: formData.temperatureAcMobilSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateTemperatureAcMobilSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Tebal Cat Body Kanan',
-                  count: 10,
-                  selectedValue: formData.tebalCatBodyKananSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateTebalCatBodyKananSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Tebal Cat Body Belakang',
-                  count: 10,
-                  selectedValue: formData.tebalCatBodyBelakangSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateTebalCatBodyBelakangSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'OBD Scanner',
-                  count: 10,
-                  selectedValue: formData.obdScannerSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateObdScannerSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Tebal Cat Body Atap',
-                  count: 10,
-                  selectedValue: formData.tebalCatBodyAtapSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateTebalCatBodyAtapSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
-                ToggleableNumberedButtonList(
-                  label: 'Test ACCU ( ON & OFF )',
-                  count: 10,
-                  selectedValue: formData.testAccuSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    formNotifier.updateTestAccuSelectedValue(value);
-                  },
-                ),
-                const SizedBox(height: 16.0),
+
+                ..._buildToggleableNumberedButtonLists(formData, formNotifier),
+
                 ExpandableTextField(
                   label: 'Catatan',
                   hintText: 'Masukkan catatan di sini',
@@ -146,6 +77,7 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> with AutomaticKee
                   },
                 ),
                 const SizedBox(height: 32.0),
+
                 NavigationButtonRow(
                   onBackPressed: () {
                     _focusScopeNode.unfocus();
@@ -164,5 +96,62 @@ class _PageFiveSevenState extends ConsumerState<PageFiveSeven> with AutomaticKee
         ),
       ),
     );
+  }
+
+  List<Widget> _buildToggleableNumberedButtonLists(FormData formData, FormNotifier formNotifier) {
+    final List<Map<String, dynamic>> toggleableNumberedButtonListData = [
+      {
+        'label': 'Tebal Cat Body Depan',
+        'selectedValue': formData.tebalCatBodyDepanSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTebalCatBodyDepanSelectedValue(value),
+      },
+      {
+        'label': 'Tebal cat Body Kiri',
+        'selectedValue': formData.tebalCatBodyKiriSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTebalCatBodyKiriSelectedValue(value),
+      },
+      {
+        'label': 'Temperature AC Mobil',
+        'selectedValue': formData.temperatureAcMobilSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTemperatureAcMobilSelectedValue(value),
+      },
+      {
+        'label': 'Tebal Cat Body Kanan',
+        'selectedValue': formData.tebalCatBodyKananSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTebalCatBodyKananSelectedValue(value),
+      },
+      {
+        'label': 'Tebal Cat Body Belakang',
+        'selectedValue': formData.tebalCatBodyBelakangSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTebalCatBodyBelakangSelectedValue(value),
+      },
+      {
+        'label': 'OBD Scanner',
+        'selectedValue': formData.obdScannerSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateObdScannerSelectedValue(value),
+      },
+      {
+        'label': 'Tebal Cat Body Atap',
+        'selectedValue': formData.tebalCatBodyAtapSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTebalCatBodyAtapSelectedValue(value),
+      },
+      {
+        'label': 'Test ACCU ( ON & OFF )',
+        'selectedValue': formData.testAccuSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTestAccuSelectedValue(value),
+      },
+    ];
+
+    return toggleableNumberedButtonListData.map<Widget>((itemData) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: ToggleableNumberedButtonList(
+          label: itemData['label'],
+          count: 10,
+          selectedValue: itemData['selectedValue'] ?? -1,
+          onItemSelected: itemData['onItemSelected'],
+        ),
+      );
+    }).toList();
   }
 }

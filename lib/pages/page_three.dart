@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_app/models/form_data.dart';
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/widgets/navigation_button_row.dart';
@@ -37,68 +38,9 @@ class _PageThreeState extends ConsumerState<PageThree> with AutomaticKeepAliveCl
           const SizedBox(height: 4),
           PageTitle(data: 'Kelengkapan'),
           const SizedBox(height: 6.0),
-          ToggleOption(
-            toggleValues: ['Lengkap', 'Tidak'],
-            label: 'Buku Service',
-            initialValue: formData.bukuService,
-            onChanged: (value) => formNotifier.updateBukuService(value),
-          ),
-          const SizedBox(height: 16.0),
-          ToggleOption(
-            toggleValues: ['Lengkap', 'Tidak'],
-            label: 'Kunci Serep',
-            initialValue: formData.kunciSerep,
-            onChanged: (value) => formNotifier.updateKunciSerep(value),
-          ),
-          const SizedBox(height: 16.0),
-          ToggleOption(
-            toggleValues: ['Lengkap', 'Tidak'],
-            label: 'Buku Manual',
-            initialValue: formData.bukuManual,
-            onChanged: (value) => formNotifier.updateBukuManual(value),
-          ),
-          const SizedBox(height: 16.0),
-          ToggleOption(
-            label: 'Ban Serep',
-            toggleValues: ['Lengkap', 'Tidak'],
-            initialValue: formData.banSerep,
-            onChanged: (value) => formNotifier.updateBanSerep(value),
-          ),
-          const SizedBox(height: 16.0),
-          ToggleOption(
-            label: 'BPKB',
-            toggleValues: ['Lengkap', 'Tidak'],
-            initialValue: formData.bpkb,
-            onChanged: (value) => formNotifier.updateBpkb(value),
-          ),
-          const SizedBox(height: 16.0),
-          ToggleOption(
-            label: 'Dongkrak',
-            toggleValues: ['Lengkap', 'Tidak'],
-            initialValue: formData.dongkrak,
-            onChanged: (value) => formNotifier.updateDongkrak(value),
-          ),
-          const SizedBox(height: 16.0),
-          ToggleOption(
-            label: 'Toolkit',
-            toggleValues: ['Lengkap', 'Tidak'],
-            initialValue: formData.toolkit,
-            onChanged: (value) => formNotifier.updateToolkit(value),
-          ),
-          const SizedBox(height: 16.0),
-          ToggleOption(
-            label: 'No Rangka',
-            toggleValues: ['Lengkap', 'Tidak'],
-            initialValue: formData.noRangka,
-            onChanged: (value) => formNotifier.updateNoRangka(value),
-          ),
-          const SizedBox(height: 16.0),
-          ToggleOption(
-            label: 'No Mesin',
-            toggleValues: ['Lengkap', 'Tidak'],
-            initialValue: formData.noMesin,
-            onChanged: (value) => formNotifier.updateNoMesin(value),
-          ),
+
+          ..._buildToggleOptions(formData, formNotifier),
+
           const SizedBox(height: 32.0),
           NavigationButtonRow(
             onBackPressed: () => ref.read(formStepProvider.notifier).state--,
@@ -110,5 +52,67 @@ class _PageThreeState extends ConsumerState<PageThree> with AutomaticKeepAliveCl
         ],
       ),
     );
+  }
+
+  List<Widget> _buildToggleOptions(FormData formData, FormNotifier formNotifier) {
+    final List<Map<String, dynamic>> toggleOptionsData = [
+      {
+        'label': 'Buku Service',
+        'initialValue': formData.bukuService,
+        'onChanged': (value) => formNotifier.updateBukuService(value),
+      },
+      {
+        'label': 'Kunci Serep',
+        'initialValue': formData.kunciSerep,
+        'onChanged': (value) => formNotifier.updateKunciSerep(value),
+      },
+      {
+        'label': 'Buku Manual',
+        'initialValue': formData.bukuManual,
+        'onChanged': (value) => formNotifier.updateBukuManual(value),
+      },
+      {
+        'label': 'Ban Serep',
+        'initialValue': formData.banSerep,
+        'onChanged': (value) => formNotifier.updateBanSerep(value),
+      },
+      {
+        'label': 'BPKB',
+        'initialValue': formData.bpkb,
+        'onChanged': (value) => formNotifier.updateBpkb(value),
+      },
+      {
+        'label': 'Dongkrak',
+        'initialValue': formData.dongkrak,
+        'onChanged': (value) => formNotifier.updateDongkrak(value),
+      },
+      {
+        'label': 'Toolkit',
+        'initialValue': formData.toolkit,
+        'onChanged': (value) => formNotifier.updateToolkit(value),
+      },
+      {
+        'label': 'No Rangka',
+        'initialValue': formData.noRangka,
+        'onChanged': (value) => formNotifier.updateNoRangka(value),
+      },
+      {
+        'label': 'No Mesin',
+        'initialValue': formData.noMesin,
+        'onChanged': (value) => formNotifier.updateNoMesin(value),
+      },
+    ];
+
+    return toggleOptionsData.map<Widget>((optionData) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: ToggleOption(
+          toggleValues: const ['Lengkap', 'Tidak'],
+          label: optionData['label'],
+          initialValue: optionData['initialValue'],
+          onChanged: optionData['onChanged'],
+        ),
+      );
+    }).toList();
   }
 }
