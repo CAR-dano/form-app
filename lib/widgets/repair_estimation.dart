@@ -195,6 +195,10 @@ class _RepairEstimationState extends State<RepairEstimation> {
           onPressed: _addEstimation,
           icon: const Icon(Icons.add_circle_outline),
           label: const Text('Tambah List'),
+          style: ButtonStyle(
+            foregroundColor: WidgetStateProperty.all<Color>(selectedDateColor),
+            overlayColor: WidgetStateProperty.all<Color>(borderColor.withAlpha(15)), 
+          ),
         ),
       ],
     );

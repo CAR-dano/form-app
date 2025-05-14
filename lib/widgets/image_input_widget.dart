@@ -33,6 +33,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> { // Change
     // Show a modal bottom sheet to choose between camera and gallery
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
+      backgroundColor: buttonTextColor,
       builder: (BuildContext context) {
         return SafeArea(
           child: Column(
@@ -40,14 +41,14 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> { // Change
             children: <Widget>[
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: const Text('Take Picture from Camera'),
+                title: const Text('Ambil Foto dari Kamera'),
                 onTap: () {
                   Navigator.of(context).pop(ImageSource.camera);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text('Choose from Gallery'),
+                title: const Text('Pilih dari Galeri'),
                 onTap: () {
                   Navigator.of(context).pop(ImageSource.gallery);
                 },
