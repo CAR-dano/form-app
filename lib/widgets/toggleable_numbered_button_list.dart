@@ -177,15 +177,11 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
                 return GestureDetector(
                   onTap: isEffectivelyEnabled // Buttons are only tappable if the whole widget is enabled
                       ? () {
-                          if (itemNumber == widget.selectedValue) { // Tapping the currently selected button
-                            // This action effectively "turns off" the selection.
-                            // _persistedSelection should remember this itemNumber.
-                            _persistedSelection = itemNumber; 
-                            widget.onItemSelected(widget.valueWhenDisabled);
-                          } else { // Tapping a new or different button
+                          if (itemNumber != widget.selectedValue) { // Tapping a new or different button
                             _persistedSelection = itemNumber; // Remember this new choice
                             widget.onItemSelected(itemNumber);
                           }
+                          // If itemNumber == widget.selectedValue (tapping the currently selected button), do nothing.
                         }
                       : null, // Not tappable if not effectively enabled
                   child: Container(
