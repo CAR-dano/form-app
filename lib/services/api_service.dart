@@ -1,12 +1,16 @@
 import 'package:dio/dio.dart' as dio; // Add prefix
 import 'package:form_app/models/form_data.dart';
+import 'package:form_app/models/inspector_data.dart'; // Import Inspector model
 
 class ApiService {
   final dio.Dio _dio = dio.Dio(); // Use prefix
-  static const String _baseApiUrl = 'http://31.220.81.182/api/v1'; // Base API URL
-  final String _inspectionsUrl = '$_baseApiUrl/inspections'; // Inspections endpoint
-  final String _inspectionBranchesUrl = '$_baseApiUrl/inspection-branches'; // Inspection branches endpoint
-  final String _inspectorsUrl = '$_baseApiUrl/public/users/inspectors'; // Inspectors endpoint
+  static const String _baseApiUrl = 'http://69.62.80.7/api/v1'; // Base API URL
+  final String _inspectionsUrl =
+      '$_baseApiUrl/inspections'; // Inspections endpoint
+  final String _inspectionBranchesUrl =
+      '$_baseApiUrl/inspection-branches'; // Inspection branches endpoint
+  final String _inspectorsUrl =
+      '$_baseApiUrl/public/users/inspectors'; // Inspectors endpoint
 
   Future<List<String>> getInspectionBranches() async {
     try {
@@ -25,23 +29,14 @@ class ApiService {
     }
   }
 
-  Future<List<String>> getInspectors() async {
+  Future<List<Inspector>> getInspectors() async {
+    // Change return type to List<Inspector>
     try {
       final response = await _dio.get(_inspectorsUrl);
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
-        final List<String> names = data
-            .map((inspector) {
-              final nameValue = inspector['name'];
-              return nameValue is String ? nameValue : null;
-            })
-            .where((name) => name != null && name.isNotEmpty) // Filter out null or empty names
-            .cast<String>()
-            .toList();
-
-        // Ensure uniqueness to prevent DropdownButton assertion errors
-        final uniqueNames = names.toSet().toList();
-        return uniqueNames;
+        // Map the JSON data to a list of Inspector objects
+        return data.map((json) => Inspector.fromJson(json)).toList();
       } else {
         // Throw an exception for FutureProvider to catch
         throw Exception('Failed to load inspectors: ${response.statusCode}');
@@ -59,8 +54,8 @@ class ApiService {
         data: {
           "vehiclePlateNumber": formData.platNomor,
           "inspectionDate": formData.tanggalInspeksi?.toIso8601String(),
-          "overallRating": formData.penilaianKeseluruhanSelectedValue,
-          "inspectorId": "e45219ca-3986-4744-bc0c-e9d4d598498d",
+          "overallRating": formData.penilaianKeseluruhanSelectedValue, // harus ada isinya, gaboleh null
+          "inspectorId": formData.inspectorId,
           "identityDetails": {
             "namaInspektor": formData.namaInspektor,
             "namaCustomer": formData.namaCustomer,

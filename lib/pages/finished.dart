@@ -72,10 +72,8 @@ class _FinishedPageState extends ConsumerState<FinishedPage> with AutomaticKeepA
         //   width: double.infinity,
         //   child: ElevatedButton(
         //     onPressed: () {
-        //       Navigator.of(context).pushReplacement(
-        //         MaterialPageRoute(builder: (context) => PageNine()),
-        //       );
-        //     },
+        //             ref.read(formStepProvider.notifier).state--;
+        //           },
         //     child: const Text('Go to Page Nine'),
         //   ),
         // ),

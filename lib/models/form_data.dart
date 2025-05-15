@@ -1,6 +1,10 @@
+import 'package:form_app/models/inspector_data.dart'; // Import Inspector model
+
 class FormData {
   // Page One Data
   String? namaInspektor;
+  String? inspectorId;
+  Inspector? selectedInspector; // Add field for selected Inspector object
   String namaCustomer;
   String? cabangInspeksi;
   DateTime? tanggalInspeksi;
@@ -196,7 +200,9 @@ class FormData {
   List<Map<String, String>> repairEstimations;
 
   FormData({
+    this.inspectorId,
     this.namaInspektor,
+    this.selectedInspector, // Add to constructor
     this.namaCustomer = '',
     this.cabangInspeksi,
     this.tanggalInspeksi,

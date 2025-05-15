@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/form_data.dart';
+import 'package:form_app/models/inspector_data.dart';
 import 'package:form_app/providers/inspection_branches_provider.dart';
 import 'package:form_app/providers/inspector_provider.dart'; // Import inspection branches provider
 
@@ -20,14 +21,14 @@ class FormNotifier extends StateNotifier<FormData> {
       _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
     });
 
-    _ref.listen<AsyncValue<List<String>>>(inspectorProvider, (previous, next) {
+    _ref.listen<AsyncValue<List<Inspector>>>(inspectorProvider, (previous, next) {
       next.whenData((availableInspectors) {
-        _validateAndUpdateNamaInspektor(state.namaInspektor, availableInspectors);
+        _validateAndUpdateSelectedInspector(state.inspectorId, availableInspectors);
       });
     });
     final initialInspectorsAsync = _ref.read(inspectorProvider);
     initialInspectorsAsync.whenData((availableInspectors) {
-      _validateAndUpdateNamaInspektor(state.namaInspektor, availableInspectors);
+      _validateAndUpdateSelectedInspector(state.inspectorId, availableInspectors);
     });
   }
 
@@ -41,22 +42,41 @@ class FormNotifier extends StateNotifier<FormData> {
     // If currentCabang is null, no change needed.
   }
 
-  void _validateAndUpdateNamaInspektor(String? currentInspector, List<String> availableInspectors) {
-    if (currentInspector != null) {
-      if (availableInspectors.isEmpty || !availableInspectors.contains(currentInspector)) {
-        state = state.copyWith(namaInspektor: null);
+  void _validateAndUpdateSelectedInspector(String? currentInspectorId, List<Inspector> availableInspectors) {
+    if (currentInspectorId != null) {
+      final isValid = availableInspectors.any((inspector) => inspector.id == currentInspectorId);
+      if (availableInspectors.isEmpty || !isValid) {
+        state = state.copyWith(
+          inspectorId: null, // Directly set to null
+          namaInspektor: null, // Directly set to null
+        );
+      } else if (isValid) {
+        final selectedInspector = availableInspectors.firstWhere((inspector) => inspector.id == currentInspectorId);
+        if (state.namaInspektor != selectedInspector.name) {
+          state = state.copyWith(namaInspektor: selectedInspector.name);
+        }
+      }
+    } else {
+      if (state.namaInspektor != null) {
+        state = state.copyWith(namaInspektor: null); // Directly set to null
       }
     }
   }
 
-  void updateNamaInspektor(String? name) { // CHANGED: Takes String?
-    final availableInspectors = _ref.read(inspectorProvider).asData?.value ?? [];
-    if (name != null && availableInspectors.isNotEmpty && !availableInspectors.contains(name)) {
-      state = state.copyWith(namaInspektor: name);
-    } else if (name == null || (availableInspectors.contains(name)) || availableInspectors.isEmpty) {
-      state = state.copyWith(namaInspektor: name);
+  void updateSelectedInspector(Inspector? selectedInspector) {
+    if (selectedInspector != null) {
+      state = state.copyWith(
+        inspectorId: selectedInspector.id,
+        namaInspektor: selectedInspector.name,
+      );
+    } else {
+      state = state.copyWith(
+        inspectorId: null, // Directly set to null
+        namaInspektor: null, // Directly set to null
+      );
     }
   }
+
 
   void updateNamaCustomer(String name) {
     state = state.copyWith(namaCustomer: name);
@@ -832,6 +852,7 @@ final formProvider = StateNotifierProvider<FormNotifier, FormData>((ref) {
 extension on FormData {
   FormData copyWith({
     String? namaInspektor,
+    String? inspectorId,
     String? namaCustomer,
     String? cabangInspeksi,
     DateTime? tanggalInspeksi,
@@ -1000,6 +1021,7 @@ extension on FormData {
   }) {
     return FormData(
       namaInspektor: namaInspektor ?? this.namaInspektor,
+      inspectorId: inspectorId ?? this.inspectorId,
       namaCustomer: namaCustomer ?? this.namaCustomer,
       cabangInspeksi: cabangInspeksi ?? this.cabangInspeksi,
       tanggalInspeksi: tanggalInspeksi ?? this.tanggalInspeksi,

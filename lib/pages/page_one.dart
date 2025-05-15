@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_app/models/inspector_data.dart';
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/providers/inspection_branches_provider.dart'; // Import the provider for branches
@@ -78,12 +79,13 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                   const SizedBox(height: 4),
                   PageTitle(data: 'Identitas'),
                   const SizedBox(height: 6.0),
-                  LabeledDropdownField<String>(
+                  LabeledDropdownField<Inspector>( // Change generic type to Inspector
                       label: 'Nama Inspektor',
                       itemsProvider: inspectorProvider, // Use the new provider
-                      value: formData.namaInspektor,
+                      value: formData.selectedInspector, // Use the new field (will add later)
+                      itemText: (inspector) => inspector.name, // Provide itemText function
                       onChanged: (newValue) {
-                        formNotifier.updateNamaInspektor(newValue);
+                        formNotifier.updateSelectedInspector(newValue); // Call new update method (will add later)
                         if (_formSubmitted) {
                           widget.formKey.currentState?.validate();
                         }
@@ -93,7 +95,7 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                         // Only validate if inspectors are loaded, not empty, and form submitted
                         if (_formSubmitted &&
                             value == null && // Check if value is null (not selected)
-                            inspectorsState is AsyncData<List<String>> &&
+                            inspectorsState is AsyncData<List<Inspector>> && // Check for List<Inspector>
                             inspectorsState.value.isNotEmpty) {
                           return 'Nama Inspektor belum terisi';
                         }
@@ -127,10 +129,11 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                         _formSubmitted, // Pass the formSubmitted flag
                   ),
                   const SizedBox(height: 16.0), // Keep internal spacing
-                  LabeledDropdownField<String>( // Use the refactored LabeledDropdownField
+                  LabeledDropdownField<String>( // Keep this as String for branches
                     label: 'Cabang Inspeksi',
                     itemsProvider: inspectionBranchesProvider, // Pass the provider
                     value: formData.cabangInspeksi,
+                    itemText: (branch) => branch, // Provide itemText for String
                     onChanged: (newValue) {
                       formNotifier.updateCabangInspeksi(newValue);
                       if (_formSubmitted) {
