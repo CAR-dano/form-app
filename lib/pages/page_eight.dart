@@ -5,7 +5,6 @@ import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
-// import 'package:form_app/pages/page_nine.dart'; // No longer directly navigating
 // Import other necessary widgets like CommonLayout if you plan to use it here
 
 // Placeholder for Page Eight
@@ -40,7 +39,7 @@ class _PageEightState extends ConsumerState<PageEight> with AutomaticKeepAliveCl
             onBackPressed: () => ref.read(formStepProvider.notifier).state--,
             onNextPressed: () => ref.read(formStepProvider.notifier).state++,
           ),
-          const SizedBox(height: 32.0), // Optional spacing below the content
+          const SizedBox(height: 24.0), // Optional spacing below the content
           // Footer
           Footer(),
         ],

@@ -1,6 +1,10 @@
+import 'package:form_app/models/inspector_data.dart'; // Import Inspector model
+
 class FormData {
   // Page One Data
-  String namaInspektor;
+  String? namaInspektor;
+  String? inspectorId;
+  Inspector? selectedInspector; // Add field for selected Inspector object
   String namaCustomer;
   String? cabangInspeksi;
   DateTime? tanggalInspeksi;
@@ -196,7 +200,9 @@ class FormData {
   List<Map<String, String>> repairEstimations;
 
   FormData({
-    this.namaInspektor = '',
+    this.inspectorId,
+    this.namaInspektor,
+    this.selectedInspector, // Add to constructor
     this.namaCustomer = '',
     this.cabangInspeksi,
     this.tanggalInspeksi,
@@ -232,12 +238,12 @@ class FormData {
     this.kakiKakiSelectedValue,
     this.mesinSelectedValue,
     this.penilaianKeseluruhanSelectedValue,
-    List<String>? keteranganInterior,
-    List<String>? keteranganEksterior,
-    List<String>? keteranganKakiKaki,
-    List<String>? keteranganMesin,
-    List<String>? deskripsiKeseluruhan,
-    List<Map<String, String>>? repairEstimations,
+    this.keteranganInterior = const [],
+    this.keteranganEksterior = const [],
+    this.keteranganKakiKaki = const [],
+    this.keteranganMesin = const [],
+    this.deskripsiKeseluruhan = const [],
+    this.repairEstimations = const [],
     this.airbagSelectedValue,
     this.sistemAudioSelectedValue,
     this.powerWindowSelectedValue,
@@ -270,7 +276,7 @@ class FormData {
     this.bushingBesarSelectedValue,
     this.bushingKecilSelectedValue,
     this.tutupRadiatorSelectedValue,
-    List<String>? mesinCatatanList,
+    this.mesinCatatanList = const [],
     this.stirSelectedValue,
     this.remTanganSelectedValue,
     this.pedalSelectedValue,
@@ -295,7 +301,7 @@ class FormData {
     this.sabukPengamanSelectedValue,
     this.trimInteriorSelectedValue,
     this.plafonSelectedValue,
-    List<String>? interiorCatatanList,
+    this.interiorCatatanList = const [],
     this.bumperDepanSelectedValue,
     this.kapMesinSelectedValue,
     this.lampuUtamaSelectedValue,
@@ -326,7 +332,7 @@ class FormData {
     this.kacaJendelaKiriSelectedValue,
     this.lisplangKiriSelectedValue,
     this.sideSkirtKiriSelectedValue,
-    List<String>? eksteriorCatatanList,
+    this.eksteriorCatatanList = const [],
     this.banDepanSelectedValue,
     this.velgDepanSelectedValue,
     this.discBrakeSelectedValue,
@@ -344,7 +350,7 @@ class FormData {
     this.upperLowerArmSelectedValue,
     this.shockBreakerSelectedValue,
     this.linkStabilizerSelectedValue,
-    List<String>? banDanKakiKakiCatatanList,
+    this.banDanKakiKakiCatatanList = const [],
     this.bunyiGetaranSelectedValue,
     this.performaStirSelectedValue,
     this.perpindahanTransmisiSelectedValue,
@@ -352,7 +358,7 @@ class FormData {
     this.performaSuspensiSelectedValue,
     this.performaKoplingSelectedValue,
     this.rpmSelectedValue,
-    List<String>? testDriveCatatanList,
+    this.testDriveCatatanList = const [],
     // New fields for Page Five Seven (Tools Test)
     this.tebalCatBodyDepanSelectedValue,
     this.tebalCatBodyKiriSelectedValue,
@@ -362,20 +368,7 @@ class FormData {
     this.obdScannerSelectedValue,
     this.tebalCatBodyAtapSelectedValue,
     this.testAccuSelectedValue,
-    List<String>? toolsTestCatatanList,
-
-  }) : keteranganEksterior = eksteriorCatatanList ?? [],
-       keteranganInterior = keteranganInterior ?? [],
-       keteranganKakiKaki = keteranganKakiKaki ?? [],
-       keteranganMesin = keteranganMesin ?? [],
-       deskripsiKeseluruhan = deskripsiKeseluruhan ?? [],
-       repairEstimations = repairEstimations ?? [],
-       mesinCatatanList = mesinCatatanList ?? [],
-       interiorCatatanList = interiorCatatanList ?? [],
-       eksteriorCatatanList = eksteriorCatatanList ?? [],
-       banDanKakiKakiCatatanList = banDanKakiKakiCatatanList ?? [],
-       testDriveCatatanList = testDriveCatatanList ?? [],
-       toolsTestCatatanList = toolsTestCatatanList ?? [];
-
+    this.toolsTestCatatanList = const [],
+  });
   // Add methods to update data if needed, or update directly
 }

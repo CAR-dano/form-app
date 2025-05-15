@@ -5,11 +5,6 @@ import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
-// Keep import in case needed later
-// Keep import in case needed later
-// Keep import in case needed later
-// Keep import in case needed later
-// import 'package:form_app/pages/page_six_alat_alat_wajib.dart'; // No longer directly navigating
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 
 class PageSixKakiKakiTambahan extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
@@ -46,7 +41,7 @@ class _PageSixKakiKakiTambahanState extends ConsumerState<PageSixKakiKakiTambaha
             onBackPressed: () => ref.read(formStepProvider.notifier).state--,
             onNextPressed: () => ref.read(formStepProvider.notifier).state++,
           ),
-          const SizedBox(height: 32.0),
+          const SizedBox(height: 24.0),
           Footer(),
         ],
       ),

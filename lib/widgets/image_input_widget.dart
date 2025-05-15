@@ -25,16 +25,51 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> { // Change
 
   // Method to handle image picking
   Future<void> _takePicture() async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: ImageSource.gallery); // Use gallery for picking from files
+    // Clear focus before showing the image picker
+    FocusScope.of(context).unfocus();
 
-    if (pickedImage != null) {
-      widget.onImagePicked?.call(File(pickedImage.path)); // Call the callback with the image file
-      // Update the image data provider
-      ref.read(imageDataListProvider.notifier).updateImageDataByLabel(
-        widget.label,
-        imagePath: pickedImage.path,
-      );
+    final picker = ImagePicker();
+    
+    // Show a modal bottom sheet to choose between camera and gallery
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: buttonTextColor,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Ambil Foto dari Kamera'),
+                onTap: () {
+                  Navigator.of(context).pop(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Pilih dari Galeri'),
+                onTap: () {
+                  Navigator.of(context).pop(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (source != null) {
+      final pickedImage = await picker.pickImage(source: source);
+
+      if (pickedImage != null) {
+        widget.onImagePicked?.call(File(pickedImage.path)); // Call the callback with the image file
+        // Update the image data provider
+        ref.read(imageDataListProvider.notifier).updateImageDataByLabel(
+          widget.label,
+          imagePath: pickedImage.path,
+        );
+      }
     }
   }
 

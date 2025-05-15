@@ -9,7 +9,6 @@ import 'package:form_app/widgets/image_input_widget.dart'; // Keep import in cas
 import 'dart:io'; // Keep import in case needed later
 import 'package:form_app/models/image_data.dart'; // Keep import in case needed later
 import 'package:form_app/providers/image_data_provider.dart'; // Keep import in case needed later
-// import 'package:form_app/pages/page_six_interior_tambahan.dart'; // No longer directly navigating
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 
 class PageSixInteriorWajib extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
@@ -86,7 +85,7 @@ class _PageSixInteriorWajibState extends ConsumerState<PageSixInteriorWajib> wit
             onBackPressed: () => ref.read(formStepProvider.notifier).state--,
             onNextPressed: () => ref.read(formStepProvider.notifier).state++,
           ),
-          const SizedBox(height: 32.0),
+          const SizedBox(height: 24.0),
           Footer(),
         ],
       ),

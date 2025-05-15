@@ -15,8 +15,9 @@ class FormApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       title: 'Palapa Inspeksi',
-      theme: ThemeData(),
-
+      theme: ThemeData(
+        useMaterial3: true,
+      ),
       debugShowCheckedModeBanner: false,
       home: const MultiStepFormScreen(), // Set MultiStepFormScreen as home
     );

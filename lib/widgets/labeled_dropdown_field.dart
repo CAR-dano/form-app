@@ -12,6 +12,7 @@ class LabeledDropdownField<T> extends ConsumerStatefulWidget {
   final ValueChanged<T?>? onChanged;
   final T? value;
   final FormFieldValidator<T?>? validator;
+  final String Function(T item) itemText; // Add itemText parameter
 
   const LabeledDropdownField({
     super.key,
@@ -24,6 +25,7 @@ class LabeledDropdownField<T> extends ConsumerStatefulWidget {
     this.onChanged,
     this.value,
     this.validator,
+    required this.itemText, // Make itemText required
   });
 
   @override
@@ -83,7 +85,7 @@ class _LabeledDropdownFieldState<T> extends ConsumerState<LabeledDropdownField<T
           items: items.map((itemValue) {
             return DropdownMenuItem<T>(
               value: itemValue,
-              child: Text(itemValue.toString()),
+              child: Text(widget.itemText(itemValue)), // Use itemText function
             );
           }).toList(),
           onChanged: isLoading ? null : _handleChanged,

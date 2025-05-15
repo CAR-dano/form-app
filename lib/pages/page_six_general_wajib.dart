@@ -9,7 +9,6 @@ import 'package:form_app/widgets/image_input_widget.dart';
 import 'dart:io';
 import 'package:form_app/models/image_data.dart';
 import 'package:form_app/providers/image_data_provider.dart';
-// import 'package:form_app/pages/page_six_general_tambahan.dart'; // No longer directly navigating
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 
 class PageSixGeneralWajib extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
@@ -91,7 +90,7 @@ class _PageSixGeneralWajibState extends ConsumerState<PageSixGeneralWajib> with 
           onBackPressed: () => ref.read(formStepProvider.notifier).state--,
           onNextPressed: () => ref.read(formStepProvider.notifier).state++,
         ),
-        const SizedBox(height: 32.0),
+        const SizedBox(height: 24.0),
         Footer(),
       ],
     );
