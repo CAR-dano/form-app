@@ -17,7 +17,6 @@ class FormApp extends ConsumerWidget {
       title: 'Palapa Inspeksi',
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
       ),
       debugShowCheckedModeBanner: false,
       home: const MultiStepFormScreen(), // Set MultiStepFormScreen as home

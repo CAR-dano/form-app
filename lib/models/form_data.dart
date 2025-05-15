@@ -1,6 +1,6 @@
 class FormData {
   // Page One Data
-  String namaInspektor;
+  String? namaInspektor;
   String namaCustomer;
   String? cabangInspeksi;
   DateTime? tanggalInspeksi;
@@ -196,7 +196,7 @@ class FormData {
   List<Map<String, String>> repairEstimations;
 
   FormData({
-    this.namaInspektor = '',
+    this.namaInspektor,
     this.namaCustomer = '',
     this.cabangInspeksi,
     this.tanggalInspeksi,

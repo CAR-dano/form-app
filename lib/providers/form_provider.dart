@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/form_data.dart';
-import 'package:form_app/providers/inspection_branches_provider.dart'; // Import inspection branches provider
+import 'package:form_app/providers/inspection_branches_provider.dart';
+import 'package:form_app/providers/inspector_provider.dart'; // Import inspection branches provider
 
 class FormNotifier extends StateNotifier<FormData> {
   final Ref _ref;
@@ -18,6 +19,16 @@ class FormNotifier extends StateNotifier<FormData> {
     initialBranchesAsync.whenData((availableBranches) {
       _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
     });
+
+    _ref.listen<AsyncValue<List<String>>>(inspectorProvider, (previous, next) {
+      next.whenData((availableInspectors) {
+        _validateAndUpdateNamaInspektor(state.namaInspektor, availableInspectors);
+      });
+    });
+    final initialInspectorsAsync = _ref.read(inspectorProvider);
+    initialInspectorsAsync.whenData((availableInspectors) {
+      _validateAndUpdateNamaInspektor(state.namaInspektor, availableInspectors);
+    });
   }
 
   void _validateAndUpdateCabangInspeksi(String? currentCabang, List<String> availableBranches) {
@@ -30,8 +41,21 @@ class FormNotifier extends StateNotifier<FormData> {
     // If currentCabang is null, no change needed.
   }
 
-  void updateNamaInspektor(String name) {
-    state = state.copyWith(namaInspektor: name);
+  void _validateAndUpdateNamaInspektor(String? currentInspector, List<String> availableInspectors) {
+    if (currentInspector != null) {
+      if (availableInspectors.isEmpty || !availableInspectors.contains(currentInspector)) {
+        state = state.copyWith(namaInspektor: null);
+      }
+    }
+  }
+
+  void updateNamaInspektor(String? name) { // CHANGED: Takes String?
+    final availableInspectors = _ref.read(inspectorProvider).asData?.value ?? [];
+    if (name != null && availableInspectors.isNotEmpty && !availableInspectors.contains(name)) {
+      state = state.copyWith(namaInspektor: name);
+    } else if (name == null || (availableInspectors.contains(name)) || availableInspectors.isEmpty) {
+      state = state.copyWith(namaInspektor: name);
+    }
   }
 
   void updateNamaCustomer(String name) {
@@ -39,23 +63,12 @@ class FormNotifier extends StateNotifier<FormData> {
   }
 
   void updateCabangInspeksi(String? cabang) {
-    //print('[FormNotifier] updateCabangInspeksi called with: $cabang'); // Added print statement
-    // When cabangInspeksi is explicitly updated, validate it against the current list of available branches.
     final availableBranches = _ref.read(inspectionBranchesProvider).asData?.value ?? [];
     if (cabang != null && availableBranches.isNotEmpty && !availableBranches.contains(cabang)) {
-      // If the new cabang is not in the available list, perhaps default to null or handle as an error.
-      // For now, let's allow setting it, but it might be immediately invalidated by the listener if branches reload.
-      // A more robust approach might be to prevent setting an invalid branch here.
-      // However, the listener should correct it if the branches list doesn't support this value.
       state = state.copyWith(cabangInspeksi: cabang);
-      //print('[FormNotifier] cabangInspeksi state updated to: ${state.cabangInspeksi}');
     } else if (cabang == null || (availableBranches.contains(cabang)) || availableBranches.isEmpty) {
-      // Allow setting to null, or to a valid branch, or if no branches are loaded yet (it will be validated by listener)
       state = state.copyWith(cabangInspeksi: cabang);
-      //print('[FormNotifier] cabangInspeksi state updated to: ${state.cabangInspeksi}');
     }
-    // If trying to set a non-null cabang when availableBranches is not empty and doesn't contain it,
-    // we could choose to not update, or set to null. Current logic allows it, listener will correct.
   }
 
   void updateTanggalInspeksi(DateTime? date) {

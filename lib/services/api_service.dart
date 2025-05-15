@@ -6,6 +6,7 @@ class ApiService {
   static const String _baseApiUrl = 'http://31.220.81.182/api/v1'; // Base API URL
   final String _inspectionsUrl = '$_baseApiUrl/inspections'; // Inspections endpoint
   final String _inspectionBranchesUrl = '$_baseApiUrl/inspection-branches'; // Inspection branches endpoint
+  final String _inspectorsUrl = '$_baseApiUrl/public/users/inspectors'; // Inspectors endpoint
 
   Future<List<String>> getInspectionBranches() async {
     try {
@@ -24,6 +25,33 @@ class ApiService {
     }
   }
 
+  Future<List<String>> getInspectors() async {
+    try {
+      final response = await _dio.get(_inspectorsUrl);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        final List<String> names = data
+            .map((inspector) {
+              final nameValue = inspector['name'];
+              return nameValue is String ? nameValue : null;
+            })
+            .where((name) => name != null && name.isNotEmpty) // Filter out null or empty names
+            .cast<String>()
+            .toList();
+
+        // Ensure uniqueness to prevent DropdownButton assertion errors
+        final uniqueNames = names.toSet().toList();
+        return uniqueNames;
+      } else {
+        // Throw an exception for FutureProvider to catch
+        throw Exception('Failed to load inspectors: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Re-throw for FutureProvider
+      throw Exception('Error fetching inspectors: $e');
+    }
+  }
+
   Future<void> submitFormData(FormData formData) async {
     try {
       final response = await _dio.post(
@@ -32,6 +60,7 @@ class ApiService {
           "vehiclePlateNumber": formData.platNomor,
           "inspectionDate": formData.tanggalInspeksi?.toIso8601String(),
           "overallRating": formData.penilaianKeseluruhanSelectedValue,
+          "inspectorId": "e45219ca-3986-4744-bc0c-e9d4d598498d",
           "identityDetails": {
             "namaInspektor": formData.namaInspektor,
             "namaCustomer": formData.namaCustomer,

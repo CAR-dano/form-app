@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/providers/inspection_branches_provider.dart'; // Import the provider for branches
+import 'package:form_app/providers/inspector_provider.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/labeled_date_field.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
@@ -77,27 +78,32 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                   const SizedBox(height: 4),
                   PageTitle(data: 'Identitas'),
                   const SizedBox(height: 6.0),
-                  LabeledTextField(
-                    label: 'Nama Inspektor',
-                    hintText: 'Masukkan nama inspektor',
-                    initialValue:
-                        formData
-                            .namaInspektor, // Initialize with data from provider
-                    onChanged: (value) {
-                      formNotifier.updateNamaInspektor(
-                        value,
-                      ); // Update data in provider
-                    },
-                    validator: (value) {
-                      if (_formSubmitted &&
-                          (value == null || value.isEmpty)) {
-                        return 'Nama Inspektor belum terisi'; // Validation message
-                      }
-                      return null; // Return null if valid
-                    },
-                    formSubmitted:
-                        _formSubmitted, // Pass the formSubmitted flag
-                  ),
+                  LabeledDropdownField<String>(
+                      label: 'Nama Inspektor',
+                      itemsProvider: inspectorProvider, // Use the new provider
+                      value: formData.namaInspektor,
+                      onChanged: (newValue) {
+                        formNotifier.updateNamaInspektor(newValue);
+                        if (_formSubmitted) {
+                          widget.formKey.currentState?.validate();
+                        }
+                      },
+                      validator: (value) {
+                        final inspectorsState = ref.read(inspectorProvider);
+                        // Only validate if inspectors are loaded, not empty, and form submitted
+                        if (_formSubmitted &&
+                            value == null && // Check if value is null (not selected)
+                            inspectorsState is AsyncData<List<String>> &&
+                            inspectorsState.value.isNotEmpty) {
+                          return 'Nama Inspektor belum terisi';
+                        }
+                        return null;
+                      },
+                      initialHintText: 'Pilih nama inspektor',
+                      loadingHintText: 'Memuat inspektor...',
+                      emptyDataHintText: 'Tidak ada inspektor tersedia',
+                      errorHintText: 'Gagal memuat inspektor',
+                    ),
                   const SizedBox(height: 16.0), // Keep internal spacing
                   LabeledTextField(
                     label: 'Nama Customer',
