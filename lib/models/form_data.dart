@@ -52,18 +52,18 @@ class FormData {
   int? penilaianKeseluruhanSelectedValue;
 
   // NEW: Fields for ExpandableTextField data (as List<String>)
-  List<String> keteranganInterior;
-  List<String> keteranganEksterior;
-  List<String> keteranganKakiKaki;
-  List<String> keteranganMesin;
-  List<String> deskripsiKeseluruhan;
+  List<String>? keteranganInterior;
+  List<String>? keteranganEksterior;
+  List<String>? keteranganKakiKaki;
+  List<String>? keteranganMesin;
+  List<String>? deskripsiKeseluruhan;
 
   // New fields for Page Five One
   int? airbagSelectedValue;
   int? sistemAudioSelectedValue;
   int? powerWindowSelectedValue;
   int? sistemAcSelectedValue;
-  List<String> fiturCatatanList;
+  List<String>? fiturCatatanList;
 
   // New fields for Page Five Two
   int? getaranMesinSelectedValue;
@@ -93,7 +93,7 @@ class FormData {
   int? bushingBesarSelectedValue;
   int? bushingKecilSelectedValue;
   int? tutupRadiatorSelectedValue;
-  List<String> mesinCatatanList;
+  List<String>? mesinCatatanList;
 
   // New fields for Page Five Three
   int? stirSelectedValue;
@@ -120,7 +120,7 @@ class FormData {
   int? sabukPengamanSelectedValue;
   int? trimInteriorSelectedValue;
   int? plafonSelectedValue;
-  List<String> interiorCatatanList;
+  List<String>? interiorCatatanList;
 
   // New fields for Page Five Four
   int? bumperDepanSelectedValue;
@@ -153,7 +153,7 @@ class FormData {
   int? kacaJendelaKiriSelectedValue;
   int? lisplangKiriSelectedValue;
   int? sideSkirtKiriSelectedValue;
-  List<String> eksteriorCatatanList;
+  List<String>? eksteriorCatatanList;
 
   // New fields for Page Five Five
   int? banDepanSelectedValue;
@@ -173,7 +173,7 @@ class FormData {
   int? upperLowerArmSelectedValue;
   int? shockBreakerSelectedValue;
   int? linkStabilizerSelectedValue;
-  List<String> banDanKakiKakiCatatanList;
+  List<String>? banDanKakiKakiCatatanList;
 
   // New fields for Page Five Six (Test Drive)
   int? bunyiGetaranSelectedValue;
@@ -183,7 +183,7 @@ class FormData {
   int? performaSuspensiSelectedValue;
   int? performaKoplingSelectedValue;
   int? rpmSelectedValue;
-  List<String> testDriveCatatanList;
+  List<String>? testDriveCatatanList;
 
   // New fields for Page Five Seven (Tools Test)
   int? tebalCatBodyDepanSelectedValue;
@@ -194,7 +194,7 @@ class FormData {
   int? obdScannerSelectedValue;
   int? tebalCatBodyAtapSelectedValue;
   int? testAccuSelectedValue;
-  List<String> toolsTestCatatanList;
+  List<String>? toolsTestCatatanList;
 
   // New field for repair estimations
   List<Map<String, String>> repairEstimations;
