@@ -9,6 +9,7 @@ import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
+import 'package:form_app/providers/image_data_provider.dart';
 
 // Placeholder for Page Nine
 class PageNine extends ConsumerStatefulWidget {
@@ -46,6 +47,10 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
           ApiService(); // Consider providing ApiService via Riverpod as well
 
       await apiService.submitFormData(formData);
+
+      // Clear stored data after successful submission
+      ref.read(formProvider.notifier).resetFormData();
+      ref.read(imageDataListProvider.notifier).clearImageData();
 
       if (!mounted) return;
       // Navigate to the FinishedPage by updating the form step

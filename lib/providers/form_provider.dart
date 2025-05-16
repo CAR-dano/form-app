@@ -3,9 +3,12 @@ import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspector_data.dart';
 import 'package:form_app/providers/inspection_branches_provider.dart';
 import 'package:form_app/providers/inspector_provider.dart'; // Import inspection branches provider
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class FormNotifier extends StateNotifier<FormData> {
   final Ref _ref;
+  static const _storageKey = 'form_data';
 
   FormNotifier(this._ref) : super(FormData()) {
     // Listen to the inspectionBranchesProvider and validate/update cabangInspeksi
@@ -30,6 +33,8 @@ class FormNotifier extends StateNotifier<FormData> {
     initialInspectorsAsync.whenData((availableInspectors) {
       _validateAndUpdateSelectedInspector(state.inspectorId, availableInspectors);
     });
+
+    _loadFormData();
   }
 
   void _validateAndUpdateCabangInspeksi(String? currentCabang, List<String> availableBranches) {
@@ -840,8 +845,30 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(toolsTestCatatanList: lines);
   }
 
+  Future<void> _loadFormData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(_storageKey);
+    if (jsonString != null) {
+      final jsonMap = json.decode(jsonString);
+      state = FormData.fromJson(jsonMap);
+    }
+  }
+
+  Future<void> _saveFormData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = json.encode(state.toJson());
+    await prefs.setString(_storageKey, jsonString);
+  }
+
+  @override
+  set state(FormData value) {
+    super.state = value;
+    _saveFormData();
+  }
+
   void resetFormData() {
     state = FormData();
+    _saveFormData();
   }
 }
 
