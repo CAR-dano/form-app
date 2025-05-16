@@ -3,76 +3,96 @@ import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspector_data.dart';
 import 'package:form_app/providers/inspection_branches_provider.dart';
 import 'package:form_app/providers/inspector_provider.dart'; // Import inspection branches provider
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class FormNotifier extends StateNotifier<FormData> {
   final Ref _ref;
+  static const _storageKey = 'form_data';
 
   FormNotifier(this._ref) : super(FormData()) {
-    // Listen to the inspectionBranchesProvider and validate/update cabangInspeksi
-    _ref.listen<AsyncValue<List<String>>>(inspectionBranchesProvider, (previous, next) {
-      next.whenData((availableBranches) {
+    // Load initial data first
+    _loadFormData().then((_) {
+      // Then setup listeners and perform initial validation with loaded state
+      _ref.listen<AsyncValue<List<String>>>(inspectionBranchesProvider, (previous, next) {
+        next.whenData((availableBranches) {
+          _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
+        });
+      });
+      final initialBranchesAsync = _ref.read(inspectionBranchesProvider);
+      initialBranchesAsync.whenData((availableBranches) {
         _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
       });
-    });
 
-    // Initial validation in case branches are already loaded when FormNotifier is created
-    final initialBranchesAsync = _ref.read(inspectionBranchesProvider);
-    initialBranchesAsync.whenData((availableBranches) {
-      _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
-    });
-
-    _ref.listen<AsyncValue<List<Inspector>>>(inspectorProvider, (previous, next) {
-      next.whenData((availableInspectors) {
+      _ref.listen<AsyncValue<List<Inspector>>>(inspectorProvider, (previous, next) {
+        next.whenData((availableInspectors) {
+          // Pass the currently loaded/set inspectorId from state
+          _validateAndUpdateSelectedInspector(state.inspectorId, availableInspectors);
+        });
+      });
+      final initialInspectorsAsync = _ref.read(inspectorProvider);
+      initialInspectorsAsync.whenData((availableInspectors) {
+        // Pass the currently loaded/set inspectorId from state
         _validateAndUpdateSelectedInspector(state.inspectorId, availableInspectors);
       });
-    });
-    final initialInspectorsAsync = _ref.read(inspectorProvider);
-    initialInspectorsAsync.whenData((availableInspectors) {
-      _validateAndUpdateSelectedInspector(state.inspectorId, availableInspectors);
     });
   }
 
   void _validateAndUpdateCabangInspeksi(String? currentCabang, List<String> availableBranches) {
     if (currentCabang != null) {
-      if (availableBranches.isEmpty || !availableBranches.contains(currentCabang)) {
-        state = state.copyWith(cabangInspeksi: null);
+      if (availableBranches.isNotEmpty && !availableBranches.contains(currentCabang)) {
+        if (state.cabangInspeksi != null) { // Check if a change is actually needed
+          state = state.copyWith(cabangInspeksi: null);
+        }
       }
-      // If currentCabang is valid and in availableBranches, no change needed.
     }
-    // If currentCabang is null, no change needed.
   }
 
   void _validateAndUpdateSelectedInspector(String? currentInspectorId, List<Inspector> availableInspectors) {
-    if (currentInspectorId != null) {
-      final isValid = availableInspectors.any((inspector) => inspector.id == currentInspectorId);
-      if (availableInspectors.isEmpty || !isValid) {
-        state = state.copyWith(
-          inspectorId: null, // Directly set to null
-          namaInspektor: null, // Directly set to null
-        );
-      } else if (isValid) {
-        final selectedInspector = availableInspectors.firstWhere((inspector) => inspector.id == currentInspectorId);
-        if (state.namaInspektor != selectedInspector.name) {
-          state = state.copyWith(namaInspektor: selectedInspector.name);
-        }
+    Inspector? resolvedInspector;
+    String? resolvedNamaInspektor;
+    String? resolvedInspectorId;
+
+    if (currentInspectorId != null && availableInspectors.isNotEmpty) {
+      try {
+        resolvedInspector = availableInspectors.firstWhere((inspector) => inspector.id == currentInspectorId);
+        resolvedNamaInspektor = resolvedInspector.name;
+        resolvedInspectorId = resolvedInspector.id;
+      } catch (e) { // Not found
+        resolvedInspector = null;
+        resolvedNamaInspektor = null;
+        resolvedInspectorId = null; 
       }
     } else {
-      if (state.namaInspektor != null) {
-        state = state.copyWith(namaInspektor: null); // Directly set to null
-      }
+        resolvedInspector = null;
+        resolvedNamaInspektor = null;
+        resolvedInspectorId = null;
+    }
+
+    if (state.selectedInspector != resolvedInspector ||
+        state.inspectorId != resolvedInspectorId ||
+        state.namaInspektor != resolvedNamaInspektor) {
+      state = state.copyWith(
+        selectedInspector: resolvedInspector,
+        inspectorId: resolvedInspectorId,
+        namaInspektor: resolvedNamaInspektor,
+      );
     }
   }
 
-  void updateSelectedInspector(Inspector? selectedInspector) {
-    if (selectedInspector != null) {
+
+  void updateSelectedInspector(Inspector? newSelectedInspector) {
+    if (newSelectedInspector != null) {
       state = state.copyWith(
-        inspectorId: selectedInspector.id,
-        namaInspektor: selectedInspector.name,
+        selectedInspector: newSelectedInspector,
+        inspectorId: newSelectedInspector.id,
+        namaInspektor: newSelectedInspector.name,
       );
     } else {
       state = state.copyWith(
-        inspectorId: null, // Directly set to null
-        namaInspektor: null, // Directly set to null
+        selectedInspector: null, 
+        inspectorId: null,
+        namaInspektor: null,
       );
     }
   }
@@ -840,8 +860,30 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(toolsTestCatatanList: lines);
   }
 
+  Future<void> _loadFormData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(_storageKey);
+    if (jsonString != null) {
+      final jsonMap = json.decode(jsonString);
+      super.state = FormData.fromJson(jsonMap);
+    }
+  }
+
+  Future<void> _saveFormData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = json.encode(state.toJson());
+    await prefs.setString(_storageKey, jsonString);
+  }
+
+  @override
+  set state(FormData value) {
+    super.state = value;
+    _saveFormData();
+  }
+
   void resetFormData() {
     state = FormData();
+    _saveFormData();
   }
 }
 
@@ -853,6 +895,7 @@ extension on FormData {
   FormData copyWith({
     String? namaInspektor,
     String? inspectorId,
+    Inspector? selectedInspector,
     String? namaCustomer,
     String? cabangInspeksi,
     DateTime? tanggalInspeksi,
@@ -1022,6 +1065,7 @@ extension on FormData {
     return FormData(
       namaInspektor: namaInspektor ?? this.namaInspektor,
       inspectorId: inspectorId ?? this.inspectorId,
+      selectedInspector: selectedInspector ?? this.selectedInspector,
       namaCustomer: namaCustomer ?? this.namaCustomer,
       cabangInspeksi: cabangInspeksi ?? this.cabangInspeksi,
       tanggalInspeksi: tanggalInspeksi ?? this.tanggalInspeksi,

@@ -9,6 +9,7 @@ import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
+import 'package:form_app/providers/image_data_provider.dart';
 
 // Placeholder for Page Nine
 class PageNine extends ConsumerStatefulWidget {
@@ -20,12 +21,13 @@ class PageNine extends ConsumerStatefulWidget {
 
 class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClientMixin { // Add mixin
   bool _isChecked = false;
+  bool _isLoading = false; // Add loading state
 
   @override
   bool get wantKeepAlive => true; // Override wantKeepAlive
 
   Future<void> _submitForm() async {
-    if (!_isChecked) {
+    if (_isLoading || !_isChecked) { // Prevent multiple submissions while loading
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Harap setujui pernyataan untuk melanjutkan.'),
@@ -35,12 +37,20 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
       return;
     }
 
+    setState(() {
+      _isLoading = true; // Set loading state to true
+    });
+
     try {
       final formData = ref.read(formProvider);
       final apiService =
           ApiService(); // Consider providing ApiService via Riverpod as well
 
       await apiService.submitFormData(formData);
+
+      // Clear stored data after successful submission
+      ref.read(formProvider.notifier).resetFormData();
+      ref.read(imageDataListProvider.notifier).clearImageData();
 
       if (!mounted) return;
       // Navigate to the FinishedPage by updating the form step
@@ -54,7 +64,9 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
         ),
       );
     } finally {
-      // Removed loading state reset
+      setState(() {
+        _isLoading = false; // Reset loading state
+      });
     }
   }
 
@@ -100,7 +112,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
           onNextPressed:
               _submitForm, // _submitForm will now update formStepProvider on success
           isFormConfirmed: _isChecked,
-          // Removed isLoading parameter
+          isLoading: _isLoading, // Pass loading state to disable button
         ),
         const SizedBox(height: 24.0), // Optional spacing below the content
         // Footer
