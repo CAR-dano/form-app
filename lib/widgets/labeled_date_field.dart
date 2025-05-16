@@ -45,6 +45,28 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
   }
 
   @override
+  void didUpdateWidget(LabeledDateField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialDate != oldWidget.initialDate) {
+      if (_selectedDate != widget.initialDate) {
+         WidgetsBinding.instance.addPostFrameCallback((_) {
+           if(mounted) {
+            setState(() {
+              _selectedDate = widget.initialDate;
+            });
+            _fieldKey.currentState?.didChange(_selectedDate);
+           }
+         });
+      }
+    }
+    // Update internal focus node if the widget's focusNode prop changes
+    if (widget.focusNode != oldWidget.focusNode) {
+        _focusNode = widget.focusNode ?? FocusNode();
+    }
+  }
+
+
+  @override
   void dispose() {
     _focusNode.dispose();
     super.dispose();

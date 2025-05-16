@@ -52,6 +52,31 @@ class _LabeledTextFieldState extends State<LabeledTextField> {
   }
 
   @override
+  void didUpdateWidget(LabeledTextField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.controller == null && widget.initialValue != oldWidget.initialValue) {
+      if (_internalController.text != widget.initialValue) {
+        WidgetsBinding.instance.addPostFrameCallback((_) { // Ensure update after build
+          if (mounted) {
+            if (widget.focusNode?.hasFocus == false || _internalController.text != widget.initialValue) {
+                final currentSelection = _internalController.selection;
+                _internalController.text = widget.initialValue ?? '';
+                if (currentSelection.start <= _internalController.text.length &&
+                    currentSelection.end <= _internalController.text.length) {
+                    _internalController.selection = currentSelection;
+                } else {
+                    _internalController.selection = TextSelection.fromPosition(
+                        TextPosition(offset: _internalController.text.length));
+                }
+            }
+          }
+        });
+      }
+    }
+  }
+
+
+  @override
   void dispose() {
     // Dispose the internal controller if it was created
     if (widget.controller == null) {

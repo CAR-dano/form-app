@@ -591,7 +591,7 @@ class FormData {
       penilaianKeseluruhanSelectedValue: json['penilaianKeseluruhanSelectedValue'] as int?,
       keteranganInterior: (json['keteranganInterior'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const [],
       keteranganEksterior: (json['keteranganEksterior'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const [],
-      keteranganKakiKaki: (json['kakiKakiSelectedValue'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const [],
+      keteranganKakiKaki: (json['keteranganKakiKaki'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const [],
       keteranganMesin: (json['keteranganMesin'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const [],
       deskripsiKeseluruhan: (json['deskripsiKeseluruhan'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const [],
       repairEstimations: (json['repairEstimations'] as List<dynamic>?)
