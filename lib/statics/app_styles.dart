@@ -120,6 +120,12 @@ final TextStyle priceTextStyle = GoogleFonts.rubik(
   fontWeight: FontWeight.w400,
 );
 
+final TextStyle imageIndexTextStyle = GoogleFonts.rubik(
+  fontSize: 24.0,
+  fontWeight: FontWeight.w300,
+  color: labelTextColor, // Assuming the color should be the same as label text
+);
+
 final TextStyle headingOneStyle = GoogleFonts.rubik(
   fontSize: 32.0,
   fontWeight: FontWeight.w400,
