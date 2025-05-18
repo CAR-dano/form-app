@@ -1,15 +1,16 @@
 import 'package:dio/dio.dart' as dio; // Add prefix
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspector_data.dart'; // Import Inspector model
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import flutter_dotenv
 
 class ApiService {
   final dio.Dio _dio = dio.Dio(); // Use prefix
-  static const String _baseApiUrl = 'http://69.62.80.7/api/v1'; // Base API URL
-  final String _inspectionsUrl =
+  String get _baseApiUrl => dotenv.env['API_BASE_URL']!; // Base API URL from .env
+  String get _inspectionsUrl =>
       '$_baseApiUrl/inspections'; // Inspections endpoint
-  final String _inspectionBranchesUrl =
+  String get _inspectionBranchesUrl =>
       '$_baseApiUrl/inspection-branches'; // Inspection branches endpoint
-  final String _inspectorsUrl =
+  String get _inspectorsUrl =>
       '$_baseApiUrl/public/users/inspectors'; // Inspectors endpoint
 
   Future<List<String>> getInspectionBranches() async {

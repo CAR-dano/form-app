@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/pages/multi_step_form_screen.dart'; // Import MultiStepFormScreen
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import flutter_dotenv
 
 
-void main() {
+Future<void> main() async { // Made main async
+  await dotenv.load(fileName: ".env"); // Load environment variables
   runApp(const ProviderScope(child: FormApp()));
 }
 
