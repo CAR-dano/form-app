@@ -93,7 +93,7 @@ final ButtonStyle baseButtonStyle = ElevatedButton.styleFrom(
     borderRadius: BorderRadius.circular(8.0),
   ),
   elevation: 5, // Base elevation for enabled state
-  shadowColor: buttonColor.withAlpha(102),
+  shadowColor: toggleOptionSelectedLengkapColor.withAlpha(102),
 );
 
 final TextStyle selectedDateTextStyle = GoogleFonts.rubik(

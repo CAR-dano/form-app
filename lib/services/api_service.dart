@@ -256,22 +256,22 @@ class ApiService {
             },
           },
           "bodyPaintThickness": {
-            "front": formData.tebalCatBodyDepanSelectedValue?.toString() ?? '-',
+            "front": formData.catDepanKap ?? '-',
             "rear": {
-              "trunk": "10", // Keep hardcoded for now
-              "bumper": formData.tebalCatBodyBelakangSelectedValue?.toString() ?? '-'
+              "trunk": formData.catBelakangTrunk,
+              "bumper": formData.catBelakangBumper ?? '-'
             },
             "right": {
-              "frontFender": formData.tebalCatBodyKananSelectedValue?.toString() ?? '-',
-              "frontDoor": "10", // Keep hardcoded
-              "rearDoor": "10", // Keep hardcoded
-              "rearFender": "10", // Keep hardcoded
+              "frontFender": formData.catKananFenderDepan ?? '-',
+              "frontDoor": formData.catKananPintuDepan ?? '-',
+              "rearDoor": formData.catKananPintuBelakang ?? '-',
+              "rearFender": formData.catKananFenderBelakang ?? '-',
             },
             "left" : {
-              "frontFender": formData.tebalCatBodyKiriSelectedValue?.toString() ?? '-',
-              "frontDoor": "10", // Keep hardcoded
-              "rearDoor": "10", // Keep hardcoded
-              "rearFender": "10", // Keep hardcoded
+              "frontFender": formData.catKiriFenderDepan ?? '-',
+              "frontDoor": formData.catKiriPintuDepan ?? '-',
+              "rearDoor": formData.catKiriPintuBelakang ?? '-',
+              "rearFender": formData.catKiriFenderBelakang ?? '-',
             },
           },
         },
