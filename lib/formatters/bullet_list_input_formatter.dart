@@ -8,25 +8,32 @@ class BulletListInputFormatter extends TextInputFormatter {
       TextEditingValue oldValue, TextEditingValue newValue) {
     
     // --- Handles adding a bullet point ('• ') after a newline character is inserted. ---
+    // Check if a newline character is being inserted
     if (newValue.text.length == oldValue.text.length - (oldValue.selection.end - oldValue.selection.start) + 1 &&
         newValue.selection.isCollapsed &&
         newValue.selection.baseOffset == oldValue.selection.start + 1 &&
-        oldValue.selection.start < newValue.text.length && 
-        newValue.text[oldValue.selection.start] == '\n' &&
-        newValue.text.substring(0, oldValue.selection.start) == oldValue.text.substring(0, oldValue.selection.start) &&
-        newValue.text.substring(oldValue.selection.start + 1) == oldValue.text.substring(oldValue.selection.end)) {
-      
+        oldValue.selection.start < newValue.text.length &&
+        newValue.text[oldValue.selection.start] == '\n') {
+
+      final int newlinePosition = oldValue.selection.start;
+      final String textBeforeNewline = oldValue.text.substring(0, newlinePosition);
+
+      // Check if the line before the newline is empty (only contains bullet and optional space)
+      if (textBeforeNewline.trim() == '•' || textBeforeNewline.trim().isEmpty) {
+         // If the line is empty, prevent the newline and return the old value
+         return oldValue;
+      }
+
       const String bulletAndSpace = '• ';
-      final int newlineActualPositionInNewText = oldValue.selection.start;
       // Inserts '• ' after the newline.
       final String textWithBullet =
-          newValue.text.substring(0, newlineActualPositionInNewText + 1) +
+          newValue.text.substring(0, newlinePosition + 1) +
           bulletAndSpace +
-          newValue.text.substring(newlineActualPositionInNewText + 1);
+          newValue.text.substring(newlinePosition + 1);
       // Returns modified text with cursor after the bullet.
       return TextEditingValue(
         text: textWithBullet,
-        selection: TextSelection.collapsed(offset: newlineActualPositionInNewText + 1 + bulletAndSpace.length),
+        selection: TextSelection.collapsed(offset: newlinePosition + 1 + bulletAndSpace.length),
       );
     }
 
