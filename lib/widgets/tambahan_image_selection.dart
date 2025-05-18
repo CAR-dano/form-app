@@ -79,6 +79,7 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
                   width: double.infinity,
                   height: 200, // Adjust height as needed
                   decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0), // Added border radius
                     image: _selectedImages.isEmpty
                         ? const DecorationImage(
                             image: AssetImage('assets/images/checker.png'),
@@ -86,7 +87,6 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
                           )
                         : null,
                     color: _selectedImages.isNotEmpty ? Colors.grey[300] : null, // Placeholder color when images are selected
-                    borderRadius: BorderRadius.circular(8.0),
                   ),
                   child: _selectedImages.isEmpty
                       ? Center(
@@ -101,9 +101,12 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
                             ),
                           ),
                         )
-                      : Image.file(
-                          File(_selectedImages[_currentImageIndex].path),
-                          fit: BoxFit.cover,
+                      : ClipRRect( // Added ClipRRect to apply border radius to the image
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.file(
+                            File(_selectedImages[_currentImageIndex].path),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                 ),
               ),
