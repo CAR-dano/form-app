@@ -860,6 +860,50 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(toolsTestCatatanList: lines);
   }
 
+  void updateCatDepanKap(String? value) {
+    state = state.copyWith(catDepanKap: value);
+  }
+
+  void updateCatBelakangBumper(String? value) {
+    state = state.copyWith(catBelakangBumper: value);
+  }
+
+  void updateCatBelakangTrunk(String? value) {
+    state = state.copyWith(catBelakangTrunk: value);
+  }
+
+  void updateCatKananFenderDepan(String? value) {
+    state = state.copyWith(catKananFenderDepan: value);
+  }
+
+  void updateCatKananPintuDepan(String? value) {
+    state = state.copyWith(catKananPintuDepan: value);
+  }
+
+  void updateCatKananPintuBelakang(String? value) {
+    state = state.copyWith(catKananPintuBelakang: value);
+  }
+
+  void updateCatKananFenderBelakang(String? value) {
+    state = state.copyWith(catKananFenderBelakang: value);
+  }
+
+  void updateCatKiriFenderDepan(String? value) {
+    state = state.copyWith(catKiriFenderDepan: value);
+  }
+
+  void updateCatKiriPintuDepan(String? value) {
+    state = state.copyWith(catKiriPintuDepan: value);
+  }
+
+  void updateCatKiriPintuBelakang(String? value) {
+    state = state.copyWith(catKiriPintuBelakang: value);
+  }
+
+  void updateCatKiriFenderBelakang(String? value) {
+    state = state.copyWith(catKiriFenderBelakang: value);
+  }
+
   Future<void> _loadFormData() async {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(_storageKey);
@@ -1061,6 +1105,17 @@ extension on FormData {
     int? tebalCatBodyAtapSelectedValue,
     int? testAccuSelectedValue,
     List<String>? toolsTestCatatanList,
+    String? catDepanKap,
+    String? catBelakangBumper,
+    String? catBelakangTrunk,
+    String? catKananFenderDepan,
+    String? catKananPintuDepan,
+    String? catKananPintuBelakang,
+    String? catKananFenderBelakang,
+    String? catKiriFenderDepan,
+    String? catKiriPintuDepan,
+    String? catKiriPintuBelakang,
+    String? catKiriFenderBelakang,
   }) {
     return FormData(
       namaInspektor: namaInspektor ?? this.namaInspektor,
@@ -1232,6 +1287,19 @@ extension on FormData {
       tebalCatBodyAtapSelectedValue: tebalCatBodyAtapSelectedValue ?? this.tebalCatBodyAtapSelectedValue,
       testAccuSelectedValue: testAccuSelectedValue ?? this.testAccuSelectedValue,
       toolsTestCatatanList: toolsTestCatatanList ?? this.toolsTestCatatanList,
+
+      // fields for page eight
+      catDepanKap: catDepanKap ?? this.catDepanKap,
+      catBelakangBumper: catBelakangBumper ?? this.catBelakangBumper,
+      catBelakangTrunk: catBelakangTrunk ?? this.catBelakangTrunk,
+      catKananFenderDepan: catKananFenderDepan ?? this.catKananFenderDepan,
+      catKananPintuDepan: catKananPintuDepan ?? this.catKananPintuDepan,
+      catKananPintuBelakang: catKananPintuBelakang ?? this.catKananPintuBelakang,
+      catKananFenderBelakang: catKananFenderBelakang ?? this.catKananFenderBelakang,
+      catKiriFenderDepan: catKiriFenderDepan ?? this.catKiriFenderDepan,
+      catKiriPintuDepan: catKiriPintuDepan ?? this.catKiriPintuDepan,
+      catKiriPintuBelakang: catKiriPintuBelakang ?? this.catKiriPintuBelakang,
+      catKiriFenderBelakang: catKiriFenderBelakang ?? this.catKiriFenderBelakang,
     );
   }
 }
