@@ -155,9 +155,13 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
               ),
               const SizedBox(width: 70.0), // Space between button and text
               // Index Indicator
-              Text(
-                '${_currentImageIndex + 1}/${_selectedImages.length}',
-                style: imageIndexTextStyle,
+              SizedBox(
+                width: 60.0, // Fixed width to prevent shifting
+                child: Text(
+                  '${_currentImageIndex + 1}/${_selectedImages.length}',
+                  style: imageIndexTextStyle,
+                  textAlign: TextAlign.center, // Center the text within the SizedBox
+                ),
               ),
               const SizedBox(width: 70.0), // Space between text and button
               // Next Button
