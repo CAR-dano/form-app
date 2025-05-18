@@ -2,10 +2,24 @@ import 'package:flutter/services.dart';
 
 // Formats text input for bulleted lists, handling newlines and backspaces on bullets.
 class BulletListInputFormatter extends TextInputFormatter {
+  static const bullet = '• ';
   // Called when text is edited; processes changes for bullet list behavior.
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
+
+        // Block deletion of the first bullet
+    final oldText = oldValue.text;
+    final newText = newValue.text;
+
+    // Prevent deletion of the first bullet
+    final isDeletingFirstBullet = oldText.startsWith(bullet) &&
+        !newText.startsWith(bullet) &&
+        newText.length < oldText.length;
+
+    if (isDeletingFirstBullet) {
+      return oldValue;
+    }
     
     // --- Handles adding a bullet point ('• ') after a newline character is inserted. ---
     // Check if a newline character is being inserted

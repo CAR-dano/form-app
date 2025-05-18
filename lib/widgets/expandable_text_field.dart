@@ -130,25 +130,29 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
 
   // Handles specific key events, like backspacing before bulleted content.
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is KeyDownEvent) {
+    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.backspace) {
       final text = _internalController.text;
       final selection = _internalController.selection;
 
-      // Handles backspace at the start of bulleted line content (e.g., "...\n• |Content").
-      if (event.logicalKey == LogicalKeyboardKey.backspace) {
-        if (selection.isCollapsed && selection.baseOffset > 0) {
-          final offset = selection.baseOffset;
-          if (offset >= 3 && text.substring(offset - 3, offset) == '\n• ') {
-            _internalController.value = TextEditingValue(
-              text: text.substring(0, offset - 3) + text.substring(offset),
-              selection: TextSelection.collapsed(offset: offset - 3),
-            );
-            return KeyEventResult.handled; // Indicates the event was handled.
-          }
+      // Case 1: Prevent deletion of the first bullet on the first line
+      if (selection.isCollapsed && selection.baseOffset <= 2 && text.startsWith('• ')) {
+        return KeyEventResult.handled; // Block deletion
+      }
+
+      // Case 2: Handle backspacing at the start of any other line with a bullet
+      if (selection.isCollapsed && selection.baseOffset > 0) {
+        final offset = selection.baseOffset;
+        if (offset >= 3 && text.substring(offset - 3, offset) == '\n• ') {
+          _internalController.value = TextEditingValue(
+            text: text.substring(0, offset - 3) + text.substring(offset),
+            selection: TextSelection.collapsed(offset: offset - 3),
+          );
+          return KeyEventResult.handled;
         }
       }
     }
-    return KeyEventResult.ignored; // Ignores other key events or unhandled ones.
+
+    return KeyEventResult.ignored;
   }
 
   // Builds the UI for the ExpandableTextField.
