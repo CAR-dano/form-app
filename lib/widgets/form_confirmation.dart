@@ -5,12 +5,14 @@ class FormConfirmation extends StatefulWidget {
   final String label;
   final bool initialValue;
   final ValueChanged<bool> onChanged;
+  final FontWeight? fontWeight;
 
   const FormConfirmation({
     super.key,
     required this.label,
     this.initialValue = false,
     required this.onChanged,
+    this.fontWeight,
   });
 
   @override
@@ -69,7 +71,7 @@ class _CustomCheckboxTileState extends State<FormConfirmation> {
           Expanded(
             child: Text(
               widget.label,
-              style: labelStyle.copyWith(fontWeight: FontWeight.w500),
+              style: labelStyle.copyWith(fontWeight: widget.fontWeight ?? FontWeight.w500),
               softWrap: true,
             ),
           ),
