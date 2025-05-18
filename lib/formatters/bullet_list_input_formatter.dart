@@ -16,10 +16,13 @@ class BulletListInputFormatter extends TextInputFormatter {
         newValue.text[oldValue.selection.start] == '\n') {
 
       final int newlinePosition = oldValue.selection.start;
-      final String textBeforeNewline = oldValue.text.substring(0, newlinePosition);
+      // Find the start and end of the current line
+      final int lineStart = oldValue.text.lastIndexOf('\n', newlinePosition - 1) + 1;
+      final int lineEnd = newlinePosition;
+      final String currentLine = oldValue.text.substring(lineStart, lineEnd);
 
-      // Check if the line before the newline is empty (only contains bullet and optional space)
-      if (textBeforeNewline.trim() == '•' || textBeforeNewline.trim().isEmpty) {
+      // Check if the current line is empty (only contains bullet and optional space)
+      if (currentLine.trim() == '•' || currentLine.trim().isEmpty) {
          // If the line is empty, prevent the newline and return the old value
          return oldValue;
       }
