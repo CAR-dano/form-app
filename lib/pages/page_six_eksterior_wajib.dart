@@ -16,6 +16,7 @@ class PageSixEksteriorWajib extends ConsumerStatefulWidget { // Changed to Consu
 
   final List<String> imageInputLabels = const [
     'Cat Samping Kanan dan Kiri (Pintu Mobil)',
+    'Pilar Pintu Depan',
     'Pilar Pintu Tengah Depan',
     'Pilar Pintu Tengah Belakang',
     'Karet Pada Pilar',
