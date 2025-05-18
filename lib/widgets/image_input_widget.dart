@@ -63,6 +63,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
 
   // Method to view the selected image
   void _viewImage(File imageFile) {
+    FocusScope.of(context).unfocus(); // Unfocus before showing the dialog
     _showImagePreview(context, imageFile);
   }
 
@@ -73,12 +74,16 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white, // Set background color to white
-          content: Image.file(imageFile),
+          content: ClipRRect( // Added ClipRRect to apply border radius
+            borderRadius: BorderRadius.circular(8.0), // Added border radius
+            child: Image.file(imageFile),
+          ),
           actions: <Widget>[
             TextButton(
               child: const Text('Close'),
               onPressed: () {
                 Navigator.of(context).pop();
+                FocusScope.of(context).unfocus(); // Unfocus after closing the dialog
               },
             ),
           ],
@@ -204,7 +209,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
               padding: const EdgeInsets.symmetric(vertical: 12.0),
               decoration: BoxDecoration(
                 color: Colors.transparent, // transparent when image is shown
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(8.0), // Added border radius
               ),
               child: Row(
                 children: [
