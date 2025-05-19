@@ -116,7 +116,8 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
           () => ImageData(
             label: widget.label,
             imagePath: '',
-          ), // Provide a default if not found
+            needAttention: false, // Provide a default if not found
+          ),
     );
 
     final storedImage =
