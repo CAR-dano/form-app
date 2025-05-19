@@ -46,14 +46,29 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
   }
 
   // Method to update existing ImageData by label
-  void updateImageDataByLabel(String label, {String? imagePath, String? formId}) {
+  void updateImageDataByLabel(String label, {String? imagePath}) {
     state = [
       for (final img in state)
         if (img.label == label)
           ImageData(
             label: img.label,
             imagePath: imagePath ?? img.imagePath,
-            formId: formId ?? img.formId,
+            needAttention: img.needAttention, // Keep existing value
+          )
+        else
+          img,
+    ];
+  }
+
+  // Method to update existing ImageData by imagePath
+  void updateImageDataByPath(String imagePath, {String? label, bool? needAttention}) {
+    state = [
+      for (final img in state)
+        if (img.imagePath == imagePath)
+          ImageData(
+            label: label ?? img.label,
+            imagePath: img.imagePath,
+            needAttention: needAttention ?? img.needAttention,
           )
         else
           img,

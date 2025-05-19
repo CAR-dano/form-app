@@ -45,7 +45,7 @@ class _PageSixGeneralWajibState extends ConsumerState<PageSixGeneralWajib> with 
         );
       } else {
         imageDataListNotifier.addImageData(
-          ImageData(label: label, imagePath: imageFile.path),
+          ImageData(label: label, imagePath: imageFile.path, needAttention: false),
         );
       }
     } else {

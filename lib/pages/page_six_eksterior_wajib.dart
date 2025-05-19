@@ -53,7 +53,7 @@ class _PageSixEksteriorWajibState extends ConsumerState<PageSixEksteriorWajib> w
       if (existingIndex != -1) {
         imageDataListNotifier.updateImageDataByLabel(label, imagePath: imageFile.path);
       } else {
-        imageDataListNotifier.addImageData(ImageData(label: label, imagePath: imageFile.path));
+        imageDataListNotifier.addImageData(ImageData(label: label, imagePath: imageFile.path, needAttention: false));
       }
     } else {
        imageDataListNotifier.removeImageDataByLabel(label);
