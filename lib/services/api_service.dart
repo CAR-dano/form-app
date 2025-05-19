@@ -121,7 +121,7 @@ class ApiService {
               "performaSuspensi": formData.performaSuspensiSelectedValue ?? 0,
               "performaKopling": formData.performaKoplingSelectedValue ?? 0,
               "rpm": formData.rpmSelectedValue ?? 0,
-              "catatan": (formData.testDriveCatatanList != null) ? formData.testDriveCatatanList!.join(', ') : '-',
+              "catatan": formData.testDriveCatatanList ?? [],
             },
             "banDanKakiKaki": {
               "banDepan": formData.banDepanSelectedValue ?? 0,
@@ -141,7 +141,7 @@ class ApiService {
               "upperLowerArm": formData.upperLowerArmSelectedValue ?? 0,
               "shockBreaker": formData.shockBreakerSelectedValue ?? 0,
               "linkStabilizer": formData.linkStabilizerSelectedValue ?? 0,
-              "catatan": (formData.banDanKakiKakiCatatanList != null) ? formData.banDanKakiKakiCatatanList!.join(', ') : '-',
+              "catatan": formData.banDanKakiKakiCatatanList ?? [],
             },
             "hasilInspeksiEksterior": {
               "bumperDepan": formData.bumperDepanSelectedValue ?? 0,
@@ -174,7 +174,7 @@ class ApiService {
               "kacaJendelaKiri": formData.kacaJendelaKiriSelectedValue ?? 0,
               "lisplangKiri": formData.lisplangKiriSelectedValue ?? 0,
               "sideSkirtKiri": formData.sideSkirtKiriSelectedValue ?? 0,
-              "catatan": (formData.eksteriorCatatanList != null) ? formData.eksteriorCatatanList!.join(', ') : '-',
+              "catatan": formData.eksteriorCatatanList ?? [],
             },
             "toolsTest": {
               "tebalCatBodyDepan": formData.tebalCatBodyDepanSelectedValue ?? 0,
@@ -185,7 +185,7 @@ class ApiService {
               "obdScanner": formData.obdScannerSelectedValue ?? 0,
               "tebalCatBodyAtap": formData.tebalCatBodyAtapSelectedValue ?? 0,
               "testAccu": formData.testAccuSelectedValue ?? 0,
-              "catatan": (formData.toolsTestCatatanList != null) ? formData.toolsTestCatatanList!.join(', ') : '-',
+              "catatan": formData.toolsTestCatatanList ?? [],
             },
             "fitur": {
               "airbag": formData.airbagSelectedValue ?? 0,
@@ -195,7 +195,7 @@ class ApiService {
               "interior1": formData.trimInteriorSelectedValue ?? 0,
               "interior2": formData.aromaInteriorSelectedValue ?? 0,
               "interior3": 10, // Keep hardcoded
-              "catatan": (formData.fiturCatatanList != null) ? formData.fiturCatatanList!.join(', ') : '-',
+              "catatan": formData.fiturCatatanList ?? [],
             },
             "hasilInspeksiMesin": {
               "getaranMesin": formData.getaranMesinSelectedValue ?? 0,
@@ -225,7 +225,7 @@ class ApiService {
               "bushingBesar": formData.bushingBesarSelectedValue ?? 0,
               "bushingKecil": formData.bushingKecilSelectedValue ?? 0,
               "tutupRadiator": formData.tutupRadiatorSelectedValue ?? 0,
-              "catatan": (formData.mesinCatatanList != null) ? formData.mesinCatatanList!.join(', ') : '-',
+              "catatan": formData.mesinCatatanList ?? [],
             },
             "hasilInspeksiInterior": {
               "stir": formData.stirSelectedValue ?? 0,
@@ -253,7 +253,7 @@ class ApiService {
               "sabukPengaman": formData.sabukPengamanSelectedValue ?? 0,
               "trimInterior": formData.trimInteriorSelectedValue ?? 0,
               "plafon": formData.plafonSelectedValue ?? 0,
-              "catatan": (formData.interiorCatatanList != null) ? formData.interiorCatatanList!.join(', ') : '-',
+              "catatan": formData.interiorCatatanList ?? [],
             },
           },
           "bodyPaintThickness": {
