@@ -54,24 +54,43 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
   }
 
   void _showImagePreview(BuildContext context, File imageFile) {
-    showDialog(
+    showGeneralDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          content: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: Image.file(imageFile),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                FocusScope.of(context).unfocus();
-              },
+      barrierDismissible: true,
+      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+      transitionDuration: const Duration(milliseconds: 200),
+      pageBuilder: (BuildContext buildContext, Animation animation,
+          Animation secondaryAnimation) {
+        return SafeArea( // Ensure content is within safe area
+          child: Center( // Center the dialog content
+            child: SizedBox( // Constrain the width of the dialog content
+              width: MediaQuery.of(context).size.width * 0.9, // Take up 90% of screen width
+              child: AlertDialog( // Use AlertDialog for styling and structure
+                backgroundColor: Colors.white,
+                insetPadding: EdgeInsets.zero, // Remove default inset padding
+                contentPadding: EdgeInsets.zero, // Remove default content padding
+                content: Padding( // Add padding around the image
+                  padding: const EdgeInsets.all(16.0), // Adjust padding as needed
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: SizedBox( // Wrap image in SizedBox to control width
+                      width: double.infinity, // Take up full available width within the SizedBox
+                      child: Image.file(imageFile),
+                    ),
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('Close'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      FocusScope.of(context).unfocus();
+                    },
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         );
       },
     );
