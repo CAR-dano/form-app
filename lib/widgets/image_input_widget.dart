@@ -71,23 +71,64 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                 contentPadding: EdgeInsets.zero, // Remove default content padding
                 content: Padding( // Add padding around the image
                   padding: const EdgeInsets.all(16.0), // Adjust padding as needed
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: SizedBox( // Wrap image in SizedBox to control width
-                      width: double.infinity, // Take up full available width within the SizedBox
-                      child: Image.file(imageFile),
-                    ),
+                  child: Stack( // Use Stack to layer image and icon
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(16.0),
+                        child: AspectRatio( // Enforce 4:3 aspect ratio
+                          aspectRatio: 4 / 3,
+                          child: Image.file(
+                            imageFile,
+                            fit: BoxFit.cover, // Crop image to cover the aspect ratio
+                          ),
+                        ),
+                      ),
+                      Positioned( // Position the row of icons
+                        top: 8.0, // Adjust position as needed
+                        right: 8.0, // Adjust position as needed
+                        child: Row( // Arrange icons horizontally
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pop(); // Close dialog before deleting
+                                _deleteImage(); // Call delete function
+                              },
+                              child: SvgPicture.asset( // Use SvgPicture directly
+                                'assets/images/trashcan.svg', // Trashcan icon
+                                width: 26.0, // Set icon size to 26.0
+                                height: 26.0, // Set icon size to 26.0
+                                // Removed colorFilter to use default SVG color
+                              ),
+                            ),
+                            const SizedBox(width: 8.0), // Add spacing between icons
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pop(); // Close dialog
+                              },
+                              child: Container( // Blue box for checkmark
+                                width: 26.0, // Same size as trashcan
+                                height: 26.0, // Same size as trashcan
+                                decoration: BoxDecoration(
+                                  color: toggleOptionSelectedLengkapColor, // Blue background
+                                  borderRadius: BorderRadius.circular(8.0), // Rounded corners
+                                ),
+                                child: Center( // Center the checkmark icon
+                                  child: SvgPicture.asset(
+                                    'assets/images/check.svg', // Checkmark icon
+                                    width: 16.0, // Adjust icon size within the box
+                                    height: 16.0, // Adjust icon size within the box
+                                    colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn), // White icon color
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                actions: <Widget>[
-                  TextButton(
-                    child: const Text('Close'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      FocusScope.of(context).unfocus();
-                    },
-                  ),
-                ],
+                actions: <Widget>[], // Removed the Close button
               ),
             ),
           ),
