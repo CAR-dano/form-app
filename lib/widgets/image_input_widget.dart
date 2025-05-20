@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart'; // Import flutter_svg
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:form_app/statics/app_styles.dart';
-import 'dart:io'; // Required for File
+import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import flutter_riverpod
-import 'package:form_app/providers/image_data_provider.dart'; // Import image_data_provider
-import 'package:form_app/models/image_data.dart'; // Import image_data model
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_app/providers/image_data_provider.dart';
+import 'package:form_app/models/image_data.dart';
 
 class ImageInputWidget extends ConsumerStatefulWidget {
   final String label;
@@ -14,68 +14,53 @@ class ImageInputWidget extends ConsumerStatefulWidget {
   const ImageInputWidget({
     super.key,
     required this.label,
-    this.onImagePicked, // Add to constructor
+    this.onImagePicked,
   });
 
   @override
-  ConsumerState<ImageInputWidget> createState() => _ImageInputWidgetState(); // Change to ConsumerState
+  ConsumerState<ImageInputWidget> createState() => _ImageInputWidgetState();
 }
 
 class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
-
-  // Method to handle image picking from camera
   Future<void> _takePictureFromCamera() async {
-    // Clear focus before showing the image picker
     FocusScope.of(context).unfocus();
-
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.camera);
 
     if (pickedImage != null) {
-      widget.onImagePicked?.call(
-        File(pickedImage.path),
-      ); // Call the callback with the image file
-      // Update the image data provider
+      widget.onImagePicked?.call(File(pickedImage.path));
       ref
           .read(imageDataListProvider.notifier)
           .updateImageDataByLabel(widget.label, imagePath: pickedImage.path);
     }
   }
 
-  // Method to handle image picking from gallery
   Future<void> _takePictureFromGallery() async {
-    // Clear focus before showing the image picker
     FocusScope.of(context).unfocus();
-
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedImage != null) {
-      widget.onImagePicked?.call(
-        File(pickedImage.path),
-      ); // Call the callback with the image file
-      // Update the image data provider
+      widget.onImagePicked?.call(File(pickedImage.path));
       ref
           .read(imageDataListProvider.notifier)
           .updateImageDataByLabel(widget.label, imagePath: pickedImage.path);
     }
   }
 
-  // Method to view the selected image
   void _viewImage(File imageFile) {
-    FocusScope.of(context).unfocus(); // Unfocus before showing the dialog
+    FocusScope.of(context).unfocus();
     _showImagePreview(context, imageFile);
   }
 
-  // Method to show image preview in a dialog
   void _showImagePreview(BuildContext context, File imageFile) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.white, // Set background color to white
-          content: ClipRRect( // Added ClipRRect to apply border radius
-            borderRadius: BorderRadius.circular(8.0), // Added border radius
+          backgroundColor: Colors.white,
+          content: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
             child: Image.file(imageFile),
           ),
           actions: <Widget>[
@@ -83,7 +68,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
               child: const Text('Close'),
               onPressed: () {
                 Navigator.of(context).pop();
-                FocusScope.of(context).unfocus(); // Unfocus after closing the dialog
+                FocusScope.of(context).unfocus();
               },
             ),
           ],
@@ -92,32 +77,23 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
     );
   }
 
-  // Method to delete the selected image
   void _deleteImage() {
-    widget.onImagePicked?.call(
-      null,
-    ); // Call the callback with null to indicate deletion
-    // Update the image data provider
+    widget.onImagePicked?.call(null);
     ref
         .read(imageDataListProvider.notifier)
-        .updateImageDataByLabel(
-          widget.label,
-          imagePath: '', // Set imagePath to empty string when deleted
-        );
+        .updateImageDataByLabel(widget.label, imagePath: '');
   }
 
   @override
   Widget build(BuildContext context) {
-    // Watch the image data provider
     final imageDataList = ref.watch(imageDataListProvider);
     final imageData = imageDataList.firstWhere(
       (img) => img.label == widget.label,
-      orElse:
-          () => ImageData(
-            label: widget.label,
-            imagePath: '',
-            needAttention: false, // Provide a default if not found
-          ),
+      orElse: () => ImageData(
+        label: widget.label,
+        imagePath: '',
+        needAttention: false,
+      ),
     );
 
     final storedImage =
@@ -129,137 +105,143 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
         Padding(
           padding: EdgeInsets.only(
             bottom: storedImage == null ? 4.0 : 2.0,
-          ), // Conditional bottom padding
+          ),
           child: Text(
             widget.label,
-            style: labelStyle, // Using the style from app_styles.dart
+            style: labelStyle,
           ),
         ),
         storedImage == null
             ? Row(
-              // Removed parent Container decoration
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: _takePictureFromCamera, // Swapped onTap
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      decoration: BoxDecoration(
-                        color:
-                            toggleOptionSelectedTidakColor, // Pink background
-                        borderRadius: BorderRadius.only(
-                          topLeft: const Radius.circular(
-                            8.0,
-                          ), // Apply full radius to corners
-                          bottomLeft: const Radius.circular(8.0),
-                        ),
-                        border: Border.all(
-                          // Apply border to this container
-                          color: toggleOptionSelectedTidakColor, // Pink border
-                          width: 2.0,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Dari Kamera', // Swapped text
-                          style: toggleOptionTextStyle.copyWith(
-                            color: buttonTextColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: _takePictureFromGallery, // Swapped onTap
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      decoration: BoxDecoration(
-                        color:
-                            toggleOptionSelectedLengkapColor, // Light blue background
-                        borderRadius: BorderRadius.only(
-                          topRight: const Radius.circular(
-                            8.0,
-                          ), // Apply full radius to corners
-                          bottomRight: const Radius.circular(8.0),
-                        ),
-                        border: Border.all(
-                          // Apply border to this container
-                          color:
-                              toggleOptionSelectedLengkapColor, // Light blue border
-                          width: 2.0,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Dari Galeri', // Swapped text
-                          style: toggleOptionTextStyle.copyWith(
-                            color: buttonTextColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            )
-            : Container(
-              width: double.infinity, // Make the container take full width
-              padding: const EdgeInsets.symmetric(vertical: 12.0),
-              decoration: BoxDecoration(
-                color: Colors.transparent, // transparent when image is shown
-                borderRadius: BorderRadius.circular(8.0), // Added border radius
-              ),
-              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SvgPicture.asset(
-                    'assets/images/galeri.svg', // Gallery icon
-                    width: 22,
-                    height: 22,
-                  ),
-                  const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
-                      storedImage.path.split('/').last, // Display file name
-                      style: inputTextStyling.copyWith(
-                        fontWeight: FontWeight.w300,
-                      ), // Using input text style
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap:
-                        () => _viewImage(
-                          storedImage,
-                        ), // Tap to view image, pass the file
-                    child: Text(
-                      'Lihat Gambar',
-                      style: TextStyle(
-                        // Style for "Lihat Gambar"
-                        color:
-                            toggleOptionSelectedLengkapColor, // Use toggleOptionSelectedLengkapColor
-                        decoration: TextDecoration.underline,
-                        decorationColor:
-                            toggleOptionSelectedLengkapColor, // Explicitly set underline color
+                    child: GestureDetector(
+                      onTap: _takePictureFromCamera,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0), // Inlined padding
+                        decoration: BoxDecoration(
+                          color: toggleOptionSelectedLengkapColor,
+                          borderRadius: BorderRadius.circular(8.0),
+                          border: Border.all(
+                            color: toggleOptionSelectedLengkapColor,
+                            width: 1.0,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              'assets/images/camera.svg',
+                              width: 30.0, // Inlined icon size
+                              height: 30.0, // Inlined icon size
+                              colorFilter: ColorFilter.mode(buttonTextColor, BlendMode.srcIn),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Kamera',
+                              style: labelStyle.copyWith(
+                                color: buttonTextColor,
+                                fontWeight: FontWeight.bold,
+                                height: 1.2, // Inlined text line height
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: _deleteImage, // Tap to delete image
-                    child: SvgPicture.asset(
-                      'assets/images/trashcan.svg', // Trashcan icon
-                      width: 26,
-                      height: 26,
-                      // Removed colorFilter to use default SVG color
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: _takePictureFromGallery,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0), // Inlined padding
+                        decoration: BoxDecoration(
+                          color: toggleOptionSelectedLengkapColor,
+                          borderRadius: BorderRadius.circular(8.0),
+                          border: Border.all(
+                            color: toggleOptionSelectedLengkapColor,
+                            width: 1.0,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              'assets/images/gallery-white.svg',
+                              width: 30.0, // Inlined icon size
+                              height: 30.0, // Inlined icon size
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Galeri',
+                              style: labelStyle.copyWith(
+                                color: buttonTextColor,
+                                fontWeight: FontWeight.bold,
+                                height: 1.2, // Inlined text line height
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
+              )
+            : Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/images/galeri.svg',
+                      width: 22.0, // Inlined icon size
+                      height: 22.0, // Inlined icon size
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        storedImage.path.split('/').last,
+                        style: inputTextStyling.copyWith(
+                          fontWeight: FontWeight.w300,
+                          height: 1.2, // Inlined text line height
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () => _viewImage(storedImage),
+                      child: Text(
+                        'Lihat Gambar',
+                        style: TextStyle(
+                          color: toggleOptionSelectedLengkapColor,
+                          decoration: TextDecoration.underline,
+                          decorationColor: toggleOptionSelectedLengkapColor,
+                          decorationThickness: 1.5,
+                          height: 1.2, // Inlined text line height
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: _deleteImage,
+                      child: SvgPicture.asset(
+                        'assets/images/trashcan.svg',
+                        width: 26.0, // Inlined icon size (or 20.0 if you prefer trashcan slightly larger)
+                        height: 26.0, // Inlined icon size
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
       ],
     );
   }
