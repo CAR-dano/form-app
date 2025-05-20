@@ -24,7 +24,7 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
     if (images.isNotEmpty) {
       setState(() {
         _selectedImages = images;
-        _currentImageIndex = 0; // Reset index when new images are picked
+        _currentImageIndex = 0;
       });
     }
   }
@@ -62,46 +62,45 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
             borderRadius: BorderRadius.circular(8.0),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withAlpha((255 * 0.3).round()), // Reduced opacity
-                spreadRadius: 3, // Increased spread
-                blurRadius: 8, // Increased blur
-                offset: const Offset(0, 4), // Slightly adjusted offset
+                color: Colors.grey.withAlpha((255 * 0.3).round()),
+                spreadRadius: 3,
+                blurRadius: 8,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Image display section
               GestureDetector(
                 onTap: _pickImages,
                 child: Container(
                   width: double.infinity,
-                  height: 200, // Adjust height as needed
+                  height: 200,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0), // Added border radius
+                    borderRadius: BorderRadius.circular(8.0),
                     image: _selectedImages.isEmpty
                         ? const DecorationImage(
-                            image: AssetImage('assets/images/checker.png'),
+                            image: AssetImage('assets/images/checker.png'), // Ensure this asset exists
                             fit: BoxFit.cover,
                           )
                         : null,
-                    color: _selectedImages.isNotEmpty ? Colors.grey[300] : null, // Placeholder color when images are selected
+                    color: _selectedImages.isNotEmpty ? Colors.grey[300] : Colors.grey[200],
                   ),
                   child: _selectedImages.isEmpty
                       ? Center(
                           child: ElevatedButton(
                             onPressed: _pickImages,
-                            style: baseButtonStyle.copyWith(
-                              backgroundColor: WidgetStateProperty.all(toggleOptionSelectedLengkapColor),
+                            style: baseButtonStyle.copyWith( // Assuming baseButtonStyle is from your app_styles
+                              backgroundColor: WidgetStateProperty.all(toggleOptionSelectedLengkapColor), // Assuming toggleOptionSelectedLengkapColor is from your app_styles
                             ),
                             child: Text(
                               'Upload Foto',
-                              style: buttonTextStyle,
+                              style: buttonTextStyle, // Assuming buttonTextStyle is from your app_styles
                             ),
                           ),
                         )
-                      : ClipRRect( // Added ClipRRect to apply border radius to the image
+                      : ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           child: Image.file(
                             File(_selectedImages[_currentImageIndex].path),
@@ -111,14 +110,12 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              // Labeled Text Field for Label
               LabeledTextField(
                 label: 'Label',
                 controller: _labelController,
                 hintText: 'Misal : Aki tampak atas',
               ),
               const SizedBox(height: 16.0),
-              // Checkbox
               FormConfirmation(
                 label: 'Perlu Perhatian',
                 initialValue: _perluPerhatian,
@@ -132,13 +129,11 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
             ],
           ),
         ),
-        const SizedBox(height: 40.0), // Space between the box and navigation
-        // Image Navigation
+        const SizedBox(height: 40.0),
         if (_selectedImages.isNotEmpty)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Previous Button
               SizedBox(
                 width: 36,
                 height: 36,
@@ -149,25 +144,25 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
-                    backgroundColor: buttonColor, // Orange color
-                    shadowColor: buttonColor.withAlpha(102), // Orange shadow
-                    alignment: Alignment.center, // Center the icon
+                    backgroundColor: buttonColor, // Assuming buttonColor is from your app_styles
+                    shadowColor: buttonColor.withAlpha(102), // Assuming buttonColor is from your app_styles
+                    elevation: 5, // Added elevation for shadow to appear
+                    alignment: Alignment.center,
                   ),
-                  child: const Icon(Icons.arrow_back_ios, size: 20, color: buttonTextColor),
+                  // Using Icons.arrow_back_ios_new for better centering
+                  child: const Icon(Icons.arrow_back_ios_new, size: 18, color: buttonTextColor), // Assuming buttonTextColor is from your app_styles
                 ),
               ),
-              const SizedBox(width: 70.0), // Space between button and text
-              // Index Indicator
+              const SizedBox(width: 70.0),
               SizedBox(
-                width: 60.0, // Fixed width to prevent shifting
+                width: 60.0,
                 child: Text(
                   '${_currentImageIndex + 1}/${_selectedImages.length}',
-                  style: imageIndexTextStyle,
-                  textAlign: TextAlign.center, // Center the text within the SizedBox
+                  style: imageIndexTextStyle, // Assuming imageIndexTextStyle is from your app_styles
+                  textAlign: TextAlign.center,
                 ),
               ),
-              const SizedBox(width: 70.0), // Space between text and button
-              // Next Button
+              const SizedBox(width: 70.0),
               SizedBox(
                 width: 36,
                 height: 36,
@@ -178,25 +173,19 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
-                    backgroundColor: buttonColor, // Orange color
-                    shadowColor: buttonColor.withAlpha(102), // Orange shadow
+                    backgroundColor: buttonColor, // Assuming buttonColor is from your app_styles
+                    shadowColor: buttonColor.withAlpha(102), // Assuming buttonColor is from your app_styles
+                    elevation: 5, // Added elevation for shadow to appear
+                    alignment: Alignment.center,
                   ),
-                  child: const Icon(Icons.arrow_forward_ios, size: 20, color: buttonTextColor),
+                  // Using Icons.arrow_forward_ios_new for better centering
+                  child: const Icon(Icons.arrow_forward_ios, size: 18, color: buttonTextColor), // Assuming buttonTextColor is from your app_styles
                 ),
               ),
             ],
           ),
-        const SizedBox(height: 24.0), // Space between the box and navigation
-        // Navigation Buttons (Assuming NavigationButtonRow is a separate widget)
-        // You would likely pass appropriate callbacks to this widget
-        // NavigationButtonRow(
-        //   onPrevious: () {
-        //     // Handle previous button tap
-        //   },
-        //   onNext: () {
-        //     // Handle next button tap
-        //   },
-        // ),
+        const SizedBox(height: 24.0),
+        // NavigationButtonRow (if you have one)
       ],
     );
   }
