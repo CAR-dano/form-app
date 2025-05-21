@@ -211,57 +211,70 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
         ),
         const SizedBox(height: 40.0),
         if (_selectedImages.isNotEmpty)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 36,
-                height: 36,
-                child: ElevatedButton(
-                  onPressed: _previousImage,
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+          Padding( // Optional: Add some horizontal padding to the whole Row if needed
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween, // Distribute space
+              children: [
+                // Previous Button - Stays fixed size
+                SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: ElevatedButton(
+                    onPressed: _previousImage,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      backgroundColor: buttonColor,
+                      shadowColor: buttonColor.withAlpha(102),
+                      elevation: 5,
+                      alignment: Alignment.center,
                     ),
-                    backgroundColor: buttonColor,
-                    shadowColor: buttonColor.withAlpha(102),
-                    elevation: 5,
-                    alignment: Alignment.center,
+                    child: const Icon(Icons.arrow_back_ios_new, size: 18, color: buttonTextColor),
                   ),
-                  child: const Icon(Icons.arrow_back_ios_new, size: 18, color: buttonTextColor),
                 ),
-              ),
-              const SizedBox(width: 70.0),
-              SizedBox(
-                width: 60.0,
-                child: Text(
-                  '${_currentImageIndex + 1}/${_selectedImages.length}',
-                  style: imageIndexTextStyle,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(width: 70.0),
-              SizedBox(
-                width: 36,
-                height: 36,
-                child: ElevatedButton(
-                  onPressed: _nextImage,
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+
+                // Index Indicator - Flexible to take necessary space
+                Flexible(
+                  child: Padding(
+                    // Add horizontal padding so text doesn't touch buttons directly
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0), // Adjust as needed
+                    child: Text(
+                      '${_currentImageIndex + 1}/${_selectedImages.length}',
+                      style: imageIndexTextStyle,
+                      textAlign: TextAlign.center,
+                      // Optional: if text can get very long and you want it to wrap or ellipsis
+                      // overflow: TextOverflow.ellipsis,
+                      // softWrap: false, // Prevents wrapping if you prefer ellipsis
                     ),
-                    backgroundColor: buttonColor,
-                    shadowColor: buttonColor.withAlpha(102),
-                    elevation: 5,
-                    alignment: Alignment.center,
                   ),
-                  child: const Icon(Icons.arrow_forward_ios, size: 18, color: buttonTextColor),
                 ),
-              ),
-            ],
+
+                // Next Button - Stays fixed size
+                SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: ElevatedButton(
+                    onPressed: _nextImage,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      backgroundColor: buttonColor,
+                      shadowColor: buttonColor.withAlpha(102),
+                      elevation: 5,
+                      alignment: Alignment.center,
+                    ),
+                    child: const Icon(Icons.arrow_forward_ios, size: 18, color: buttonTextColor),
+                  ),
+                ),
+              ],
+            ),
           ),
+
         const SizedBox(height: 24.0),
       ],
     );
