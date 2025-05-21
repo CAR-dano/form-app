@@ -61,10 +61,11 @@ class NavigationButtonRow extends StatelessWidget {
                   return buttonTextColor; // Enabled text color
                 },
               ),
+              shadowColor: WidgetStateProperty.all(buttonColor.withAlpha(102)), // Set shadow color to orange
             ),
             child: Text('Back', style: buttonTextStyle),
-                    ),
           ),
+        ),
 
         // --- Spacer (Conditionally Rendered with Back Button) ---
         if (isBackButtonEnabled) // Only render spacer if back button is rendered
@@ -81,16 +82,21 @@ class NavigationButtonRow extends StatelessWidget {
                foregroundColor: WidgetStateProperty.all(buttonTextColor), // Always white when enabled
                shadowColor: WidgetStateProperty.all(isLastPage && !isFormConfirmed ? const Color(0xffcacaca).withAlpha(102) : (isLastPage ? toggleOptionSelectedLengkapColor.withAlpha(102) : buttonColor.withAlpha(102))), // Adjust shadow color
             ),
-            child: isLoading
-                ? SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      color: buttonTextColor,
-                      strokeWidth: 2,
-                    ),
-                  )
-                : Text(isLastPage ? 'Kirim' : nextButtonText, style: buttonTextStyle),
+            child: SizedBox(
+              height: 24.0, // Fixed height for the button content
+              child: Center( // Center the content vertically and horizontally
+                child: isLoading
+                    ? SizedBox(
+                        width: 24, // Slightly larger size for visibility
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: buttonTextColor,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : Text(isLastPage ? 'Kirim' : nextButtonText, style: buttonTextStyle),
+              ),
+            ),
           ),
         ),
       ],

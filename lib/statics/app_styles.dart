@@ -93,7 +93,7 @@ final ButtonStyle baseButtonStyle = ElevatedButton.styleFrom(
     borderRadius: BorderRadius.circular(8.0),
   ),
   elevation: 5, // Base elevation for enabled state
-  shadowColor: buttonColor.withAlpha(102),
+  shadowColor: toggleOptionSelectedLengkapColor.withAlpha(102),
 );
 
 final TextStyle selectedDateTextStyle = GoogleFonts.rubik(
@@ -118,6 +118,12 @@ final TextStyle priceTextStyle = GoogleFonts.rubik(
   fontSize: 16.0,
   color: Color(0xFF141414), // Hex color #FF141414
   fontWeight: FontWeight.w400,
+);
+
+final TextStyle imageIndexTextStyle = GoogleFonts.rubik(
+  fontSize: 24.0,
+  fontWeight: FontWeight.w300,
+  color: labelTextColor, // Assuming the color should be the same as label text
 );
 
 final TextStyle headingOneStyle = GoogleFonts.rubik(

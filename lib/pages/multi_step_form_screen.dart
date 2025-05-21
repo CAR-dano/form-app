@@ -111,6 +111,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     });
 
     return Scaffold(
+      resizeToAvoidBottomInset: true, // Explicitly set to true
       // The PageView becomes the direct body of this Scaffold.
       // Each child of PageView will be a CommonLayout wrapping a page from _formPages.
       body: PageView(

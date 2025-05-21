@@ -16,6 +16,7 @@ class PageSixGeneralWajib extends ConsumerStatefulWidget { // Changed to Consume
 
   final List<String> imageInputLabels = const [ // This can stay here or move to state if preferred
     'Tampak Depan',
+    'Tampak Belakang',
     'Tampak Samping Kanan',
     'Tampak Samping Kiri',
   ];
@@ -44,7 +45,7 @@ class _PageSixGeneralWajibState extends ConsumerState<PageSixGeneralWajib> with 
         );
       } else {
         imageDataListNotifier.addImageData(
-          ImageData(label: label, imagePath: imageFile.path),
+          ImageData(label: label, imagePath: imageFile.path, needAttention: false),
         );
       }
     } else {

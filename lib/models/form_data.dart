@@ -199,10 +199,23 @@ class FormData {
   // New field for repair estimations
   List<Map<String, String>> repairEstimations;
 
+  String? catDepanKap;
+  String? catBelakangBumper;
+  String? catBelakangTrunk;
+  String? catKananFenderDepan;
+  String? catKananPintuDepan;
+  String? catKananPintuBelakang;
+  String? catKananFenderBelakang; 
+  String? catKiriFenderDepan;
+  String? catKiriPintuDepan;
+  String? catKiriPintuBelakang;
+  String? catKiriFenderBelakang; 
+
+
   FormData({
     this.inspectorId,
     this.namaInspektor,
-    this.selectedInspector, // Add to constructor
+    this.selectedInspector,
     this.namaCustomer = '',
     this.cabangInspeksi,
     this.tanggalInspeksi,
@@ -369,6 +382,18 @@ class FormData {
     this.tebalCatBodyAtapSelectedValue,
     this.testAccuSelectedValue,
     this.toolsTestCatatanList = const [],
+    //new fields for page eight
+    this.catDepanKap,
+    this.catBelakangBumper,
+    this.catBelakangTrunk,
+    this.catKananFenderDepan,
+    this.catKananPintuDepan,
+    this.catKananPintuBelakang,
+    this.catKananFenderBelakang,
+    this.catKiriFenderDepan,
+    this.catKiriPintuDepan,
+    this.catKiriPintuBelakang,
+    this.catKiriFenderBelakang,
   });
   // Add methods to update data if needed, or update directly
 
@@ -541,6 +566,17 @@ class FormData {
       'tebalCatBodyAtapSelectedValue': tebalCatBodyAtapSelectedValue,
       'testAccuSelectedValue': testAccuSelectedValue,
       'toolsTestCatatanList': toolsTestCatatanList,
+      'catDepanKap': catDepanKap,
+      'catBelakangBumper': catBelakangBumper,
+      'catBelakangTrunk': catBelakangTrunk,
+      'catKananFenderDepan': catKananFenderDepan,
+      'catKananPintuDepan': catKananPintuDepan,
+      'catKananPintuBelakang': catKananPintuBelakang,
+      'catKananFenderBelakang': catKananFenderBelakang,
+      'catKiriFenderDepan': catKiriFenderDepan,
+      'catKiriPintuDepan': catKiriPintuDepan,
+      'catKiriPintuBelakang': catKiriPintuBelakang,
+      'catKiriFenderBelakang': catKiriFenderBelakang,
     };
   }
 
@@ -721,6 +757,17 @@ class FormData {
       tebalCatBodyAtapSelectedValue: json['tebalCatBodyAtapSelectedValue'] as int?,
       testAccuSelectedValue: json['testAccuSelectedValue'] as int?,
       toolsTestCatatanList: (json['toolsTestCatatanList'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const [],
+      catDepanKap: json['catDepanKap'] as String?,
+      catBelakangBumper: json['catBelakangBumper'] as String?,
+      catBelakangTrunk: json['catBelakangTrunk'] as String?,
+      catKananFenderDepan: json['catKananFenderDepan'] as String?,
+      catKananPintuDepan: json['catKananPintuDepan'] as String?,
+      catKananPintuBelakang: json['catKananPintuBelakang'] as String?,
+      catKananFenderBelakang: json['catKananFenderBelakang'] as String?,
+      catKiriFenderDepan: json['catKiriFenderDepan'] as String?,
+      catKiriPintuDepan: json['catKiriPintuDepan'] as String?,
+      catKiriPintuBelakang: json['catKiriPintuBelakang'] as String?,
+      catKiriFenderBelakang: json['catKiriFenderBelakang'] as String?,
     );
   }
 }
