@@ -10,6 +10,7 @@ import 'package:form_app/widgets/labeled_date_field.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
+import 'package:form_app/models/inspection_branch.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/labeled_dropdown_field.dart'; // Use the refactored generic LabeledDropdownField
 
@@ -129,11 +130,11 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                         _formSubmitted, // Pass the formSubmitted flag
                   ),
                   const SizedBox(height: 16.0), // Keep internal spacing
-                  LabeledDropdownField<String>( // Keep this as String for branches
+                  LabeledDropdownField<InspectionBranch>( // Change generic type to InspectionBranch
                     label: 'Cabang Inspeksi',
                     itemsProvider: inspectionBranchesProvider, // Pass the provider
                     value: formData.cabangInspeksi,
-                    itemText: (branch) => branch, // Provide itemText for String
+                    itemText: (branch) => branch.city, // Provide itemText for InspectionBranch
                     onChanged: (newValue) {
                       formNotifier.updateCabangInspeksi(newValue);
                       if (_formSubmitted) {
@@ -143,7 +144,7 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                     validator: (value) {
                       final branchesState = ref.read(inspectionBranchesProvider);
                       // Only validate if branches are loaded and not empty
-                      if (_formSubmitted && value == null && branchesState is AsyncData<List<String>> && branchesState.value.isNotEmpty) {
+                      if (_formSubmitted && value == null && branchesState is AsyncData<List<InspectionBranch>> && branchesState.value.isNotEmpty) {
                         return 'Cabang Inspeksi belum terisi';
                       }
                       return null;

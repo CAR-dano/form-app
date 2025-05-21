@@ -1,20 +1,23 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspector_data.dart';
 import 'package:form_app/providers/inspection_branches_provider.dart';
 import 'package:form_app/providers/inspector_provider.dart'; // Import inspection branches provider
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 import 'dart:convert';
+import 'package:form_app/models/inspection_branch.dart'; // Import InspectionBranch model
 
 class FormNotifier extends StateNotifier<FormData> {
   final Ref _ref;
-  static const _storageKey = 'form_data';
+  static const _fileName = 'form_data.json';
 
   FormNotifier(this._ref) : super(FormData()) {
     // Load initial data first
     _loadFormData().then((_) {
       // Then setup listeners and perform initial validation with loaded state
-      _ref.listen<AsyncValue<List<String>>>(inspectionBranchesProvider, (previous, next) {
+      _ref.listen<AsyncValue<List<InspectionBranch>>>(inspectionBranchesProvider, (previous, next) {
         next.whenData((availableBranches) {
           _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
         });
@@ -38,9 +41,10 @@ class FormNotifier extends StateNotifier<FormData> {
     });
   }
 
-  void _validateAndUpdateCabangInspeksi(String? currentCabang, List<String> availableBranches) {
+  void _validateAndUpdateCabangInspeksi(InspectionBranch? currentCabang, List<InspectionBranch> availableBranches) {
     if (currentCabang != null) {
-      if (availableBranches.isNotEmpty && !availableBranches.contains(currentCabang)) {
+      // Check if the current branch's ID exists in the available branches
+      if (availableBranches.isNotEmpty && !availableBranches.any((branch) => branch.id == currentCabang.id)) {
         if (state.cabangInspeksi != null) { // Check if a change is actually needed
           state = state.copyWith(cabangInspeksi: null);
         }
@@ -61,7 +65,7 @@ class FormNotifier extends StateNotifier<FormData> {
       } catch (e) { // Not found
         resolvedInspector = null;
         resolvedNamaInspektor = null;
-        resolvedInspectorId = null; 
+        resolvedInspectorId = null;
       }
     } else {
         resolvedInspector = null;
@@ -90,7 +94,7 @@ class FormNotifier extends StateNotifier<FormData> {
       );
     } else {
       state = state.copyWith(
-        selectedInspector: null, 
+        selectedInspector: null,
         inspectorId: null,
         namaInspektor: null,
       );
@@ -102,13 +106,8 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(namaCustomer: name);
   }
 
-  void updateCabangInspeksi(String? cabang) {
-    final availableBranches = _ref.read(inspectionBranchesProvider).asData?.value ?? [];
-    if (cabang != null && availableBranches.isNotEmpty && !availableBranches.contains(cabang)) {
-      state = state.copyWith(cabangInspeksi: cabang);
-    } else if (cabang == null || (availableBranches.contains(cabang)) || availableBranches.isEmpty) {
-      state = state.copyWith(cabangInspeksi: cabang);
-    }
+  void updateCabangInspeksi(InspectionBranch? cabang) {
+    state = state.copyWith(cabangInspeksi: cabang);
   }
 
   void updateTanggalInspeksi(DateTime? date) {
@@ -904,19 +903,40 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(catKiriFenderBelakang: value);
   }
 
+  Future<String> _getFilePath() async {
+    final directory = await getApplicationDocumentsDirectory();
+    return '${directory.path}/$_fileName';
+  }
+
   Future<void> _loadFormData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(_storageKey);
-    if (jsonString != null) {
-      final jsonMap = json.decode(jsonString);
-      super.state = FormData.fromJson(jsonMap);
+    try {
+      final filePath = await _getFilePath();
+      final file = File(filePath);
+      if (await file.exists()) {
+        final jsonString = await file.readAsString();
+        final jsonMap = json.decode(jsonString);
+        super.state = FormData.fromJson(jsonMap);
+      }
+    } catch (e) {
+      // Handle errors during file loading
+      if (kDebugMode) {
+        print('Error loading form data: $e');
+      }
     }
   }
 
   Future<void> _saveFormData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = json.encode(state.toJson());
-    await prefs.setString(_storageKey, jsonString);
+    try {
+      final filePath = await _getFilePath();
+      final file = File(filePath);
+      final jsonString = json.encode(state.toJson());
+      await file.writeAsString(jsonString);
+    } catch (e) {
+      // Handle errors during file saving
+      if (kDebugMode) {
+        print('Error saving form data: $e');
+      }
+    }
   }
 
   @override
@@ -934,372 +954,3 @@ class FormNotifier extends StateNotifier<FormData> {
 final formProvider = StateNotifierProvider<FormNotifier, FormData>((ref) {
   return FormNotifier(ref); // Pass ref to the constructor
 });
-
-extension on FormData {
-  FormData copyWith({
-    String? namaInspektor,
-    String? inspectorId,
-    Inspector? selectedInspector,
-    String? namaCustomer,
-    String? cabangInspeksi,
-    DateTime? tanggalInspeksi,
-    String? merekKendaraan,
-    String? tipeKendaraan,
-    String? tahun,
-    String? transmisi,
-    String? warnaKendaraan,
-    String? odometer,
-    String? kepemilikan,
-    String? platNomor,
-    DateTime? pajak1TahunDate,
-    DateTime? pajak5TahunDate,
-    String? biayaPajak,
-    String? bukuService,
-    String? kunciSerep,
-    String? bukuManual,
-    String? banSerep,
-    String? bpkb,
-    String? dongkrak,
-    String? toolkit,
-    String? noRangka,
-    String? noMesin,
-    String? indikasiTabrakan,
-    String? indikasiBanjir,
-    String? indikasiOdometerReset,
-    String? posisiBan,
-    String? merk,
-    String? tipeVelg,
-    String? ketebalan,
-    int? interiorSelectedValue,
-    int? eksteriorSelectedValue,
-    int? kakiKakiSelectedValue,
-    int? mesinSelectedValue,
-    int? penilaianKeseluruhanSelectedValue,
-    List<String>? keteranganInterior,
-    List<String>? keteranganEksterior,
-    List<String>? keteranganKakiKaki,
-    List<String>? keteranganMesin,
-    List<String>? deskripsiKeseluruhan,
-    List<Map<String, String>>? repairEstimations,
-    int? airbagSelectedValue,
-    int? sistemAudioSelectedValue,
-    int? powerWindowSelectedValue,
-    int? sistemAcSelectedValue,
-    List<String>? fiturCatatanList,
-    int? getaranMesinSelectedValue,
-    int? suaraMesinSelectedValue,
-    int? transmisiSelectedValue,
-    int? pompaPowerSteeringSelectedValue,
-    int? coverTimingChainSelectedValue,
-    int? oliPowerSteeringSelectedValue,
-    int? accuSelectedValue,
-    int? kompressorAcSelectedValue,
-    int? fanSelectedValue,
-    int? selangSelectedValue,
-    int? karterOliSelectedValue,
-    int? oilRemSelectedValue,
-    int? kabelSelectedValue,
-    int? kondensorSelectedValue,
-    int? radiatorSelectedValue,
-    int? cylinderHeadSelectedValue,
-    int? oliMesinSelectedValue,
-    int? airRadiatorSelectedValue,
-    int? coverKlepSelectedValue,
-    int? alternatorSelectedValue,
-    int? waterPumpSelectedValue,
-    int? beltSelectedValue,
-    int? oliTransmisiSelectedValue,
-    int? cylinderBlockSelectedValue,
-    int? bushingBesarSelectedValue,
-    int? bushingKecilSelectedValue,
-    int? tutupRadiatorSelectedValue,
-    List<String>? mesinCatatanList,
-    int? stirSelectedValue,
-    int? remTanganSelectedValue,
-    int? pedalSelectedValue,
-    int? switchWiperSelectedValue,
-    int? lampuHazardSelectedValue,
-    int? panelDashboardSelectedValue,
-    int? pembukaKapMesinSelectedValue,
-    int? pembukaBagasiSelectedValue,
-    int? jokDepanSelectedValue,
-    int? aromaInteriorSelectedValue,
-    int? handlePintuSelectedValue,
-    int? consoleBoxSelectedValue,
-    int? spionTengahSelectedValue,
-    int? tuasPersnelingSelectedValue,
-    int? jokBelakangSelectedValue,
-    int? panelIndikatorSelectedValue,
-    int? switchLampuSelectedValue,
-    int? karpetDasarSelectedValue,
-    int? klaksonSelectedValue,
-    int? sunVisorSelectedValue,
-    int? tuasTangkiBensinSelectedValue,
-    int? sabukPengamanSelectedValue,
-    int? trimInteriorSelectedValue,
-    int? plafonSelectedValue,
-    List<String>? interiorCatatanList,
-    int? bumperDepanSelectedValue,
-    int? kapMesinSelectedValue,
-    int? lampuUtamaSelectedValue,
-    int? panelAtapSelectedValue,
-    int? grillSelectedValue,
-    int? lampuFoglampSelectedValue,
-    int? kacaBeningSelectedValue,
-    int? wiperBelakangSelectedValue,
-    int? bumperBelakangSelectedValue,
-    int? lampuBelakangSelectedValue,
-    int? trunklidSelectedValue,
-    int? kacaDepanSelectedValue,
-    int? fenderKananSelectedValue,
-    int? quarterPanelKananSelectedValue,
-    int? pintuBelakangKananSelectedValue,
-    int? spionKananSelectedValue,
-    int? lisplangKananSelectedValue,
-    int? sideSkirtKananSelectedValue,
-    int? daunWiperSelectedValue,
-    int? pintuBelakangSelectedValue,
-    int? fenderKiriSelectedValue,
-    int? quarterPanelKiriSelectedValue,
-    int? pintuDepanSelectedValue,
-    int? kacaJendelaKananSelectedValue,
-    int? pintuBelakangKiriSelectedValue,
-    int? spionKiriSelectedValue,
-    int? pintuDepanKiriSelectedValue,
-    int? kacaJendelaKiriSelectedValue,
-    int? lisplangKiriSelectedValue,
-    int? sideSkirtKiriSelectedValue,
-    List<String>? eksteriorCatatanList,
-    int? banDepanSelectedValue,
-    int? velgDepanSelectedValue,
-    int? discBrakeSelectedValue,
-    int? masterRemSelectedValue,
-    int? tieRodSelectedValue,
-    int? gardanSelectedValue,
-    int? banBelakangSelectedValue,
-    int? velgBelakangSelectedValue,
-    int? brakePadSelectedValue,
-    int? crossmemberSelectedValue,
-    int? knalpotSelectedValue,
-    int? balljointSelectedValue,
-    int? rocksteerSelectedValue,
-    int? karetBootSelectedValue,
-    int? upperLowerArmSelectedValue,
-    int? shockBreakerSelectedValue,
-    int? linkStabilizerSelectedValue,
-    List<String>? banDanKakiKakiCatatanList,
-    int? bunyiGetaranSelectedValue,
-    int? performaStirSelectedValue,
-    int? perpindahanTransmisiSelectedValue,
-    int? stirBalanceSelectedValue,
-    int? performaSuspensiSelectedValue,
-    int? performaKoplingSelectedValue,
-    int? rpmSelectedValue,
-    List<String>? testDriveCatatanList,
-    int? tebalCatBodyDepanSelectedValue,
-    int? tebalCatBodyKiriSelectedValue,
-    int? temperatureAcMobilSelectedValue,
-    int? tebalCatBodyKananSelectedValue,
-    int? tebalCatBodyBelakangSelectedValue,
-    int? obdScannerSelectedValue,
-    int? tebalCatBodyAtapSelectedValue,
-    int? testAccuSelectedValue,
-    List<String>? toolsTestCatatanList,
-    String? catDepanKap,
-    String? catBelakangBumper,
-    String? catBelakangTrunk,
-    String? catKananFenderDepan,
-    String? catKananPintuDepan,
-    String? catKananPintuBelakang,
-    String? catKananFenderBelakang,
-    String? catKiriFenderDepan,
-    String? catKiriPintuDepan,
-    String? catKiriPintuBelakang,
-    String? catKiriFenderBelakang,
-  }) {
-    return FormData(
-      namaInspektor: namaInspektor ?? this.namaInspektor,
-      inspectorId: inspectorId ?? this.inspectorId,
-      selectedInspector: selectedInspector ?? this.selectedInspector,
-      namaCustomer: namaCustomer ?? this.namaCustomer,
-      cabangInspeksi: cabangInspeksi ?? this.cabangInspeksi,
-      tanggalInspeksi: tanggalInspeksi ?? this.tanggalInspeksi,
-      merekKendaraan: merekKendaraan ?? this.merekKendaraan,
-      tipeKendaraan: tipeKendaraan ?? this.tipeKendaraan,
-      tahun: tahun ?? this.tahun,
-      transmisi: transmisi ?? this.transmisi,
-      warnaKendaraan: warnaKendaraan ?? this.warnaKendaraan,
-      odometer: odometer ?? this.odometer,
-      kepemilikan: kepemilikan ?? this.kepemilikan,
-      platNomor: platNomor ?? this.platNomor,
-      pajak1TahunDate: pajak1TahunDate ?? this.pajak1TahunDate,
-      pajak5TahunDate: pajak5TahunDate ?? this.pajak5TahunDate,
-      biayaPajak: biayaPajak ?? this.biayaPajak,
-      bukuService: bukuService ?? this.bukuService,
-      kunciSerep: kunciSerep ?? this.kunciSerep,
-      bukuManual: bukuManual ?? this.bukuManual,
-      banSerep: banSerep ?? this.banSerep,
-      bpkb: bpkb ?? this.bpkb,
-      dongkrak: dongkrak ?? this.dongkrak,
-      toolkit: toolkit ?? this.toolkit,
-      noRangka: noRangka ?? this.noRangka,
-      noMesin: noMesin ?? this.noMesin,
-      indikasiTabrakan: indikasiTabrakan ?? this.indikasiTabrakan,
-      indikasiBanjir: indikasiBanjir ?? this.indikasiBanjir,
-      indikasiOdometerReset: indikasiOdometerReset ?? this.indikasiOdometerReset,
-      posisiBan: posisiBan ?? this.posisiBan,
-      merk: merk ?? this.merk,
-      tipeVelg: tipeVelg ?? this.tipeVelg,
-      ketebalan: ketebalan ?? this.ketebalan,
-      interiorSelectedValue: interiorSelectedValue ?? this.interiorSelectedValue,
-      eksteriorSelectedValue: eksteriorSelectedValue ?? this.eksteriorSelectedValue,
-      kakiKakiSelectedValue: kakiKakiSelectedValue ?? this.kakiKakiSelectedValue,
-      mesinSelectedValue: mesinSelectedValue ?? this.mesinSelectedValue,
-      penilaianKeseluruhanSelectedValue: penilaianKeseluruhanSelectedValue ?? this.penilaianKeseluruhanSelectedValue,
-      keteranganInterior: keteranganInterior ?? this.keteranganInterior,
-      keteranganEksterior: keteranganEksterior ?? this.keteranganEksterior,
-      keteranganKakiKaki: keteranganKakiKaki ?? this.keteranganKakiKaki,
-      keteranganMesin: keteranganMesin ?? this.keteranganMesin,
-      deskripsiKeseluruhan: deskripsiKeseluruhan ?? this.deskripsiKeseluruhan,
-      repairEstimations: repairEstimations ?? this.repairEstimations,
-      airbagSelectedValue: airbagSelectedValue ?? this.airbagSelectedValue,
-      sistemAudioSelectedValue: sistemAudioSelectedValue ?? this.sistemAudioSelectedValue,
-      powerWindowSelectedValue: powerWindowSelectedValue ?? this.powerWindowSelectedValue,
-      sistemAcSelectedValue: sistemAcSelectedValue ?? this.sistemAcSelectedValue,
-      fiturCatatanList: fiturCatatanList ?? this.fiturCatatanList,
-      getaranMesinSelectedValue: getaranMesinSelectedValue ?? this.getaranMesinSelectedValue,
-      suaraMesinSelectedValue: suaraMesinSelectedValue ?? this.suaraMesinSelectedValue,
-      transmisiSelectedValue: transmisiSelectedValue ?? this.transmisiSelectedValue,
-      pompaPowerSteeringSelectedValue: pompaPowerSteeringSelectedValue ?? this.pompaPowerSteeringSelectedValue,
-      coverTimingChainSelectedValue: coverTimingChainSelectedValue ?? this.coverTimingChainSelectedValue,
-      oliPowerSteeringSelectedValue: oliPowerSteeringSelectedValue ?? this.oliPowerSteeringSelectedValue,
-      accuSelectedValue: accuSelectedValue ?? this.accuSelectedValue,
-      kompressorAcSelectedValue: kompressorAcSelectedValue ?? this.kompressorAcSelectedValue,
-      fanSelectedValue: fanSelectedValue ?? this.fanSelectedValue,
-      selangSelectedValue: selangSelectedValue ?? this.selangSelectedValue,
-      karterOliSelectedValue: karterOliSelectedValue ?? this.karterOliSelectedValue,
-      oilRemSelectedValue: oilRemSelectedValue ?? this.oilRemSelectedValue,
-      kabelSelectedValue: kabelSelectedValue ?? this.kabelSelectedValue,
-      kondensorSelectedValue: kondensorSelectedValue ?? this.kondensorSelectedValue,
-      radiatorSelectedValue: radiatorSelectedValue ?? this.radiatorSelectedValue,
-      cylinderHeadSelectedValue: cylinderHeadSelectedValue ?? this.cylinderHeadSelectedValue,
-      oliMesinSelectedValue: oliMesinSelectedValue ?? this.oliMesinSelectedValue,
-      airRadiatorSelectedValue: airRadiatorSelectedValue ?? this.airRadiatorSelectedValue,
-      coverKlepSelectedValue: coverKlepSelectedValue ?? this.coverKlepSelectedValue,
-      alternatorSelectedValue: alternatorSelectedValue ?? this.alternatorSelectedValue,
-      waterPumpSelectedValue: waterPumpSelectedValue ?? this.waterPumpSelectedValue,
-      beltSelectedValue: beltSelectedValue ?? this.beltSelectedValue,
-      oliTransmisiSelectedValue: oliTransmisiSelectedValue ?? this.oliTransmisiSelectedValue,
-      cylinderBlockSelectedValue: cylinderBlockSelectedValue ?? this.cylinderBlockSelectedValue,
-      bushingBesarSelectedValue: bushingBesarSelectedValue ?? this.bushingBesarSelectedValue,
-      bushingKecilSelectedValue: bushingKecilSelectedValue ?? this.bushingKecilSelectedValue,
-      tutupRadiatorSelectedValue: tutupRadiatorSelectedValue ?? this.tutupRadiatorSelectedValue,
-      mesinCatatanList: mesinCatatanList ?? this.mesinCatatanList,
-      stirSelectedValue: stirSelectedValue ?? this.stirSelectedValue,
-      remTanganSelectedValue: remTanganSelectedValue ?? this.remTanganSelectedValue,
-      pedalSelectedValue: pedalSelectedValue ?? this.pedalSelectedValue,
-      switchWiperSelectedValue: switchWiperSelectedValue ?? this.switchWiperSelectedValue,
-      lampuHazardSelectedValue: lampuHazardSelectedValue ?? this.lampuHazardSelectedValue,
-      panelDashboardSelectedValue: panelDashboardSelectedValue ?? this.panelDashboardSelectedValue,
-      pembukaKapMesinSelectedValue: pembukaKapMesinSelectedValue ?? this.pembukaKapMesinSelectedValue,
-      pembukaBagasiSelectedValue: pembukaBagasiSelectedValue ?? this.pembukaBagasiSelectedValue,
-      jokDepanSelectedValue: jokDepanSelectedValue ?? this.jokDepanSelectedValue,
-      aromaInteriorSelectedValue: aromaInteriorSelectedValue ?? this.aromaInteriorSelectedValue,
-      handlePintuSelectedValue: handlePintuSelectedValue ?? this.handlePintuSelectedValue,
-      consoleBoxSelectedValue: consoleBoxSelectedValue ?? this.consoleBoxSelectedValue,
-      spionTengahSelectedValue: spionTengahSelectedValue ?? this.spionTengahSelectedValue,
-      tuasPersnelingSelectedValue: tuasPersnelingSelectedValue ?? this.tuasPersnelingSelectedValue,
-      jokBelakangSelectedValue: jokBelakangSelectedValue ?? this.jokBelakangSelectedValue,
-      panelIndikatorSelectedValue: panelIndikatorSelectedValue ?? this.panelIndikatorSelectedValue,
-      switchLampuSelectedValue: switchLampuSelectedValue ?? this.switchLampuSelectedValue,
-      karpetDasarSelectedValue: karpetDasarSelectedValue ?? this.karpetDasarSelectedValue,
-      klaksonSelectedValue: klaksonSelectedValue ?? this.klaksonSelectedValue,
-      sunVisorSelectedValue: sunVisorSelectedValue ?? this.sunVisorSelectedValue,
-      tuasTangkiBensinSelectedValue: tuasTangkiBensinSelectedValue ?? this.tuasTangkiBensinSelectedValue,
-      sabukPengamanSelectedValue: sabukPengamanSelectedValue ?? this.sabukPengamanSelectedValue,
-      trimInteriorSelectedValue: trimInteriorSelectedValue ?? this.trimInteriorSelectedValue,
-      plafonSelectedValue: plafonSelectedValue ?? this.plafonSelectedValue,
-      interiorCatatanList: interiorCatatanList ?? this.interiorCatatanList,
-      bumperDepanSelectedValue: bumperDepanSelectedValue ?? this.bumperDepanSelectedValue,
-      kapMesinSelectedValue: kapMesinSelectedValue ?? this.kapMesinSelectedValue,
-      lampuUtamaSelectedValue: lampuUtamaSelectedValue ?? this.lampuUtamaSelectedValue,
-      panelAtapSelectedValue: panelAtapSelectedValue ?? this.panelAtapSelectedValue,
-      grillSelectedValue: grillSelectedValue ?? this.grillSelectedValue,
-      lampuFoglampSelectedValue: lampuFoglampSelectedValue ?? this.lampuFoglampSelectedValue,
-      kacaBeningSelectedValue: kacaBeningSelectedValue ?? this.kacaBeningSelectedValue,
-      wiperBelakangSelectedValue: wiperBelakangSelectedValue ?? this.wiperBelakangSelectedValue,
-      bumperBelakangSelectedValue: bumperBelakangSelectedValue ?? this.bumperBelakangSelectedValue,
-      lampuBelakangSelectedValue: lampuBelakangSelectedValue ?? this.lampuBelakangSelectedValue,
-      trunklidSelectedValue: trunklidSelectedValue ?? this.trunklidSelectedValue,
-      kacaDepanSelectedValue: kacaDepanSelectedValue ?? this.kacaDepanSelectedValue,
-      fenderKananSelectedValue: fenderKananSelectedValue ?? this.fenderKananSelectedValue,
-      quarterPanelKananSelectedValue: quarterPanelKananSelectedValue ?? this.quarterPanelKananSelectedValue,
-      pintuBelakangKananSelectedValue: pintuBelakangKananSelectedValue ?? this.pintuBelakangKananSelectedValue,
-      spionKananSelectedValue: spionKananSelectedValue ?? this.spionKananSelectedValue,
-      lisplangKananSelectedValue: lisplangKananSelectedValue ?? this.lisplangKananSelectedValue,
-      sideSkirtKananSelectedValue: sideSkirtKananSelectedValue ?? this.sideSkirtKananSelectedValue,
-      daunWiperSelectedValue: daunWiperSelectedValue ?? this.daunWiperSelectedValue,
-      pintuBelakangSelectedValue: pintuBelakangSelectedValue ?? this.pintuBelakangSelectedValue,
-      fenderKiriSelectedValue: fenderKiriSelectedValue ?? this.fenderKiriSelectedValue,
-      quarterPanelKiriSelectedValue: quarterPanelKiriSelectedValue ?? this.quarterPanelKiriSelectedValue,
-      pintuDepanSelectedValue: pintuDepanSelectedValue ?? this.pintuDepanSelectedValue,
-      kacaJendelaKananSelectedValue: kacaJendelaKananSelectedValue ?? this.kacaJendelaKananSelectedValue,
-      pintuBelakangKiriSelectedValue: pintuBelakangKiriSelectedValue ?? this.pintuBelakangKiriSelectedValue,
-      spionKiriSelectedValue: spionKiriSelectedValue ?? this.spionKiriSelectedValue,
-      pintuDepanKiriSelectedValue: pintuDepanKiriSelectedValue ?? this.pintuDepanKiriSelectedValue,
-      kacaJendelaKiriSelectedValue: kacaJendelaKiriSelectedValue ?? this.kacaJendelaKiriSelectedValue,
-      lisplangKiriSelectedValue: lisplangKiriSelectedValue ?? this.lisplangKiriSelectedValue,
-      sideSkirtKiriSelectedValue: sideSkirtKiriSelectedValue ?? this.sideSkirtKiriSelectedValue,
-      eksteriorCatatanList: eksteriorCatatanList ?? this.eksteriorCatatanList,
-      banDepanSelectedValue: banDepanSelectedValue ?? this.banDepanSelectedValue,
-      velgDepanSelectedValue: velgDepanSelectedValue ?? this.velgDepanSelectedValue,
-      discBrakeSelectedValue: discBrakeSelectedValue ?? this.discBrakeSelectedValue,
-      masterRemSelectedValue: masterRemSelectedValue ?? this.masterRemSelectedValue,
-      tieRodSelectedValue: tieRodSelectedValue ?? this.tieRodSelectedValue,
-      gardanSelectedValue: gardanSelectedValue ?? this.gardanSelectedValue,
-      banBelakangSelectedValue: banBelakangSelectedValue ?? this.banBelakangSelectedValue,
-      velgBelakangSelectedValue: velgBelakangSelectedValue ?? this.velgBelakangSelectedValue,
-      brakePadSelectedValue: brakePadSelectedValue ?? this.brakePadSelectedValue,
-      crossmemberSelectedValue: crossmemberSelectedValue ?? this.crossmemberSelectedValue,
-      knalpotSelectedValue: knalpotSelectedValue ?? this.knalpotSelectedValue,
-      balljointSelectedValue: balljointSelectedValue ?? this.balljointSelectedValue,
-      rocksteerSelectedValue: rocksteerSelectedValue ?? this.rocksteerSelectedValue,
-      karetBootSelectedValue: karetBootSelectedValue ?? this.karetBootSelectedValue,
-      upperLowerArmSelectedValue: upperLowerArmSelectedValue ?? this.upperLowerArmSelectedValue,
-      shockBreakerSelectedValue: shockBreakerSelectedValue ?? this.shockBreakerSelectedValue,
-      linkStabilizerSelectedValue: linkStabilizerSelectedValue ?? this.linkStabilizerSelectedValue,
-      banDanKakiKakiCatatanList: banDanKakiKakiCatatanList ?? this.banDanKakiKakiCatatanList,
-      bunyiGetaranSelectedValue: bunyiGetaranSelectedValue ?? this.bunyiGetaranSelectedValue,
-      performaStirSelectedValue: performaStirSelectedValue ?? this.performaStirSelectedValue,
-      perpindahanTransmisiSelectedValue: perpindahanTransmisiSelectedValue ?? this.perpindahanTransmisiSelectedValue,
-      stirBalanceSelectedValue: stirBalanceSelectedValue ?? this.stirBalanceSelectedValue,
-      performaSuspensiSelectedValue: performaSuspensiSelectedValue ?? this.performaSuspensiSelectedValue,
-      performaKoplingSelectedValue: performaKoplingSelectedValue ?? this.performaKoplingSelectedValue,
-      rpmSelectedValue: rpmSelectedValue ?? this.rpmSelectedValue,
-      testDriveCatatanList: testDriveCatatanList ?? this.testDriveCatatanList,
-      // New fields for Page Five Seven (Tools Test)
-      tebalCatBodyDepanSelectedValue: tebalCatBodyDepanSelectedValue ?? this.tebalCatBodyDepanSelectedValue,
-      tebalCatBodyKiriSelectedValue: tebalCatBodyKiriSelectedValue ?? this.tebalCatBodyKiriSelectedValue,
-      temperatureAcMobilSelectedValue: temperatureAcMobilSelectedValue ?? this.temperatureAcMobilSelectedValue,
-      tebalCatBodyKananSelectedValue: tebalCatBodyKananSelectedValue ?? this.tebalCatBodyKananSelectedValue,
-      tebalCatBodyBelakangSelectedValue: tebalCatBodyBelakangSelectedValue ?? this.tebalCatBodyBelakangSelectedValue,
-      obdScannerSelectedValue: obdScannerSelectedValue ?? this.obdScannerSelectedValue,
-      tebalCatBodyAtapSelectedValue: tebalCatBodyAtapSelectedValue ?? this.tebalCatBodyAtapSelectedValue,
-      testAccuSelectedValue: testAccuSelectedValue ?? this.testAccuSelectedValue,
-      toolsTestCatatanList: toolsTestCatatanList ?? this.toolsTestCatatanList,
-
-      // fields for page eight
-      catDepanKap: catDepanKap ?? this.catDepanKap,
-      catBelakangBumper: catBelakangBumper ?? this.catBelakangBumper,
-      catBelakangTrunk: catBelakangTrunk ?? this.catBelakangTrunk,
-      catKananFenderDepan: catKananFenderDepan ?? this.catKananFenderDepan,
-      catKananPintuDepan: catKananPintuDepan ?? this.catKananPintuDepan,
-      catKananPintuBelakang: catKananPintuBelakang ?? this.catKananPintuBelakang,
-      catKananFenderBelakang: catKananFenderBelakang ?? this.catKananFenderBelakang,
-      catKiriFenderDepan: catKiriFenderDepan ?? this.catKiriFenderDepan,
-      catKiriPintuDepan: catKiriPintuDepan ?? this.catKiriPintuDepan,
-      catKiriPintuBelakang: catKiriPintuBelakang ?? this.catKiriPintuBelakang,
-      catKiriFenderBelakang: catKiriFenderBelakang ?? this.catKiriFenderBelakang,
-    );
-  }
-}

@@ -1,42 +1,68 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/image_data.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// Import dart:io and path_provider
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
+// Removed SharedPreferences import
 
-// Define a StateNotifierProvider for managing a list of ImageData
 final imageDataListProvider = StateNotifierProvider<ImageDataListNotifier, List<ImageData>>((ref) {
   return ImageDataListNotifier();
 });
 
-// Define the StateNotifier to manage the list of ImageData
 class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
-  static const _storageKey = 'image_data_list';
+  // static const _storageKey = 'image_data_list'; // Old key
+  static const String _fileName = 'wajib_image_data_list.json'; // Unique filename
 
   ImageDataListNotifier() : super([]) {
     _loadImageDataList();
   }
 
-  // Method to add new ImageData
-  void addImageData(ImageData imageData) {
-    state = [...state, imageData];
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
   }
 
-  // Method to load image data list from SharedPreferences
+  Future<File> get _file async {
+    final path = await _localPath;
+    return File('$path/$_fileName');
+  }
+
   Future<void> _loadImageDataList() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(_storageKey);
-    if (jsonString != null) {
-      final List<dynamic> jsonList = json.decode(jsonString);
-      state = jsonList.map((json) => ImageData.fromJson(json)).toList();
+    try {
+      final file = await _file;
+      if (await file.exists()) {
+        final jsonString = await file.readAsString();
+        if (jsonString.isNotEmpty) {
+          final List<dynamic> jsonList = json.decode(jsonString);
+          // Use super.state to avoid triggering _saveData during initial load
+          super.state = jsonList.map((json) => ImageData.fromJson(json)).toList();
+        } else {
+          super.state = [];
+        }
+      } else {
+        super.state = [];
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error loading ImageDataList from file: $e");
+      }
+      super.state = [];
     }
   }
 
-  // Method to save image data list to SharedPreferences
   Future<void> _saveImageDataList() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonList = state.map((image) => image.toJson()).toList();
-    final jsonString = json.encode(jsonList);
-    await prefs.setString(_storageKey, jsonString);
+    try {
+      final file = await _file;
+      final jsonList = state.map((image) => image.toJson()).toList();
+      final jsonString = json.encode(jsonList);
+      await file.writeAsString(jsonString);
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error saving ImageDataList to file: $e");
+      }
+    }
   }
 
   @override
@@ -45,7 +71,11 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
     _saveImageDataList();
   }
 
-  // Method to update existing ImageData by label
+  void addImageData(ImageData imageData) {
+    // The 'state' setter will automatically call _saveImageDataList
+    state = [...state, imageData];
+  }
+
   void updateImageDataByLabel(String label, {String? imagePath}) {
     state = [
       for (final img in state)
@@ -53,14 +83,14 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
           ImageData(
             label: img.label,
             imagePath: imagePath ?? img.imagePath,
-            needAttention: img.needAttention, // Keep existing value
+            needAttention: img.needAttention,
           )
         else
           img,
     ];
+    // The 'state' setter handles saving
   }
 
-  // Method to update existing ImageData by imagePath
   void updateImageDataByPath(String imagePath, {String? label, bool? needAttention}) {
     state = [
       for (final img in state)
@@ -73,15 +103,26 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
         else
           img,
     ];
+    // The 'state' setter handles saving
   }
 
-  // Method to remove ImageData by label
   void removeImageDataByLabel(String label) {
     state = state.where((img) => img.label != label).toList();
+    // The 'state' setter handles saving
   }
 
-  // Method to clear all ImageData
-  void clearImageData() {
-    state = [];
+  Future<void> clearImageData() async { // Made async
+    state = []; // Clear in-memory state
+    try {
+      final file = await _file;
+      if (await file.exists()) {
+        await file.delete(); // Delete the persisted file
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error deleting ImageDataList file: $e");
+      }
+    }
+    // No need to call _saveImageDataList as we are clearing.
   }
 }
