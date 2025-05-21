@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_provider.dart';
+import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/services/api_service.dart';
 import 'package:form_app/statics/app_styles.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
@@ -51,6 +52,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
       // Clear stored data after successful submission
       ref.read(formProvider.notifier).resetFormData();
       ref.read(imageDataListProvider.notifier).clearImageData();
+      ref.read(tambahanImageDataProvider.notifier).clearAll();
 
       if (!mounted) return;
       // Navigate to the FinishedPage by updating the form step
