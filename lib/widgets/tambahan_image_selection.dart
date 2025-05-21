@@ -263,22 +263,24 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
             children: [
               Stack(
                 children: [
-                  Container(
-                    width: double.infinity,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      image: currentImage == null
-                          ? const DecorationImage(image: AssetImage('assets/images/checker.png'), fit: BoxFit.cover)
-                          : null,
-                      color: currentImage != null ? Colors.grey[300] : Colors.grey[200],
+                  AspectRatio(
+                    aspectRatio: 4 / 3,
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        image: currentImage == null
+                            ? const DecorationImage(image: AssetImage('assets/images/checker.png'), fit: BoxFit.cover)
+                            : null,
+                        color: currentImage != null ? Colors.grey[300] : Colors.grey[200],
+                      ),
+                      child: currentImage == null
+                          ? const SizedBox.shrink()
+                          : ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: Image.file(File(currentImage.imagePath), fit: BoxFit.cover),
+                            ),
                     ),
-                    child: currentImage == null
-                        ? const SizedBox.shrink()
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: Image.file(File(currentImage.imagePath), fit: BoxFit.cover),
-                          ),
                   ),
                   if (currentImage != null)
                     Positioned(
