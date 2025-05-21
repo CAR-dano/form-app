@@ -88,73 +88,86 @@ class _PageEightState extends ConsumerState<PageEight>
 
               // Section 2: Belakang
               HeadingOne(text: 'Belakang'),
-              PaintThicknessInputField(
-                initialValue: formData.catBelakangBumper,
-                onChanged: (value) {
-                  formNotifier.updateCatBelakangBumper(value);
-                },
-              ),
-              PaintThicknessInputField(
-                initialValue: formData.catBelakangTrunk,
-                onChanged: (value) {
-                  formNotifier.updateCatBelakangTrunk(value);
-                },
+              Row(
+                children: [
+                  PaintThicknessInputField(
+                    initialValue: formData.catBelakangBumper,
+                    onChanged: (value) {
+                      formNotifier.updateCatBelakangBumper(value);
+                    },
+                  ),
+                  PaintThicknessInputField(
+                    initialValue: formData.catBelakangTrunk,
+                    onChanged: (value) {
+                      formNotifier.updateCatBelakangTrunk(value);
+                    },
+                  ),
+                ],
               ),
               const SizedBox(height: 16.0),
 
               // Section 3: Samping Kanan
               HeadingOne(text: 'Samping Kanan'),
-              PaintThicknessInputField(
-                initialValue: formData.catKananFenderDepan,
-                onChanged: (value) {
-                  formNotifier.updateCatKananFenderDepan(value);
-                },
-              ),
-              PaintThicknessInputField(
-                initialValue: formData.catKananPintuDepan,
-                onChanged: (value) {
-                  formNotifier.updateCatKananPintuDepan(value);
-                },
-              ),
-              PaintThicknessInputField(
-                initialValue: formData.catKananPintuBelakang,
-                onChanged: (value) {
-                  formNotifier.updateCatKananPintuBelakang(value);
-                },
-              ),
-              PaintThicknessInputField(
-                initialValue: formData.catKananFenderBelakang,
-                onChanged: (value) {
-                  formNotifier.updateCatKananFenderBelakang(value);
-                },
+              Row(
+                children: [
+                  PaintThicknessInputField(
+                    initialValue: formData.catKananFenderDepan,
+                    onChanged: (value) {
+                      formNotifier.updateCatKananFenderDepan(value);
+                    },
+                  ),
+                  PaintThicknessInputField(
+                    initialValue: formData.catKananPintuDepan,
+                    onChanged: (value) {
+                      formNotifier.updateCatKananPintuDepan(value);
+                    },
+                  ),
+                  PaintThicknessInputField(
+                    initialValue: formData.catKananPintuBelakang,
+                    onChanged: (value) {
+                      formNotifier.updateCatKananPintuBelakang(value);
+                    },
+                  ),
+                  PaintThicknessInputField(
+                    initialValue: formData.catKananFenderBelakang,
+                    onChanged: (value) {
+                      formNotifier.updateCatKananFenderBelakang(value);
+                    },
+                  ),
+                ],
               ),
               const SizedBox(height: 16.0),
 
               // Section 4: Samping Kiri
               HeadingOne(text: 'Samping Kiri'),
-              PaintThicknessInputField(
-                initialValue: formData.catKiriFenderDepan,
-                onChanged: (value) {
-                  formNotifier.updateCatKiriFenderDepan(value);
-                },
-              ),
-              PaintThicknessInputField(
-                initialValue: formData.catKiriPintuDepan,
-                onChanged: (value) {
-                  formNotifier.updateCatKiriPintuDepan(value);
-                },
-              ),
-              PaintThicknessInputField(
-                initialValue: formData.catKiriPintuBelakang,
-                onChanged: (value) {
-                  formNotifier.updateCatKiriPintuBelakang(value);
-                },
-              ),
-              PaintThicknessInputField(
-                initialValue: formData.catKiriFenderBelakang,
-                onChanged: (value) {
-                  formNotifier.updateCatKiriFenderBelakang(value);
-                },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  PaintThicknessInputField(
+                    initialValue: formData.catKiriFenderDepan,
+                    onChanged: (value) {
+                      formNotifier.updateCatKiriFenderDepan(value);
+                    },
+                  ),
+                  PaintThicknessInputField(
+                    initialValue: formData.catKiriPintuDepan,
+                    onChanged: (value) {
+                      formNotifier.updateCatKiriPintuDepan(value);
+                    },
+                  ),
+                  PaintThicknessInputField(
+                    initialValue: formData.catKiriPintuBelakang,
+                    onChanged: (value) {
+                      formNotifier.updateCatKiriPintuBelakang(value);
+                    },
+                  ),
+                  PaintThicknessInputField(
+                    initialValue: formData.catKiriFenderBelakang,
+                    onChanged: (value) {
+                      formNotifier.updateCatKiriFenderBelakang(value);
+                    },
+                  ),
+                ],
               ),
               const SizedBox(height: 32.0),
 
