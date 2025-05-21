@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:form_app/statics/app_styles.dart'; // Assuming app_styles contains necessary styles
-import 'package:form_app/widgets/labeled_text_field.dart'; // Assuming LabeledTextField exists
+import 'package:form_app/statics/app_styles.dart';
+import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
 
 class TambahanImageSelection extends StatefulWidget {
@@ -19,7 +20,17 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
   bool _perluPerhatian = false;
   int _currentImageIndex = 0;
 
-  Future<void> _pickImages() async {
+  Future<void> _takePictureFromCamera() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+    if (image != null) {
+      setState(() {
+        _selectedImages = [image];
+        _currentImageIndex = 0;
+      });
+    }
+  }
+
+  Future<void> _takePictureFromGallery() async {
     final List<XFile> images = await _picker.pickMultiImage();
     if (images.isNotEmpty) {
       setState(() {
@@ -55,6 +66,86 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: _takePictureFromCamera,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+                  decoration: BoxDecoration(
+                    color: toggleOptionSelectedLengkapColor,
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(
+                      color: toggleOptionSelectedLengkapColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/camera.svg',
+                        width: 30.0,
+                        height: 30.0,
+                        colorFilter: ColorFilter.mode(buttonTextColor, BlendMode.srcIn),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Kamera',
+                        style: labelStyle.copyWith(
+                          color: buttonTextColor,
+                          fontWeight: FontWeight.bold,
+                          height: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: GestureDetector(
+                onTap: _takePictureFromGallery,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+                  decoration: BoxDecoration(
+                    color: toggleOptionSelectedLengkapColor,
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(
+                      color: toggleOptionSelectedLengkapColor,
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/gallery-white.svg',
+                        width: 30.0,
+                        height: 30.0,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Galeri',
+                        style: labelStyle.copyWith(
+                          color: buttonTextColor,
+                          fontWeight: FontWeight.bold,
+                          height: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16.0),
         Container(
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
@@ -73,7 +164,7 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
-                onTap: _pickImages,
+                onTap: _takePictureFromGallery,
                 child: Container(
                   width: double.infinity,
                   height: 200,
@@ -81,25 +172,14 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
                     borderRadius: BorderRadius.circular(8.0),
                     image: _selectedImages.isEmpty
                         ? const DecorationImage(
-                            image: AssetImage('assets/images/checker.png'), // Ensure this asset exists
+                            image: AssetImage('assets/images/checker.png'),
                             fit: BoxFit.cover,
                           )
                         : null,
                     color: _selectedImages.isNotEmpty ? Colors.grey[300] : Colors.grey[200],
                   ),
                   child: _selectedImages.isEmpty
-                      ? Center(
-                          child: ElevatedButton(
-                            onPressed: _pickImages,
-                            style: baseButtonStyle.copyWith( // Assuming baseButtonStyle is from your app_styles
-                              backgroundColor: WidgetStateProperty.all(toggleOptionSelectedLengkapColor), // Assuming toggleOptionSelectedLengkapColor is from your app_styles
-                            ),
-                            child: Text(
-                              'Upload Foto',
-                              style: buttonTextStyle, // Assuming buttonTextStyle is from your app_styles
-                            ),
-                          ),
-                        )
+                      ? const SizedBox.shrink()
                       : ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           child: Image.file(
@@ -144,13 +224,12 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
-                    backgroundColor: buttonColor, // Assuming buttonColor is from your app_styles
-                    shadowColor: buttonColor.withAlpha(102), // Assuming buttonColor is from your app_styles
-                    elevation: 5, // Added elevation for shadow to appear
+                    backgroundColor: buttonColor,
+                    shadowColor: buttonColor.withAlpha(102),
+                    elevation: 5,
                     alignment: Alignment.center,
                   ),
-                  // Using Icons.arrow_back_ios_new for better centering
-                  child: const Icon(Icons.arrow_back_ios_new, size: 18, color: buttonTextColor), // Assuming buttonTextColor is from your app_styles
+                  child: const Icon(Icons.arrow_back_ios_new, size: 18, color: buttonTextColor),
                 ),
               ),
               const SizedBox(width: 70.0),
@@ -158,7 +237,7 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
                 width: 60.0,
                 child: Text(
                   '${_currentImageIndex + 1}/${_selectedImages.length}',
-                  style: imageIndexTextStyle, // Assuming imageIndexTextStyle is from your app_styles
+                  style: imageIndexTextStyle,
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -173,19 +252,17 @@ class _TambahanImageSelectionState extends State<TambahanImageSelection> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
-                    backgroundColor: buttonColor, // Assuming buttonColor is from your app_styles
-                    shadowColor: buttonColor.withAlpha(102), // Assuming buttonColor is from your app_styles
-                    elevation: 5, // Added elevation for shadow to appear
+                    backgroundColor: buttonColor,
+                    shadowColor: buttonColor.withAlpha(102),
+                    elevation: 5,
                     alignment: Alignment.center,
                   ),
-                  // Using Icons.arrow_forward_ios_new for better centering
-                  child: const Icon(Icons.arrow_forward_ios, size: 18, color: buttonTextColor), // Assuming buttonTextColor is from your app_styles
+                  child: const Icon(Icons.arrow_forward_ios, size: 18, color: buttonTextColor),
                 ),
               ),
             ],
           ),
         const SizedBox(height: 24.0),
-        // NavigationButtonRow (if you have one)
       ],
     );
   }

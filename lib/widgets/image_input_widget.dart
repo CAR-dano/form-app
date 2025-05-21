@@ -128,7 +128,6 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                     ],
                   ),
                 ),
-                actions: <Widget>[], // Removed the Close button
               ),
             ),
           ),
