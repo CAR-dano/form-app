@@ -10,7 +10,12 @@ import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
-  const TambahanImageSelection({super.key});
+  final String identifier; // Add identifier parameter
+
+  const TambahanImageSelection({
+    super.key,
+    required this.identifier, // Make it required
+  });
 
   @override
   ConsumerState<TambahanImageSelection> createState() => _TambahanImageSelectionState();
@@ -24,7 +29,10 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   @override
   void initState() {
     super.initState();
-    _updateControllersForCurrentIndex();
+    // Initial update based on potentially loaded data for this specific identifier
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateControllersForCurrentIndex();
+    });
   }
 
   @override
@@ -34,11 +42,14 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   }
 
   void _updateControllersForCurrentIndex() {
-    final images = ref.read(tambahanImageDataProvider);
+    // Use widget.identifier to get the correct provider instance
+    final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
       final currentImage = images[_currentIndex];
       if (_labelController.text != currentImage.label) {
         _labelController.text = currentImage.label;
+         // Ensure cursor is at the end after programmatic text change
+        _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
       }
     } else {
       _labelController.clear();
@@ -52,15 +63,17 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         for (var imageFile in images) {
           final newTambahanImage = TambahanImageData(
             imagePath: imageFile.path,
-            label: '',
+            label: '', // Default label, user can edit
             needAttention: false,
           );
-          ref.read(tambahanImageDataProvider.notifier).addImage(newTambahanImage);
+          // Use widget.identifier for the provider
+          ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
         }
         setState(() {
-          _currentIndex = ref.read(tambahanImageDataProvider).length - images.length;
+           // Use widget.identifier for the provider
+          _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - images.length;
           if (_currentIndex < 0) _currentIndex = 0;
-           _updateControllersForCurrentIndex();
+          _updateControllersForCurrentIndex();
         });
       }
     } else {
@@ -68,12 +81,14 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       if (image != null) {
         final newTambahanImage = TambahanImageData(
           imagePath: image.path,
-          label: '',
+          label: '', // Default label
           needAttention: false,
         );
-        ref.read(tambahanImageDataProvider.notifier).addImage(newTambahanImage);
+         // Use widget.identifier for the provider
+        ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
         setState(() {
-          _currentIndex = ref.read(tambahanImageDataProvider).length - 1;
+           // Use widget.identifier for the provider
+          _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - 1;
           _updateControllersForCurrentIndex();
         });
       }
@@ -81,7 +96,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   }
 
   void _nextImage() {
-    final images = ref.read(tambahanImageDataProvider);
+    // Use widget.identifier for the provider
+    final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (_currentIndex < images.length - 1) {
       setState(() {
         _currentIndex++;
@@ -100,13 +116,18 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   }
 
   void _deleteCurrentImage() {
-    final images = ref.read(tambahanImageDataProvider);
+    // Use widget.identifier for the provider
+    final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
-      ref.read(tambahanImageDataProvider.notifier).removeImageAtIndex(_currentIndex);
+      // Use widget.identifier for the provider
+      ref.read(tambahanImageDataProvider(widget.identifier).notifier).removeImageAtIndex(_currentIndex);
       setState(() {
-        if (_currentIndex >= images.length - 1) {
-          _currentIndex = (images.length - 2).clamp(0, (images.length - 2));
-           if (images.length -1 == 0) _currentIndex = 0;
+        // Adjust current index after deletion
+        final newLength = images.length - 1; // new length after potential removal
+        if (newLength == 0) {
+          _currentIndex = 0;
+        } else if (_currentIndex >= newLength) {
+          _currentIndex = newLength -1;
         }
         _updateControllersForCurrentIndex();
       });
@@ -114,48 +135,57 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   }
 
   void _onLabelChanged(String newLabel) {
-    final images = ref.read(tambahanImageDataProvider);
+    // Use widget.identifier for the provider
+    final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
       final currentImage = images[_currentIndex];
+      // Use widget.identifier for the provider
       ref
-          .read(tambahanImageDataProvider.notifier)
+          .read(tambahanImageDataProvider(widget.identifier).notifier)
           .updateImageAtIndex(_currentIndex, currentImage.copyWith(label: newLabel));
     }
   }
 
   void _onNeedAttentionChanged(bool newAttentionStatus) {
-    final images = ref.read(tambahanImageDataProvider);
+     // Use widget.identifier for the provider
+    final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
       final currentImage = images[_currentIndex];
-      ref.read(tambahanImageDataProvider.notifier).updateImageAtIndex(
+       // Use widget.identifier for the provider
+      ref.read(tambahanImageDataProvider(widget.identifier).notifier).updateImageAtIndex(
           _currentIndex, currentImage.copyWith(needAttention: newAttentionStatus));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final tambahanImages = ref.watch(tambahanImageDataProvider);
+     // Use widget.identifier to watch the correct provider instance
+    final tambahanImages = ref.watch(tambahanImageDataProvider(widget.identifier));
     final TambahanImageData? currentImage =
         tambahanImages.isNotEmpty && _currentIndex < tambahanImages.length
             ? tambahanImages[_currentIndex]
             : null;
     
+    // This logic helps keep _currentIndex valid if images are deleted externally or list becomes empty
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        if (tambahanImages.isNotEmpty && _currentIndex >= tambahanImages.length) {
+        final currentImagesList = ref.read(tambahanImageDataProvider(widget.identifier));
+        if (currentImagesList.isNotEmpty && _currentIndex >= currentImagesList.length) {
           setState(() {
-            _currentIndex = (tambahanImages.length - 1).clamp(0, tambahanImages.length -1);
+            _currentIndex = (currentImagesList.length - 1).clamp(0, currentImagesList.length -1);
             _updateControllersForCurrentIndex();
           });
-        } else if (tambahanImages.isEmpty && _currentIndex != 0) {
+        } else if (currentImagesList.isEmpty && _currentIndex != 0) {
            setState(() {
             _currentIndex = 0;
             _updateControllersForCurrentIndex();
           });
         }
-        final currentImageForController = tambahanImages.isNotEmpty && _currentIndex < tambahanImages.length
-            ? tambahanImages[_currentIndex]
+        // Synchronize label controller if currentImage changes
+        final currentImageForController = currentImagesList.isNotEmpty && _currentIndex < currentImagesList.length
+            ? currentImagesList[_currentIndex]
             : null;
+
         if (currentImageForController != null && _labelController.text != currentImageForController.label) {
            _labelController.text = currentImageForController.label;
            _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
@@ -254,13 +284,12 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                     Positioned(
                       top: 8.0,
                       right: 8.0,
-                      child: GestureDetector( // Simplified delete button
+                      child: GestureDetector(
                         onTap: _deleteCurrentImage,
                         child: SvgPicture.asset(
                           'assets/images/trashcan.svg',
-                          width: 26.0, // As per your example
-                          height: 26.0, // As per your example
-                          // No colorFilter to use default SVG color, or add one if needed
+                          width: 26.0,
+                          height: 26.0,
                         ),
                       ),
                     ),
@@ -268,15 +297,17 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
               ),
               const SizedBox(height: 16.0),
               LabeledTextField(
+                // Use a dynamic key to force rebuild when currentImage changes
                 key: ValueKey<String>('label_${currentImage?.id ?? "default_label_state"}'),
                 label: 'Label',
-                controller: _labelController,
+                controller: _labelController, // Controller is managed now
                 hintText: 'Misal : Aki tampak atas',
                 onChanged: _onLabelChanged,
-                initialValue: currentImage?.label ?? '',
+                // initialValue: currentImage?.label ?? '', // Controller handles initial value
               ),
               const SizedBox(height: 16.0),
               FormConfirmation(
+                // Use a dynamic key
                 key: ValueKey<String>('attention_${currentImage?.id ?? "default_attention_state"}'),
                 label: 'Perlu Perhatian',
                 initialValue: currentImage?.needAttention ?? false,

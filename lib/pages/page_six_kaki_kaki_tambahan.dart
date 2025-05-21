@@ -56,7 +56,7 @@ class _PageSixKakiKakiTambahanState extends ConsumerState<PageSixKakiKakiTambaha
               const SizedBox(height: 6.0),
               HeadingOne(text: 'Tambahan'),
               const SizedBox(height: 16.0),
-              TambahanImageSelection(),
+              TambahanImageSelection(identifier: 'kaki_kaki_tambahan'),
               const SizedBox(height: 32.0),
               NavigationButtonRow(
                 onBackPressed: () => ref.read(formStepProvider.notifier).state--,

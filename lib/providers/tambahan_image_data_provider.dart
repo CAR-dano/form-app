@@ -3,27 +3,35 @@ import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-final tambahanImageDataProvider =
-    StateNotifierProvider<TambahanImageDataListNotifier, List<TambahanImageData>>((ref) {
-  return TambahanImageDataListNotifier();
-});
+// Changed to StateNotifierProvider.family
+// The second type argument is List<TambahanImageData> (the state type)
+// The third type argument is String (the type of the family parameter, our identifier)
+final tambahanImageDataProvider = StateNotifierProvider.family<
+    TambahanImageDataListNotifier, List<TambahanImageData>, String>(
+  (ref, identifier) {
+    return TambahanImageDataListNotifier(identifier); // Pass the identifier to the notifier
+  },
+);
 
 class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData>> {
-  static const _storageKey = 'tambahan_image_data_list';
+  // static const _storageKey = 'tambahan_image_data_list'; // Old global key
+  final String identifier; // To make storage key unique
+  late final String _storageKey; // Instance-specific storage key
 
-  TambahanImageDataListNotifier() : super([]) {
+  TambahanImageDataListNotifier(this.identifier) : super([]) {
+    _storageKey = 'tambahan_image_data_list_$identifier'; // Create unique storage key
     _loadData();
   }
 
   Future<void> _loadData() async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(_storageKey);
+    final jsonString = prefs.getString(_storageKey); // Use instance-specific key
     if (jsonString != null) {
       try {
         final List<dynamic> jsonList = json.decode(jsonString);
         state = jsonList.map((jsonItem) => TambahanImageData.fromJson(jsonItem)).toList();
       } catch (e) {
-        // print("Error decoding TambahanImageData: $e");
+        // print("Error decoding TambahanImageData for $identifier: $e");
         state = []; // Fallback to empty list on error
       }
     }
@@ -32,7 +40,7 @@ class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData
   Future<void> _saveData() async {
     final prefs = await SharedPreferences.getInstance();
     final List<Map<String, dynamic>> jsonList = state.map((item) => item.toJson()).toList();
-    await prefs.setString(_storageKey, json.encode(jsonList));
+    await prefs.setString(_storageKey, json.encode(jsonList)); // Use instance-specific key
   }
 
   void addImage(TambahanImageData image) {

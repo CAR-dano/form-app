@@ -60,7 +60,6 @@ class _FinishedPageState extends ConsumerState<FinishedPage> with AutomaticKeepA
           onPressed: () {
             ref.read(formProvider.notifier).resetFormData();
             ref.read(imageDataListProvider.notifier).clearImageData();
-            ref.read(tambahanImageDataProvider.notifier).clearAll();
             ref.read(formStepProvider.notifier).state = 0; // Reset form step to 0
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => const MultiStepFormScreen()), // Navigate to MultiStepFormScreen

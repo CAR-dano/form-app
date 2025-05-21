@@ -24,6 +24,15 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
   bool _isChecked = false;
   bool _isLoading = false; // Add loading state
 
+  final List<String> tambahanImageIdentifiers = [
+    'general_tambahan',
+    'eksterior_tambahan',
+    'interior_tambahan',
+    'mesin_tambahan',
+    'kaki_kaki_tambahan',
+    'alat_alat_tambahan',
+  ];
+
   @override
   bool get wantKeepAlive => true; // Override wantKeepAlive
 
@@ -52,7 +61,9 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
       // Clear stored data after successful submission
       ref.read(formProvider.notifier).resetFormData();
       ref.read(imageDataListProvider.notifier).clearImageData();
-      ref.read(tambahanImageDataProvider.notifier).clearAll();
+      for (final identifier in tambahanImageIdentifiers) {
+        ref.read(tambahanImageDataProvider(identifier).notifier).clearAll();
+      }
 
       if (!mounted) return;
       // Navigate to the FinishedPage by updating the form step
