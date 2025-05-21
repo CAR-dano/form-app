@@ -1,15 +1,17 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspector_data.dart';
 import 'package:form_app/providers/inspection_branches_provider.dart';
 import 'package:form_app/providers/inspector_provider.dart'; // Import inspection branches provider
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 import 'dart:convert';
 import 'package:form_app/models/inspection_branch.dart'; // Import InspectionBranch model
 
 class FormNotifier extends StateNotifier<FormData> {
   final Ref _ref;
-  static const _storageKey = 'form_data';
+  static const _fileName = 'form_data.json';
 
   FormNotifier(this._ref) : super(FormData()) {
     // Load initial data first
@@ -63,7 +65,7 @@ class FormNotifier extends StateNotifier<FormData> {
       } catch (e) { // Not found
         resolvedInspector = null;
         resolvedNamaInspektor = null;
-        resolvedInspectorId = null; 
+        resolvedInspectorId = null;
       }
     } else {
         resolvedInspector = null;
@@ -92,7 +94,7 @@ class FormNotifier extends StateNotifier<FormData> {
       );
     } else {
       state = state.copyWith(
-        selectedInspector: null, 
+        selectedInspector: null,
         inspectorId: null,
         namaInspektor: null,
       );
@@ -901,19 +903,40 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(catKiriFenderBelakang: value);
   }
 
+  Future<String> _getFilePath() async {
+    final directory = await getApplicationDocumentsDirectory();
+    return '${directory.path}/$_fileName';
+  }
+
   Future<void> _loadFormData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(_storageKey);
-    if (jsonString != null) {
-      final jsonMap = json.decode(jsonString);
-      super.state = FormData.fromJson(jsonMap);
+    try {
+      final filePath = await _getFilePath();
+      final file = File(filePath);
+      if (await file.exists()) {
+        final jsonString = await file.readAsString();
+        final jsonMap = json.decode(jsonString);
+        super.state = FormData.fromJson(jsonMap);
+      }
+    } catch (e) {
+      // Handle errors during file loading
+      if (kDebugMode) {
+        print('Error loading form data: $e');
+      }
     }
   }
 
   Future<void> _saveFormData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = json.encode(state.toJson());
-    await prefs.setString(_storageKey, jsonString);
+    try {
+      final filePath = await _getFilePath();
+      final file = File(filePath);
+      final jsonString = json.encode(state.toJson());
+      await file.writeAsString(jsonString);
+    } catch (e) {
+      // Handle errors during file saving
+      if (kDebugMode) {
+        print('Error saving form data: $e');
+      }
+    }
   }
 
   @override

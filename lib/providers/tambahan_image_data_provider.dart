@@ -1,46 +1,62 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/tambahan_image_data.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// Import dart:io for File operations
+import 'dart:io';
+// Import path_provider to get documents directory
+import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
 
-// Changed to StateNotifierProvider.family
-// The second type argument is List<TambahanImageData> (the state type)
-// The third type argument is String (the type of the family parameter, our identifier)
 final tambahanImageDataProvider = StateNotifierProvider.family<
     TambahanImageDataListNotifier, List<TambahanImageData>, String>(
   (ref, identifier) {
-    return TambahanImageDataListNotifier(identifier); // Pass the identifier to the notifier
+    return TambahanImageDataListNotifier(identifier);
   },
 );
 
 class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData>> {
-  // static const _storageKey = 'tambahan_image_data_list'; // Old global key
-  final String identifier; // To make storage key unique
-  late final String _storageKey; // Instance-specific storage key
+  final String identifier;
 
   TambahanImageDataListNotifier(this.identifier) : super([]) {
-    _storageKey = 'tambahan_image_data_list_$identifier'; // Create unique storage key
     _loadData();
   }
 
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
+
+  // Corrected getter definition:
+  // 1. Use the 'get' keyword.
+  // 2. Renamed to '_file' for clarity and to avoid previous naming confusion.
+  Future<File> get _file async {
+    final path = await _localPath;
+    return File('$path/tambahan_image_data_$identifier.json');
+  }
+
   Future<void> _loadData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(_storageKey); // Use instance-specific key
-    if (jsonString != null) {
-      try {
+    try {
+      // Correctly await the getter '_file'
+      final file = await _file;
+      if (await file.exists()) {
+        final jsonString = await file.readAsString();
         final List<dynamic> jsonList = json.decode(jsonString);
         state = jsonList.map((jsonItem) => TambahanImageData.fromJson(jsonItem)).toList();
-      } catch (e) {
-        // print("Error decoding TambahanImageData for $identifier: $e");
-        state = []; // Fallback to empty list on error
       }
+    } catch (e) {
+      // print("Error loading TambahanImageData for $identifier from file: $e");
+      state = [];
     }
   }
 
   Future<void> _saveData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final List<Map<String, dynamic>> jsonList = state.map((item) => item.toJson()).toList();
-    await prefs.setString(_storageKey, json.encode(jsonList)); // Use instance-specific key
+    try {
+      // Correctly await the getter '_file'
+      final file = await _file;
+      final List<Map<String, dynamic>> jsonList = state.map((item) => item.toJson()).toList();
+      await file.writeAsString(json.encode(jsonList));
+    } catch (e) {
+      // print("Error saving TambahanImageData for $identifier to file: $e");
+    }
   }
 
   void addImage(TambahanImageData image) {
@@ -66,8 +82,16 @@ class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData
     }
   }
 
-  void clearAll() {
+  Future<void> clearAll() async {
     state = [];
-    _saveData();
+    try {
+      // Correctly await the getter '_file'
+      final file = await _file;
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (e) {
+      // print("Error deleting TambahanImageData file for $identifier: $e");
+    }
   }
 }

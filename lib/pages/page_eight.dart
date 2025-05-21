@@ -89,6 +89,7 @@ class _PageEightState extends ConsumerState<PageEight>
               // Section 2: Belakang
               HeadingOne(text: 'Belakang'),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   PaintThicknessInputField(
                     initialValue: formData.catBelakangBumper,
@@ -109,6 +110,7 @@ class _PageEightState extends ConsumerState<PageEight>
               // Section 3: Samping Kanan
               HeadingOne(text: 'Samping Kanan'),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   PaintThicknessInputField(
                     initialValue: formData.catKananFenderDepan,
