@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart' as dio; // Add prefix
+import 'package:flutter/foundation.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspector_data.dart'; // Import Inspector model
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import flutter_dotenv
@@ -279,14 +280,20 @@ class ApiService {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        //print('Form data submitted successfully!');
+        if (kDebugMode) {
+          print('Form data submitted successfully!');
+        }
         // TODO: Handle success (e.g., show a success message)
       } else {
-        //print('Failed to submit form data: ${response.statusCode}');
+        if (kDebugMode) {
+          print('Failed to submit form data: ${response.statusCode}');
+        }
         // TODO: Handle errors (e.g., show an error message)
       }
     } catch (e) {
-      //print('Error submitting form data: $e');
+      if (kDebugMode) {
+        print('Error submitting form data: $e');
+      }
       // TODO: Handle network errors or exceptions (e.g., show an error message)
     }
   }
