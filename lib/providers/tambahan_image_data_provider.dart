@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/tambahan_image_data.dart';
 // Import dart:io for File operations
@@ -43,7 +44,9 @@ class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData
         state = jsonList.map((jsonItem) => TambahanImageData.fromJson(jsonItem)).toList();
       }
     } catch (e) {
-      // print("Error loading TambahanImageData for $identifier from file: $e");
+      if (kDebugMode) {
+        print("Error loading TambahanImageData for $identifier from file: $e");
+      }
       state = [];
     }
   }
@@ -55,7 +58,9 @@ class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData
       final List<Map<String, dynamic>> jsonList = state.map((item) => item.toJson()).toList();
       await file.writeAsString(json.encode(jsonList));
     } catch (e) {
-      // print("Error saving TambahanImageData for $identifier to file: $e");
+      if (kDebugMode) {
+        print("Error saving TambahanImageData for $identifier to file: $e");
+      }
     }
   }
 
@@ -91,7 +96,9 @@ class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData
         await file.delete();
       }
     } catch (e) {
-      // print("Error deleting TambahanImageData file for $identifier: $e");
+      if (kDebugMode) {
+        print("Error deleting TambahanImageData file for $identifier: $e");
+      }
     }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/image_data.dart';
 // Import dart:io and path_provider
@@ -44,7 +45,9 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
         super.state = [];
       }
     } catch (e) {
-      // print("Error loading ImageDataList from file: $e");
+      if (kDebugMode) {
+        print("Error loading ImageDataList from file: $e");
+      }
       super.state = [];
     }
   }
@@ -56,7 +59,9 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
       final jsonString = json.encode(jsonList);
       await file.writeAsString(jsonString);
     } catch (e) {
-      // print("Error saving ImageDataList to file: $e");
+      if (kDebugMode) {
+        print("Error saving ImageDataList to file: $e");
+      }
     }
   }
 
@@ -114,7 +119,9 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
         await file.delete(); // Delete the persisted file
       }
     } catch (e) {
-      // print("Error deleting ImageDataList file: $e");
+      if (kDebugMode) {
+        print("Error deleting ImageDataList file: $e");
+      }
     }
     // No need to call _saveImageDataList as we are clearing.
   }

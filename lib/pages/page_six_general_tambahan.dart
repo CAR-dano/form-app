@@ -63,7 +63,6 @@ class _PageSixGeneralTambahanState extends ConsumerState<PageSixGeneralTambahan>
               // Tambahan image selection widget
               TambahanImageSelection(identifier: 'general_tambahan'),
 
-              // TODO: Add logic here to save the selected images and label from TambahanImageSelectionWidget
               const SizedBox(height: 32.0),
               NavigationButtonRow(
                 onBackPressed:
