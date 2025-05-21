@@ -1,4 +1,5 @@
 import 'package:form_app/models/inspector_data.dart'; // Import Inspector model
+import 'package:form_app/models/inspection_branch.dart'; // Import InspectionBranch model
 
 class FormData {
   // Page One Data
@@ -6,7 +7,7 @@ class FormData {
   String? inspectorId;
   Inspector? selectedInspector; // Add field for selected Inspector object
   String namaCustomer;
-  String? cabangInspeksi;
+  InspectionBranch? cabangInspeksi; // Change type to InspectionBranch
   DateTime? tanggalInspeksi;
 
   // Page Two Data
@@ -402,7 +403,7 @@ class FormData {
       'namaInspektor': namaInspektor,
       'inspectorId': inspectorId,
       'namaCustomer': namaCustomer,
-      'cabangInspeksi': cabangInspeksi,
+      'cabangInspeksi': cabangInspeksi != null ? {'id': cabangInspeksi!.id, 'city': cabangInspeksi!.city} : null,
       'tanggalInspeksi': tanggalInspeksi?.toIso8601String(),
       'merekKendaraan': merekKendaraan,
       'tipeKendaraan': tipeKendaraan,
@@ -585,7 +586,9 @@ class FormData {
       namaInspektor: json['namaInspektor'] as String?,
       inspectorId: json['inspectorId'] as String?,
       namaCustomer: json['namaCustomer'] as String? ?? '',
-      cabangInspeksi: json['cabangInspeksi'] as String?,
+      cabangInspeksi: json['cabangInspeksi'] != null
+          ? InspectionBranch.fromJson(json['cabangInspeksi'] as Map<String, dynamic>)
+          : null,
       tanggalInspeksi: json['tanggalInspeksi'] != null
           ? DateTime.parse(json['tanggalInspeksi'] as String)
           : null,

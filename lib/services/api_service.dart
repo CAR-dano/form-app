@@ -2,6 +2,7 @@ import 'package:dio/dio.dart' as dio; // Add prefix
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspector_data.dart'; // Import Inspector model
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import flutter_dotenv
+import 'package:form_app/models/inspection_branch.dart'; // Import InspectionBranch model
 
 class ApiService {
   final dio.Dio _dio = dio.Dio(); // Use prefix
@@ -13,20 +14,20 @@ class ApiService {
   String get _inspectorsUrl =>
       '$_baseApiUrl/public/users/inspectors'; // Inspectors endpoint
 
-  Future<List<String>> getInspectionBranches() async {
+  Future<List<InspectionBranch>> getInspectionBranches() async {
     try {
       final response = await _dio.get(_inspectionBranchesUrl);
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
-        return data.map((branch) => branch['city'] as String).toList();
+        // Map the JSON data to a list of InspectionBranch objects
+        return data.map((json) => InspectionBranch.fromJson(json)).toList();
       } else {
-        // Handle error, perhaps return an empty list or throw an exception
-        //print('Failed to load inspection branches: ${response.statusCode}');
-        return [];
+        // Throw an exception for FutureProvider to catch
+        throw Exception('Failed to load inspection branches: ${response.statusCode}');
       }
     } catch (e) {
-      //print('Error fetching inspection branches: $e');
-      return [];
+      // Re-throw for FutureProvider
+      throw Exception('Error fetching inspection branches: $e');
     }
   }
 
@@ -56,11 +57,10 @@ class ApiService {
           "vehiclePlateNumber": formData.platNomor,
           "inspectionDate": formData.tanggalInspeksi?.toIso8601String() ?? '-',
           "overallRating": formData.penilaianKeseluruhanSelectedValue ?? 0,
-          "inspectorId": formData.inspectorId ?? '-',
           "identityDetails": {
-            "namaInspektor": formData.namaInspektor ?? '-',
+            "namaInspektor": formData.inspectorId ?? '-',
             "namaCustomer": formData.namaCustomer,
-            "cabangInspeksi": formData.cabangInspeksi ?? '-',
+            "cabangInspeksi": formData.cabangInspeksi?.id ?? '-',
           },
           "vehicleData": {
             "merekKendaraan": formData.merekKendaraan,
@@ -89,15 +89,15 @@ class ApiService {
           "inspectionSummary": {
             "interiorScore": formData.interiorSelectedValue ?? 0,
             
-            "interiorNotes": formData.keteranganInterior?.join(', ') ?? '-',
+            "interiorNotes": formData.keteranganInterior ?? [],
             "eksteriorScore": formData.eksteriorSelectedValue ?? 0,
-            "eksteriorNotes": formData.keteranganEksterior?.join(', ') ?? '-',
+            "eksteriorNotes": formData.keteranganEksterior ?? [],
             "kakiKakiScore": formData.kakiKakiSelectedValue ?? 0,
-            "kakiKakiNotes": formData.keteranganKakiKaki?.join(', ') ?? '-',
+            "kakiKakiNotes": formData.keteranganKakiKaki ?? [],
             "mesinScore": formData.mesinSelectedValue ?? 0,
-            "mesinNotes": formData.keteranganMesin?.join(', ') ?? '-',
+            "mesinNotes": formData.keteranganMesin ?? [],
             "penilaianKeseluruhanScore": formData.penilaianKeseluruhanSelectedValue ?? 0,
-            "deskripsiKeseluruhan": formData.deskripsiKeseluruhan?.join(', ') ?? '-',
+            "deskripsiKeseluruhan": formData.deskripsiKeseluruhan ?? [],
             "indikasiTabrakan": formData.indikasiTabrakan ?? false,
             "indikasiBanjir": formData.indikasiBanjir ?? false,
             "indikasiOdometerReset": formData.indikasiOdometerReset ?? false,

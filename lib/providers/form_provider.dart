@@ -5,6 +5,7 @@ import 'package:form_app/providers/inspection_branches_provider.dart';
 import 'package:form_app/providers/inspector_provider.dart'; // Import inspection branches provider
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:form_app/models/inspection_branch.dart'; // Import InspectionBranch model
 
 class FormNotifier extends StateNotifier<FormData> {
   final Ref _ref;
@@ -14,7 +15,7 @@ class FormNotifier extends StateNotifier<FormData> {
     // Load initial data first
     _loadFormData().then((_) {
       // Then setup listeners and perform initial validation with loaded state
-      _ref.listen<AsyncValue<List<String>>>(inspectionBranchesProvider, (previous, next) {
+      _ref.listen<AsyncValue<List<InspectionBranch>>>(inspectionBranchesProvider, (previous, next) {
         next.whenData((availableBranches) {
           _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
         });
@@ -38,9 +39,10 @@ class FormNotifier extends StateNotifier<FormData> {
     });
   }
 
-  void _validateAndUpdateCabangInspeksi(String? currentCabang, List<String> availableBranches) {
+  void _validateAndUpdateCabangInspeksi(InspectionBranch? currentCabang, List<InspectionBranch> availableBranches) {
     if (currentCabang != null) {
-      if (availableBranches.isNotEmpty && !availableBranches.contains(currentCabang)) {
+      // Check if the current branch's ID exists in the available branches
+      if (availableBranches.isNotEmpty && !availableBranches.any((branch) => branch.id == currentCabang.id)) {
         if (state.cabangInspeksi != null) { // Check if a change is actually needed
           state = state.copyWith(cabangInspeksi: null);
         }
@@ -102,13 +104,8 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(namaCustomer: name);
   }
 
-  void updateCabangInspeksi(String? cabang) {
-    final availableBranches = _ref.read(inspectionBranchesProvider).asData?.value ?? [];
-    if (cabang != null && availableBranches.isNotEmpty && !availableBranches.contains(cabang)) {
-      state = state.copyWith(cabangInspeksi: cabang);
-    } else if (cabang == null || (availableBranches.contains(cabang)) || availableBranches.isEmpty) {
-      state = state.copyWith(cabangInspeksi: cabang);
-    }
+  void updateCabangInspeksi(InspectionBranch? cabang) {
+    state = state.copyWith(cabangInspeksi: cabang);
   }
 
   void updateTanggalInspeksi(DateTime? date) {
@@ -941,7 +938,7 @@ extension on FormData {
     String? inspectorId,
     Inspector? selectedInspector,
     String? namaCustomer,
-    String? cabangInspeksi,
+    InspectionBranch? cabangInspeksi, // Change type to InspectionBranch
     DateTime? tanggalInspeksi,
     String? merekKendaraan,
     String? tipeKendaraan,
