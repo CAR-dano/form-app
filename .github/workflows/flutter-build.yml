@@ -18,21 +18,22 @@ jobs:
         with:
           fetch-depth: 0
 
-      # --- Get Semantic Version from pubspec.yaml ---
       - name: Read pubspec.yaml semantic version
-        id: pubspec # Give step an ID
+        id: pubspec
         run: |
-          # Read the line starting with 'version:', extract the value, and remove everything from '+' onwards
           VERSION_LINE=$(grep '^version:' pubspec.yaml)
           SEMANTIC_VERSION=$(echo "$VERSION_LINE" | sed 's/version: //g' | sed 's/+\.*//g' | tr -d '[:space:]')
           echo "semantic_version=$SEMANTIC_VERSION" >> $GITHUB_OUTPUT
-          echo "Full version line from pubspec: $VERSION_LINE" # For debugging
-          echo "Extracted semantic version: $SEMANTIC_VERSION" # For debugging
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.3' # Your Flutter version
+          flutter-version: '3.29.3'
+
+      - name: Create dummy .env file for analysis and testing
+        run: |
+          echo "API_BASE_URL=http://dummy.api.for.ci" > .env
+          # Add other expected env keys with dummy values if needed
 
       - name: Install dependencies
         run: flutter pub get
@@ -43,11 +44,15 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      # --- Build APK with Overridden Version ---
+      - name: Create .env file for Release Build
+        run: |
+          echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" > .env
+        env:
+          API_BASE_URL: ${{ secrets.API_BASE_URL }} # Ensure this secret is set in GitHub repo settings
+
       - name: Build APK
         run: flutter build apk --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ github.run_number }}
 
-      # --- Release Steps (using the version info) ---
       - name: Create Release Tag Name
         id: create_tag
         run: echo "tag_name=v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}" >> $GITHUB_OUTPUT
