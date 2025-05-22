@@ -41,29 +41,6 @@ class DeleteConfirmationDialog extends StatelessWidget {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: onConfirm,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: buttonColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      minimumSize: const Size.fromHeight(44), // Set height to 44
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      elevation: 5,
-                      shadowColor: buttonColor.withAlpha(102),
-                    ),
-                    child: Text(
-                      'Iya',
-                      style: labelStyle.copyWith(
-                        color: buttonTextColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16.0),
-                Expanded(
-                  child: ElevatedButton(
                     onPressed: onCancel,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.grey[300], // A neutral color for "Tidak"
@@ -71,15 +48,52 @@ class DeleteConfirmationDialog extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       minimumSize: const Size.fromHeight(44), // Set height to 44
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
                       elevation: 5,
                       shadowColor: Colors.grey[300]?.withAlpha(102),
+                      alignment: Alignment.center, // Explicitly center the content
                     ),
-                    child: Text(
-                      'Tidak',
-                      style: labelStyle.copyWith(
-                        color: darkTextColor, // Or a suitable dark color
-                        fontWeight: FontWeight.bold,
+                    child: SizedBox(
+                      height: 24.0, // Fixed height for the button content
+                      child: Transform.translate(
+                        offset: const Offset(0.0, -2.0), // Move text up by 1 pixel
+                        child: Text(
+                          'Tidak',
+                          textAlign: TextAlign.center, // Ensure text is centered horizontally
+                          style: labelStyle.copyWith(
+                            color: darkTextColor, // Or a suitable dark color
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: onConfirm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      minimumSize: const Size.fromHeight(44), // Set height to 44
+                      elevation: 5,
+                      shadowColor: buttonColor.withAlpha(102),
+                      alignment: Alignment.center, // Explicitly center the content
+                    ),
+                    child: SizedBox(
+                      height: 24.0, // Fixed height for the button content
+                      child: Transform.translate(
+                        offset: const Offset(0.0, -2.0), // Move text up by 1 pixel
+                        child: Text(
+                          'Iya',
+                          textAlign: TextAlign.center, // Ensure text is centered horizontally
+                          style: labelStyle.copyWith(
+                            color: buttonTextColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ),
