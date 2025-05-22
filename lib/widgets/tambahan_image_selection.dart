@@ -312,8 +312,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                         onTap: _showDeleteConfirmationDialog,
                         child: SvgPicture.asset(
                           'assets/images/trashcan.svg',
-                          width: 26.0,
-                          height: 26.0,
+                          width: 40.0,
+                          height: 40.0,
                         ),
                       ),
                     ),
