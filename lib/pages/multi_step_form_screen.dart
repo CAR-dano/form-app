@@ -31,7 +31,6 @@ import 'package:form_app/pages/page_seven.dart';
 import 'package:form_app/pages/page_eight.dart';
 import 'package:form_app/pages/page_nine.dart';
 import 'package:form_app/pages/finished.dart';
-import 'package:form_app/statics/app_styles.dart'; // Import app_styles for snackbar text style
 
 class MultiStepFormScreen extends ConsumerStatefulWidget {
   const MultiStepFormScreen({super.key});
@@ -97,7 +96,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         formSubmittedPageOne: _formSubmittedPageOne,
         formSubmittedPageTwo: _formSubmittedPageTwo,
         pageNames: _pageNames,
-        validateAndShowSnackbar: _validateAndShowSnackbar, // Pass the function
+        validatePage: _validatePage, // Pass the function
       ),
       const FinishedPage(),
     ];
@@ -109,31 +108,14 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     super.dispose();
   }
 
-  // Function to show a snackbar
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: subTitleTextStyle.copyWith(color: Colors.white),
-        ),
-        backgroundColor: Colors.red,
-        duration: const Duration(seconds: 3),
-      ),
-    );
-  }
-
-  // Function to validate a specific page and show snackbar if invalid
-  bool _validateAndShowSnackbar(int pageIndex) {
+  // Function to validate a specific page
+  String? _validatePage(int pageIndex) {
     final formKey = _formKeys[pageIndex];
     // Trigger validation for the specific page's form
     if (!(formKey.currentState?.validate() ?? false)) {
-      _showSnackBar('Harap lengkapi data di ${_pageNames[pageIndex]}');
-      // Navigate to the page that failed validation
-      ref.read(formStepProvider.notifier).state = pageIndex;
-      return false;
+      return 'Harap lengkapi data di ${_pageNames[pageIndex]}';
     }
-    return true;
+    return null;
   }
 
   @override

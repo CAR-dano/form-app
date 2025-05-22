@@ -19,7 +19,7 @@ class PageNine extends ConsumerStatefulWidget {
   final ValueNotifier<bool> formSubmittedPageOne;
   final ValueNotifier<bool> formSubmittedPageTwo;
   final Map<int, String> pageNames;
-  final bool Function(int pageIndex) validateAndShowSnackbar; // New parameter
+  final String? Function(int pageIndex) validatePage; // New parameter
 
   const PageNine({
     super.key,
@@ -28,7 +28,7 @@ class PageNine extends ConsumerStatefulWidget {
     required this.formSubmittedPageOne,
     required this.formSubmittedPageTwo,
     required this.pageNames,
-    required this.validateAndShowSnackbar, // Update constructor
+    required this.validatePage, // Update constructor
   });
 
   @override
@@ -53,29 +53,70 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
   bool get wantKeepAlive => true;
 
   Future<void> _submitForm() async {
-    if (_isLoading || !_isChecked) {
-      // Use the passed validateAndShowSnackbar for the initial check
-      widget.validateAndShowSnackbar(-1); // Use a dummy index or handle this case in MultiStepFormScreen
+    if (_isLoading) {
       return;
     }
 
-    // Set formSubmitted to true for Page One and Page Two
-    widget.formSubmittedPageOne.value = true;
-    widget.formSubmittedPageTwo.value = true;
-
-    // Validate Page One using the passed function
-    if (!widget.validateAndShowSnackbar(0)) {
-      return;
-    }
-
-    // Validate Page Two using the passed function
-    if (!widget.validateAndShowSnackbar(1)) {
+    if (!_isChecked) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Harap setujui pernyataan di atas sebelum melanjutkan.',
+            style: subTitleTextStyle.copyWith(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
       return;
     }
 
     setState(() {
       _isLoading = true;
     });
+
+    // Set formSubmitted to true for Page One and Page Two to show validation messages
+    widget.formSubmittedPageOne.value = true;
+    widget.formSubmittedPageTwo.value = true;
+
+    List<String> validationErrors = [];
+    int? firstErrorPageIndex;
+
+    // Validate Page One
+    final pageOneError = widget.validatePage(0);
+    if (pageOneError != null) {
+      validationErrors.add(pageOneError);
+      firstErrorPageIndex ??= 0;
+    }
+
+    // Validate Page Two
+    final pageTwoError = widget.validatePage(1);
+    if (pageTwoError != null) {
+      validationErrors.add(pageTwoError);
+      firstErrorPageIndex ??= 1; // Only set if it's the first error found
+    }
+
+    if (validationErrors.isNotEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            validationErrors.join('\n'), // Join all error messages
+            style: subTitleTextStyle.copyWith(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5), // Give more time for multiple messages
+        ),
+      );
+      // Navigate to the first page that failed validation
+      if (firstErrorPageIndex != null) {
+        ref.read(formStepProvider.notifier).state = firstErrorPageIndex;
+      }
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
 
     try {
       final formData = ref.read(formProvider);
@@ -93,8 +134,16 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
       ref.read(formStepProvider.notifier).state++;
     } catch (e) {
       if (!mounted) return;
-      // Use the passed validateAndShowSnackbar for error messages
-      widget.validateAndShowSnackbar(-2); // Use a dummy index or handle this case in MultiStepFormScreen
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Terjadi kesalahan saat mengirim data: $e',
+            style: subTitleTextStyle.copyWith(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
     } finally {
       setState(() {
         _isLoading = false;
