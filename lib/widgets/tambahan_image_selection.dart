@@ -12,9 +12,12 @@ import 'package:form_app/providers/tambahan_image_data_provider.dart';
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier; // Add identifier parameter
 
+  final bool showNeedAttention;
+
   const TambahanImageSelection({
     super.key,
-    required this.identifier, // Make it required
+    required this.identifier,
+    this.showNeedAttention = true, // Default to true
   });
 
   @override
@@ -308,14 +311,15 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                 // initialValue: currentImage?.label ?? '', // Controller handles initial value
               ),
               const SizedBox(height: 16.0),
-              FormConfirmation(
-                // Use a dynamic key
-                key: ValueKey<String>('attention_${currentImage?.id ?? "default_attention_state"}'),
-                label: 'Perlu Perhatian',
-                initialValue: currentImage?.needAttention ?? false,
-                onChanged: _onNeedAttentionChanged,
-                fontWeight: FontWeight.w300,
-              ),
+              if (widget.showNeedAttention) // Conditionally render
+                FormConfirmation(
+                  // Use a dynamic key
+                  key: ValueKey<String>('attention_${currentImage?.id ?? "default_attention_state"}'),
+                  label: 'Perlu Perhatian',
+                  initialValue: currentImage?.needAttention ?? false,
+                  onChanged: _onNeedAttentionChanged,
+                  fontWeight: FontWeight.w300,
+                ),
             ],
           ),
         ),
@@ -336,6 +340,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
                       backgroundColor: buttonColor,
                       disabledBackgroundColor: Colors.grey[300],
+                      elevation: 5, // Add elevation
+                      shadowColor: buttonColor.withAlpha(102), // Add shadow color
                     ),
                     child: const Icon(Icons.arrow_back_ios_new, size: 18, color: buttonTextColor),
                   ),
@@ -360,6 +366,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
                       backgroundColor: buttonColor,
                       disabledBackgroundColor: Colors.grey[300],
+                      elevation: 5, // Add elevation
+                      shadowColor: buttonColor.withAlpha(102), // Add shadow color
                     ),
                     child: const Icon(Icons.arrow_forward_ios, size: 18, color: buttonTextColor),
                   ),
