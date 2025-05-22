@@ -1,15 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_provider.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
-import 'package:form_app/services/api_service.dart';
+import 'package:form_app/services/api_service.dart'; // Ensure UploadableImage is accessible or define it here
 import 'package:form_app/statics/app_styles.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
-import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
+import 'package:form_app/providers/form_step_provider.dart';
 import 'package:form_app/providers/image_data_provider.dart';
 
 // Placeholder for Page Nine
@@ -19,7 +20,7 @@ class PageNine extends ConsumerStatefulWidget {
   final ValueNotifier<bool> formSubmittedPageOne;
   final ValueNotifier<bool> formSubmittedPageTwo;
   final Map<int, String> pageNames;
-  final String? Function(int pageIndex) validatePage; // New parameter
+  final String? Function(int pageIndex) validatePage;
 
   const PageNine({
     super.key,
@@ -28,7 +29,7 @@ class PageNine extends ConsumerStatefulWidget {
     required this.formSubmittedPageOne,
     required this.formSubmittedPageTwo,
     required this.pageNames,
-    required this.validatePage, // Update constructor
+    required this.validatePage,
   });
 
   @override
@@ -46,7 +47,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
     'Mesin Tambahan',
     'Kaki-kaki Tambahan',
     'Alat-alat Tambahan',
-    'Foto Dokumen',
+    'Foto Dokumen', // Assuming 'Foto Dokumen' is one of the identifiers for TambahanImageData
   ];
 
   @override
@@ -75,25 +76,22 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
       _isLoading = true;
     });
 
-    // Set formSubmitted to true for Page One and Page Two to show validation messages
     widget.formSubmittedPageOne.value = true;
     widget.formSubmittedPageTwo.value = true;
 
     List<String> validationErrors = [];
     int? firstErrorPageIndex;
 
-    // Validate Page One
     final pageOneError = widget.validatePage(0);
     if (pageOneError != null) {
       validationErrors.add(pageOneError);
       firstErrorPageIndex ??= 0;
     }
 
-    // Validate Page Two
     final pageTwoError = widget.validatePage(1);
     if (pageTwoError != null) {
       validationErrors.add(pageTwoError);
-      firstErrorPageIndex ??= 1; // Only set if it's the first error found
+      firstErrorPageIndex ??= 1;
     }
 
     if (validationErrors.isNotEmpty) {
@@ -101,14 +99,13 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            validationErrors.join('\n'), // Join all error messages
+            validationErrors.join('\n'),
             style: subTitleTextStyle.copyWith(color: Colors.white),
           ),
           backgroundColor: Colors.red,
-          duration: const Duration(seconds: 5), // Give more time for multiple messages
+          duration: const Duration(seconds: 5),
         ),
       );
-      // Navigate to the first page that failed validation
       if (firstErrorPageIndex != null) {
         ref.read(formStepProvider.notifier).state = firstErrorPageIndex;
       }
@@ -118,12 +115,73 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
       return;
     }
 
+    String? inspectionId;
     try {
       final formData = ref.read(formProvider);
       final apiService = ApiService();
 
-      await apiService.submitFormData(formData);
+      final Map<String, dynamic> formDataResponse = await apiService.submitFormData(formData);
+      inspectionId = formDataResponse['id'] as String?;
 
+      if (inspectionId == null || inspectionId.isEmpty) {
+        throw Exception('Inspection ID not received from server.');
+      }
+
+      if (!mounted) return;
+      setState(() {
+      });
+
+      // Collect all images
+      List<UploadableImage> allImagesToUpload = [];
+
+      // 1. Wajib Images
+      final wajibImages = ref.read(imageDataListProvider);
+      for (var imgData in wajibImages) {
+        if (imgData.imagePath.isNotEmpty) { // Only add if path is not empty
+            allImagesToUpload.add(UploadableImage(
+            imagePath: imgData.imagePath,
+            label: imgData.label,
+            needAttention: imgData.needAttention,
+            category: imgData.category,
+            isMandatory: imgData.isMandatory,
+          ));
+        }
+      }
+
+      // 2. Tambahan Images
+      for (final identifier in tambahanImageIdentifiers) {
+        final tambahanImagesList = ref.read(tambahanImageDataProvider(identifier));
+        for (var imgData in tambahanImagesList) {
+           if (imgData.imagePath.isNotEmpty) { // Only add if path is not empty
+            allImagesToUpload.add(UploadableImage(
+              imagePath: imgData.imagePath,
+              label: imgData.label,
+              needAttention: imgData.needAttention,
+              category: imgData.category, // Already set during creation
+              isMandatory: imgData.isMandatory, // Already set
+            ));
+           }
+        }
+      }
+      
+      if (kDebugMode) {
+        print('Total images to upload: ${allImagesToUpload.length}');
+        for (var img in allImagesToUpload) {
+          print('Image: ${img.label}, Path: ${img.imagePath}, Category: ${img.category}, Mandatory: ${img.isMandatory}');
+        }
+      }
+
+
+      if (allImagesToUpload.isNotEmpty) {
+        await apiService.uploadImagesInBatches(inspectionId, allImagesToUpload);
+      } else {
+        if (kDebugMode) {
+          print('No images to upload.');
+        }
+      }
+
+
+      // If all successful
       ref.read(formProvider.notifier).resetFormData();
       ref.read(imageDataListProvider.notifier).clearImageData();
       for (final identifier in tambahanImageIdentifiers) {
@@ -131,13 +189,14 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
       }
 
       if (!mounted) return;
-      ref.read(formStepProvider.notifier).state++;
+      ref.read(formStepProvider.notifier).state++; // Move to finished page
+
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Terjadi kesalahan saat mengirim data: $e',
+            'Terjadi kesalahan: $e', // Display specific error
             style: subTitleTextStyle.copyWith(color: Colors.white),
           ),
           backgroundColor: Colors.red,
@@ -145,33 +204,35 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
         ),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
+    super.build(context);
     return Column(
       children: [
         SingleChildScrollView(
-          key: const PageStorageKey<String>('pageNineScrollKey'), // Add PageStorageKey here
+          key: const PageStorageKey<String>('pageNineScrollKey'),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               PageNumber(data: '9/9'),
               const SizedBox(height: 4),
-              PageTitle(data: 'Finalisasi'), // Placeholder Title
+              PageTitle(data: 'Finalisasi'),
               const SizedBox(height: 6.0),
               Text(
                 'Pastikan data yang telah diisi telah sesuai dengan yang sebenarnya dan memenuhi SOP PT Inspeksi Mobil Jogja',
                 style: labelStyle.copyWith(
                   fontWeight: FontWeight.w300,
-                ), // Corrected font weight
+                ),
               ),
-              const SizedBox(height: 16.0), // Added spacing
+              const SizedBox(height: 16.0),
               FormConfirmation(
                 label: 'Data yang saya isi telah sesuai',
                 initialValue: _isChecked,
@@ -185,19 +246,18 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
             ],
           ),
         ),
-        Spacer(),
+        const Spacer(),
         NavigationButtonRow(
           onBackPressed: () => ref.read(formStepProvider.notifier).state--,
-          isLastPage:
-              true, // This will make the button text "Selesai" or similar
-          onNextPressed:
-              _submitForm, // _submitForm will now update formStepProvider on success
+          isLastPage: true,
+          onNextPressed: _submitForm,
           isFormConfirmed: _isChecked,
-          isLoading: _isLoading, // Pass loading state to disable button
+          isLoading: _isLoading,
+          // Optional: Pass _loadingMessage to NavigationButtonRow if it can display it
+          // nextButtonText: _isLoading ? _loadingMessage : 'Kirim', // Example
         ),
-        const SizedBox(height: 24.0), // Optional spacing below the content
-        // Footer
-        Footer(),
+        const SizedBox(height: 24.0),
+        const Footer(),
       ],
     );
   }

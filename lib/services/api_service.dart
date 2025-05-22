@@ -1,9 +1,35 @@
+import 'dart:convert'; // Import for json.encode
+import 'dart:io'; // Import for File
 import 'package:dio/dio.dart' as dio; // Add prefix
 import 'package:flutter/foundation.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspector_data.dart'; // Import Inspector model
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import flutter_dotenv
 import 'package:form_app/models/inspection_branch.dart'; // Import InspectionBranch model
+
+// Temporary simple class to represent a generic image for upload
+class UploadableImage {
+  final String imagePath;
+  final String label;
+  final bool needAttention;
+  final String category;
+  final bool isMandatory;
+
+  UploadableImage({
+    required this.imagePath,
+    required this.label,
+    required this.needAttention,
+    required this.category,
+    required this.isMandatory,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'label': label,
+        'needAttention': needAttention,
+        'category': category,
+        'isMandatory': isMandatory,
+      };
+}
 
 class ApiService {
   final dio.Dio _dio = dio.Dio(); // Use prefix
@@ -50,7 +76,7 @@ class ApiService {
     }
   }
 
-  Future<void> submitFormData(FormData formData) async {
+  Future<Map<String, dynamic>> submitFormData(FormData formData) async { // Modified to return Map<String, dynamic>
     try {
       final response = await _dio.post(
         _inspectionsUrl,
@@ -77,15 +103,15 @@ class ApiService {
             "biayaPajak": formData.biayaPajak,
           },
           "equipmentChecklist": {
-            "bukuService": formData.bukuService ?? false,
-            "kunciSerep": formData.kunciSerep ?? false,
-            "bukuManual": formData.bukuManual ?? false,
-            "banSerep": formData.banSerep ?? false,
-            "bpkb": formData.bpkb ?? false,
-            "dongkrak": formData.dongkrak ?? false,
-            "toolkit": formData.toolkit ?? false,
-            "noRangka":  formData.noRangka ?? false,
-            "noMesin": formData.noMesin ?? false,
+            "bukuService": formData.bukuService == "Lengkap", // Convert to boolean
+            "kunciSerep": formData.kunciSerep == "Lengkap",
+            "bukuManual": formData.bukuManual == "Lengkap",
+            "banSerep": formData.banSerep == "Lengkap",
+            "bpkb": formData.bpkb == "Lengkap",
+            "dongkrak": formData.dongkrak == "Lengkap",
+            "toolkit": formData.toolkit == "Lengkap",
+            "noRangka":  formData.noRangka == "Lengkap",
+            "noMesin": formData.noMesin == "Lengkap",
           },
           "inspectionSummary": {
             "interiorScore": formData.interiorSelectedValue ?? 0,
@@ -99,9 +125,9 @@ class ApiService {
             "mesinNotes": formData.keteranganMesin ?? [],
             "penilaianKeseluruhanScore": formData.penilaianKeseluruhanSelectedValue ?? 0,
             "deskripsiKeseluruhan": formData.deskripsiKeseluruhan ?? [],
-            "indikasiTabrakan": formData.indikasiTabrakan ?? false,
-            "indikasiBanjir": formData.indikasiBanjir ?? false,
-            "indikasiOdometerReset": formData.indikasiOdometerReset ?? false,
+            "indikasiTabrakan": formData.indikasiTabrakan == "Terindikasi", // Convert to boolean
+            "indikasiBanjir": formData.indikasiBanjir == "Terindikasi",
+            "indikasiOdometerReset": formData.indikasiOdometerReset == "Terindikasi",
             "posisiBan": formData.posisiBan ?? '-',
             "merkban": formData.merk ?? '-',
             "tipeVelg": formData.tipeVelg ?? '-',
@@ -109,7 +135,7 @@ class ApiService {
             "estimasiPerbaikan": formData.repairEstimations.map((estimation) {
               return {
                 "namaPart": estimation['repair'] ?? '-',
-                "harga": estimation['price'] ?? 0,
+                "harga": estimation['price']?.replaceAll('.', '') ?? "0", // Remove dots for price
               };
             }).toList(),
           },
@@ -260,7 +286,7 @@ class ApiService {
           "bodyPaintThickness": {
             "front": formData.catDepanKap ?? '-',
             "rear": {
-              "trunk": formData.catBelakangTrunk,
+              "trunk": formData.catBelakangTrunk ?? '-',
               "bumper": formData.catBelakangBumper ?? '-'
             },
             "right": {
@@ -281,20 +307,93 @@ class ApiService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (kDebugMode) {
-          print('Form data submitted successfully!');
+          print('Form data submitted successfully! Response: ${response.data}');
         }
-        // TODO: Handle success (e.g., show a success message)
+        return response.data as Map<String, dynamic>; // Return the response data
       } else {
         if (kDebugMode) {
-          print('Failed to submit form data: ${response.statusCode}');
+          print('Failed to submit form data: ${response.statusCode} - ${response.data}');
         }
-        // TODO: Handle errors (e.g., show an error message)
+        throw Exception('Failed to submit form data: ${response.statusCode} - ${response.data}');
       }
     } catch (e) {
       if (kDebugMode) {
         print('Error submitting form data: $e');
       }
-      // TODO: Handle network errors or exceptions (e.g., show an error message)
+      throw Exception('Error submitting form data: $e');
+    }
+  }
+
+  Future<void> uploadImagesInBatches(String inspectionId, List<UploadableImage> allImages) async {
+    const int batchSize = 10;
+    for (int i = 0; i < allImages.length; i += batchSize) {
+      final batch = allImages.sublist(i, i + batchSize > allImages.length ? allImages.length : i + batchSize);
+      
+      List<dio.MultipartFile> photoFiles = [];
+      List<Map<String, dynamic>> metadataList = [];
+
+      for (var image in batch) {
+        if (image.imagePath.isEmpty) continue; // Skip if path is empty
+        File file = File(image.imagePath);
+        if (!await file.exists()) {
+          if (kDebugMode) {
+            print('Image file not found: ${image.imagePath}');
+          }
+          continue; // Skip if file doesn't exist
+        }
+        String fileName = file.path.split('/').last;
+        photoFiles.add(await dio.MultipartFile.fromFile(file.path, filename: fileName));
+        metadataList.add(image.toJson());
+      }
+
+      if (photoFiles.isEmpty) { // If all images in batch were invalid
+        if (kDebugMode) {
+          print('Skipping empty batch for inspection $inspectionId from index $i');
+        }
+        continue;
+      }
+
+      String metadataJsonString = json.encode(metadataList);
+
+      dio.FormData formData = dio.FormData.fromMap({
+        'photos': photoFiles,
+        'metadata': metadataJsonString,
+      });
+
+      final photosUploadUrl = '$_inspectionsUrl/$inspectionId/photos/multiple';
+      
+      if (kDebugMode) {
+        print('Uploading batch of ${photoFiles.length} photos to $photosUploadUrl');
+        print('Metadata for batch: $metadataJsonString');
+      }
+
+      try {
+        final response = await _dio.post(
+          photosUploadUrl,
+          data: formData,
+          // Options for timeouts can be added here if needed
+        );
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          if (kDebugMode) {
+            print('Batch of ${photoFiles.length} photos uploaded successfully for inspection $inspectionId.');
+            print('Response from photo upload: ${response.data}');
+          }
+        } else {
+          if (kDebugMode) {
+            print('Failed to upload batch for inspection $inspectionId: ${response.statusCode} - ${response.data}');
+          }
+          // Consider how to handle partial failures. Should it stop all uploads?
+          // For now, we'll throw an exception for the batch.
+          throw Exception('Failed to upload photo batch: ${response.statusCode} - ${response.data}');
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error uploading batch for inspection $inspectionId: $e');
+        }
+        // Propagate the error
+        throw Exception('Error uploading photo batch: $e');
+      }
     }
   }
 }
