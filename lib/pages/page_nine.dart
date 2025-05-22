@@ -14,15 +14,30 @@ import 'package:form_app/providers/image_data_provider.dart';
 
 // Placeholder for Page Nine
 class PageNine extends ConsumerStatefulWidget {
-  const PageNine({super.key});
+  final GlobalKey<FormState> formKeyPageOne;
+  final GlobalKey<FormState> formKeyPageTwo;
+  final ValueNotifier<bool> formSubmittedPageOne;
+  final ValueNotifier<bool> formSubmittedPageTwo;
+  final Map<int, String> pageNames;
+  final bool Function(int pageIndex) validateAndShowSnackbar; // New parameter
+
+  const PageNine({
+    super.key,
+    required this.formKeyPageOne,
+    required this.formKeyPageTwo,
+    required this.formSubmittedPageOne,
+    required this.formSubmittedPageTwo,
+    required this.pageNames,
+    required this.validateAndShowSnackbar, // Update constructor
+  });
 
   @override
   ConsumerState<PageNine> createState() => _PageNineState();
 }
 
-class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClientMixin { // Add mixin
+class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClientMixin {
   bool _isChecked = false;
-  bool _isLoading = false; // Add loading state
+  bool _isLoading = false;
 
   final List<String> tambahanImageIdentifiers = [
     'general_tambahan',
@@ -31,34 +46,43 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
     'mesin_tambahan',
     'kaki_kaki_tambahan',
     'alat_alat_tambahan',
+    'foto_dokumen',
   ];
 
   @override
-  bool get wantKeepAlive => true; // Override wantKeepAlive
+  bool get wantKeepAlive => true;
 
   Future<void> _submitForm() async {
-    if (_isLoading || !_isChecked) { // Prevent multiple submissions while loading
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Harap setujui pernyataan untuk melanjutkan.'),
-          backgroundColor: Colors.red,
-        ),
-      );
+    if (_isLoading || !_isChecked) {
+      // Use the passed validateAndShowSnackbar for the initial check
+      widget.validateAndShowSnackbar(-1); // Use a dummy index or handle this case in MultiStepFormScreen
+      return;
+    }
+
+    // Set formSubmitted to true for Page One and Page Two
+    widget.formSubmittedPageOne.value = true;
+    widget.formSubmittedPageTwo.value = true;
+
+    // Validate Page One using the passed function
+    if (!widget.validateAndShowSnackbar(0)) {
+      return;
+    }
+
+    // Validate Page Two using the passed function
+    if (!widget.validateAndShowSnackbar(1)) {
       return;
     }
 
     setState(() {
-      _isLoading = true; // Set loading state to true
+      _isLoading = true;
     });
 
     try {
       final formData = ref.read(formProvider);
-      final apiService =
-          ApiService(); // Consider providing ApiService via Riverpod as well
+      final apiService = ApiService();
 
       await apiService.submitFormData(formData);
 
-      // Clear stored data after successful submission
       ref.read(formProvider.notifier).resetFormData();
       ref.read(imageDataListProvider.notifier).clearImageData();
       for (final identifier in tambahanImageIdentifiers) {
@@ -66,19 +90,14 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
       }
 
       if (!mounted) return;
-      // Navigate to the FinishedPage by updating the form step
       ref.read(formStepProvider.notifier).state++;
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Gagal mengirim formulir: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      // Use the passed validateAndShowSnackbar for error messages
+      widget.validateAndShowSnackbar(-2); // Use a dummy index or handle this case in MultiStepFormScreen
     } finally {
       setState(() {
-        _isLoading = false; // Reset loading state
+        _isLoading = false;
       });
     }
   }

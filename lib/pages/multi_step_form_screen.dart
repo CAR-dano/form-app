@@ -31,6 +31,7 @@ import 'package:form_app/pages/page_seven.dart';
 import 'package:form_app/pages/page_eight.dart';
 import 'package:form_app/pages/page_nine.dart';
 import 'package:form_app/pages/finished.dart';
+import 'package:form_app/statics/app_styles.dart'; // Import app_styles for snackbar text style
 
 class MultiStepFormScreen extends ConsumerStatefulWidget {
   const MultiStepFormScreen({super.key});
@@ -41,29 +42,33 @@ class MultiStepFormScreen extends ConsumerStatefulWidget {
 
 class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   final List<GlobalKey<FormState>> _formKeys = [
-    GlobalKey<FormState>(), // For PageOne
-    GlobalKey<FormState>(), // For PageTwo
+    GlobalKey<FormState>(), // For PageOne (index 0)
+    GlobalKey<FormState>(), // For PageTwo (index 1)
     // Add more GlobalKeys if other pages have forms needing them
   ];
+
+  // ValueNotifiers to control when validation messages are shown for specific pages
+  final ValueNotifier<bool> _formSubmittedPageOne = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _formSubmittedPageTwo = ValueNotifier<bool>(false);
 
   late final List<Widget> _formPages;
   late PageController _pageController;
 
+  // Map page indices to their names for snackbar messages
+  final Map<int, String> _pageNames = {
+    0: 'Identitas (Halaman 1)',
+    1: 'Data Kendaraan (Halaman 2)',
+  };
+
   @override
   void initState() {
     super.initState();
-    // Initialize PageController with the initial step from the provider
-    // Note: ref.read is safe here as initState is called once.
     _pageController = PageController(initialPage: ref.read(formStepProvider));
 
-    // Initialize _formPages:
-    // PageStorageKey on the page widgets themselves is not strictly needed
-    // when using PageView with AutomaticKeepAliveClientMixin on each page's state.
-    // The key on the scrollable child INSIDE the page remains important.
     _formPages = [
-      PageOne(formKey: _formKeys[0]), // Removed PageStorageKey from here
-      PageTwo(formKey: _formKeys[1]), // Removed PageStorageKey from here
-      const PageThree(),              // Removed PageStorageKey from here
+      PageOne(formKey: _formKeys[0], formSubmitted: _formSubmittedPageOne),
+      PageTwo(formKey: _formKeys[1], formSubmitted: _formSubmittedPageTwo),
+      const PageThree(),
       const PageFour(),
       const PageFiveOne(),
       const PageFiveTwo(),
@@ -86,7 +91,14 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       const PageSixAlatAlatTambahan(),
       const PageSeven(),
       const PageEight(),
-      const PageNine(),
+      PageNine(
+        formKeyPageOne: _formKeys[0],
+        formKeyPageTwo: _formKeys[1],
+        formSubmittedPageOne: _formSubmittedPageOne,
+        formSubmittedPageTwo: _formSubmittedPageTwo,
+        pageNames: _pageNames,
+        validateAndShowSnackbar: _validateAndShowSnackbar, // Pass the function
+      ),
       const FinishedPage(),
     ];
   }
@@ -97,33 +109,53 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     super.dispose();
   }
 
+  // Function to show a snackbar
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: subTitleTextStyle.copyWith(color: Colors.white),
+        ),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  // Function to validate a specific page and show snackbar if invalid
+  bool _validateAndShowSnackbar(int pageIndex) {
+    final formKey = _formKeys[pageIndex];
+    // Trigger validation for the specific page's form
+    if (!(formKey.currentState?.validate() ?? false)) {
+      _showSnackBar('Harap lengkapi data di ${_pageNames[pageIndex]}');
+      // Navigate to the page that failed validation
+      ref.read(formStepProvider.notifier).state = pageIndex;
+      return false;
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Listen to formStepProvider changes to control PageView
     ref.listen<int>(formStepProvider, (previous, next) {
       if (_pageController.hasClients && _pageController.page?.round() != next) {
         _pageController.animateToPage(
           next,
-          duration: const Duration(milliseconds: 150), // Standard page transition duration
+          duration: const Duration(milliseconds: 150),
           curve: Curves.easeInOut,
         );
       }
     });
 
     return Scaffold(
-      resizeToAvoidBottomInset: true, // Explicitly set to true
-      // The PageView becomes the direct body of this Scaffold.
-      // Each child of PageView will be a CommonLayout wrapping a page from _formPages.
+      resizeToAvoidBottomInset: true,
       body: PageView(
         controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(), // Disable manual swiping by user
+        physics: const NeverScrollableScrollPhysics(),
         children: _formPages.map((pageContent) {
           return CommonLayout(child: pageContent);
         }).toList(),
-        // If you want to update formStepProvider when PageView swipes (if not disabled):
-        // onPageChanged: (index) {
-        //   ref.read(formStepProvider.notifier).state = index;
-        // },
       ),
     );
   }

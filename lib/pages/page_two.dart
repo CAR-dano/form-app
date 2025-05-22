@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:form_app/pages/page_three.dart'; // No longer directly navigating
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
 import 'package:form_app/models/form_data.dart'; // Import FormData
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
@@ -12,22 +11,26 @@ import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 
 class PageTwo extends ConsumerStatefulWidget {
-  final GlobalKey<FormState> formKey; // Add formKey parameter
+  final GlobalKey<FormState> formKey;
+  final ValueNotifier<bool> formSubmitted; // New parameter
 
-  const PageTwo({super.key, required this.formKey}); // Update constructor
+  const PageTwo({
+    super.key,
+    required this.formKey,
+    required this.formSubmitted, // Update constructor
+  });
 
   @override
   ConsumerState<PageTwo> createState() => _PageTwoState();
 }
 
-class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClientMixin { // Add mixin
+class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClientMixin {
   late FocusScopeNode _focusScopeNode;
 
   @override
-  bool get wantKeepAlive => true; // Override wantKeepAlive
+  bool get wantKeepAlive => true;
 
-  // final _formKey = GlobalKey<FormState>(); // GlobalKey for the form - now passed as a parameter
-  bool _formSubmitted = false; // Track if the form has been submitted
+  // Removed _formSubmitted local state
 
   @override
   void initState() {
@@ -92,7 +95,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
                   PageTitle(data: 'Data Kendaraan'), // Updated Title
                   const SizedBox(height: 6.0),
 
-                  ..._buildInputFields(formData, formNotifier, _formSubmitted),
+                  ..._buildInputFields(formData, formNotifier),
 
                   const SizedBox(height: 32.0), // Spacing before buttons
                   NavigationButtonRow(
@@ -101,13 +104,8 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
                       ref.read(formStepProvider.notifier).state--;
                     },
                     onNextPressed: () {
-                      setState(() {
-                        _formSubmitted = true;
-                      });
-                      if (widget.formKey.currentState?.validate() ?? false) {
-                        _focusScopeNode.unfocus();
-                        ref.read(formStepProvider.notifier).state++;
-                      }
+                      _focusScopeNode.unfocus();
+                      ref.read(formStepProvider.notifier).state++;
                     },
                   ),
                   const SizedBox(height: 24.0),
@@ -121,7 +119,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
     );
   }
 
-  List<Widget> _buildInputFields(FormData formData, FormNotifier formNotifier, bool formSubmitted) {
+  List<Widget> _buildInputFields(FormData formData, FormNotifier formNotifier) {
     final List<Map<String, dynamic>> inputFieldsData = [
       {
         'label': 'Merek Kendaraan',
@@ -130,11 +128,11 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
         'initialValue': formData.merekKendaraan,
         'onChanged': (value) => formNotifier.updateMerekKendaraan(value),
         'validator': (value) {
-           if (value == null || value.isEmpty) {
-             return 'Merek Kendaraan belum terisi';
-           }
-           return null;
-         },
+          if (widget.formSubmitted.value && (value == null || value.isEmpty)) {
+            return 'Merek Kendaraan belum terisi';
+          }
+          return null;
+        },
       },
       {
         'label': 'Tipe Kendaraan',
@@ -142,12 +140,12 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
         'keyboardType': TextInputType.text,
         'initialValue': formData.tipeKendaraan,
         'onChanged': (value) => formNotifier.updateTipeKendaraan(value),
-         'validator': (value) {
-           if (value == null || value.isEmpty) {
-             return 'Tipe Kendaraan belum terisi';
-           }
-           return null;
-         },
+        'validator': (value) {
+          if (widget.formSubmitted.value && (value == null || value.isEmpty)) {
+            return 'Tipe Kendaraan belum terisi';
+          }
+          return null;
+        },
       },
       {
         'label': 'Tahun',
@@ -157,7 +155,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
         'initialValue': formData.tahun,
         'onChanged': (value) => formNotifier.updateTahun(value),
         'validator': (value) {
-          if (value == null || value.isEmpty) {
+          if (widget.formSubmitted.value && (value == null || value.isEmpty)) {
             return 'Tahun belum terisi';
           }
           return null;
@@ -170,7 +168,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
         'initialValue': formData.transmisi,
         'onChanged': (value) => formNotifier.updateTransmisi(value),
         'validator': (value) {
-          if (value == null || value.isEmpty) {
+          if (widget.formSubmitted.value && (value == null || value.isEmpty)) {
             return 'Transmisi belum terisi';
           }
           return null;
@@ -183,7 +181,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
         'initialValue': formData.warnaKendaraan,
         'onChanged': (value) => formNotifier.updateWarnaKendaraan(value),
         'validator': (value) {
-          if (value == null || value.isEmpty) {
+          if (widget.formSubmitted.value && (value == null || value.isEmpty)) {
             return 'Warna Kendaraan belum terisi';
           }
           return null;
@@ -197,7 +195,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
         'initialValue': formData.odometer,
         'onChanged': (value) => formNotifier.updateOdometer(value),
         'validator': (value) {
-          if (value == null || value.isEmpty) {
+          if (widget.formSubmitted.value && (value == null || value.isEmpty)) {
             return 'Odometer belum terisi';
           }
           return null;
@@ -210,7 +208,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
         'initialValue': formData.kepemilikan,
         'onChanged': (value) => formNotifier.updateKepemilikan(value),
         'validator': (value) {
-          if (value == null || value.isEmpty) {
+          if (widget.formSubmitted.value && (value == null || value.isEmpty)) {
             return 'Kepemilikan belum terisi';
           }
           return null;
@@ -223,7 +221,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
         'initialValue': formData.platNomor,
         'onChanged': (value) => formNotifier.updatePlatNomor(value),
         'validator': (value) {
-          if (value == null || value.isEmpty) {
+          if (widget.formSubmitted.value && (value == null || value.isEmpty)) {
             return 'Plat Nomor belum terisi';
           }
           return null;
@@ -232,11 +230,11 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
       {
         'label': 'Pajak 1 Tahun s.d.',
         'hintText': 'Pilih tanggal',
-        'isDateField': true, // Custom flag to identify date fields
+        'isDateField': true,
         'initialValue': formData.pajak1TahunDate,
         'onChanged': (date) => formNotifier.updatePajak1TahunDate(date),
         'validator': (value) {
-          if (value == null) {
+          if (widget.formSubmitted.value && value == null) {
             return 'Pajak 1 Tahun s.d. belum terisi';
           }
           return null;
@@ -245,11 +243,11 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
       {
         'label': 'Pajak 5 Tahun s.d.',
         'hintText': 'Pilih tanggal',
-        'isDateField': true, // Custom flag to identify date fields
+        'isDateField': true,
         'initialValue': formData.pajak5TahunDate,
         'onChanged': (date) => formNotifier.updatePajak5TahunDate(date),
         'validator': (value) {
-          if (value == null) {
+          if (widget.formSubmitted.value && value == null) {
             return 'Pajak 5 Tahun s.d. belum terisi';
           }
           return null;
@@ -263,7 +261,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
         'initialValue': formData.biayaPajak,
         'onChanged': (value) => formNotifier.updateBiayaPajak(value),
         'validator': (value) {
-          if (value == null || value.isEmpty) {
+          if (widget.formSubmitted.value && (value == null || value.isEmpty)) {
             return 'Biaya Pajak belum terisi';
           }
           return null;
@@ -281,7 +279,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
             onChanged: fieldData['onChanged'],
             validator: fieldData['validator'],
             initialDate: fieldData['initialValue'],
-            formSubmitted: formSubmitted,
+            formSubmitted: widget.formSubmitted.value,
             lastDate: DateTime.now().add(const Duration(days: 365 * 20)),
           ),
         );
@@ -295,7 +293,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
             onChanged: fieldData['onChanged'],
             validator: fieldData['validator'],
             initialValue: fieldData['initialValue'],
-            formSubmitted: formSubmitted,
+            formSubmitted: widget.formSubmitted.value,
             useThousandsSeparator: fieldData['useThousandsSeparator'] ?? true,
             suffixText: fieldData['suffixText'],
           ),

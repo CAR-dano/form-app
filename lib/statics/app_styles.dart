@@ -131,3 +131,9 @@ final TextStyle headingOneStyle = GoogleFonts.rubik(
   fontWeight: FontWeight.w400,
   color: Colors.black,
 );
+
+final TextStyle subTitleTextStyle = GoogleFonts.rubik(
+  fontSize: 16.0,
+  fontWeight: FontWeight.w400,
+  color: Colors.black, // Default color, will be overridden by snackbar
+);
