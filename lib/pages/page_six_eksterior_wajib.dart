@@ -53,7 +53,13 @@ class _PageSixEksteriorWajibState extends ConsumerState<PageSixEksteriorWajib> w
       if (existingIndex != -1) {
         imageDataListNotifier.updateImageDataByLabel(label, imagePath: imageFile.path);
       } else {
-        imageDataListNotifier.addImageData(ImageData(label: label, imagePath: imageFile.path, needAttention: false));
+        imageDataListNotifier.addImageData(ImageData(
+          label: label,
+          imagePath: imageFile.path,
+          needAttention: false,
+          category: 'Eksterior Wajib', // New field
+          isMandatory: true, // New field
+        ));
       }
     } else {
        imageDataListNotifier.removeImageDataByLabel(label);

@@ -7,12 +7,16 @@ class TambahanImageData {
   final String label;
   final bool needAttention;
   final String id;
+  final String category; // New field
+  final bool isMandatory; // New field
 
   TambahanImageData({
     required this.imagePath,
     required this.label,
     required this.needAttention,
     String? id,
+    required this.category, // Add to constructor
+    required this.isMandatory, // Add to constructor
   }) : id = id ?? uuid.v4();
 
   TambahanImageData copyWith({
@@ -20,12 +24,16 @@ class TambahanImageData {
     String? label,
     bool? needAttention,
     String? id,
+    String? category, // Add to copyWith
+    bool? isMandatory, // Add to copyWith
   }) {
     return TambahanImageData(
       imagePath: imagePath ?? this.imagePath,
       label: label ?? this.label,
       needAttention: needAttention ?? this.needAttention,
       id: id ?? this.id, 
+      category: category ?? this.category, // Add to copyWith
+      isMandatory: isMandatory ?? this.isMandatory, // Add to copyWith
     );
   }
 
@@ -35,6 +43,8 @@ class TambahanImageData {
       'label': label,
       'needAttention': needAttention,
       'id': id,
+      'category': category, // Add to toJson
+      'isMandatory': isMandatory, // Add to toJson
     };
   }
 
@@ -44,6 +54,8 @@ class TambahanImageData {
       label: json['label'] as String,
       needAttention: json['needAttention'] as bool,
       id: json['id'] as String? ?? uuid.v4(),
+      category: json['category'] as String, // Add to fromJson
+      isMandatory: json['isMandatory'] as bool, // Add to fromJson
     );
   }
 

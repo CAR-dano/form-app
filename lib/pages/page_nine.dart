@@ -40,13 +40,13 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
   bool _isLoading = false;
 
   final List<String> tambahanImageIdentifiers = [
-    'general_tambahan',
-    'eksterior_tambahan',
-    'interior_tambahan',
-    'mesin_tambahan',
-    'kaki_kaki_tambahan',
-    'alat_alat_tambahan',
-    'foto_dokumen',
+    'General Tambahan',
+    'Eksterior Tambahan',
+    'Interior Tambahan',
+    'Mesin Tambahan',
+    'Kaki-kaki Tambahan',
+    'Alat-alat Tambahan',
+    'Foto Dokumen',
   ];
 
   @override

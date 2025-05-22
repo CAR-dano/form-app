@@ -87,6 +87,8 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
         label: widget.label,
         imagePath: '',
         needAttention: false,
+        category: '', // Default value
+        isMandatory: true, // Default value
       ),
     );
 

@@ -64,7 +64,13 @@ class _PageSixMesinWajibState extends ConsumerState<PageSixMesinWajib> with Auto
       if (existingIndex != -1) {
         imageDataListNotifier.updateImageDataByLabel(label, imagePath: imageFile.path);
       } else {
-        imageDataListNotifier.addImageData(ImageData(label: label, imagePath: imageFile.path, needAttention: false));
+        imageDataListNotifier.addImageData(ImageData(
+          label: label,
+          imagePath: imageFile.path,
+          needAttention: false,
+          category: 'Mesin Wajib', // New field
+          isMandatory: true, // New field
+        ));
       }
     } else {
        imageDataListNotifier.removeImageDataByLabel(label);

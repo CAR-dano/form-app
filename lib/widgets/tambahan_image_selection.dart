@@ -14,11 +14,13 @@ class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier; // Add identifier parameter
 
   final bool showNeedAttention;
+  final bool isMandatory; // New parameter
 
   const TambahanImageSelection({
     super.key,
     required this.identifier,
     this.showNeedAttention = true, // Default to true
+    this.isMandatory = false, // Default to false
   });
 
   @override
@@ -69,6 +71,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
             imagePath: imageFile.path,
             label: '', // Default label, user can edit
             needAttention: false,
+            category: widget.identifier, // Use identifier as category
+            isMandatory: widget.isMandatory, // Use the widget's isMandatory value
           );
           // Use widget.identifier for the provider
           ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
@@ -87,6 +91,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
           imagePath: image.path,
           label: '', // Default label
           needAttention: false,
+          category: widget.identifier, // Use identifier as category
+          isMandatory: widget.isMandatory, // Use the widget's isMandatory value
         );
          // Use widget.identifier for the provider
         ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);

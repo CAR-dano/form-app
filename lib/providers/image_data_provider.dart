@@ -84,6 +84,8 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
             label: img.label,
             imagePath: imagePath ?? img.imagePath,
             needAttention: img.needAttention,
+            category: img.category, // Add existing category
+            isMandatory: img.isMandatory, // Add existing isMandatory
           )
         else
           img,
@@ -91,7 +93,7 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
     // The 'state' setter handles saving
   }
 
-  void updateImageDataByPath(String imagePath, {String? label, bool? needAttention}) {
+  void updateImageDataByPath(String imagePath, {String? label, bool? needAttention, String? category, bool? isMandatory}) {
     state = [
       for (final img in state)
         if (img.imagePath == imagePath)
@@ -99,6 +101,8 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
             label: label ?? img.label,
             imagePath: img.imagePath,
             needAttention: needAttention ?? img.needAttention,
+            category: category ?? img.category, // Add existing category
+            isMandatory: isMandatory ?? img.isMandatory, // Add existing isMandatory
           )
         else
           img,

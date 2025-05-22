@@ -32,8 +32,9 @@ class _PageSevenState extends ConsumerState<PageSeven> with AutomaticKeepAliveCl
           PageTitle(data: 'Foto Dokumen'),
           const SizedBox(height: 6.0),
           TambahanImageSelection(
-            identifier: 'foto_dokumen',
+            identifier: 'Foto Dokumen',
             showNeedAttention: false,
+            isMandatory: true, // Set isMandatory to true for Page Seven
           ),
       
           const SizedBox(height: 32.0),

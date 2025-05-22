@@ -56,7 +56,7 @@ class _PageSixMesinTambahanState extends ConsumerState<PageSixMesinTambahan>
               const SizedBox(height: 6.0),
               HeadingOne(text: 'Tambahan'),
               const SizedBox(height: 16.0),
-              TambahanImageSelection(identifier: 'mesin_tambahan'),
+              TambahanImageSelection(identifier: 'Mesin Tambahan'),
               const SizedBox(height: 32.0),
               NavigationButtonRow(
                 onBackPressed: () => ref.read(formStepProvider.notifier).state--,
