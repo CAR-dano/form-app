@@ -45,7 +45,13 @@ class _PageSixGeneralWajibState extends ConsumerState<PageSixGeneralWajib> with 
         );
       } else {
         imageDataListNotifier.addImageData(
-          ImageData(label: label, imagePath: imageFile.path, needAttention: false),
+          ImageData(
+            label: label,
+            imagePath: imageFile.path,
+            needAttention: false,
+            category: 'General Wajib', // New field
+            isMandatory: true, // New field
+          ),
         );
       }
     } else {

@@ -40,7 +40,13 @@ class _PageSixAlatAlatWajibState extends ConsumerState<PageSixAlatAlatWajib> wit
       if (existingIndex != -1) {
         imageDataListNotifier.updateImageDataByLabel(label, imagePath: imageFile.path);
       } else {
-        imageDataListNotifier.addImageData(ImageData(label: label, imagePath: imageFile.path, needAttention: false));
+        imageDataListNotifier.addImageData(ImageData(
+          label: label,
+          imagePath: imageFile.path,
+          needAttention: false,
+          category: 'Alat-alat Wajib', // New field
+          isMandatory: true, // New field
+        ));
       }
     } else {
        imageDataListNotifier.removeImageDataByLabel(label);

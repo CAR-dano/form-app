@@ -14,51 +14,116 @@ import 'package:form_app/providers/image_data_provider.dart';
 
 // Placeholder for Page Nine
 class PageNine extends ConsumerStatefulWidget {
-  const PageNine({super.key});
+  final GlobalKey<FormState> formKeyPageOne;
+  final GlobalKey<FormState> formKeyPageTwo;
+  final ValueNotifier<bool> formSubmittedPageOne;
+  final ValueNotifier<bool> formSubmittedPageTwo;
+  final Map<int, String> pageNames;
+  final String? Function(int pageIndex) validatePage; // New parameter
+
+  const PageNine({
+    super.key,
+    required this.formKeyPageOne,
+    required this.formKeyPageTwo,
+    required this.formSubmittedPageOne,
+    required this.formSubmittedPageTwo,
+    required this.pageNames,
+    required this.validatePage, // Update constructor
+  });
 
   @override
   ConsumerState<PageNine> createState() => _PageNineState();
 }
 
-class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClientMixin { // Add mixin
+class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClientMixin {
   bool _isChecked = false;
-  bool _isLoading = false; // Add loading state
+  bool _isLoading = false;
 
   final List<String> tambahanImageIdentifiers = [
-    'general_tambahan',
-    'eksterior_tambahan',
-    'interior_tambahan',
-    'mesin_tambahan',
-    'kaki_kaki_tambahan',
-    'alat_alat_tambahan',
+    'General Tambahan',
+    'Eksterior Tambahan',
+    'Interior Tambahan',
+    'Mesin Tambahan',
+    'Kaki-kaki Tambahan',
+    'Alat-alat Tambahan',
+    'Foto Dokumen',
   ];
 
   @override
-  bool get wantKeepAlive => true; // Override wantKeepAlive
+  bool get wantKeepAlive => true;
 
   Future<void> _submitForm() async {
-    if (_isLoading || !_isChecked) { // Prevent multiple submissions while loading
+    if (_isLoading) {
+      return;
+    }
+
+    if (!_isChecked) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Harap setujui pernyataan untuk melanjutkan.'),
+        SnackBar(
+          content: Text(
+            'Harap setujui pernyataan di atas sebelum melanjutkan.',
+            style: subTitleTextStyle.copyWith(color: Colors.white),
+          ),
           backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
         ),
       );
       return;
     }
 
     setState(() {
-      _isLoading = true; // Set loading state to true
+      _isLoading = true;
     });
+
+    // Set formSubmitted to true for Page One and Page Two to show validation messages
+    widget.formSubmittedPageOne.value = true;
+    widget.formSubmittedPageTwo.value = true;
+
+    List<String> validationErrors = [];
+    int? firstErrorPageIndex;
+
+    // Validate Page One
+    final pageOneError = widget.validatePage(0);
+    if (pageOneError != null) {
+      validationErrors.add(pageOneError);
+      firstErrorPageIndex ??= 0;
+    }
+
+    // Validate Page Two
+    final pageTwoError = widget.validatePage(1);
+    if (pageTwoError != null) {
+      validationErrors.add(pageTwoError);
+      firstErrorPageIndex ??= 1; // Only set if it's the first error found
+    }
+
+    if (validationErrors.isNotEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            validationErrors.join('\n'), // Join all error messages
+            style: subTitleTextStyle.copyWith(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5), // Give more time for multiple messages
+        ),
+      );
+      // Navigate to the first page that failed validation
+      if (firstErrorPageIndex != null) {
+        ref.read(formStepProvider.notifier).state = firstErrorPageIndex;
+      }
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
 
     try {
       final formData = ref.read(formProvider);
-      final apiService =
-          ApiService(); // Consider providing ApiService via Riverpod as well
+      final apiService = ApiService();
 
       await apiService.submitFormData(formData);
 
-      // Clear stored data after successful submission
       ref.read(formProvider.notifier).resetFormData();
       ref.read(imageDataListProvider.notifier).clearImageData();
       for (final identifier in tambahanImageIdentifiers) {
@@ -66,19 +131,22 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
       }
 
       if (!mounted) return;
-      // Navigate to the FinishedPage by updating the form step
       ref.read(formStepProvider.notifier).state++;
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Gagal mengirim formulir: $e'),
+          content: Text(
+            'Terjadi kesalahan saat mengirim data: $e',
+            style: subTitleTextStyle.copyWith(color: Colors.white),
+          ),
           backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
         ),
       );
     } finally {
       setState(() {
-        _isLoading = false; // Reset loading state
+        _isLoading = false;
       });
     }
   }

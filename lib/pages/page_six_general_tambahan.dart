@@ -61,7 +61,7 @@ class _PageSixGeneralTambahanState extends ConsumerState<PageSixGeneralTambahan>
               const SizedBox(height: 16.0),
 
               // Tambahan image selection widget
-              TambahanImageSelection(identifier: 'general_tambahan'),
+              TambahanImageSelection(identifier: 'General Tambahan'),
 
               const SizedBox(height: 32.0),
               NavigationButtonRow(

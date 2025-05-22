@@ -15,28 +15,29 @@ import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/labeled_dropdown_field.dart'; // Use the refactored generic LabeledDropdownField
 
 class PageOne extends ConsumerStatefulWidget {
-  final GlobalKey<FormState> formKey; // Add formKey parameter
+  final GlobalKey<FormState> formKey;
+  final ValueNotifier<bool> formSubmitted; // New parameter
 
-  const PageOne({super.key, required this.formKey}); // Update constructor
+  const PageOne({
+    super.key,
+    required this.formKey,
+    required this.formSubmitted, // Update constructor
+  });
 
   @override
   ConsumerState<PageOne> createState() => _PageOneState();
 }
 
-class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClientMixin { // Add mixin
+class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClientMixin {
   late FocusScopeNode _focusScopeNode;
-  // Removed local state for branches, loading, and error
 
   @override
-  bool get wantKeepAlive => true; // Override wantKeepAlive
-
-  bool _formSubmitted = false; // Track if the form has been submitted
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
     _focusScopeNode = FocusScopeNode();
-    // Fetching is handled by FutureProvider, no need to call _fetchBranches here
   }
 
   @override
@@ -83,20 +84,19 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                   LabeledDropdownField<Inspector>( // Change generic type to Inspector
                       label: 'Nama Inspektor',
                       itemsProvider: inspectorProvider, // Use the new provider
-                      value: formData.selectedInspector, // Use the new field (will add later)
-                      itemText: (inspector) => inspector.name, // Provide itemText function
+                      value: formData.selectedInspector,
+                      itemText: (inspector) => inspector.name,
                       onChanged: (newValue) {
-                        formNotifier.updateSelectedInspector(newValue); // Call new update method (will add later)
-                        if (_formSubmitted) {
+                        formNotifier.updateSelectedInspector(newValue);
+                        if (widget.formSubmitted.value) {
                           widget.formKey.currentState?.validate();
                         }
                       },
                       validator: (value) {
                         final inspectorsState = ref.read(inspectorProvider);
-                        // Only validate if inspectors are loaded, not empty, and form submitted
-                        if (_formSubmitted &&
-                            value == null && // Check if value is null (not selected)
-                            inspectorsState is AsyncData<List<Inspector>> && // Check for List<Inspector>
+                        if (widget.formSubmitted.value &&
+                            value == null &&
+                            inspectorsState is AsyncData<List<Inspector>> &&
                             inspectorsState.value.isNotEmpty) {
                           return 'Nama Inspektor belum terisi';
                         }
@@ -107,44 +107,41 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                       emptyDataHintText: 'Tidak ada inspektor tersedia',
                       errorHintText: 'Gagal memuat inspektor',
                     ),
-                  const SizedBox(height: 16.0), // Keep internal spacing
+                  const SizedBox(height: 16.0),
                   LabeledTextField(
                     label: 'Nama Customer',
                     hintText: 'Masukkan nama customer',
-                    initialValue:
-                        formData
-                            .namaCustomer, // Initialize with data from provider
+                    initialValue: formData.namaCustomer,
                     onChanged: (value) {
-                      formNotifier.updateNamaCustomer(
-                        value,
-                      ); // Update data in provider
+                      formNotifier.updateNamaCustomer(value);
                     },
                     validator: (value) {
-                      if (_formSubmitted &&
+                      if (widget.formSubmitted.value &&
                           (value == null || value.isEmpty)) {
-                        return 'Nama Customer belum terisi'; // Validation message
+                        return 'Nama Customer belum terisi';
                       }
-                      return null; // Return null if valid
+                      return null;
                     },
-                    formSubmitted:
-                        _formSubmitted, // Pass the formSubmitted flag
+                    formSubmitted: widget.formSubmitted.value,
                   ),
-                  const SizedBox(height: 16.0), // Keep internal spacing
-                  LabeledDropdownField<InspectionBranch>( // Change generic type to InspectionBranch
+                  const SizedBox(height: 16.0),
+                  LabeledDropdownField<InspectionBranch>(
                     label: 'Cabang Inspeksi',
-                    itemsProvider: inspectionBranchesProvider, // Pass the provider
+                    itemsProvider: inspectionBranchesProvider,
                     value: formData.cabangInspeksi,
-                    itemText: (branch) => branch.city, // Provide itemText for InspectionBranch
+                    itemText: (branch) => branch.city,
                     onChanged: (newValue) {
                       formNotifier.updateCabangInspeksi(newValue);
-                      if (_formSubmitted) {
+                      if (widget.formSubmitted.value) {
                         widget.formKey.currentState?.validate();
                       }
                     },
                     validator: (value) {
                       final branchesState = ref.read(inspectionBranchesProvider);
-                      // Only validate if branches are loaded and not empty
-                      if (_formSubmitted && value == null && branchesState is AsyncData<List<InspectionBranch>> && branchesState.value.isNotEmpty) {
+                      if (widget.formSubmitted.value &&
+                          value == null &&
+                          branchesState is AsyncData<List<InspectionBranch>> &&
+                          branchesState.value.isNotEmpty) {
                         return 'Cabang Inspeksi belum terisi';
                       }
                       return null;
@@ -154,48 +151,36 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                     emptyDataHintText: 'Tidak ada cabang tersedia',
                     errorHintText: 'Gagal memuat cabang',
                   ),
-                  const SizedBox(height: 16.0), // Keep internal spacing
+                  const SizedBox(height: 16.0),
                   LabeledDateField(
                     label: 'Tanggal Inspeksi',
                     hintText: 'Pilih tanggal inspeksi',
-                    initialDate:
-                        formData
-                            .tanggalInspeksi, // Initialize with data from provider
+                    initialDate: formData.tanggalInspeksi,
                     onChanged: (date) {
-                      formNotifier.updateTanggalInspeksi(
-                        date,
-                      ); // Update data in provider
+                      formNotifier.updateTanggalInspeksi(date);
                     },
                     validator: (date) {
-                      if (_formSubmitted && date == null) {
-                        return 'Tanggal Inspeksi belum terisi'; // Validation message
+                      if (widget.formSubmitted.value && date == null) {
+                        return 'Tanggal Inspeksi belum terisi';
                       }
-                      return null; // Return null if valid
+                      return null;
                     },
-                    formSubmitted:
-                        _formSubmitted, // Pass the formSubmitted flag
+                    formSubmitted: widget.formSubmitted.value,
                   ),
-                  const SizedBox(height: 32.0), // Keep internal spacing
+                  const SizedBox(height: 32.0),
                   NavigationButtonRow(
-                    isBackButtonEnabled: false, // PageOne has no back button
+                    isBackButtonEnabled: false,
                     onNextPressed: () {
-                      setState(() {
-                        _formSubmitted = true;
-                      });
-                      if (widget.formKey.currentState?.validate() ?? false) {
-                        _focusScopeNode.unfocus();
-                        ref.read(formStepProvider.notifier).state++;
-                      }
+                      _focusScopeNode.unfocus();
+                      ref.read(formStepProvider.notifier).state++;
                     },
-                    // onBackPressed will be null due to isBackButtonEnabled: false
                   ),
-                  const SizedBox(height: 24.0), // Optional spacing below the content
-                  // Footer
+                  const SizedBox(height: 24.0),
                   Footer(),
                 ],
               ),
             ),
-          ), // Closing parenthesis for GestureDetector
+          ),
         ),
       ),
     );

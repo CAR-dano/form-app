@@ -56,7 +56,7 @@ class _PageSixEksteriorTambahanState extends ConsumerState<PageSixEksteriorTamba
               const SizedBox(height: 6.0),
               HeadingOne(text: 'Tambahan'),
               const SizedBox(height: 16.0),
-              TambahanImageSelection(identifier: 'eksterior_tambahan'),
+              TambahanImageSelection(identifier: 'Eksterior Tambahan'),
               const SizedBox(height: 32.0),
               NavigationButtonRow(
                 onBackPressed: () => ref.read(formStepProvider.notifier).state--,

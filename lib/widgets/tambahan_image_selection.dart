@@ -8,13 +8,19 @@ import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
 import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
+import 'package:form_app/widgets/delete_confirmation_dialog.dart'; // Import the new widget
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier; // Add identifier parameter
 
+  final bool showNeedAttention;
+  final bool isMandatory; // New parameter
+
   const TambahanImageSelection({
     super.key,
-    required this.identifier, // Make it required
+    required this.identifier,
+    this.showNeedAttention = true, // Default to true
+    this.isMandatory = false, // Default to false
   });
 
   @override
@@ -65,6 +71,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
             imagePath: imageFile.path,
             label: '', // Default label, user can edit
             needAttention: false,
+            category: widget.identifier, // Use identifier as category
+            isMandatory: widget.isMandatory, // Use the widget's isMandatory value
           );
           // Use widget.identifier for the provider
           ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
@@ -83,6 +91,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
           imagePath: image.path,
           label: '', // Default label
           needAttention: false,
+          category: widget.identifier, // Use identifier as category
+          isMandatory: widget.isMandatory, // Use the widget's isMandatory value
         );
          // Use widget.identifier for the provider
         ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
@@ -115,7 +125,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     }
   }
 
-  void _deleteCurrentImage() {
+  void _deleteCurrentImageConfirmed() {
     // Use widget.identifier for the provider
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
@@ -132,6 +142,24 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         _updateControllersForCurrentIndex();
       });
     }
+  }
+
+  void _showDeleteConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return DeleteConfirmationDialog(
+          message: 'Apakah anda yakin ingin menghapus gambar tersebut?',
+          onConfirm: () {
+            Navigator.of(context).pop(); // Close the dialog
+            _deleteCurrentImageConfirmed(); // Perform deletion
+          },
+          onCancel: () {
+            Navigator.of(context).pop(); // Close the dialog
+          },
+        );
+      },
+    );
   }
 
   void _onLabelChanged(String newLabel) {
@@ -287,11 +315,11 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                       top: 8.0,
                       right: 8.0,
                       child: GestureDetector(
-                        onTap: _deleteCurrentImage,
+                        onTap: _showDeleteConfirmationDialog,
                         child: SvgPicture.asset(
                           'assets/images/trashcan.svg',
-                          width: 26.0,
-                          height: 26.0,
+                          width: 40.0,
+                          height: 40.0,
                         ),
                       ),
                     ),
@@ -308,14 +336,15 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                 // initialValue: currentImage?.label ?? '', // Controller handles initial value
               ),
               const SizedBox(height: 16.0),
-              FormConfirmation(
-                // Use a dynamic key
-                key: ValueKey<String>('attention_${currentImage?.id ?? "default_attention_state"}'),
-                label: 'Perlu Perhatian',
-                initialValue: currentImage?.needAttention ?? false,
-                onChanged: _onNeedAttentionChanged,
-                fontWeight: FontWeight.w300,
-              ),
+              if (widget.showNeedAttention) // Conditionally render
+                FormConfirmation(
+                  // Use a dynamic key
+                  key: ValueKey<String>('attention_${currentImage?.id ?? "default_attention_state"}'),
+                  label: 'Perlu Perhatian',
+                  initialValue: currentImage?.needAttention ?? false,
+                  onChanged: _onNeedAttentionChanged,
+                  fontWeight: FontWeight.w300,
+                ),
             ],
           ),
         ),
@@ -336,6 +365,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
                       backgroundColor: buttonColor,
                       disabledBackgroundColor: Colors.grey[300],
+                      elevation: 5, // Add elevation
+                      shadowColor: buttonColor.withAlpha(102), // Add shadow color
                     ),
                     child: const Icon(Icons.arrow_back_ios_new, size: 18, color: buttonTextColor),
                   ),
@@ -360,6 +391,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
                       backgroundColor: buttonColor,
                       disabledBackgroundColor: Colors.grey[300],
+                      elevation: 5, // Add elevation
+                      shadowColor: buttonColor.withAlpha(102), // Add shadow color
                     ),
                     child: const Icon(Icons.arrow_forward_ios, size: 18, color: buttonTextColor),
                   ),

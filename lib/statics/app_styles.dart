@@ -11,6 +11,8 @@ const Color selectedDateColor = Color(
   0xFF4C1C82,
 ); // Specific selected date color
 
+const Color darkTextColor = Colors.black; // Define dark text color
+
 const Color iconColor = borderColor; // Color for the dropdown icon
 const Color pageNumberColor = Color(0xFFF4622F); // Hex color #F4622F
 
@@ -130,4 +132,10 @@ final TextStyle headingOneStyle = GoogleFonts.rubik(
   fontSize: 32.0,
   fontWeight: FontWeight.w400,
   color: Colors.black,
+);
+
+final TextStyle subTitleTextStyle = GoogleFonts.rubik(
+  fontSize: 16.0,
+  fontWeight: FontWeight.w400,
+  color: Colors.black, // Default color, will be overridden by snackbar
 );
