@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/image_data_provider.dart';
 import 'package:form_app/models/image_data.dart';
+import 'package:form_app/widgets/delete_confirmation_dialog.dart'; // Import the new widget
 
 class ImageInputWidget extends ConsumerStatefulWidget {
   final String label;
@@ -90,13 +91,27 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                Navigator.of(context).pop(); // Close dialog before deleting
-                                _deleteImage(); // Call delete function
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return DeleteConfirmationDialog(
+                                      message: 'Apakah anda yakin ingin menghapus gambar tersebut?',
+                                      onConfirm: () {
+                                        Navigator.of(context).pop(); // Close the confirmation dialog
+                                        _deleteImageConfirmed(); // Perform deletion
+                                        Navigator.of(buildContext).pop(); // Close the image preview popup
+                                      },
+                                      onCancel: () {
+                                        Navigator.of(context).pop(); // Close the confirmation dialog
+                                      },
+                                    );
+                                  },
+                                );
                               },
                               child: SvgPicture.asset( // Use SvgPicture directly
                                 'assets/images/trashcan.svg', // Trashcan icon
-                                width: 26.0, // Set icon size to 26.0
-                                height: 26.0, // Set icon size to 26.0
+                                width: 40.0, // Set icon size to 26.0
+                                height: 40.0, // Set icon size to 26.0
                                 // Removed colorFilter to use default SVG color
                               ),
                             ),
@@ -106,8 +121,8 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                                 Navigator.of(context).pop(); // Close dialog
                               },
                               child: Container( // Blue box for checkmark
-                                width: 26.0, // Same size as trashcan
-                                height: 26.0, // Same size as trashcan
+                                width: 40.0, // Same size as trashcan
+                                height: 40.0, // Same size as trashcan
                                 decoration: BoxDecoration(
                                   color: toggleOptionSelectedLengkapColor, // Blue background
                                   borderRadius: BorderRadius.circular(8.0), // Rounded corners
@@ -115,8 +130,8 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                                 child: Center( // Center the checkmark icon
                                   child: SvgPicture.asset(
                                     'assets/images/check.svg', // Checkmark icon
-                                    width: 16.0, // Adjust icon size within the box
-                                    height: 16.0, // Adjust icon size within the box
+                                    width: 24.0, // Adjust icon size within the box
+                                    height: 24.0, // Adjust icon size within the box
                                     colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn), // White icon color
                                   ),
                                 ),
@@ -136,7 +151,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
     );
   }
 
-  void _deleteImage() {
+  void _deleteImageConfirmed() {
     widget.onImagePicked?.call(null);
     ref
         .read(imageDataListProvider.notifier)
@@ -291,7 +306,23 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                     ),
                     const SizedBox(width: 10),
                     GestureDetector(
-                      onTap: _deleteImage,
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return DeleteConfirmationDialog(
+                              message: 'Apakah anda yakin ingin menghapus gambar tersebut?',
+                              onConfirm: () {
+                                Navigator.of(context).pop(); // Close the confirmation dialog
+                                _deleteImageConfirmed(); // Perform deletion
+                              },
+                              onCancel: () {
+                                Navigator.of(context).pop(); // Close the confirmation dialog
+                              },
+                            );
+                          },
+                        );
+                      },
                       child: SvgPicture.asset(
                         'assets/images/trashcan.svg',
                         width: 26.0, // Inlined icon size (or 20.0 if you prefer trashcan slightly larger)

@@ -8,6 +8,7 @@ import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
 import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
+import 'package:form_app/widgets/delete_confirmation_dialog.dart'; // Import the new widget
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier; // Add identifier parameter
@@ -118,7 +119,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     }
   }
 
-  void _deleteCurrentImage() {
+  void _deleteCurrentImageConfirmed() {
     // Use widget.identifier for the provider
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
@@ -135,6 +136,24 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         _updateControllersForCurrentIndex();
       });
     }
+  }
+
+  void _showDeleteConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return DeleteConfirmationDialog(
+          message: 'Apakah anda yakin ingin menghapus gambar tersebut?',
+          onConfirm: () {
+            Navigator.of(context).pop(); // Close the dialog
+            _deleteCurrentImageConfirmed(); // Perform deletion
+          },
+          onCancel: () {
+            Navigator.of(context).pop(); // Close the dialog
+          },
+        );
+      },
+    );
   }
 
   void _onLabelChanged(String newLabel) {
@@ -290,7 +309,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                       top: 8.0,
                       right: 8.0,
                       child: GestureDetector(
-                        onTap: _deleteCurrentImage,
+                        onTap: _showDeleteConfirmationDialog,
                         child: SvgPicture.asset(
                           'assets/images/trashcan.svg',
                           width: 26.0,

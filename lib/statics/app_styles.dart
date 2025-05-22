@@ -11,6 +11,8 @@ const Color selectedDateColor = Color(
   0xFF4C1C82,
 ); // Specific selected date color
 
+const Color darkTextColor = Colors.black; // Define dark text color
+
 const Color iconColor = borderColor; // Color for the dropdown icon
 const Color pageNumberColor = Color(0xFFF4622F); // Hex color #F4622F
 
