@@ -67,109 +67,139 @@ class _PageEightState extends ConsumerState<PageEight>
               const SizedBox(height: 4),
               PageTitle(data: 'Ketebalan Cat'), // Updated Title
               const SizedBox(height: 6.0),
-
-              // Center( // Center the SVG
-              //   child: Image.asset(
-              //     'assets/images/mobil_depan.png',
-              //     width: 200,
-              //     fit: BoxFit.contain,
-              //   ),
-              // ),
-
+              
               // Section 1: Depan
               HeadingOne(text: 'Depan'),
-              PaintThicknessInputField(
-                initialValue: formData.catDepanKap,
-                onChanged: (value) {
-                  formNotifier.updateCatDepanKap(value);
-                },
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    PaintThicknessInputField(
+                      initialValue: formData.catDepanKap,
+                      onChanged: (value) {
+                        formNotifier.updateCatDepanKap(value);
+                      },
+                    ),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 300), // Limit image width
+                      child: Image.asset('assets/images/depan.png'),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 16.0),
 
               // Section 2: Belakang
               HeadingOne(text: 'Belakang'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  PaintThicknessInputField(
-                    initialValue: formData.catBelakangBumper,
-                    onChanged: (value) {
-                      formNotifier.updateCatBelakangBumper(value);
-                    },
-                  ),
-                  PaintThicknessInputField(
-                    initialValue: formData.catBelakangTrunk,
-                    onChanged: (value) {
-                      formNotifier.updateCatBelakangTrunk(value);
-                    },
-                  ),
-                ],
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        PaintThicknessInputField(
+                          initialValue: formData.catBelakangBumper,
+                          onChanged: (value) {
+                            formNotifier.updateCatBelakangBumper(value);
+                          },
+                        ),
+                        PaintThicknessInputField(
+                          initialValue: formData.catBelakangTrunk,
+                          onChanged: (value) {
+                            formNotifier.updateCatBelakangTrunk(value);
+                          },
+                        ),
+                      ],
+                    ),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 300), // Limit image width
+                      child: Image.asset('assets/images/belakang.png'),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 16.0),
 
               // Section 3: Samping Kanan
               HeadingOne(text: 'Samping Kanan'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  PaintThicknessInputField(
-                    initialValue: formData.catKananFenderDepan,
-                    onChanged: (value) {
-                      formNotifier.updateCatKananFenderDepan(value);
-                    },
-                  ),
-                  PaintThicknessInputField(
-                    initialValue: formData.catKananPintuDepan,
-                    onChanged: (value) {
-                      formNotifier.updateCatKananPintuDepan(value);
-                    },
-                  ),
-                  PaintThicknessInputField(
-                    initialValue: formData.catKananPintuBelakang,
-                    onChanged: (value) {
-                      formNotifier.updateCatKananPintuBelakang(value);
-                    },
-                  ),
-                  PaintThicknessInputField(
-                    initialValue: formData.catKananFenderBelakang,
-                    onChanged: (value) {
-                      formNotifier.updateCatKananFenderBelakang(value);
-                    },
-                  ),
-                ],
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        PaintThicknessInputField(
+                          initialValue: formData.catKananFenderDepan,
+                          onChanged: (value) {
+                            formNotifier.updateCatKananFenderDepan(value);
+                          },
+                        ),
+                        PaintThicknessInputField(
+                          initialValue: formData.catKananPintuDepan,
+                          onChanged: (value) {
+                            formNotifier.updateCatKananPintuDepan(value);
+                          },
+                        ),
+                        PaintThicknessInputField(
+                          initialValue: formData.catKananPintuBelakang,
+                          onChanged: (value) {
+                            formNotifier.updateCatKananPintuBelakang(value);
+                          },
+                        ),
+                        PaintThicknessInputField(
+                          initialValue: formData.catKananFenderBelakang,
+                          onChanged: (value) {
+                            formNotifier.updateCatKananFenderBelakang(value);
+                          },
+                        ),
+                      ],
+                    ),
+                    Image.asset('assets/images/kanan.png'),
+                  ],
+                ),
               ),
               const SizedBox(height: 16.0),
 
               // Section 4: Samping Kiri
               HeadingOne(text: 'Samping Kiri'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  PaintThicknessInputField(
-                    initialValue: formData.catKiriFenderDepan,
-                    onChanged: (value) {
-                      formNotifier.updateCatKiriFenderDepan(value);
-                    },
-                  ),
-                  PaintThicknessInputField(
-                    initialValue: formData.catKiriPintuDepan,
-                    onChanged: (value) {
-                      formNotifier.updateCatKiriPintuDepan(value);
-                    },
-                  ),
-                  PaintThicknessInputField(
-                    initialValue: formData.catKiriPintuBelakang,
-                    onChanged: (value) {
-                      formNotifier.updateCatKiriPintuBelakang(value);
-                    },
-                  ),
-                  PaintThicknessInputField(
-                    initialValue: formData.catKiriFenderBelakang,
-                    onChanged: (value) {
-                      formNotifier.updateCatKiriFenderBelakang(value);
-                    },
-                  ),
-                ],
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        PaintThicknessInputField(
+                          initialValue: formData.catKiriFenderDepan,
+                          onChanged: (value) {
+                            formNotifier.updateCatKiriFenderDepan(value);
+                          },
+                        ),
+                        PaintThicknessInputField(
+                          initialValue: formData.catKiriPintuDepan,
+                          onChanged: (value) {
+                            formNotifier.updateCatKiriPintuDepan(value);
+                          },
+                        ),
+                        PaintThicknessInputField(
+                          initialValue: formData.catKiriPintuBelakang,
+                          onChanged: (value) {
+                            formNotifier.updateCatKiriPintuBelakang(value);
+                          },
+                        ),
+                        PaintThicknessInputField(
+                          initialValue: formData.catKiriFenderBelakang,
+                          onChanged: (value) {
+                            formNotifier.updateCatKiriFenderBelakang(value);
+                          },
+                        ),
+                      ],
+                    ),
+                    Image.asset('assets/images/kiri.png'),
+                  ],
+                ),
               ),
               const SizedBox(height: 32.0),
 
