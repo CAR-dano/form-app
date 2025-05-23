@@ -74,11 +74,14 @@ class _PageEightState extends ConsumerState<PageEight>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    PaintThicknessInputField(
-                      initialValue: formData.catDepanKap,
-                      onChanged: (value) {
-                        formNotifier.updateCatDepanKap(value);
-                      },
+                    Padding(
+                      padding: const EdgeInsets.only(left: 34.0), // Offset to the right
+                      child: PaintThicknessInputField(
+                        initialValue: formData.catDepanKap,
+                        onChanged: (value) {
+                          formNotifier.updateCatDepanKap(value);
+                        },
+                      ),
                     ),
                     ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 300), // Limit image width
