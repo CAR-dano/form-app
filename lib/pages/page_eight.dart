@@ -102,14 +102,16 @@ class _PageEightState extends ConsumerState<PageEight>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.start, // Change to start
                       children: [
+                        SizedBox(width: MediaQuery.of(context).size.width * 0.38), // Offset for first field
                         PaintThicknessInputField(
                           initialValue: formData.catBelakangBumper,
                           onChanged: (value) {
                             formNotifier.updateCatBelakangBumper(value);
                           },
                         ),
+                        SizedBox(width: MediaQuery.of(context).size.width * 0.04), // Reduced space to move second field left
                         PaintThicknessInputField(
                           initialValue: formData.catBelakangTrunk,
                           onChanged: (value) {
