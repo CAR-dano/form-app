@@ -63,7 +63,7 @@ class _PageEightState extends ConsumerState<PageEight>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PageNumber(data: '8/9'),
+              PageNumber(data: '25/26'),
               const SizedBox(height: 4),
               PageTitle(data: 'Ketebalan Cat'), // Updated Title
               const SizedBox(height: 6.0),

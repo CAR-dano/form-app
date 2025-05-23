@@ -62,7 +62,7 @@ class _PageSixAlatAlatWajibState extends ConsumerState<PageSixAlatAlatWajib> wit
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(data: '6/9'),
+          PageNumber(data: '7/26'),
           const SizedBox(height: 4),
           PageTitle(data: 'Foto Alat-alat'),
           const SizedBox(height: 6.0),

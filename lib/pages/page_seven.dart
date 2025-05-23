@@ -27,7 +27,7 @@ class _PageSevenState extends ConsumerState<PageSeven> with AutomaticKeepAliveCl
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(data: '7/9'),
+          PageNumber(data: '14/26'),
           const SizedBox(height: 4),
           PageTitle(data: 'Foto Dokumen'),
           const SizedBox(height: 6.0),

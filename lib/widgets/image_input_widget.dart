@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:form_app/statics/app_styles.dart';
 import 'dart:io';
+import 'package:image/image.dart' as img;
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart'; // For kDebugMode
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/image_data_provider.dart';
@@ -24,29 +27,112 @@ class ImageInputWidget extends ConsumerStatefulWidget {
 }
 
 class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
+  Future<String?> _processAndSaveImage(XFile pickedFile) async {
+    final File imageFile = File(pickedFile.path);
+    List<int> imageBytes = await imageFile.readAsBytes();
+    img.Image? originalImage = img.decodeImage(Uint8List.fromList(imageBytes));
+
+    if (originalImage == null) {
+      if (kDebugMode) {
+        print("Error: Could not decode image ${pickedFile.path}");
+      }
+      return null;
+    }
+
+    double currentAspectRatio = originalImage.width / originalImage.height;
+    double targetAspectRatio = 4.0 / 3.0;
+    const double tolerance = 0.01;
+    bool needsCrop = false;
+
+    int cropX = 0;
+    int cropY = 0;
+    int cropWidth = originalImage.width;
+    int cropHeight = originalImage.height;
+
+    if ((currentAspectRatio - targetAspectRatio).abs() > tolerance) {
+        needsCrop = true;
+        if (currentAspectRatio > targetAspectRatio) {
+          cropWidth = (originalImage.height * targetAspectRatio).round();
+          cropX = ((originalImage.width - cropWidth) / 2).round();
+        } else {
+          cropHeight = (originalImage.width / targetAspectRatio).round();
+          cropY = ((originalImage.height - cropHeight) / 2).round();
+        }
+    }
+
+    img.Image? processedImage = originalImage;
+    if (needsCrop) {
+      processedImage = img.copyCrop(originalImage, x: cropX, y: cropY, width: cropWidth, height: cropHeight);
+    }
+
+    // Resize if the image is too large
+    const int maxWidth = 1200; // Target maximum width
+    if (processedImage.width > maxWidth) {
+      processedImage = img.copyResize(processedImage, width: maxWidth);
+    }
+
+    String finalImagePath = pickedFile.path;
+    List<int> processedBytes;
+    String extension = pickedFile.name.split('.').last.toLowerCase();
+    if (extension == 'png') {
+      processedBytes = img.encodePng(processedImage);
+    } else if (extension == 'gif') {
+        processedBytes = img.encodeGif(processedImage);
+    } else {
+      processedBytes = img.encodeJpg(processedImage, quality: 70);
+      if (extension != 'jpg' && extension != 'jpeg') extension = 'jpg';
+    }
+
+    try {
+      final directory = await getTemporaryDirectory();
+      final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+      final String newFileName = '${timestamp}_${pickedFile.name.replaceAll(RegExp(r'\s+'), '_')}_processed.$extension';
+      finalImagePath = '${directory.path}/$newFileName';
+      final File newProcessedFile = File(finalImagePath);
+      await newProcessedFile.writeAsBytes(processedBytes);
+       if (kDebugMode) {
+         print('Processed image saved to: $finalImagePath');
+         final int fileSize = await newProcessedFile.length();
+         print('Compressed file size: ${fileSize / 1024} KB');
+       }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error saving processed image: $e");
+      }
+      return null;
+    }
+    return finalImagePath;
+  }
+
   Future<void> _takePictureFromCamera() async {
     FocusScope.of(context).unfocus();
     final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: ImageSource.camera);
+    final pickedImageXFile = await picker.pickImage(source: ImageSource.camera);
 
-    if (pickedImage != null) {
-      widget.onImagePicked?.call(File(pickedImage.path));
-      ref
-          .read(imageDataListProvider.notifier)
-          .updateImageDataByLabel(widget.label, imagePath: pickedImage.path);
+    if (pickedImageXFile != null) {
+      final String? processedPath = await _processAndSaveImage(pickedImageXFile);
+      if (processedPath != null) {
+        widget.onImagePicked?.call(File(processedPath)); // Call with the new File object
+        ref
+            .read(imageDataListProvider.notifier)
+            .updateImageDataByLabel(widget.label, imagePath: processedPath);
+      }
     }
   }
 
   Future<void> _takePictureFromGallery() async {
     FocusScope.of(context).unfocus();
     final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+    final pickedImageXFile = await picker.pickImage(source: ImageSource.gallery);
 
-    if (pickedImage != null) {
-      widget.onImagePicked?.call(File(pickedImage.path));
-      ref
-          .read(imageDataListProvider.notifier)
-          .updateImageDataByLabel(widget.label, imagePath: pickedImage.path);
+    if (pickedImageXFile != null) {
+       final String? processedPath = await _processAndSaveImage(pickedImageXFile);
+      if (processedPath != null) {
+        widget.onImagePicked?.call(File(processedPath)); // Call with the new File object
+        ref
+            .read(imageDataListProvider.notifier)
+            .updateImageDataByLabel(widget.label, imagePath: processedPath);
+      }
     }
   }
 

@@ -50,7 +50,7 @@ class _PageSixEksteriorTambahanState extends ConsumerState<PageSixEksteriorTamba
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PageNumber(data: '6/9'),
+              PageNumber(data: '9/26'),
               const SizedBox(height: 4),
               PageTitle(data: 'Foto Eksterior'),
               const SizedBox(height: 6.0),

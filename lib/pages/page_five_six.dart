@@ -59,7 +59,7 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageNumber(data: '6/9'),
+                PageNumber(data: '23/26'),
                 const SizedBox(height: 4),
                 PageTitle(data: 'Penilaian (6)'),
                 const SizedBox(height: 6.0),

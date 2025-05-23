@@ -1,16 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart' as dio show Dio, FormData, MultipartFile, LogInterceptor, DioException;
+import 'package:dio/dio.dart' as dio show Dio, FormData, MultipartFile, LogInterceptor, DioException; // Consolidated dio imports
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspection_branch.dart';
 import 'package:form_app/models/inspector_data.dart';
 import 'package:http_parser/http_parser.dart' show MediaType;
-import 'package:mime/mime.dart'; // Import the mime package
+import 'package:mime/mime.dart';
 
-// UploadableImage class remains the same
+// Typedef for the progress callback
+typedef ImageUploadProgressCallback = void Function(int currentBatch, int totalBatches);
+
+// UploadableImage class (ensure this is defined here or imported)
 class UploadableImage {
   final String imagePath;
   final String label;
@@ -59,9 +62,8 @@ class ApiService {
     );
   }
 
-  // getInspectionBranches, getInspectors, submitFormData methods remain the same
-  // ... (keep your existing getInspectionBranches, getInspectors, submitFormData methods here) ...
-    Future<List<InspectionBranch>> getInspectionBranches() async {
+  Future<List<InspectionBranch>> getInspectionBranches() async {
+    // ... (your existing implementation)
     try {
       final response = await _dioInst.get(_inspectionBranchesUrl);
       if (response.statusCode == 200) {
@@ -76,6 +78,7 @@ class ApiService {
   }
 
   Future<List<Inspector>> getInspectors() async {
+    // ... (your existing implementation)
     try {
       final response = await _dioInst.get(_inspectorsUrl);
       if (response.statusCode == 200) {
@@ -90,17 +93,18 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> submitFormData(FormData formData) async {
+    // ... (your existing implementation, ensure it returns Map<String, dynamic>)
     try {
       final response = await _dioInst.post(
         _inspectionsUrl,
-        data: { // Ensure this data structure matches exactly what the backend expects
+        data: { 
           "vehiclePlateNumber": formData.platNomor,
           "inspectionDate": formData.tanggalInspeksi?.toIso8601String() ?? '-',
           "overallRating": formData.penilaianKeseluruhanSelectedValue ?? 0,
           "identityDetails": {
-            "namaInspektor": formData.inspectorId ?? '-', // Backend expects inspector ID here
+            "namaInspektor": formData.inspectorId ?? '-', 
             "namaCustomer": formData.namaCustomer,
-            "cabangInspeksi": formData.cabangInspeksi?.id ?? '-', // Backend expects branch ID here
+            "cabangInspeksi": formData.cabangInspeksi?.id ?? '-', 
           },
           "vehicleData": {
             "merekKendaraan": formData.merekKendaraan,
@@ -110,10 +114,10 @@ class ApiService {
             "warnaKendaraan": formData.warnaKendaraan,
             "odometer": formData.odometer,
             "kepemilikan": formData.kepemilikan,
-            "platNomor": formData.platNomor, // Assuming this is the same as vehiclePlateNumber at the top level
+            "platNomor": formData.platNomor, 
             "pajak1Tahun": formData.pajak1TahunDate?.toIso8601String() ?? '-',
             "pajak5Tahun": formData.pajak5TahunDate?.toIso8601String() ?? '-',
-            "biayaPajak": formData.biayaPajak.replaceAll('.', ''), // Ensure this is a number string without dots
+            "biayaPajak": formData.biayaPajak.replaceAll('.', ''), 
           },
           "equipmentChecklist": {
             "bukuService": formData.bukuService == "Lengkap",
@@ -231,8 +235,8 @@ class ApiService {
               "sistemAudio": formData.sistemAudioSelectedValue ?? 0,
               "powerWindow": formData.powerWindowSelectedValue ?? 0,
               "sistemAC": formData.sistemAcSelectedValue ?? 0,
-              "interior1": formData.trimInteriorSelectedValue ?? 0,
-              "interior2": formData.aromaInteriorSelectedValue ?? 0,
+              "interior1": formData.trimInteriorSelectedValue ?? 0, 
+              "interior2": formData.aromaInteriorSelectedValue ?? 0, 
               "interior3": 10,
               "catatan": formData.fiturCatatanList ?? [],
             },
@@ -337,9 +341,23 @@ class ApiService {
   }
 
 
-  Future<void> uploadImagesInBatches(String inspectionId, List<UploadableImage> allImages) async {
+  Future<void> uploadImagesInBatches(
+    String inspectionId, 
+    List<UploadableImage> allImages,
+    ImageUploadProgressCallback onProgress, // Add this
+  ) async {
     const int batchSize = 10;
-    for (int i = 0; i < allImages.length; i += batchSize) {
+    // Calculate total batches, ensure it's at least 1 if there are images, or 0 if not
+    int totalBatchesCalc = allImages.isEmpty ? 0 : (allImages.length / batchSize).ceil();
+
+    if (allImages.isEmpty) {
+      onProgress(0, 0); // Signal completion or no work if no images
+      return;
+    }
+
+    for (int i = 0, currentBatchNum = 1; i < allImages.length; i += batchSize, currentBatchNum++) {
+      onProgress(currentBatchNum, totalBatchesCalc); // Report progress for the current batch about to be processed
+
       final batch = allImages.sublist(i, i + batchSize > allImages.length ? allImages.length : i + batchSize);
       
       List<dio.MultipartFile> photoFiles = [];
@@ -357,7 +375,6 @@ class ApiService {
         }
         String fileName = file.path.split('/').last;
         
-        // Explicitly determine and set ContentType
         String? mimeType = lookupMimeType(file.path);
         if (kDebugMode) {
           print('File: ${file.path}, Determined MIME type: $mimeType');
@@ -366,9 +383,6 @@ class ApiService {
         photoFiles.add(await dio.MultipartFile.fromFile(
           file.path,
           filename: fileName,
-          // Explicitly set contentType here using MediaType from http_parser
-          // However, Dio's MultipartFile takes contentType as a String.
-          // The `mime` package's lookupMimeType returns a String like 'image/jpeg'.
           contentType: mimeType != null ? MediaType.parse(mimeType) : null,
         ));
         metadataList.add(image.toJson());
@@ -376,57 +390,38 @@ class ApiService {
 
       if (photoFiles.isEmpty) {
         if (kDebugMode) print('Skipping empty batch for inspection $inspectionId from index $i');
+        // If this was the last potential batch and it's empty, it means all prior batches (if any) completed.
+        // The final onProgress call after the loop will handle true completion.
         continue;
       }
 
       String metadataJsonString = json.encode(metadataList);
-
       dio.FormData formData = dio.FormData.fromMap({
         'photos': photoFiles,
         'metadata': metadataJsonString,
       });
-
       final photosUploadUrl = '$_inspectionsUrl/$inspectionId/photos/multiple';
       
       if (kDebugMode) {
-        print('Attempting to upload batch of ${photoFiles.length} photos to $photosUploadUrl');
+        print('Attempting to upload batch $currentBatchNum/$totalBatchesCalc of ${photoFiles.length} photos to $photosUploadUrl');
         print('Metadata for this batch: $metadataJsonString');
       }
 
       try {
-        final response = await _dioInst.post(
-          photosUploadUrl,
-          data: formData,
-        );
-
+        final response = await _dioInst.post(photosUploadUrl, data: formData);
         if (response.statusCode == 200 || response.statusCode == 201) {
-          if (kDebugMode) {
-            print('Batch of ${photoFiles.length} photos uploaded successfully for inspection $inspectionId.');
-          }
+          if (kDebugMode) print('Batch $currentBatchNum/$totalBatchesCalc uploaded successfully.');
         } else {
-          if (kDebugMode) {
-            print('Failed to upload batch for inspection $inspectionId: ${response.statusCode} - ${response.data}');
-          }
-          throw Exception('Failed to upload photo batch: ${response.statusCode} - ${response.data}');
+          throw Exception('Failed to upload photo batch $currentBatchNum/$totalBatchesCalc: ${response.statusCode} - ${response.data}');
         }
       } on dio.DioException catch (e) {
-         if (kDebugMode) {
-          print('DioError uploading batch for inspection $inspectionId: ${e.message}');
-          if (e.response != null) {
-            print('DioError response data: ${e.response?.data}');
-            print('DioError response headers: ${e.response?.headers}');
-          } else {
-            print('DioError: Request failed without a response.');
-          }
-        }
-        throw Exception('Error uploading photo batch (DioException): ${e.message}');
-      } 
-      catch (e) {
-        if (kDebugMode) {
-          print('Generic error uploading batch for inspection $inspectionId: $e');
-        }
-        throw Exception('Error uploading photo batch: $e');
+        throw Exception('Error uploading photo batch $currentBatchNum/$totalBatchesCalc (DioException): ${e.message}');
+      } catch (e) {
+        throw Exception('Error uploading photo batch $currentBatchNum/$totalBatchesCalc: $e');
       }
     }
+    // After the loop, signal completion by calling onProgress with currentBatch = totalBatches
+    // (or totalBatchesCalc, totalBatchesCalc)
+    onProgress(totalBatchesCalc, totalBatchesCalc);
   }
 }

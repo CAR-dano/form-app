@@ -40,11 +40,7 @@ class MultiStepFormScreen extends ConsumerStatefulWidget {
 }
 
 class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
-  final List<GlobalKey<FormState>> _formKeys = [
-    GlobalKey<FormState>(), // For PageOne (index 0)
-    GlobalKey<FormState>(), // For PageTwo (index 1)
-    // Add more GlobalKeys if other pages have forms needing them
-  ];
+  final List<GlobalKey<FormState>> _formKeys = List.generate(27, (_) => GlobalKey<FormState>());
 
   // ValueNotifiers to control when validation messages are shown for specific pages
   final ValueNotifier<bool> _formSubmittedPageOne = ValueNotifier<bool>(false);
@@ -55,8 +51,8 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
   // Map page indices to their names for snackbar messages
   final Map<int, String> _pageNames = {
-    0: 'Identitas (Halaman 1)',
-    1: 'Data Kendaraan (Halaman 2)',
+    0: 'Identitas',
+    14: 'Data Kendaraan',
   };
 
   @override
@@ -66,7 +62,20 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
     _formPages = [
       PageOne(formKey: _formKeys[0], formSubmitted: _formSubmittedPageOne),
-      PageTwo(formKey: _formKeys[1], formSubmitted: _formSubmittedPageTwo),
+      const PageSixGeneralWajib(),
+      const PageSixEksteriorWajib(),
+      const PageSixInteriorWajib(),
+      const PageSixMesinWajib(),
+      const PageSixKakiKakiWajib(),
+      const PageSixAlatAlatWajib(),
+      const PageSixGeneralTambahan(),
+      const PageSixEksteriorTambahan(),
+      const PageSixInteriorTambahan(),
+      const PageSixMesinTambahan(),
+      const PageSixKakiKakiTambahan(),
+      const PageSixAlatAlatTambahan(),
+      const PageSeven(), // Moved PageSeven here
+      PageTwo(formKey: _formKeys[14], formSubmitted: _formSubmittedPageTwo), // Index updated
       const PageThree(),
       const PageFour(),
       const PageFiveOne(),
@@ -76,23 +85,10 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       const PageFiveFive(),
       const PageFiveSix(),
       const PageFiveSeven(),
-      const PageSixGeneralWajib(),
-      const PageSixGeneralTambahan(),
-      const PageSixEksteriorWajib(),
-      const PageSixEksteriorTambahan(),
-      const PageSixInteriorWajib(),
-      const PageSixInteriorTambahan(),
-      const PageSixMesinWajib(),
-      const PageSixMesinTambahan(),
-      const PageSixKakiKakiWajib(),
-      const PageSixKakiKakiTambahan(),
-      const PageSixAlatAlatWajib(),
-      const PageSixAlatAlatTambahan(),
-      const PageSeven(),
       const PageEight(),
       PageNine(
         formKeyPageOne: _formKeys[0],
-        formKeyPageTwo: _formKeys[1],
+        formKeyPageTwo: _formKeys[14], // Index updated
         formSubmittedPageOne: _formSubmittedPageOne,
         formSubmittedPageTwo: _formSubmittedPageTwo,
         pageNames: _pageNames,
@@ -113,7 +109,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     final formKey = _formKeys[pageIndex];
     // Trigger validation for the specific page's form
     if (!(formKey.currentState?.validate() ?? false)) {
-      return 'Harap lengkapi data di ${_pageNames[pageIndex]}';
+      return 'Harap lengkapi data di Halaman ${pageIndex + 1}';
     }
     return null;
   }

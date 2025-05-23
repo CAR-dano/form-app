@@ -50,7 +50,7 @@ class _PageSixKakiKakiTambahanState extends ConsumerState<PageSixKakiKakiTambaha
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PageNumber(data: '6/9'),
+              PageNumber(data: '12/26'),
               const SizedBox(height: 4),
               PageTitle(data: 'Foto Kaki-kaki'),
               const SizedBox(height: 6.0),

@@ -75,7 +75,7 @@ class _PageSixEksteriorWajibState extends ConsumerState<PageSixEksteriorWajib> w
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(data: '6/9'),
+          PageNumber(data: '3/26'),
           const SizedBox(height: 4),
           PageTitle(data: 'Foto Eksterior'),
           const SizedBox(height: 6.0),

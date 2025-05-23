@@ -34,7 +34,7 @@ class _PageThreeState extends ConsumerState<PageThree> with AutomaticKeepAliveCl
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(data: '3/9'),
+          PageNumber(data: '16/26'),
           const SizedBox(height: 4),
           PageTitle(data: 'Kelengkapan'),
           const SizedBox(height: 6.0),
