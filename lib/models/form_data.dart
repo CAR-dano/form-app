@@ -64,6 +64,9 @@ class FormData {
   int? sistemAudioSelectedValue;
   int? powerWindowSelectedValue;
   int? sistemAcSelectedValue;
+  int? centralLockSelectedValue; // New field
+  int? electricMirrorSelectedValue; // New field
+  int? remAbsSelectedValue; // New field
   List<String>? fiturCatatanList;
 
   // New fields for Page Five Two
@@ -262,6 +265,9 @@ class FormData {
     this.sistemAudioSelectedValue,
     this.powerWindowSelectedValue,
     this.sistemAcSelectedValue,
+    this.centralLockSelectedValue, // New field
+    this.electricMirrorSelectedValue, // New field
+    this.remAbsSelectedValue, // New field
     this.getaranMesinSelectedValue,
     this.fiturCatatanList = const [],
     this.suaraMesinSelectedValue,
@@ -447,6 +453,9 @@ class FormData {
       'sistemAudioSelectedValue': sistemAudioSelectedValue,
       'powerWindowSelectedValue': powerWindowSelectedValue,
       'sistemAcSelectedValue': sistemAcSelectedValue,
+      'centralLockSelectedValue': centralLockSelectedValue, // New field
+      'electricMirrorSelectedValue': electricMirrorSelectedValue, // New field
+      'remAbsSelectedValue': remAbsSelectedValue, // New field
       'fiturCatatanList': fiturCatatanList,
       'getaranMesinSelectedValue': getaranMesinSelectedValue,
       'suaraMesinSelectedValue': suaraMesinSelectedValue,
@@ -640,6 +649,9 @@ class FormData {
       sistemAudioSelectedValue: json['sistemAudioSelectedValue'] as int?,
       powerWindowSelectedValue: json['powerWindowSelectedValue'] as int?,
       sistemAcSelectedValue: json['sistemAcSelectedValue'] as int?,
+      centralLockSelectedValue: json['centralLockSelectedValue'] as int?, // New field
+      electricMirrorSelectedValue: json['electricMirrorSelectedValue'] as int?, // New field
+      remAbsSelectedValue: json['remAbsSelectedValue'] as int?, // New field
       fiturCatatanList: (json['fiturCatatanList'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const [],
       getaranMesinSelectedValue: json['getaranMesinSelectedValue'] as int?,
       suaraMesinSelectedValue: json['suaraMesinSelectedValue'] as int?,
@@ -823,6 +835,9 @@ class FormData {
     int? sistemAudioSelectedValue,
     int? powerWindowSelectedValue,
     int? sistemAcSelectedValue,
+    int? centralLockSelectedValue, // New field
+    int? electricMirrorSelectedValue, // New field
+    int? remAbsSelectedValue, // New field
     List<String>? fiturCatatanList,
     int? getaranMesinSelectedValue,
     int? suaraMesinSelectedValue,
@@ -1004,6 +1019,9 @@ class FormData {
       sistemAudioSelectedValue: sistemAudioSelectedValue ?? this.sistemAudioSelectedValue,
       powerWindowSelectedValue: powerWindowSelectedValue ?? this.powerWindowSelectedValue,
       sistemAcSelectedValue: sistemAcSelectedValue ?? this.sistemAcSelectedValue,
+      centralLockSelectedValue: centralLockSelectedValue ?? this.centralLockSelectedValue, // New field
+      electricMirrorSelectedValue: electricMirrorSelectedValue ?? this.electricMirrorSelectedValue, // New field
+      remAbsSelectedValue: remAbsSelectedValue ?? this.remAbsSelectedValue, // New field
       fiturCatatanList: fiturCatatanList ?? this.fiturCatatanList,
       getaranMesinSelectedValue: getaranMesinSelectedValue ?? this.getaranMesinSelectedValue,
       suaraMesinSelectedValue: suaraMesinSelectedValue ?? this.suaraMesinSelectedValue,
