@@ -50,7 +50,7 @@ class _PageSixInteriorTambahanState extends ConsumerState<PageSixInteriorTambaha
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PageNumber(data: '6/9'),
+              PageNumber(data: '10/26'),
               const SizedBox(height: 4),
               PageTitle(data: 'Foto Interior'),
               const SizedBox(height: 6.0),

@@ -53,7 +53,7 @@ class _PageSixGeneralTambahanState extends ConsumerState<PageSixGeneralTambahan>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PageNumber(data: '6/9'),
+              PageNumber(data: '8/26'),
               const SizedBox(height: 4),
               PageTitle(data: 'Foto General'),
               const SizedBox(height: 6.0),

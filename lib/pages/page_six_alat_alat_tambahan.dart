@@ -50,7 +50,7 @@ class _PageSixAlatAlatTambahanState extends ConsumerState<PageSixAlatAlatTambaha
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PageNumber(data: '6/9'),
+              PageNumber(data: '13/26'),
               const SizedBox(height: 4),
               PageTitle(data: 'Foto Alat-alat'),
               const SizedBox(height: 6.0),

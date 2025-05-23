@@ -70,7 +70,7 @@ class _PageSixKakiKakiWajibState extends ConsumerState<PageSixKakiKakiWajib> wit
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(data: '6/9'),
+          PageNumber(data: '6/26'),
           const SizedBox(height: 4),
           PageTitle(data: 'Foto Kaki-kaki'),
           const SizedBox(height: 6.0),

@@ -86,7 +86,7 @@ class _PageSixMesinWajibState extends ConsumerState<PageSixMesinWajib> with Auto
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(data: '6/9'),
+          PageNumber(data: '5/26'),
           const SizedBox(height: 4),
           PageTitle(data: 'Foto Mesin'),
           const SizedBox(height: 6.0),

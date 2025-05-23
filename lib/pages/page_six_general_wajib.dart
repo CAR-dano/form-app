@@ -69,7 +69,7 @@ class _PageSixGeneralWajibState extends ConsumerState<PageSixGeneralWajib> with 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PageNumber(data: '6/9'),
+          PageNumber(data: '2/26'),
               const SizedBox(height: 4),
               PageTitle(data: 'Foto General'),
               const SizedBox(height: 6.0),

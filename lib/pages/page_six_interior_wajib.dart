@@ -68,7 +68,7 @@ class _PageSixInteriorWajibState extends ConsumerState<PageSixInteriorWajib> wit
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(data: '6/9'),
+          PageNumber(data: '4/26'),
           const SizedBox(height: 4),
           PageTitle(data: 'Foto Interior'),
           const SizedBox(height: 6.0),

@@ -77,7 +77,7 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(data: '1/9'),
+                  PageNumber(data: '1/26'),
                   const SizedBox(height: 4),
                   PageTitle(data: 'Identitas'),
                   const SizedBox(height: 6.0),

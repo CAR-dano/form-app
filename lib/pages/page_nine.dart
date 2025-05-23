@@ -88,10 +88,10 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
       firstErrorPageIndex ??= 0;
     }
 
-    final pageTwoError = widget.validatePage(1);
+    final pageTwoError = widget.validatePage(14);
     if (pageTwoError != null) {
       validationErrors.add(pageTwoError);
-      firstErrorPageIndex ??= 1;
+      firstErrorPageIndex ??= 14;
     }
 
     if (validationErrors.isNotEmpty) {
@@ -222,7 +222,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PageNumber(data: '9/9'),
+              PageNumber(data: '26/26'),
               const SizedBox(height: 4),
               PageTitle(data: 'Finalisasi'),
               const SizedBox(height: 6.0),

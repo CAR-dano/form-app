@@ -66,7 +66,7 @@ class _PageFourState extends ConsumerState<PageFour> with AutomaticKeepAliveClie
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageNumber(data: '4/9'),
+                PageNumber(data: '17/26'),
                 const SizedBox(height: 4),
                 PageTitle(data: 'Hasil Inspeksi'), // Placeholder Title
                 const SizedBox(height: 6.0),

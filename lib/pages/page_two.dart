@@ -90,7 +90,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(data: '2/9'), // Updated Page Number
+                  PageNumber(data: '15/26'),
                   const SizedBox(height: 4),
                   PageTitle(data: 'Data Kendaraan'), // Updated Title
                   const SizedBox(height: 6.0),
