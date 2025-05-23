@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_step_provider.dart';
+import 'package:form_app/providers/tambahan_image_data_provider.dart'; // Import the provider
 import 'package:form_app/widgets/common_layout.dart';
 
 // Import all form pages
@@ -45,15 +46,36 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   // ValueNotifiers to control when validation messages are shown for specific pages
   final ValueNotifier<bool> _formSubmittedPageOne = ValueNotifier<bool>(false);
   final ValueNotifier<bool> _formSubmittedPageTwo = ValueNotifier<bool>(false);
+  // ValueNotifier for Tambahan Image pages
+  final ValueNotifier<bool> _formSubmittedTambahanImages = ValueNotifier<bool>(false);
 
   late final List<Widget> _formPages;
   late PageController _pageController;
 
   // Map page indices to their names for snackbar messages
   final Map<int, String> _pageNames = {
-    0: 'Identitas',
-    14: 'Data Kendaraan',
+    0: 'Identitas', // PageOne
+    7: 'Foto General (Tambahan)', // PageSixGeneralTambahan
+    8: 'Foto Eksterior (Tambahan)', // PageSixEksteriorTambahan
+    9: 'Foto Interior (Tambahan)', // PageSixInteriorTambahan
+    10: 'Foto Mesin (Tambahan)', // PageSixMesinTambahan
+    11: 'Foto Kaki-kaki (Tambahan)', // PageSixKakiKakiTambahan
+    12: 'Foto Alat-alat (Tambahan)', // PageSixAlatAlatTambahan
+    13: 'Foto Dokumen', // PageSeven
+    14: 'Data Kendaraan', // PageTwo
   };
+
+  // Identifiers for pages with TambahanImageSelection
+  final Map<int, String> _tambahanImagePageIdentifiers = {
+    7: 'General Tambahan',
+    8: 'Eksterior Tambahan',
+    9: 'Interior Tambahan',
+    10: 'Mesin Tambahan',
+    11: 'Kaki-kaki Tambahan',
+    12: 'Alat-alat Tambahan',
+    13: 'Foto Dokumen',
+  };
+
 
   @override
   void initState() {
@@ -68,14 +90,14 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       const PageSixMesinWajib(),
       const PageSixKakiKakiWajib(),
       const PageSixAlatAlatWajib(),
-      const PageSixGeneralTambahan(),
-      const PageSixEksteriorTambahan(),
-      const PageSixInteriorTambahan(),
-      const PageSixMesinTambahan(),
-      const PageSixKakiKakiTambahan(),
-      const PageSixAlatAlatTambahan(),
-      const PageSeven(), // Moved PageSeven here
-      PageTwo(formKey: _formKeys[14], formSubmitted: _formSubmittedPageTwo), // Index updated
+      PageSixGeneralTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 7
+      PageSixEksteriorTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 8
+      PageSixInteriorTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 9
+      PageSixMesinTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 10
+      PageSixKakiKakiTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 11
+      PageSixAlatAlatTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 12
+      PageSeven(formSubmitted: _formSubmittedTambahanImages), // Index 13
+      PageTwo(formKey: _formKeys[14], formSubmitted: _formSubmittedPageTwo), // Index 14
       const PageThree(),
       const PageFour(),
       const PageFiveOne(),
@@ -88,11 +110,13 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       const PageEight(),
       PageNine(
         formKeyPageOne: _formKeys[0],
-        formKeyPageTwo: _formKeys[14], // Index updated
+        formKeyPageTwo: _formKeys[14],
         formSubmittedPageOne: _formSubmittedPageOne,
         formSubmittedPageTwo: _formSubmittedPageTwo,
+        formSubmittedTambahanImages: _formSubmittedTambahanImages,
         pageNames: _pageNames,
-        validatePage: _validatePage, // Pass the function
+        validatePage: _validatePage,
+        tambahanImagePageIdentifiers: _tambahanImagePageIdentifiers,
       ),
       const FinishedPage(),
     ];
@@ -101,15 +125,28 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   @override
   void dispose() {
     _pageController.dispose();
+    _formSubmittedPageOne.dispose();
+    _formSubmittedPageTwo.dispose();
+    _formSubmittedTambahanImages.dispose();
     super.dispose();
   }
 
   // Function to validate a specific page
   String? _validatePage(int pageIndex) {
-    final formKey = _formKeys[pageIndex];
-    // Trigger validation for the specific page's form
-    if (!(formKey.currentState?.validate() ?? false)) {
-      return 'Harap lengkapi data di Halaman ${pageIndex + 1}';
+    // Validation for pages with GlobalKey<FormState>
+    if (_formKeys[pageIndex].currentState != null) {
+      if (!(_formKeys[pageIndex].currentState!.validate())) {
+        return 'Harap lengkapi data di Halaman ${pageIndex + 1}';
+      }
+    }
+
+    // Validation for pages with TambahanImageSelection
+    if (_tambahanImagePageIdentifiers.containsKey(pageIndex)) {
+      final identifier = _tambahanImagePageIdentifiers[pageIndex]!;
+      final images = ref.read(tambahanImageDataProvider(identifier));
+      if (images.any((image) => image.label.trim().isEmpty)) {
+        return 'Harap isi semua label gambar di Halaman ${pageIndex + 1}';
+      }
     }
     return null;
   }

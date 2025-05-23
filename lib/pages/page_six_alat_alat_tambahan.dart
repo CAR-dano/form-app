@@ -9,7 +9,12 @@ import 'package:form_app/widgets/tambahan_image_selection.dart';
 import 'package:form_app/providers/form_step_provider.dart';
 
 class PageSixAlatAlatTambahan extends ConsumerStatefulWidget {
-  const PageSixAlatAlatTambahan({super.key});
+  final ValueNotifier<bool> formSubmitted;
+
+  const PageSixAlatAlatTambahan({
+    super.key,
+    required this.formSubmitted,
+  });
 
   @override
   ConsumerState<PageSixAlatAlatTambahan> createState() => _PageSixAlatAlatTambahanState();
@@ -56,7 +61,10 @@ class _PageSixAlatAlatTambahanState extends ConsumerState<PageSixAlatAlatTambaha
               const SizedBox(height: 6.0),
               HeadingOne(text: 'Tambahan'),
               const SizedBox(height: 16.0),
-              TambahanImageSelection(identifier: 'Alat-alat Tambahan'),
+              TambahanImageSelection(
+                identifier: 'Alat-alat Tambahan',
+                formSubmitted: widget.formSubmitted,
+              ),
               const SizedBox(height: 32.0),
               NavigationButtonRow(
                 onBackPressed: () => ref.read(formStepProvider.notifier).state--,

@@ -14,16 +14,17 @@ import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart'; // Import the new widget
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
-  final String identifier; // Add identifier parameter
-
+  final String identifier;
   final bool showNeedAttention;
-  final bool isMandatory; // New parameter
+  final bool isMandatory;
+  final ValueNotifier<bool>? formSubmitted; // Make it nullable or provide a default
 
   const TambahanImageSelection({
     super.key,
     required this.identifier,
-    this.showNeedAttention = true, // Default to true
-    this.isMandatory = false, // Default to false
+    this.showNeedAttention = true,
+    this.isMandatory = false,
+    this.formSubmitted, // Accept the notifier
   });
 
   @override
@@ -34,6 +35,56 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   final ImagePicker _picker = ImagePicker();
   int _currentIndex = 0;
   final TextEditingController _labelController = TextEditingController();
+  final GlobalKey<FormFieldState<String>> _labelFieldKey = GlobalKey<FormFieldState<String>>();
+
+  // To listen to formSubmitted changes if passed
+  VoidCallback? _formSubmittedListener;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateControllersForCurrentIndex();
+    });
+
+    if (widget.formSubmitted != null) {
+      _formSubmittedListener = () {
+        if (mounted && widget.formSubmitted!.value) {
+          // Trigger validation for the current label field when formSubmitted becomes true
+          _labelFieldKey.currentState?.validate();
+        }
+      };
+      widget.formSubmitted!.addListener(_formSubmittedListener!);
+    }
+  }
+
+  @override
+  void dispose() {
+    _labelController.dispose();
+    if (widget.formSubmitted != null && _formSubmittedListener != null) {
+      widget.formSubmitted!.removeListener(_formSubmittedListener!);
+    }
+    super.dispose();
+  }
+
+  void _updateControllersForCurrentIndex() {
+    final images = ref.read(tambahanImageDataProvider(widget.identifier));
+    if (images.isNotEmpty && _currentIndex < images.length) {
+      final currentImage = images[_currentIndex];
+      if (_labelController.text != currentImage.label) {
+        _labelController.text = currentImage.label;
+        _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
+      }
+    } else {
+      _labelController.clear();
+    }
+    // If form has been submitted, re-validate the new field content
+    if (widget.formSubmitted?.value ?? false) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _labelFieldKey.currentState?.validate();
+        });
+    }
+  }
 
   Future<String?> _processAndSaveImage(XFile pickedFile) async {
     final File imageFile = File(pickedFile.path);
@@ -115,36 +166,6 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       return null; // Indicate failure
     }
     return finalImagePath;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // Initial update based on potentially loaded data for this specific identifier
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _updateControllersForCurrentIndex();
-    });
-  }
-
-  @override
-  void dispose() {
-    _labelController.dispose();
-    super.dispose();
-  }
-
-  void _updateControllersForCurrentIndex() {
-    // Use widget.identifier to get the correct provider instance
-    final images = ref.read(tambahanImageDataProvider(widget.identifier));
-    if (images.isNotEmpty && _currentIndex < images.length) {
-      final currentImage = images[_currentIndex];
-      if (_labelController.text != currentImage.label) {
-        _labelController.text = currentImage.label;
-         // Ensure cursor is at the end after programmatic text change
-        _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
-      }
-    } else {
-      _labelController.clear();
-    }
   }
 
   Future<void> _pickImage(ImageSource source) async {

@@ -20,8 +20,10 @@ class PageNine extends ConsumerStatefulWidget {
   final GlobalKey<FormState> formKeyPageTwo;
   final ValueNotifier<bool> formSubmittedPageOne;
   final ValueNotifier<bool> formSubmittedPageTwo;
+  final ValueNotifier<bool> formSubmittedTambahanImages; // New
   final Map<int, String> pageNames;
   final String? Function(int pageIndex) validatePage;
+  final Map<int, String> tambahanImagePageIdentifiers; // New
 
   const PageNine({
     super.key,
@@ -29,8 +31,10 @@ class PageNine extends ConsumerStatefulWidget {
     required this.formKeyPageTwo,
     required this.formSubmittedPageOne,
     required this.formSubmittedPageTwo,
+    required this.formSubmittedTambahanImages, // New
     required this.pageNames,
     required this.validatePage,
+    required this.tambahanImagePageIdentifiers, // New
   });
 
   @override
@@ -46,10 +50,13 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
 // Could be batches or form data step
 // Start with 1 for form data, then update for image batches
 
-  final List<String> tambahanImageIdentifiers = [
-    'General Tambahan', 'Eksterior Tambahan', 'Interior Tambahan',
-    'Mesin Tambahan', 'Kaki-kaki Tambahan', 'Alat-alat Tambahan', 'Foto Dokumen',
+  // Combined list of page indices that need validation
+  List<int> get _pagesToValidate => [
+    0, // PageOne
+    14, // PageTwo
+    ...widget.tambahanImagePageIdentifiers.keys, // All Tambahan Image pages
   ];
+
 
   @override
   bool get wantKeepAlive => true;
@@ -74,24 +81,22 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
       _isLoading = true;
       _loadingMessage = 'Memvalidasi data...';
       _currentProgress = 0.0;
-// Step 1: Form data submission
     });
 
     widget.formSubmittedPageOne.value = true;
     widget.formSubmittedPageTwo.value = true;
+    widget.formSubmittedTambahanImages.value = true; // Trigger for Tambahan Image Pages
+
     List<String> validationErrors = [];
     int? firstErrorPageIndex;
 
-    final pageOneError = widget.validatePage(0);
-    if (pageOneError != null) validationErrors.add(pageOneError);
-    firstErrorPageIndex ??= (pageOneError != null ? 0 : null);
-
-    // Assuming page two is index 1 for validation key, adjust if it's different for your _formKeys
-    // The user's code had widget.validatePage(14) - I'll stick to that for now
-    final pageNError = widget.validatePage(14); 
-    if (pageNError != null) validationErrors.add(pageNError);
-    firstErrorPageIndex ??= (pageNError != null ? 14 : null);
-
+    for (int pageIndex in _pagesToValidate) {
+      final error = widget.validatePage(pageIndex);
+      if (error != null) {
+        validationErrors.add(error);
+        firstErrorPageIndex ??= pageIndex;
+      }
+    }
 
     if (validationErrors.isNotEmpty) {
       if (!mounted) return;
@@ -145,10 +150,15 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
           ));
         }
       }
-      for (final identifier in tambahanImageIdentifiers) {
+
+      // Use widget.tambahanImagePageIdentifiers.values directly if they are the strings for the provider
+      for (final identifier in widget.tambahanImagePageIdentifiers.values) {
         final tambahanImagesList = ref.read(tambahanImageDataProvider(identifier));
         for (var imgData in tambahanImagesList) {
           if (imgData.imagePath.isNotEmpty) {
+             if (imgData.label.trim().isEmpty) { // Double check, though validation should catch this
+                throw Exception('Gambar tambahan pada halaman terkait "$identifier" memiliki label kosong.');
+            }
             allImagesToUpload.add(UploadableImage(
               imagePath: imgData.imagePath, label: imgData.label, needAttention: imgData.needAttention,
               category: imgData.category, isMandatory: imgData.isMandatory,
@@ -201,7 +211,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
       setState(() { _loadingMessage = 'Menyelesaikan...'; _currentProgress = 1.0; });
       ref.read(formProvider.notifier).resetFormData();
       ref.read(imageDataListProvider.notifier).clearImageData();
-      for (final identifier in tambahanImageIdentifiers) {
+      for (final identifier in widget.tambahanImagePageIdentifiers.values) {
         ref.read(tambahanImageDataProvider(identifier).notifier).clearAll();
       }
 
