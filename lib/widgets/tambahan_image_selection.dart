@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:image/image.dart' as img;
+import 'package:path_provider/path_provider.dart'; // For getTemporaryDirectory
+import 'package:flutter/foundation.dart'; // For kDebugMode
 import 'package:form_app/statics/app_styles.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
@@ -31,6 +34,88 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   final ImagePicker _picker = ImagePicker();
   int _currentIndex = 0;
   final TextEditingController _labelController = TextEditingController();
+
+  Future<String?> _processAndSaveImage(XFile pickedFile) async {
+    final File imageFile = File(pickedFile.path);
+    List<int> imageBytes = await imageFile.readAsBytes();
+    img.Image? originalImage = img.decodeImage(Uint8List.fromList(imageBytes));
+
+    if (originalImage == null) {
+      if (kDebugMode) {
+        print("Error: Could not decode image ${pickedFile.path}");
+      }
+      return null; // Indicate failure
+    }
+
+    double currentAspectRatio = originalImage.width / originalImage.height;
+    double targetAspectRatio = 4.0 / 3.0;
+    const double tolerance = 0.01; // Allow for small floating point inaccuracies
+
+    int cropX = 0;
+    int cropY = 0;
+    int cropWidth = originalImage.width;
+    int cropHeight = originalImage.height;
+    bool needsCrop = false;
+
+    if ((currentAspectRatio - targetAspectRatio).abs() > tolerance) {
+        needsCrop = true;
+        if (currentAspectRatio > targetAspectRatio) {
+          // Image is wider than 4:3, crop width
+          cropWidth = (originalImage.height * targetAspectRatio).round();
+          cropX = ((originalImage.width - cropWidth) / 2).round();
+        } else {
+          // Image is taller than 4:3, crop height
+          cropHeight = (originalImage.width / targetAspectRatio).round();
+          cropY = ((originalImage.height - cropHeight) / 2).round();
+        }
+    }
+
+    img.Image? processedImage = originalImage;
+    if (needsCrop) {
+      processedImage = img.copyCrop(originalImage, x: cropX, y: cropY, width: cropWidth, height: cropHeight);
+    }
+
+    // Resize if the image is too large
+    const int maxWidth = 1200; // Target maximum width
+    if (processedImage.width > maxWidth) {
+      processedImage = img.copyResize(processedImage, width: maxWidth);
+    }
+
+    String finalImagePath = pickedFile.path;
+    List<int> processedBytes;
+    // Preserve original extension or default to jpg
+    String extension = pickedFile.name.split('.').last.toLowerCase();
+    if (extension == 'png') {
+      processedBytes = img.encodePng(processedImage);
+    } else if (extension == 'gif') {
+      processedBytes = img.encodeGif(processedImage); // If you need to support GIF
+    }
+    else { // default to jpg for jpeg, jpg, or unknown
+      processedBytes = img.encodeJpg(processedImage, quality: 70); // Adjust quality
+      if (extension != 'jpg' && extension != 'jpeg') extension = 'jpg';
+    }
+
+    try {
+      final directory = await getTemporaryDirectory();
+      final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+      // Ensure unique filename if multiple images are processed quickly
+      final String newFileName = '${timestamp}_${pickedFile.name.replaceAll(RegExp(r'\s+'), '_')}_processed.$extension';
+      finalImagePath = '${directory.path}/$newFileName';
+      final File newProcessedFile = File(finalImagePath);
+      await newProcessedFile.writeAsBytes(processedBytes);
+      if (kDebugMode) {
+        print('Processed image saved to: $finalImagePath');
+        final int fileSize = await newProcessedFile.length();
+        print('Compressed file size: ${fileSize / 1024} KB');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error saving processed image: $e");
+      }
+      return null; // Indicate failure
+    }
+    return finalImagePath;
+  }
 
   @override
   void initState() {
@@ -66,41 +151,48 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     if (source == ImageSource.gallery) {
       final List<XFile> images = await _picker.pickMultiImage();
       if (images.isNotEmpty) {
-        for (var imageFile in images) {
-          final newTambahanImage = TambahanImageData(
-            imagePath: imageFile.path,
-            label: '', // Default label, user can edit
-            needAttention: false,
-            category: widget.identifier, // Use identifier as category
-            isMandatory: widget.isMandatory, // Use the widget's isMandatory value
-          );
-          // Use widget.identifier for the provider
-          ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
+        List<TambahanImageData> newImagesData = [];
+        for (var imageFileXFile in images) {
+          final String? processedPath = await _processAndSaveImage(imageFileXFile);
+          if (processedPath != null) {
+            final newTambahanImage = TambahanImageData(
+              imagePath: processedPath, // Use processed path
+              label: '', // Default label, user can edit
+              needAttention: false,
+              category: widget.identifier,
+              isMandatory: widget.isMandatory,
+            );
+            newImagesData.add(newTambahanImage);
+            // Use widget.identifier for the provider
+            ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
+          }
         }
-        setState(() {
-           // Use widget.identifier for the provider
-          _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - images.length;
-          if (_currentIndex < 0) _currentIndex = 0;
-          _updateControllersForCurrentIndex();
-        });
+        if (newImagesData.isNotEmpty) {
+          setState(() {
+            _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - newImagesData.length;
+            if (_currentIndex < 0) _currentIndex = 0;
+            _updateControllersForCurrentIndex();
+          });
+        }
       }
-    } else {
-      final XFile? image = await _picker.pickImage(source: source);
-      if (image != null) {
-        final newTambahanImage = TambahanImageData(
-          imagePath: image.path,
-          label: '', // Default label
-          needAttention: false,
-          category: widget.identifier, // Use identifier as category
-          isMandatory: widget.isMandatory, // Use the widget's isMandatory value
-        );
-         // Use widget.identifier for the provider
-        ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
-        setState(() {
-           // Use widget.identifier for the provider
-          _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - 1;
-          _updateControllersForCurrentIndex();
-        });
+    } else { // Camera
+      final XFile? imageXFile = await _picker.pickImage(source: source);
+      if (imageXFile != null) {
+        final String? processedPath = await _processAndSaveImage(imageXFile);
+        if (processedPath != null) {
+          final newTambahanImage = TambahanImageData(
+            imagePath: processedPath, // Use processed path
+            label: '', 
+            needAttention: false,
+            category: widget.identifier,
+            isMandatory: widget.isMandatory,
+          );
+          ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
+          setState(() {
+            _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - 1;
+            _updateControllersForCurrentIndex();
+          });
+        }
       }
     }
   }
