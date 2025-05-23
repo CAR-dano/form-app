@@ -295,7 +295,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
             // Let NavigationButtonRow handle its own isLoading for the spinner within the button
             // If you want to completely replace the button content, that's a bigger change for NavigationButtonRow
             isLoading: _isLoading, 
-            nextButtonText: _isLoading ? _loadingMessage : 'Kirim',
+            nextButtonText: 'Kirim',
           ),
         ),
         const SizedBox(height: 24.0),
