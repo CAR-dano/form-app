@@ -82,21 +82,7 @@ class NavigationButtonRow extends StatelessWidget {
                foregroundColor: WidgetStateProperty.all(buttonTextColor), // Always white when enabled
                shadowColor: WidgetStateProperty.all(isLastPage && !isFormConfirmed ? const Color(0xffcacaca).withAlpha(102) : (isLastPage ? toggleOptionSelectedLengkapColor.withAlpha(102) : buttonColor.withAlpha(102))), // Adjust shadow color
             ),
-            child: SizedBox(
-              height: 24.0, // Fixed height for the button content
-              child: Center( // Center the content vertically and horizontally
-                child: isLoading
-                    ? SizedBox(
-                        width: 24, // Slightly larger size for visibility
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          color: buttonTextColor,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : Text(isLastPage ? 'Kirim' : nextButtonText, style: buttonTextStyle),
-              ),
-            ),
+            child: Text(isLoading ? nextButtonText : (isLastPage ? 'Kirim' : nextButtonText), style: buttonTextStyle),
           ),
         ),
       ],

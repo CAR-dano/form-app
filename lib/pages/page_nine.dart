@@ -264,17 +264,17 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
                     },
                   ),
                   const SizedBox(height: 20.0),
-                  if (_isLoading)
-                    LoadingIndicatorWidget(
-                      message: _loadingMessage,
-                      progress: _currentProgress,
-                    ),
                 ],
               ),
             ),
           ),
         ),
         // Buttons and Footer at the bottom
+        if (_isLoading)
+          LoadingIndicatorWidget(
+            message: _loadingMessage,
+            progress: _currentProgress,
+          ),
         Padding(
           padding: const EdgeInsets.only(top:16.0), // Add some space if content is short
           child: NavigationButtonRow(
