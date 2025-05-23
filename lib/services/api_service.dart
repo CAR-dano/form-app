@@ -1,67 +1,106 @@
-import 'package:dio/dio.dart' as dio; // Add prefix
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:dio/dio.dart' as dio show Dio, FormData, MultipartFile, LogInterceptor, DioException;
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:form_app/models/form_data.dart';
-import 'package:form_app/models/inspector_data.dart'; // Import Inspector model
-import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import flutter_dotenv
-import 'package:form_app/models/inspection_branch.dart'; // Import InspectionBranch model
+import 'package:form_app/models/inspection_branch.dart';
+import 'package:form_app/models/inspector_data.dart';
+import 'package:http_parser/http_parser.dart' show MediaType;
+import 'package:mime/mime.dart'; // Import the mime package
+
+// UploadableImage class remains the same
+class UploadableImage {
+  final String imagePath;
+  final String label;
+  final bool needAttention;
+  final String category;
+  final bool isMandatory;
+
+  UploadableImage({
+    required this.imagePath,
+    required this.label,
+    required this.needAttention,
+    required this.category,
+    required this.isMandatory,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'label': label,
+        'needAttention': needAttention,
+        'category': category,
+        'isMandatory': isMandatory,
+      };
+}
 
 class ApiService {
-  final dio.Dio _dio = dio.Dio(); // Use prefix
-  String get _baseApiUrl => dotenv.env['API_BASE_URL']!; // Base API URL from .env
-  String get _inspectionsUrl =>
-      '$_baseApiUrl/inspections'; // Inspections endpoint
-  String get _inspectionBranchesUrl =>
-      '$_baseApiUrl/inspection-branches'; // Inspection branches endpoint
-  String get _inspectorsUrl =>
-      '$_baseApiUrl/public/users/inspectors'; // Inspectors endpoint
+  final dio.Dio _dioInst;
 
-  Future<List<InspectionBranch>> getInspectionBranches() async {
+  String get _baseApiUrl => dotenv.env['API_BASE_URL']!;
+  String get _inspectionsUrl => '$_baseApiUrl/inspections';
+  String get _inspectionBranchesUrl => '$_baseApiUrl/inspection-branches';
+  String get _inspectorsUrl => '$_baseApiUrl/public/users/inspectors';
+
+  ApiService() : _dioInst = dio.Dio() {
+    _dioInst.interceptors.add(
+      dio.LogInterceptor(
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: true,
+        responseBody: true,
+        error: true,
+        logPrint: (object) {
+          if (kDebugMode) {
+            print("DIO_LOG: ${object.toString()}");
+          }
+        },
+      ),
+    );
+  }
+
+  // getInspectionBranches, getInspectors, submitFormData methods remain the same
+  // ... (keep your existing getInspectionBranches, getInspectors, submitFormData methods here) ...
+    Future<List<InspectionBranch>> getInspectionBranches() async {
     try {
-      final response = await _dio.get(_inspectionBranchesUrl);
+      final response = await _dioInst.get(_inspectionBranchesUrl);
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
-        // Map the JSON data to a list of InspectionBranch objects
         return data.map((json) => InspectionBranch.fromJson(json)).toList();
       } else {
-        // Throw an exception for FutureProvider to catch
         throw Exception('Failed to load inspection branches: ${response.statusCode}');
       }
     } catch (e) {
-      // Re-throw for FutureProvider
       throw Exception('Error fetching inspection branches: $e');
     }
   }
 
   Future<List<Inspector>> getInspectors() async {
-    // Change return type to List<Inspector>
     try {
-      final response = await _dio.get(_inspectorsUrl);
+      final response = await _dioInst.get(_inspectorsUrl);
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
-        // Map the JSON data to a list of Inspector objects
         return data.map((json) => Inspector.fromJson(json)).toList();
       } else {
-        // Throw an exception for FutureProvider to catch
         throw Exception('Failed to load inspectors: ${response.statusCode}');
       }
     } catch (e) {
-      // Re-throw for FutureProvider
       throw Exception('Error fetching inspectors: $e');
     }
   }
 
-  Future<void> submitFormData(FormData formData) async {
+  Future<Map<String, dynamic>> submitFormData(FormData formData) async {
     try {
-      final response = await _dio.post(
+      final response = await _dioInst.post(
         _inspectionsUrl,
-        data: {
+        data: { // Ensure this data structure matches exactly what the backend expects
           "vehiclePlateNumber": formData.platNomor,
           "inspectionDate": formData.tanggalInspeksi?.toIso8601String() ?? '-',
           "overallRating": formData.penilaianKeseluruhanSelectedValue ?? 0,
           "identityDetails": {
-            "namaInspektor": formData.inspectorId ?? '-',
+            "namaInspektor": formData.inspectorId ?? '-', // Backend expects inspector ID here
             "namaCustomer": formData.namaCustomer,
-            "cabangInspeksi": formData.cabangInspeksi?.id ?? '-',
+            "cabangInspeksi": formData.cabangInspeksi?.id ?? '-', // Backend expects branch ID here
           },
           "vehicleData": {
             "merekKendaraan": formData.merekKendaraan,
@@ -71,25 +110,24 @@ class ApiService {
             "warnaKendaraan": formData.warnaKendaraan,
             "odometer": formData.odometer,
             "kepemilikan": formData.kepemilikan,
-            "platNomor": formData.platNomor,
+            "platNomor": formData.platNomor, // Assuming this is the same as vehiclePlateNumber at the top level
             "pajak1Tahun": formData.pajak1TahunDate?.toIso8601String() ?? '-',
             "pajak5Tahun": formData.pajak5TahunDate?.toIso8601String() ?? '-',
-            "biayaPajak": formData.biayaPajak,
+            "biayaPajak": formData.biayaPajak.replaceAll('.', ''), // Ensure this is a number string without dots
           },
           "equipmentChecklist": {
-            "bukuService": formData.bukuService ?? false,
-            "kunciSerep": formData.kunciSerep ?? false,
-            "bukuManual": formData.bukuManual ?? false,
-            "banSerep": formData.banSerep ?? false,
-            "bpkb": formData.bpkb ?? false,
-            "dongkrak": formData.dongkrak ?? false,
-            "toolkit": formData.toolkit ?? false,
-            "noRangka":  formData.noRangka ?? false,
-            "noMesin": formData.noMesin ?? false,
+            "bukuService": formData.bukuService == "Lengkap",
+            "kunciSerep": formData.kunciSerep == "Lengkap",
+            "bukuManual": formData.bukuManual == "Lengkap",
+            "banSerep": formData.banSerep == "Lengkap",
+            "bpkb": formData.bpkb == "Lengkap",
+            "dongkrak": formData.dongkrak == "Lengkap",
+            "toolkit": formData.toolkit == "Lengkap",
+            "noRangka":  formData.noRangka == "Lengkap",
+            "noMesin": formData.noMesin == "Lengkap",
           },
           "inspectionSummary": {
             "interiorScore": formData.interiorSelectedValue ?? 0,
-            
             "interiorNotes": formData.keteranganInterior ?? [],
             "eksteriorScore": formData.eksteriorSelectedValue ?? 0,
             "eksteriorNotes": formData.keteranganEksterior ?? [],
@@ -99,9 +137,9 @@ class ApiService {
             "mesinNotes": formData.keteranganMesin ?? [],
             "penilaianKeseluruhanScore": formData.penilaianKeseluruhanSelectedValue ?? 0,
             "deskripsiKeseluruhan": formData.deskripsiKeseluruhan ?? [],
-            "indikasiTabrakan": formData.indikasiTabrakan ?? false,
-            "indikasiBanjir": formData.indikasiBanjir ?? false,
-            "indikasiOdometerReset": formData.indikasiOdometerReset ?? false,
+            "indikasiTabrakan": formData.indikasiTabrakan == "Terindikasi",
+            "indikasiBanjir": formData.indikasiBanjir == "Terindikasi",
+            "indikasiOdometerReset": formData.indikasiOdometerReset == "Terindikasi",
             "posisiBan": formData.posisiBan ?? '-',
             "merkban": formData.merk ?? '-',
             "tipeVelg": formData.tipeVelg ?? '-',
@@ -109,7 +147,7 @@ class ApiService {
             "estimasiPerbaikan": formData.repairEstimations.map((estimation) {
               return {
                 "namaPart": estimation['repair'] ?? '-',
-                "harga": estimation['price'] ?? 0,
+                "harga": estimation['price']?.replaceAll('.', '') ?? "0",
               };
             }).toList(),
           },
@@ -195,7 +233,7 @@ class ApiService {
               "sistemAC": formData.sistemAcSelectedValue ?? 0,
               "interior1": formData.trimInteriorSelectedValue ?? 0,
               "interior2": formData.aromaInteriorSelectedValue ?? 0,
-              "interior3": 10, // Keep hardcoded
+              "interior3": 10,
               "catatan": formData.fiturCatatanList ?? [],
             },
             "hasilInspeksiMesin": {
@@ -234,7 +272,7 @@ class ApiService {
               "pedal": formData.pedalSelectedValue ?? 0,
               "switchWiper": formData.switchWiperSelectedValue ?? 0,
               "lampuHazard": formData.lampuHazardSelectedValue ?? 0,
-              "switchLampu": formData.switchLampuSelectedValue ?? 0,
+              "switchLampu": formData.switchLampuSelectedValue ?? 0, 
               "panelDashboard": formData.panelDashboardSelectedValue ?? 0,
               "pembukaKapMesin": formData.pembukaKapMesinSelectedValue ?? 0,
               "pembukaBagasi": formData.pembukaBagasiSelectedValue ?? 0,
@@ -246,7 +284,7 @@ class ApiService {
               "tuasPersneling": formData.tuasPersnelingSelectedValue ?? 0,
               "jokBelakang": formData.jokBelakangSelectedValue ?? 0,
               "panelIndikator": formData.panelIndikatorSelectedValue ?? 0,
-              "switchLampuInterior": formData.switchLampuSelectedValue ?? 0,
+              "switchLampuInterior": formData.switchLampuSelectedValue ?? 0, 
               "karpetDasar": formData.karpetDasarSelectedValue ?? 0,
               "klakson": formData.klaksonSelectedValue ?? 0,
               "sunVisor": formData.sunVisorSelectedValue ?? 0,
@@ -260,7 +298,7 @@ class ApiService {
           "bodyPaintThickness": {
             "front": formData.catDepanKap ?? '-',
             "rear": {
-              "trunk": formData.catBelakangTrunk,
+              "trunk": formData.catBelakangTrunk ?? '-',
               "bumper": formData.catBelakangBumper ?? '-'
             },
             "right": {
@@ -281,20 +319,114 @@ class ApiService {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (kDebugMode) {
-          print('Form data submitted successfully!');
+          print('Form data submitted successfully! Response: ${response.data}');
         }
-        // TODO: Handle success (e.g., show a success message)
+        return response.data as Map<String, dynamic>;
       } else {
         if (kDebugMode) {
-          print('Failed to submit form data: ${response.statusCode}');
+          print('Failed to submit form data: ${response.statusCode} - ${response.data}');
         }
-        // TODO: Handle errors (e.g., show an error message)
+        throw Exception('Failed to submit form data: ${response.statusCode} - ${response.data}');
       }
     } catch (e) {
       if (kDebugMode) {
         print('Error submitting form data: $e');
       }
-      // TODO: Handle network errors or exceptions (e.g., show an error message)
+      throw Exception('Error submitting form data: $e');
+    }
+  }
+
+
+  Future<void> uploadImagesInBatches(String inspectionId, List<UploadableImage> allImages) async {
+    const int batchSize = 10;
+    for (int i = 0; i < allImages.length; i += batchSize) {
+      final batch = allImages.sublist(i, i + batchSize > allImages.length ? allImages.length : i + batchSize);
+      
+      List<dio.MultipartFile> photoFiles = [];
+      List<Map<String, dynamic>> metadataList = [];
+
+      for (var image in batch) {
+        if (image.imagePath.isEmpty) {
+          if (kDebugMode) print('Skipping image with empty path: ${image.label}');
+          continue;
+        }
+        File file = File(image.imagePath);
+        if (!await file.exists()) {
+          if (kDebugMode) print('Image file not found: ${image.imagePath}');
+          continue;
+        }
+        String fileName = file.path.split('/').last;
+        
+        // Explicitly determine and set ContentType
+        String? mimeType = lookupMimeType(file.path);
+        if (kDebugMode) {
+          print('File: ${file.path}, Determined MIME type: $mimeType');
+        }
+
+        photoFiles.add(await dio.MultipartFile.fromFile(
+          file.path,
+          filename: fileName,
+          // Explicitly set contentType here using MediaType from http_parser
+          // However, Dio's MultipartFile takes contentType as a String.
+          // The `mime` package's lookupMimeType returns a String like 'image/jpeg'.
+          contentType: mimeType != null ? MediaType.parse(mimeType) : null,
+        ));
+        metadataList.add(image.toJson());
+      }
+
+      if (photoFiles.isEmpty) {
+        if (kDebugMode) print('Skipping empty batch for inspection $inspectionId from index $i');
+        continue;
+      }
+
+      String metadataJsonString = json.encode(metadataList);
+
+      dio.FormData formData = dio.FormData.fromMap({
+        'photos': photoFiles,
+        'metadata': metadataJsonString,
+      });
+
+      final photosUploadUrl = '$_inspectionsUrl/$inspectionId/photos/multiple';
+      
+      if (kDebugMode) {
+        print('Attempting to upload batch of ${photoFiles.length} photos to $photosUploadUrl');
+        print('Metadata for this batch: $metadataJsonString');
+      }
+
+      try {
+        final response = await _dioInst.post(
+          photosUploadUrl,
+          data: formData,
+        );
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          if (kDebugMode) {
+            print('Batch of ${photoFiles.length} photos uploaded successfully for inspection $inspectionId.');
+          }
+        } else {
+          if (kDebugMode) {
+            print('Failed to upload batch for inspection $inspectionId: ${response.statusCode} - ${response.data}');
+          }
+          throw Exception('Failed to upload photo batch: ${response.statusCode} - ${response.data}');
+        }
+      } on dio.DioException catch (e) {
+         if (kDebugMode) {
+          print('DioError uploading batch for inspection $inspectionId: ${e.message}');
+          if (e.response != null) {
+            print('DioError response data: ${e.response?.data}');
+            print('DioError response headers: ${e.response?.headers}');
+          } else {
+            print('DioError: Request failed without a response.');
+          }
+        }
+        throw Exception('Error uploading photo batch (DioException): ${e.message}');
+      } 
+      catch (e) {
+        if (kDebugMode) {
+          print('Generic error uploading batch for inspection $inspectionId: $e');
+        }
+        throw Exception('Error uploading photo batch: $e');
+      }
     }
   }
 }
