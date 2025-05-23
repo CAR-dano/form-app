@@ -9,7 +9,12 @@ import 'package:form_app/widgets/tambahan_image_selection.dart'; // Import the n
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 
 class PageSixGeneralTambahan extends ConsumerStatefulWidget {
-  const PageSixGeneralTambahan({super.key});
+  final ValueNotifier<bool> formSubmitted;
+
+  const PageSixGeneralTambahan({
+    super.key,
+    required this.formSubmitted,
+  });
 
   @override
   ConsumerState<PageSixGeneralTambahan> createState() => _PageSixGeneralTambahanState();
@@ -61,7 +66,10 @@ class _PageSixGeneralTambahanState extends ConsumerState<PageSixGeneralTambahan>
               const SizedBox(height: 16.0),
 
               // Tambahan image selection widget
-              TambahanImageSelection(identifier: 'General Tambahan'),
+              TambahanImageSelection(
+                identifier: 'General Tambahan',
+                formSubmitted: widget.formSubmitted,
+              ),
 
               const SizedBox(height: 32.0),
               NavigationButtonRow(

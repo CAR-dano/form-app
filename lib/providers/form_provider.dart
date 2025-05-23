@@ -283,6 +283,18 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(sistemAcSelectedValue: value);
   }
 
+  void updateCentralLockSelectedValue(int? value) {
+    state = state.copyWith(centralLockSelectedValue: value);
+  }
+
+  void updateElectricMirrorSelectedValue(int? value) {
+    state = state.copyWith(electricMirrorSelectedValue: value);
+  }
+
+  void updateRemAbsSelectedValue(int? value) {
+    state = state.copyWith(remAbsSelectedValue: value);
+  }
+
   void updateFiturCatatanList(List<String> lines) {
     state = state.copyWith(fiturCatatanList: lines);
   }

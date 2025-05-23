@@ -9,7 +9,12 @@ import 'package:form_app/providers/form_step_provider.dart';
 
 // Foto Dokumen Page (formerly Page Seven)
 class PageSeven extends ConsumerStatefulWidget { 
-  const PageSeven({super.key});
+  final ValueNotifier<bool> formSubmitted;
+
+  const PageSeven({
+    super.key,
+    required this.formSubmitted,
+  });
 
   @override
   ConsumerState<PageSeven> createState() => _PageSevenState();
@@ -35,6 +40,7 @@ class _PageSevenState extends ConsumerState<PageSeven> with AutomaticKeepAliveCl
             identifier: 'Foto Dokumen',
             showNeedAttention: false,
             isMandatory: true, // Set isMandatory to true for Page Seven
+            formSubmitted: widget.formSubmitted,
           ),
       
           const SizedBox(height: 32.0),

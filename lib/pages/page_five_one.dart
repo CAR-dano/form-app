@@ -122,6 +122,21 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAli
         'selectedValue': formData.sistemAcSelectedValue,
         'onItemSelected': (value) => formNotifier.updateSistemAcSelectedValue(value),
       },
+      {
+        'label': 'Central Lock',
+        'selectedValue': formData.centralLockSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateCentralLockSelectedValue(value),
+      },
+      {
+        'label': 'Electric Mirror',
+        'selectedValue': formData.electricMirrorSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateElectricMirrorSelectedValue(value),
+      },
+      {
+        'label': 'Rem ABS',
+        'selectedValue': formData.remAbsSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateRemAbsSelectedValue(value),
+      },
     ];
 
     return toggleableNumberedButtonListData.map<Widget>((itemData) {
