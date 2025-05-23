@@ -139,15 +139,9 @@ class _PageEightState extends ConsumerState<PageEight>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         PaintThicknessInputField(
-                          initialValue: formData.catKananFenderDepan,
+                          initialValue: formData.catKananFenderBelakang,
                           onChanged: (value) {
-                            formNotifier.updateCatKananFenderDepan(value);
-                          },
-                        ),
-                        PaintThicknessInputField(
-                          initialValue: formData.catKananPintuDepan,
-                          onChanged: (value) {
-                            formNotifier.updateCatKananPintuDepan(value);
+                            formNotifier.updateCatKananFenderBelakang(value);
                           },
                         ),
                         PaintThicknessInputField(
@@ -157,9 +151,15 @@ class _PageEightState extends ConsumerState<PageEight>
                           },
                         ),
                         PaintThicknessInputField(
-                          initialValue: formData.catKananFenderBelakang,
+                          initialValue: formData.catKananPintuDepan,
                           onChanged: (value) {
-                            formNotifier.updateCatKananFenderBelakang(value);
+                            formNotifier.updateCatKananPintuDepan(value);
+                          },
+                        ),
+                        PaintThicknessInputField(
+                          initialValue: formData.catKananFenderDepan,
+                          onChanged: (value) {
+                            formNotifier.updateCatKananFenderDepan(value);
                           },
                         ),
                       ],
