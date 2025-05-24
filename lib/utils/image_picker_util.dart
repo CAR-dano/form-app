@@ -65,10 +65,22 @@ class ImagePickerUtil {
     }
 
     try {
-      final directory = await getTemporaryDirectory();
-      final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      final String newFileName = '${timestamp}_${pickedFile.name.replaceAll(RegExp(r'\s+'), '_')}_processed.$extension';
-      finalImagePath = '${directory.path}/$newFileName';
+      // Use the original path's directory and filename, but append '_compressed'
+      final String originalDirectory = pickedFile.path.substring(0, pickedFile.path.lastIndexOf(Platform.pathSeparator));
+      final String originalFileNameWithoutExtension = pickedFile.name.split('.').first;
+      
+      // Ensure the extension is consistent with the processed bytes
+      String finalExtension = extension;
+      if (extension == 'png') {
+        // already png
+      } else if (extension == 'gif') {
+        // already gif
+      } else {
+        finalExtension = 'jpg'; // Default to jpg if not png/gif
+      }
+
+      final String newFileName = '${originalFileNameWithoutExtension}_compressed.$finalExtension';
+      finalImagePath = '$originalDirectory${Platform.pathSeparator}$newFileName';
       final File newProcessedFile = File(finalImagePath);
       await newProcessedFile.writeAsBytes(processedBytes);
       if (kDebugMode) {
