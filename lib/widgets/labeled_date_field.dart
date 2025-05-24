@@ -39,9 +39,8 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
   @override
   void initState() {
     super.initState();
-    // Initialize the state with the initialDate provided to the widget
     _selectedDate = widget.initialDate;
-    _focusNode = FocusNode();
+    _focusNode = widget.focusNode ?? FocusNode(); // Use provided or internal
   }
 
   @override
@@ -59,58 +58,61 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
          });
       }
     }
-    // Update internal focus node if the widget's focusNode prop changes
     if (widget.focusNode != oldWidget.focusNode) {
+        // If an external focus node is now provided, or changes, update our _focusNode.
+        // Dispose the old internal one if we created it and it's no longer needed.
+        if (oldWidget.focusNode == null && _focusNode != widget.focusNode) {
+          _focusNode.dispose();
+        }
         _focusNode = widget.focusNode ?? FocusNode();
     }
   }
 
-
   @override
   void dispose() {
-    _focusNode.dispose();
+    // Only dispose the focus node if it was created internally
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    }
     super.dispose();
   }
 
-  // Helper function to build the input decoration, similar to LabeledTextField
-  InputDecoration _buildInputDecoration() {
+  InputDecoration _getBaseInputDecoration() { // Renamed to avoid conflict with FormFieldState's decoration
     return InputDecoration(
-      // No hintText here, handled by the Text widget logic
-      contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
-      isDense: true, // Make the input decorator more compact
+      contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0), // Re-added contentPadding
+      isDense: true,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8.0),
-        borderSide: const BorderSide(color: borderColor, width: 1.5), // Access borderColor from AppStyles
+        borderSide: const BorderSide(color: borderColor, width: 1.5),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8.0),
-        borderSide: const BorderSide(color: borderColor, width: 1.5), // Access borderColor from AppStyles
+        borderSide: const BorderSide(color: borderColor, width: 1.5),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8.0),
-        borderSide: const BorderSide(color: borderColor, width: 2.0), // Access borderColor from AppStyles
+        borderSide: const BorderSide(color: borderColor, width: 2.0),
       ),
-      // Could add error borders if validation is needed later
+      // Error borders will be merged from FormFieldState
     );
   }
 
-  // Date Picker Function
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2000), // Sensible default range start
-      lastDate: widget.lastDate ?? DateTime.now(), // Use the provided lastDate or default to today
+      firstDate: DateTime(2000),
+      lastDate: widget.lastDate ?? DateTime.now(),
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData(
             colorScheme: const ColorScheme.light(
-              primary: pickedDateColor, // Color of the selected date
-              onSurface: Colors.black, // Color of the dates in the calendar
-              surface: Colors.white, // Background color of the date picker
+              primary: pickedDateColor,
+              onSurface: Colors.black,
+              surface: Colors.white,
             ),
             textTheme: Theme.of(context).textTheme.apply(
-              fontFamily: GoogleFonts.rubik().fontFamily, // Use Rubik font
+              fontFamily: GoogleFonts.rubik().fontFamily,
             ),
           ),
           child: child!,
@@ -118,21 +120,27 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
       },
     );
 
-    // Request focus for this widget after the date picker is closed
     _focusNode.requestFocus();
+    if (!mounted) return;
 
-    // Check if the widget is still mounted before interacting with context or state
-    if (!mounted) return; // Exit if the widget was removed during the await
-
-    // Check if a date was actually picked and it's different
     if (picked != null && picked != _selectedDate) {
-      // No need for another mounted check here as setState does it internally,
-      // but it's good practice to be aware.
       setState(() {
-        _selectedDate = picked; // Update local state to refresh UI
+        _selectedDate = picked;
       });
-      // Call the callback function provided by the parent widget
       widget.onChanged?.call(picked);
+      // Manually trigger validation on the FormField
+      _fieldKey.currentState?.didChange(picked); // Update FormField's value
+      if (widget.formSubmitted) {
+        _fieldKey.currentState?.validate();
+      }
+    } else if (picked == null && _selectedDate != null && widget.onChanged != null) {
+      // If user cancelled and there was a date, and onChanged is provided,
+      // it might be desirable to notify with null if the field should be clearable this way.
+      // Or, retain the old date. For now, we only update if 'picked' is different and not null.
+      // If you want to clear it on cancel, you might call:
+      // setState(() { _selectedDate = null; });
+      // widget.onChanged?.call(null);
+      // _fieldKey.currentState?.didChange(null);
     }
   }
 
@@ -141,80 +149,70 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // --- Label ---
-        Text(widget.label, style: labelStyle), // Access labelStyle from AppStyles
+        Text(widget.label, style: labelStyle),
         const SizedBox(height: 4.0),
-
-        // --- Tappable Date Input Area ---
-        // Use FormField to integrate with Form and provide validation
         FormField<DateTime?>(
-          key: _fieldKey, // Assign the field key
+          key: _fieldKey,
           initialValue: _selectedDate,
-          validator: widget.validator, // Use the provided validator
+          validator: widget.validator,
           builder: (FormFieldState<DateTime?> field) {
-            return InputDecorator( // Use InputDecorator for consistent styling
-              decoration: _buildInputDecoration().copyWith(
-                // Display error text if validation fails
-                errorText: field.errorText,
-                // Customize border color based on validation state
-                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide(
-                    color: field.hasError ? errorBorderColor : borderColor, // Error color or default
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide(
-                    color: field.hasError ? errorBorderColor : borderColor, // Error color or default
-                    width: 2.0,
-                  ),
-                ),
-                 errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: const BorderSide(color: errorBorderColor, width: 1.5), // Error color
-                ),
-                 focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: const BorderSide(color: errorBorderColor, width: 2.0), // Error color
+            // Combine base decoration with error state from FormField
+            final effectiveDecoration = _getBaseInputDecoration().copyWith(
+              errorText: field.errorText,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(
+                  color: field.hasError ? errorBorderColor : borderColor,
+                  width: 1.5,
                 ),
               ),
-              isEmpty: field.value == null,
-              child: InkWell(
-                onTap: () async {
-                   // Use the provided focusNode if available, otherwise use the internal one
-                  (widget.focusNode ?? _focusNode).requestFocus(); // Request focus for this widget
-                  await _selectDate(context); // Call the _selectDate function
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(
+                  color: field.hasError ? errorBorderColor : borderColor,
+                  width: 2.0,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: const BorderSide(color: errorBorderColor, width: 1.5),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: const BorderSide(color: errorBorderColor, width: 2.0),
+              ),
+            );
 
-                  // After _selectDate updates _selectedDate, update the FormField's value
-                  // and call the onChanged callback if a date was picked and is different.
-                  // _selectDate already handles the mounted check and the picked != null check.
-                  if (_selectedDate != null && _selectedDate != field.value) {
-                     field.didChange(_selectedDate);
-                     widget.onChanged?.call(_selectedDate);
-                     // Trigger validation if the form has been submitted
-                     if (widget.formSubmitted) {
-                       _fieldKey.currentState?.validate();
-                     }
-                  }
-                },
-                 focusNode: widget.focusNode ?? _focusNode, // Assign the focus node to InkWell
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    // --- Display Text (Hint or Formatted Date) ---
-                    Text(
-                      field.value == null
-                          ? widget.hintText // Show hint text if no date selected
-                          : DateFormat('dd/MM/yyyy').format(field.value!), // Show formatted date
-                      style: field.value == null
-                          ? hintTextStyle // Access hintTextStyle from AppStyles
-                          : selectedDateTextStyle.copyWith(color: selectedDateColor), // Explicitly set color
-                    ),
-                    // --- Dropdown Icon ---
-                    Icon(Icons.arrow_drop_down, color: field.hasError ? errorBorderColor : iconColor), // Access iconColor from AppStyles
-                  ],
+            return InkWell(
+              onTap: () => _selectDate(context),
+              focusNode: _focusNode,
+              customBorder: RoundedRectangleBorder( // Make InkWell's shape match the border
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: InputDecorator(
+                decoration: effectiveDecoration,
+                isEmpty: field.value == null,
+                child: Container( // Ensure the Row takes up the decorator's padded space
+                  // This container helps define the minimum height if content is small
+                  // The actual padding for content comes from effectiveDecoration.contentPadding
+                  // which is implicitly applied by InputDecorator to its child.
+                  // If explicit padding control is needed here, ensure it aligns with InputDecoration's contentPadding.
+                  // For this use case, relying on InputDecorator's padding of its child (the Row) is standard.
+                  constraints: const BoxConstraints(minHeight: 20), // Typical minimum height for a form field line
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        field.value == null
+                            ? widget.hintText
+                            : DateFormat('dd/MM/yyyy').format(field.value!),
+                        style: field.value == null
+                            ? hintTextStyle
+                            : selectedDateTextStyle.copyWith(color: selectedDateColor),
+                      ),
+                      Icon(Icons.arrow_drop_down, color: field.hasError ? errorBorderColor : iconColor),
+                    ],
+                  ),
                 ),
               ),
             );

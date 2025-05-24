@@ -12,7 +12,8 @@ class LabeledDropdownField<T> extends ConsumerStatefulWidget {
   final ValueChanged<T?>? onChanged;
   final T? value;
   final FormFieldValidator<T?>? validator;
-  final String Function(T item) itemText; // Add itemText parameter
+  final String Function(T item) itemText;
+  final FocusNode? focusNode; // Add FocusNode
 
   const LabeledDropdownField({
     super.key,
@@ -25,7 +26,8 @@ class LabeledDropdownField<T> extends ConsumerStatefulWidget {
     this.onChanged,
     this.value,
     this.validator,
-    required this.itemText, // Make itemText required
+    required this.itemText,
+    this.focusNode, // Add FocusNode
   });
 
   @override
@@ -35,18 +37,44 @@ class LabeledDropdownField<T> extends ConsumerStatefulWidget {
 class _LabeledDropdownFieldState<T> extends ConsumerState<LabeledDropdownField<T>> {
   final GlobalKey<FormFieldState<T>> _formFieldKey = GlobalKey<FormFieldState<T>>();
   bool _hasValidationOrApiError = false;
+  // Internal focus node if an external one isn't provided.
+  late FocusNode _internalFocusNode;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _internalFocusNode = widget.focusNode ?? FocusNode();
+  }
+
+  @override
+  void didUpdateWidget(covariant LabeledDropdownField<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.focusNode != oldWidget.focusNode) {
+      if (oldWidget.focusNode == null && _internalFocusNode != widget.focusNode) {
+        _internalFocusNode.dispose();
+      }
+      _internalFocusNode = widget.focusNode ?? FocusNode();
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.focusNode == null) {
+      _internalFocusNode.dispose();
+    }
+    super.dispose();
+  }
 
   String? _internalValidator(T? value) {
     final errorString = widget.validator?.call(value);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         final currentErrorState = errorString != null;
-        if (_hasValidationOrApiError != currentErrorState) {
-          if (_hasValidationOrApiError != currentErrorState && ref.read(widget.itemsProvider) is! AsyncError) {
-             setState(() {
-                _hasValidationOrApiError = currentErrorState;
-             });
-          }
+        if (_hasValidationOrApiError != currentErrorState && ref.read(widget.itemsProvider) is! AsyncError) {
+           setState(() {
+              _hasValidationOrApiError = currentErrorState;
+           });
         }
       }
     });
@@ -59,7 +87,8 @@ class _LabeledDropdownFieldState<T> extends ConsumerState<LabeledDropdownField<T
     // and to allow _internalValidator to update _hasValidationError
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && _formFieldKey.currentState != null) {
-        _formFieldKey.currentState!.validate(); 
+        _formFieldKey.currentState!.validate();
+        _internalFocusNode.unfocus(); // Unfocus the widget after selection
       }
     });
   }
@@ -78,32 +107,44 @@ class _LabeledDropdownFieldState<T> extends ConsumerState<LabeledDropdownField<T
       children: [
         Text(widget.label, style: labelStyle),
         const SizedBox(height: 4.0),
-        DropdownButtonFormField<T>(
-          key: _formFieldKey,
-          value: widget.value,
-          hint: hint != null ? Text(hint, style: hintTextStyling.copyWith(color: isApiError ? errorBorderColor : null)) : null,
-          items: items.map((itemValue) {
-            return DropdownMenuItem<T>(
-              value: itemValue,
-              child: Text(widget.itemText(itemValue)), // Use itemText function
-            );
-          }).toList(),
-          onChanged: isLoading ? null : _handleChanged,
-          validator: _internalValidator, // Use the wrapped validator
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          style: inputTextStyling,
-          dropdownColor: Colors.white,
-          iconEnabledColor: showErrorStyling ? errorBorderColor : iconColor,
-          iconDisabledColor: showErrorStyling ? errorBorderColor : iconColor,
-          decoration: _inputDecoration(showErrorStyling),
+        SizedBox(
+          width: double.infinity, // Ensure the dropdown takes full width
+          child: DropdownButtonFormField<T>(
+            key: _formFieldKey,
+            focusNode: _internalFocusNode, // Assign the focus node
+            value: widget.value,
+            hint: hint != null ? Text(hint, style: hintTextStyling.copyWith(color: isApiError ? errorBorderColor : null, overflow: TextOverflow.ellipsis)) : null,
+            items: items.map((itemValue) {
+              return DropdownMenuItem<T>(
+                value: itemValue,
+                child: Text(widget.itemText(itemValue), overflow: TextOverflow.ellipsis),
+              );
+            }).toList(),
+            onChanged: isLoading ? null : _handleChanged,
+            validator: _internalValidator,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            style: inputTextStyling,
+            dropdownColor: Colors.white,
+            iconEnabledColor: showErrorStyling ? errorBorderColor : iconColor,
+            iconDisabledColor: showErrorStyling ? errorBorderColor : iconColor,
+            decoration: _inputDecoration(showErrorStyling),
+            isExpanded: true, // Ensures the hint/selected item fills the width, making it more tappable
+            selectedItemBuilder: (BuildContext context) { // Optional: Custom builder for selected item for consistent styling
+              if (widget.value == null && hint != null) {
+                return [ Text(hint, style: hintTextStyling.copyWith(color: isApiError ? errorBorderColor : null, overflow: TextOverflow.ellipsis)) ];
+              }
+              return items.map<Widget>((T item) {
+                return Text(widget.itemText(item), style: inputTextStyling, overflow: TextOverflow.ellipsis,);
+              }).toList();
+            },
+          ),
         ),
         if (isApiError && onRetry != null) ...[
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: Row(
               children: [
-                Text(widget.errorHintText ?? 'Gagal memuat data.', style: const TextStyle(color: Colors.red, fontSize: 12)),
-                const Spacer(),
+                Expanded(child: Text(widget.errorHintText ?? 'Gagal memuat data.', style: const TextStyle(color: Colors.red, fontSize: 12))),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
