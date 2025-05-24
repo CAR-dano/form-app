@@ -1,31 +1,34 @@
-name: Flutter CI/CD Workflow
+name: Flutter Build and Release on Main Branch Update
 
+# This workflow triggers on any push to the 'main' branch.
+# This includes merges of pull requests into 'main' and direct pushes to 'main'.
 on:
-  pull_request:
-    types: [closed]
-    branches: [ main ]
   push:
     branches: [ main ]
 
 jobs:
-  ci_checks:
-    if: github.event_name == 'push'
+  build_and_release_on_main:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required to create releases and tags
+      pull-requests: read # Required by actions/github-script to read PR details
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Important for versioning and commit history access
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.3'
+          flutter-version: '3.29.3' # Ensure this matches your project's Flutter version
+          channel: 'stable' # Optional: specify channel
 
       - name: Create dummy .env file for analysis and testing
         run: |
           echo "API_BASE_URL=http://dummy.api.for.ci" > .env
-          # Add other expected env keys with dummy values if needed
+          # Add any other environment variables your app expects during CI checks, with dummy values.
 
       - name: Install dependencies
         run: flutter pub get
@@ -35,19 +38,7 @@ jobs:
 
       - name: Run tests
         run: flutter test
-
-  build_and_release:
-    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
-    needs: ci_checks
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      # If any of the above steps (analyze, test) fail, the workflow will stop here.
 
       - name: Read pubspec.yaml semantic version
         id: pubspec
@@ -55,40 +46,97 @@ jobs:
           VERSION_LINE=$(grep '^version:' pubspec.yaml)
           SEMANTIC_VERSION=$(echo "$VERSION_LINE" | sed 's/version: //g' | sed 's/+\.*//g' | tr -d '[:space:]')
           echo "semantic_version=$SEMANTIC_VERSION" >> $GITHUB_OUTPUT
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.29.3'
-
-      - name: Create dummy .env file for analysis and testing
-        run: |
-          echo "API_BASE_URL=http://dummy.api.for.ci" > .env
-          # Add other expected env keys with dummy values if needed
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Analyze project
-        run: flutter analyze
-
-      - name: Run tests
-        run: flutter test
+          echo "Extracted semantic version: $SEMANTIC_VERSION"
 
       - name: Create .env file for Release Build
         run: |
           echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" > .env
+          # Add other production environment variables from secrets as needed
         env:
-          API_BASE_URL: ${{ secrets.API_BASE_URL }} # Ensure this secret is set in GitHub repo settings
+          API_BASE_URL: ${{ secrets.API_BASE_URL }} # Ensure this secret is set in GitHub repository settings
 
       - name: Build APK
         run: flutter build apk --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ github.run_number }}
 
       - name: Create Release Tag Name
         id: create_tag
-        run: echo "tag_name=v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}" >> $GITHUB_OUTPUT
+        run: |
+          TAG_NAME="v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}"
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "Generated tag name: $TAG_NAME"
 
-      - name: Create Release
+      - name: Prepare Release Body
+        id: prep_release_body
+        uses: actions/github-script@v7 # Using v7 for latest features and bug fixes
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const commit_sha = process.env.COMMIT_SHA;
+            const actor = process.env.ACTOR;
+            const semantic_version = process.env.SEMANTIC_VERSION;
+            const run_number = process.env.RUN_NUMBER;
+            const head_commit_message = `${{ github.event.head_commit.message }}`; // Accessing directly
+
+            let pr_info = "";
+            let pr_body_content = "";
+
+            // Regex to find PR number from typical merge commit messages
+            // "Merge pull request #123 from branch-name"
+            // "Squash merge pull request #123 from branch-name" (less common for GitHub.com default)
+            // "PR Title (#123)" (common for squash merges)
+            const pr_regex_merge = /Merge pull request #(\d+)/;
+            const pr_regex_squash_title = /\(#(\d+)\)(?:$|\n)/; // Matches (#123) at the end of a line (often the title line of commit)
+
+            let match = head_commit_message.match(pr_regex_merge);
+            if (!match) {
+              // Try matching squash merge format from commit title (first line)
+              const first_line_of_commit = head_commit_message.split('\n')[0];
+              match = first_line_of_commit.match(pr_regex_squash_title);
+            }
+
+            if (match && match[1]) {
+              const pr_number = match[1];
+              core.info(`Attempting to fetch details for PR #${pr_number}`);
+              try {
+                const { data: pr } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr_number,
+                });
+                pr_info = `This release incorporates changes from Pull Request **#${pr_number}: ${pr.title}**.\n`;
+                pr_info += `Authored by: @${pr.user.login}\n`;
+                pr_info += `PR Link: ${pr.html_url}\n\n`;
+                if (pr.body) {
+                  // Limit PR body length to avoid overly long release notes
+                  const max_pr_body_length = 1000;
+                  let pr_body_trimmed = pr.body.length > max_pr_body_length ? pr.body.substring(0, max_pr_body_length) + "..." : pr.body;
+                  pr_body_content = `**PR Description:**\n${pr_body_trimmed}\n\n`;
+                }
+              } catch (error) {
+                core.warning(`Could not fetch details for PR #${pr_number}: ${error.message}`);
+                pr_info = `This release may incorporate changes from Pull Request #${pr_number} (details could not be automatically fetched).\n\n`;
+              }
+            } else {
+              core.info("Could not determine PR from commit message. Assuming direct push or unrecognized merge format.");
+              pr_info = "This release was triggered by a direct push or the PR could not be determined from the commit message.\n\n";
+            }
+
+            let release_body = `Automated release triggered by commit to the main branch.\n\n`;
+            release_body += `**Version:** v${semantic_version}+${run_number}\n`;
+            release_body += `**Commit SHA:** ${commit_sha}\n`;
+            release_body += `**Pushed by:** @${actor}\n\n`;
+            release_body += pr_info;
+            release_body += `**Full Commit Message:**\n\`\`\`\n${head_commit_message}\n\`\`\`\n\n`;
+            release_body += pr_body_content;
+
+            core.setOutput("body", release_body);
+        env:
+          SEMANTIC_VERSION: ${{ steps.pubspec.outputs.semantic_version }}
+          RUN_NUMBER: ${{ github.run_number }}
+          COMMIT_SHA: ${{ github.sha }}
+          ACTOR: ${{ github.actor }}
+
+      - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -96,14 +144,7 @@ jobs:
         with:
           tag_name: ${{ steps.create_tag.outputs.tag_name }}
           release_name: "Release v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}"
-          body: |
-            Automated release triggered by merge of PR #${{ github.event.pull_request.number }}:
-            **Version:** v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}
-            **Title:** ${{ github.event.pull_request.title }}
-            **Author:** ${{ github.event.pull_request.user.login }}
-            **Link:** ${{ github.event.pull_request.html_url }}
-
-            ${{ github.event.pull_request.body }}
+          body: ${{ steps.prep_release_body.outputs.body }}
           draft: false
           prerelease: false
 
@@ -117,7 +158,7 @@ jobs:
           asset_name: app-release-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}.apk
           asset_content_type: application/vnd.android.package-archive
 
-      - name: Upload Build Artifact (Optional)
+      - name: Upload Build Artifact (Optional for debugging or internal use)
         uses: actions/upload-artifact@v4
         with:
           name: release-apk-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}
