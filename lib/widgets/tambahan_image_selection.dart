@@ -16,6 +16,7 @@ class TambahanImageSelection extends ConsumerStatefulWidget {
   final bool showNeedAttention;
   final bool isMandatory;
   final ValueNotifier<bool>? formSubmitted;
+  final String defaultLabel;
 
   const TambahanImageSelection({
     super.key,
@@ -23,6 +24,7 @@ class TambahanImageSelection extends ConsumerStatefulWidget {
     this.showNeedAttention = true,
     this.isMandatory = false,
     this.formSubmitted,
+    this.defaultLabel = 'Foto Tambahan',
   });
 
   @override
@@ -91,7 +93,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
           if (processedPath != null) {
             final newTambahanImage = TambahanImageData(
               imagePath: processedPath,
-              label: '',
+              label: widget.defaultLabel, // Use defaultLabel here
               needAttention: false,
               category: widget.identifier,
               isMandatory: widget.isMandatory,
@@ -122,7 +124,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         if (processedPath != null) {
           final newTambahanImage = TambahanImageData(
             imagePath: processedPath,
-            label: '', 
+            label: widget.defaultLabel, // Use defaultLabel here
             needAttention: false,
             category: widget.identifier,
             isMandatory: widget.isMandatory,
