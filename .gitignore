@@ -72,3 +72,4 @@ fabric.properties
 # Environment files
 .env
 .env.*
+!.env.example
