@@ -163,11 +163,43 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       }
     });
 
+    final currentPageIndex = ref.watch(formStepProvider); // Watch the current step
+
+    ref.listen<int>(formStepProvider, (previous, next) {
+      if (_pageController.hasClients && _pageController.page?.round() != next) {
+        _pageController.animateToPage(
+          next,
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+
+    // Determine the physics for the PageView
+    ScrollPhysics pageViewPhysics;
+    // PageNine is at index 25, FinishedPage is at index 26.
+    // _formPages.length - 2 is the index of PageNine.
+    // _formPages.length - 1 is the index of FinishedPage.
+    if (currentPageIndex >= _formPages.length - 2) { // If current page is PageNine or FinishedPage
+      pageViewPhysics = const NeverScrollableScrollPhysics();
+    } else {
+      pageViewPhysics = const PageScrollPhysics();
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: PageView(
         controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
+        physics: pageViewPhysics, // Use the conditionally set physics
+        onPageChanged: (int page) {
+          // Prevent swiping from PageNine to FinishedPage manually
+          if (currentPageIndex == _formPages.length - 2 && page == _formPages.length - 1) {
+            // If on PageNine and trying to swipe to FinishedPage, jump back to PageNine
+            _pageController.jumpToPage(currentPageIndex);
+          } else {
+            ref.read(formStepProvider.notifier).state = page;
+          }
+        },
         children: _formPages.map((pageContent) {
           return CommonLayout(child: pageContent);
         }).toList(),
