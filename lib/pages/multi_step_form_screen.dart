@@ -154,26 +154,25 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   @override
   Widget build(BuildContext context) {
     ref.listen<int>(formStepProvider, (previous, next) {
+      // Only animate if the controller is attached and the page actually needs to change
       if (_pageController.hasClients && _pageController.page?.round() != next) {
-        _pageController.animateToPage(
-          next,
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeInOut,
-        );
+        // And critically, only if the previous state was not null (i.e., it's not the initial setup)
+        if (previous != null && previous != next) { // <-- ADD THIS CHECK
+          _pageController.animateToPage(
+            next,
+            duration: const Duration(milliseconds: 150), // Consider making this slightly longer or using jumpToPage for resets
+            curve: Curves.easeInOut,
+          );
+        } else if (previous == null && next != _pageController.page?.round()) {
+          // If it's the initial setup (previous is null) and the target page is different
+          // from the current page controller page, then jump. This handles cases where
+          // the provider might be updated before the PageController fully initializes.
+          _pageController.jumpToPage(next);
+        }
       }
     });
 
     final currentPageIndex = ref.watch(formStepProvider); // Watch the current step
-
-    ref.listen<int>(formStepProvider, (previous, next) {
-      if (_pageController.hasClients && _pageController.page?.round() != next) {
-        _pageController.animateToPage(
-          next,
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
 
     // Determine the physics for the PageView
     ScrollPhysics pageViewPhysics;
