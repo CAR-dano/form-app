@@ -12,6 +12,7 @@ import 'package:form_app/widgets/form_confirmation.dart';
 import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart'; // Import the new widget
+import 'package:gal/gal.dart'; // Import Gal
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -199,10 +200,50 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     } else { // Camera
       final XFile? imageXFile = await _picker.pickImage(source: source);
       if (imageXFile != null) {
+        // --- Save to Gallery BEFORE processing ---
+        try {
+          // Optional: Request permission first if you haven't done it elsewhere
+          bool hasAccess = await Gal.hasAccess();
+          if (!hasAccess) {
+            final accessGranted = await Gal.requestAccess();
+            if (!accessGranted) {
+              if (kDebugMode) {
+                print('Gallery access denied by user.');
+              }
+              // Optionally show a message to the user
+              // return; // Or proceed without saving to gallery
+            }
+          }
+
+          if (kDebugMode) {
+            print('Attempting to save original camera image to gallery: ${imageXFile.path}');
+          }
+          await Gal.putImage(imageXFile.path); // Save the original image
+          if (kDebugMode) {
+            print('Image successfully saved to gallery via Gal package.');
+          }
+          if(mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Gambar disimpan ke galeri.'), duration: Duration(seconds: 2)),
+            );
+          }
+        } catch (e) {
+          if (kDebugMode) {
+            print('Error saving image to gallery using Gal: $e');
+            if (e is GalException) {
+              print('GalException type: ${e.type}');
+            }
+          }
+          // Optionally, inform the user that gallery save failed
+        }
+        // --- End Save to Gallery ---
+
+        // Now, proceed to process the image for app use (cropping, resizing)
+        // This processed image is saved to a temporary directory by _processAndSaveImage
         final String? processedPath = await _processAndSaveImage(imageXFile);
         if (processedPath != null) {
           final newTambahanImage = TambahanImageData(
-            imagePath: processedPath, // Use processed path
+            imagePath: processedPath, // Use the path of the *processed* image for the app
             label: '', 
             needAttention: false,
             category: widget.identifier,

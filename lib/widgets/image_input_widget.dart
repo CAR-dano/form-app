@@ -11,6 +11,7 @@ import 'package:form_app/providers/image_data_provider.dart';
 import 'package:form_app/models/image_data.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart'; // Import the new widget
 import 'package:form_app/widgets/image_preview_dialog.dart'; // Import the new image preview dialog
+import 'package:gal/gal.dart';
 
 class ImageInputWidget extends ConsumerStatefulWidget {
   final String label;
@@ -110,6 +111,44 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
     final pickedImageXFile = await picker.pickImage(source: ImageSource.camera);
 
     if (pickedImageXFile != null) {
+      // --- Save to Gallery BEFORE processing ---
+      try {
+        // Optional: Request permission first if you haven't done it elsewhere
+        bool hasAccess = await Gal.hasAccess();
+        if (!hasAccess) {
+          final accessGranted = await Gal.requestAccess();
+          if (!accessGranted) {
+            if (kDebugMode) {
+              print('Gallery access denied by user.');
+            }
+            // Optionally show a message to the user
+            // return; // Or proceed without saving to gallery
+          }
+        }
+
+        if (kDebugMode) {
+          print('Attempting to save original camera image to gallery: ${pickedImageXFile.path}');
+        }
+        await Gal.putImage(pickedImageXFile.path); // Save the original image
+        if (kDebugMode) {
+          print('Image successfully saved to gallery via Gal package.');
+        }
+        if(mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Gambar disimpan ke galeri.'), duration: Duration(seconds: 2)),
+          );
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error saving image to gallery using Gal: $e');
+          if (e is GalException) {
+            print('GalException type: ${e.type}');
+          }
+        }
+        // Optionally, inform the user that gallery save failed
+      }
+      // --- End Save to Gallery ---
+
       final String? processedPath = await _processAndSaveImage(pickedImageXFile);
       if (processedPath != null) {
         widget.onImagePicked?.call(File(processedPath)); // Call with the new File object
