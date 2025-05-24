@@ -23,23 +23,29 @@ class LoadingIndicatorWidget extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12.0),
-          ClipRRect( // For rounded corners
-            borderRadius: BorderRadius.circular(8.0), // Material 3 style rounded corners
-            child: LinearProgressIndicator(
-              value: progress,
-              backgroundColor: numberedButtonColors[1]?.withAlpha((numberedButtonColors[1]!.a * 0.3).round()), // Lighter shade of the first color
-              valueColor: AlwaysStoppedAnimation<Color>(numberedButtonColors[10]!), // Use the 10th color for progress
-              minHeight: 10, // Make it a bit thicker
-            ),
-          ),
-          if (progress > 0 && progress < 1)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Text(
-                '${(progress * 100).toStringAsFixed(0)}%',
-                style: hintTextStyle,
+          Row(
+            children: [
+              Expanded(
+                child: ClipRRect( // For rounded corners
+                  borderRadius: BorderRadius.circular(8.0), // Material 3 style rounded corners
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: numberedButtonColors[1]?.withAlpha((numberedButtonColors[1]!.a * 0.3).round()), // Lighter shade of the first color
+                    valueColor: AlwaysStoppedAnimation<Color>(numberedButtonColors[10]!), // Use the 10th color for progress
+                    minHeight: 10, // Make it a bit thicker
+                  ),
+                ),
               ),
-            ),
+              if (progress > 0 && progress < 1)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0), // Add left padding for spacing
+                  child: Text(
+                    '${(progress * 100).toStringAsFixed(0)}%',
+                    style: hintTextStyle,
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );
