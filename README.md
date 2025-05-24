@@ -4,17 +4,9 @@
   <img src="assets/images/icon.png" alt="Palapa Inspeksi App Icon" width="128"/>
 </p>
 
-<p align="center">
-  <a href="https://flutter.dev">
-    <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter">
-  </a>
-  <a href="https://github.com/CAR-dano/form-app/actions/workflows/flutter-build.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/CAR-dano/form-app/flutter-build.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white" alt="Build Status">
-  </a>
-  <a href="https://deepwiki.com/CAR-dano/form-app">
-    <img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki">
-  </a>
-</p>
+[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/CAR-dano/form-app/flutter-build.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/CAR-dano/form-app/actions/workflows/flutter-build.yml)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/CAR-dano/form-app)
 
 Palapa Inspeksi is a comprehensive Flutter-based mobile application designed for conducting detailed vehicle inspections. It allows inspectors to systematically capture vehicle data, assessment scores, notes, and photographs across numerous categories. The app is intended for use by "PT. Inspeksi Mobil Jogja" and is named "Palapa Inspeksi" (description: "Car-dano Palapa Form App").
 
@@ -34,10 +26,11 @@ The application guides inspectors through a multi-step form covering various asp
     * Tires and Undercarriage (Tires, Rims, Brakes, Suspension, etc.)
     * Test Drive Performance (Steering, Transmission, Suspension, etc.)
     * Diagnostic Tools Test (Paint Thickness, AC Temperature, OBD Scanner, Battery Test, etc.)
-* **Image Uploads:** Extensive photo documentation capability:
+* **Image Uploads & Gallery Saving:** Extensive photo documentation capability:
     * Mandatory and additional photos for General, Exterior, Interior, Engine, Undercarriage, and Diagnostic Tools sections.
     * Document photos (e.g., STNK, BPKB).
-    * Images are processed (cropped to 4:3 aspect ratio, resized) and can be labeled by the inspector.
+    * Images taken with the camera are saved to the device gallery before being processed by the app.
+    * App-used images are processed (cropped to 4:3 aspect ratio, resized) and can be labeled by the inspector.
 * **Paint Thickness Measurement:** Input fields for recording paint thickness on various car body panels.
 * **Data Persistence:** Form data and image references are saved locally, allowing inspectors to resume incomplete inspections.
 * **API Submission:** Completed inspection forms and associated images are submitted to a backend server.
@@ -52,6 +45,7 @@ The application guides inspectors through a multi-step form covering various asp
 * **State Management:** Riverpod
 * **HTTP Client:** Dio (for API communication)
 * **Image Handling:** image_picker, image (cropping/resizing)
+* **Gallery Saving:** gal (for saving images to device gallery)
 * **Path Provider:** For accessing local file system for data persistence.
 * **Environment Variables:** flutter_dotenv (for API configuration)
 * **Unique IDs:** uuid
