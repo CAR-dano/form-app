@@ -58,6 +58,7 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAli
             _focusScopeNode.unfocus(); // Unfocus on tap outside text fields
           },
           child: SingleChildScrollView(
+            clipBehavior: Clip.none,
             key: const PageStorageKey<String>('pageFiveOneScrollKey'), // Add PageStorageKey here
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

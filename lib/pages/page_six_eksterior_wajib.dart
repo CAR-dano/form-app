@@ -71,6 +71,7 @@ class _PageSixEksteriorWajibState extends ConsumerState<PageSixEksteriorWajib> w
     super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
     // ref is available directly in ConsumerStatefulWidget state classes
     return SingleChildScrollView(
+      clipBehavior: Clip.none,
       key: const PageStorageKey<String>('pageSixEksteriorWajibScrollKey'), // This key remains important
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

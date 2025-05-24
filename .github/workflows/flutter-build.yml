@@ -1,13 +1,44 @@
-name: Flutter Build and Release APK on Merge
+name: Flutter CI/CD Workflow
 
 on:
   pull_request:
     types: [closed]
     branches: [ main ]
+  push:
+    branches: [ main ]
 
 jobs:
+  ci_checks:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.3'
+
+      - name: Create dummy .env file for analysis and testing
+        run: |
+          echo "API_BASE_URL=http://dummy.api.for.ci" > .env
+          # Add other expected env keys with dummy values if needed
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze project
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
   build_and_release:
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+    needs: ci_checks
     runs-on: ubuntu-latest
     permissions:
       contents: write

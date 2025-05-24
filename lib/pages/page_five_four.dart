@@ -55,6 +55,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
             _focusScopeNode.unfocus();
           },
           child: SingleChildScrollView(
+            clipBehavior: Clip.none,
             key: const PageStorageKey<String>('pageFiveFourScrollKey'), // Add PageStorageKey here
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

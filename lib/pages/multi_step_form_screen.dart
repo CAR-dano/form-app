@@ -45,6 +45,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
   // ValueNotifiers to control when validation messages are shown for specific pages
   final ValueNotifier<bool> _formSubmittedPageOne = ValueNotifier<bool>(false);
+  static const String _defaultTambahanLabel = 'Foto Tambahan';
   final ValueNotifier<bool> _formSubmittedPageTwo = ValueNotifier<bool>(false);
   // ValueNotifier for Tambahan Image pages
   final ValueNotifier<bool> _formSubmittedTambahanImages = ValueNotifier<bool>(false);
@@ -96,7 +97,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       PageSixMesinTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 10
       PageSixKakiKakiTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 11
       PageSixAlatAlatTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 12
-      PageSeven(formSubmitted: _formSubmittedTambahanImages), // Index 13
+      PageSeven(formSubmitted: _formSubmittedTambahanImages, defaultLabel: 'Foto Dokumen'), // Index 13
       PageTwo(formKey: _formKeys[14], formSubmitted: _formSubmittedPageTwo), // Index 14
       const PageThree(),
       const PageFour(),
@@ -117,6 +118,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         pageNames: _pageNames,
         validatePage: _validatePage,
         tambahanImagePageIdentifiers: _tambahanImagePageIdentifiers,
+        defaultTambahanLabel: _defaultTambahanLabel,
       ),
       const FinishedPage(),
     ];
@@ -154,20 +156,51 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   @override
   Widget build(BuildContext context) {
     ref.listen<int>(formStepProvider, (previous, next) {
+      // Only animate if the controller is attached and the page actually needs to change
       if (_pageController.hasClients && _pageController.page?.round() != next) {
-        _pageController.animateToPage(
-          next,
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeInOut,
-        );
+        // And critically, only if the previous state was not null (i.e., it's not the initial setup)
+        if (previous != null && previous != next) { // <-- ADD THIS CHECK
+          _pageController.animateToPage(
+            next,
+            duration: const Duration(milliseconds: 150), // Consider making this slightly longer or using jumpToPage for resets
+            curve: Curves.easeInOut,
+          );
+        } else if (previous == null && next != _pageController.page?.round()) {
+          // If it's the initial setup (previous is null) and the target page is different
+          // from the current page controller page, then jump. This handles cases where
+          // the provider might be updated before the PageController fully initializes.
+          _pageController.jumpToPage(next);
+        }
       }
     });
+
+    final currentPageIndex = ref.watch(formStepProvider); // Watch the current step
+
+    // Determine the physics for the PageView
+    ScrollPhysics pageViewPhysics;
+    // PageNine is at index 25, FinishedPage is at index 26.
+    // _formPages.length - 2 is the index of PageNine.
+    // _formPages.length - 1 is the index of FinishedPage.
+    if (currentPageIndex >= _formPages.length - 2) { // If current page is PageNine or FinishedPage
+      pageViewPhysics = const NeverScrollableScrollPhysics();
+    } else {
+      pageViewPhysics = const PageScrollPhysics();
+    }
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: PageView(
         controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
+        physics: pageViewPhysics, // Use the conditionally set physics
+        onPageChanged: (int page) {
+          // Prevent swiping from PageNine to FinishedPage manually
+          if (currentPageIndex == _formPages.length - 2 && page == _formPages.length - 1) {
+            // If on PageNine and trying to swipe to FinishedPage, jump back to PageNine
+            _pageController.jumpToPage(currentPageIndex);
+          } else {
+            ref.read(formStepProvider.notifier).state = page;
+          }
+        },
         children: _formPages.map((pageContent) {
           return CommonLayout(child: pageContent);
         }).toList(),

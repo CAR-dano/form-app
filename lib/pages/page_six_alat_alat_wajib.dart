@@ -58,6 +58,7 @@ class _PageSixAlatAlatWajibState extends ConsumerState<PageSixAlatAlatWajib> wit
     super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
     // ref is available directly in ConsumerStatefulWidget state classes
     return SingleChildScrollView(
+      clipBehavior: Clip.none,
       key: const PageStorageKey<String>('pageSixAlatAlatWajibScrollKey'), // This key remains important
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

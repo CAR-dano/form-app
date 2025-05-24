@@ -52,6 +52,7 @@ class _PageSixGeneralTambahanState extends ConsumerState<PageSixGeneralTambahan>
       child: FocusScope(
         node: _focusScopeNode,
         child: SingleChildScrollView(
+          clipBehavior: Clip.none,
           key: const PageStorageKey<String>(
             'pageSixGeneralTambahanScrollKey',
           ), // This key remains important

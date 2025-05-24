@@ -57,6 +57,7 @@ class _PageEightState extends ConsumerState<PageEight>
       child: FocusScope(
         node: _focusScopeNode,
         child: SingleChildScrollView(
+          clipBehavior: Clip.none,
           key: const PageStorageKey<String>(
             'pageEightScrollKey',
           ), // This key remains important

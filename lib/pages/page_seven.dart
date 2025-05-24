@@ -10,10 +10,12 @@ import 'package:form_app/providers/form_step_provider.dart';
 // Foto Dokumen Page (formerly Page Seven)
 class PageSeven extends ConsumerStatefulWidget { 
   final ValueNotifier<bool> formSubmitted;
+  final String defaultLabel;
 
   const PageSeven({
     super.key,
     required this.formSubmitted,
+    required this.defaultLabel,
   });
 
   @override
@@ -28,6 +30,7 @@ class _PageSevenState extends ConsumerState<PageSeven> with AutomaticKeepAliveCl
   Widget build(BuildContext context) {
     super.build(context);
     return SingleChildScrollView(
+      clipBehavior: Clip.none,
       key: const PageStorageKey<String>('pageSevenScrollKey'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,6 +44,7 @@ class _PageSevenState extends ConsumerState<PageSeven> with AutomaticKeepAliveCl
             showNeedAttention: false,
             isMandatory: true, // Set isMandatory to true for Page Seven
             formSubmitted: widget.formSubmitted,
+            defaultLabel: widget.defaultLabel, // Pass the defaultLabel
           ),
       
           const SizedBox(height: 32.0),

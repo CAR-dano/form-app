@@ -3,28 +3,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:image/image.dart' as img;
-import 'package:path_provider/path_provider.dart'; // For getTemporaryDirectory
-import 'package:flutter/foundation.dart'; // For kDebugMode
 import 'package:form_app/statics/app_styles.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
 import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
-import 'package:form_app/widgets/delete_confirmation_dialog.dart'; // Import the new widget
+import 'package:form_app/widgets/delete_confirmation_dialog.dart';
+import 'package:form_app/utils/image_picker_util.dart'; // Import the new utility
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
   final bool showNeedAttention;
   final bool isMandatory;
-  final ValueNotifier<bool>? formSubmitted; // Make it nullable or provide a default
+  final ValueNotifier<bool>? formSubmitted;
+  final String defaultLabel;
 
   const TambahanImageSelection({
     super.key,
     required this.identifier,
     this.showNeedAttention = true,
     this.isMandatory = false,
-    this.formSubmitted, // Accept the notifier
+    this.formSubmitted,
+    this.defaultLabel = 'Foto Tambahan',
   });
 
   @override
@@ -37,7 +37,6 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   final TextEditingController _labelController = TextEditingController();
   final GlobalKey<FormFieldState<String>> _labelFieldKey = GlobalKey<FormFieldState<String>>();
 
-  // To listen to formSubmitted changes if passed
   VoidCallback? _formSubmittedListener;
 
   @override
@@ -50,7 +49,6 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     if (widget.formSubmitted != null) {
       _formSubmittedListener = () {
         if (mounted && widget.formSubmitted!.value) {
-          // Trigger validation for the current label field when formSubmitted becomes true
           _labelFieldKey.currentState?.validate();
         }
       };
@@ -78,7 +76,6 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     } else {
       _labelController.clear();
     }
-    // If form has been submitted, re-validate the new field content
     if (widget.formSubmitted?.value ?? false) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) _labelFieldKey.currentState?.validate();
@@ -86,105 +83,22 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     }
   }
 
-  Future<String?> _processAndSaveImage(XFile pickedFile) async {
-    final File imageFile = File(pickedFile.path);
-    List<int> imageBytes = await imageFile.readAsBytes();
-    img.Image? originalImage = img.decodeImage(Uint8List.fromList(imageBytes));
-
-    if (originalImage == null) {
-      if (kDebugMode) {
-        print("Error: Could not decode image ${pickedFile.path}");
-      }
-      return null; // Indicate failure
-    }
-
-    double currentAspectRatio = originalImage.width / originalImage.height;
-    double targetAspectRatio = 4.0 / 3.0;
-    const double tolerance = 0.01; // Allow for small floating point inaccuracies
-
-    int cropX = 0;
-    int cropY = 0;
-    int cropWidth = originalImage.width;
-    int cropHeight = originalImage.height;
-    bool needsCrop = false;
-
-    if ((currentAspectRatio - targetAspectRatio).abs() > tolerance) {
-        needsCrop = true;
-        if (currentAspectRatio > targetAspectRatio) {
-          // Image is wider than 4:3, crop width
-          cropWidth = (originalImage.height * targetAspectRatio).round();
-          cropX = ((originalImage.width - cropWidth) / 2).round();
-        } else {
-          // Image is taller than 4:3, crop height
-          cropHeight = (originalImage.width / targetAspectRatio).round();
-          cropY = ((originalImage.height - cropHeight) / 2).round();
-        }
-    }
-
-    img.Image? processedImage = originalImage;
-    if (needsCrop) {
-      processedImage = img.copyCrop(originalImage, x: cropX, y: cropY, width: cropWidth, height: cropHeight);
-    }
-
-    // Resize if the image is too large
-    const int maxWidth = 1200; // Target maximum width
-    if (processedImage.width > maxWidth) {
-      processedImage = img.copyResize(processedImage, width: maxWidth);
-    }
-
-    String finalImagePath = pickedFile.path;
-    List<int> processedBytes;
-    // Preserve original extension or default to jpg
-    String extension = pickedFile.name.split('.').last.toLowerCase();
-    if (extension == 'png') {
-      processedBytes = img.encodePng(processedImage);
-    } else if (extension == 'gif') {
-      processedBytes = img.encodeGif(processedImage); // If you need to support GIF
-    }
-    else { // default to jpg for jpeg, jpg, or unknown
-      processedBytes = img.encodeJpg(processedImage, quality: 70); // Adjust quality
-      if (extension != 'jpg' && extension != 'jpeg') extension = 'jpg';
-    }
-
-    try {
-      final directory = await getTemporaryDirectory();
-      final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      // Ensure unique filename if multiple images are processed quickly
-      final String newFileName = '${timestamp}_${pickedFile.name.replaceAll(RegExp(r'\s+'), '_')}_processed.$extension';
-      finalImagePath = '${directory.path}/$newFileName';
-      final File newProcessedFile = File(finalImagePath);
-      await newProcessedFile.writeAsBytes(processedBytes);
-      if (kDebugMode) {
-        print('Processed image saved to: $finalImagePath');
-        final int fileSize = await newProcessedFile.length();
-        print('Compressed file size: ${fileSize / 1024} KB');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print("Error saving processed image: $e");
-      }
-      return null; // Indicate failure
-    }
-    return finalImagePath;
-  }
-
   Future<void> _pickImage(ImageSource source) async {
     if (source == ImageSource.gallery) {
-      final List<XFile> images = await _picker.pickMultiImage();
+      final List<XFile> images = await ImagePickerUtil.pickMultiImagesFromGallery();
       if (images.isNotEmpty) {
         List<TambahanImageData> newImagesData = [];
         for (var imageFileXFile in images) {
-          final String? processedPath = await _processAndSaveImage(imageFileXFile);
+          final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageFileXFile);
           if (processedPath != null) {
             final newTambahanImage = TambahanImageData(
-              imagePath: processedPath, // Use processed path
-              label: '', // Default label, user can edit
+              imagePath: processedPath,
+              label: widget.defaultLabel, // Use defaultLabel here
               needAttention: false,
               category: widget.identifier,
               isMandatory: widget.isMandatory,
             );
             newImagesData.add(newTambahanImage);
-            // Use widget.identifier for the provider
             ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
           }
         }
@@ -199,11 +113,18 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     } else { // Camera
       final XFile? imageXFile = await _picker.pickImage(source: source);
       if (imageXFile != null) {
-        final String? processedPath = await _processAndSaveImage(imageXFile);
+        await ImagePickerUtil.saveImageToGallery(imageXFile);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Gambar disimpan ke galeri.'), duration: Duration(seconds: 2)),
+          );
+        }
+
+        final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageXFile);
         if (processedPath != null) {
           final newTambahanImage = TambahanImageData(
-            imagePath: processedPath, // Use processed path
-            label: '', 
+            imagePath: processedPath,
+            label: widget.defaultLabel, // Use defaultLabel here
             needAttention: false,
             category: widget.identifier,
             isMandatory: widget.isMandatory,
