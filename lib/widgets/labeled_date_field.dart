@@ -158,7 +158,6 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
           builder: (FormFieldState<DateTime?> field) {
             // Combine base decoration with error state from FormField
             final effectiveDecoration = _getBaseInputDecoration().copyWith(
-              errorText: field.errorText,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
@@ -183,38 +182,46 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
               ),
             );
 
-            return InkWell(
-              onTap: () => _selectDate(context),
-              focusNode: _focusNode,
-              customBorder: RoundedRectangleBorder( // Make InkWell's shape match the border
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: InputDecorator(
-                decoration: effectiveDecoration,
-                isEmpty: field.value == null,
-                child: Container( // Ensure the Row takes up the decorator's padded space
-                  // This container helps define the minimum height if content is small
-                  // The actual padding for content comes from effectiveDecoration.contentPadding
-                  // which is implicitly applied by InputDecorator to its child.
-                  // If explicit padding control is needed here, ensure it aligns with InputDecoration's contentPadding.
-                  // For this use case, relying on InputDecorator's padding of its child (the Row) is standard.
-                  constraints: const BoxConstraints(minHeight: 20), // Typical minimum height for a form field line
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        field.value == null
-                            ? widget.hintText
-                            : DateFormat('dd/MM/yyyy').format(field.value!),
-                        style: field.value == null
-                            ? hintTextStyle
-                            : selectedDateTextStyle.copyWith(color: selectedDateColor),
+            return Column( // Wrap InkWell and error text in a Column
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: () => _selectDate(context),
+                  focusNode: _focusNode,
+                  customBorder: RoundedRectangleBorder( // Make InkWell's shape match the border
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: InputDecorator(
+                    decoration: effectiveDecoration,
+                    isEmpty: field.value == null,
+                    child: Container( // Ensure the Row takes up the decorator's padded space
+                      constraints: const BoxConstraints(minHeight: 20), // Typical minimum height for a form field line
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text(
+                            field.value == null
+                                ? widget.hintText
+                                : DateFormat('dd/MM/yyyy').format(field.value!),
+                            style: field.value == null
+                                ? hintTextStyle
+                                : selectedDateTextStyle.copyWith(color: selectedDateColor),
+                          ),
+                          Icon(Icons.arrow_drop_down, color: field.hasError ? errorBorderColor : iconColor),
+                        ],
                       ),
-                      Icon(Icons.arrow_drop_down, color: field.hasError ? errorBorderColor : iconColor),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+                if (field.hasError && field.errorText != null) // Conditionally display error text
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4.0, left: 12.0), // Adjust padding as needed
+                    child: Text(
+                      field.errorText!,
+                      style: const TextStyle(color: errorBorderColor, fontSize: 12.0), // Error text style
+                    ),
+                  ),
+              ],
             );
           },
         ),
