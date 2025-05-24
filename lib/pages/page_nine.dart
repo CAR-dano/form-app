@@ -24,6 +24,7 @@ class PageNine extends ConsumerStatefulWidget {
   final Map<int, String> pageNames;
   final String? Function(int pageIndex) validatePage;
   final Map<int, String> tambahanImagePageIdentifiers; // New
+  final String defaultTambahanLabel;
 
   const PageNine({
     super.key,
@@ -35,6 +36,7 @@ class PageNine extends ConsumerStatefulWidget {
     required this.pageNames,
     required this.validatePage,
     required this.tambahanImagePageIdentifiers, // New
+    required this.defaultTambahanLabel,
   });
 
   @override
@@ -54,7 +56,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
   List<int> get _pagesToValidate => [
     0, // PageOne
     14, // PageTwo
-    ...widget.tambahanImagePageIdentifiers.keys, // All Tambahan Image pages
+    // Removed validation for Tambahan Image pages as per user request
   ];
 
 
@@ -156,11 +158,10 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
         final tambahanImagesList = ref.read(tambahanImageDataProvider(identifier));
         for (var imgData in tambahanImagesList) {
           if (imgData.imagePath.isNotEmpty) {
-             if (imgData.label.trim().isEmpty) { // Double check, though validation should catch this
-                throw Exception('Gambar tambahan pada halaman terkait "$identifier" memiliki label kosong.');
-            }
+            // If label is empty, use the default label provided
+            final String labelToUse = imgData.label.isEmpty ? widget.defaultTambahanLabel : imgData.label;
             allImagesToUpload.add(UploadableImage(
-              imagePath: imgData.imagePath, label: imgData.label, needAttention: imgData.needAttention,
+              imagePath: imgData.imagePath, label: labelToUse, needAttention: imgData.needAttention,
               category: imgData.category, isMandatory: imgData.isMandatory,
             ));
           }

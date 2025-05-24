@@ -45,6 +45,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
   // ValueNotifiers to control when validation messages are shown for specific pages
   final ValueNotifier<bool> _formSubmittedPageOne = ValueNotifier<bool>(false);
+  static const String _defaultTambahanLabel = 'Foto Tambahan';
   final ValueNotifier<bool> _formSubmittedPageTwo = ValueNotifier<bool>(false);
   // ValueNotifier for Tambahan Image pages
   final ValueNotifier<bool> _formSubmittedTambahanImages = ValueNotifier<bool>(false);
@@ -96,7 +97,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       PageSixMesinTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 10
       PageSixKakiKakiTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 11
       PageSixAlatAlatTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 12
-      PageSeven(formSubmitted: _formSubmittedTambahanImages), // Index 13
+      PageSeven(formSubmitted: _formSubmittedTambahanImages, defaultLabel: 'Foto Dokumen'), // Index 13
       PageTwo(formKey: _formKeys[14], formSubmitted: _formSubmittedPageTwo), // Index 14
       const PageThree(),
       const PageFour(),
@@ -117,6 +118,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         pageNames: _pageNames,
         validatePage: _validatePage,
         tambahanImagePageIdentifiers: _tambahanImagePageIdentifiers,
+        defaultTambahanLabel: _defaultTambahanLabel,
       ),
       const FinishedPage(),
     ];
