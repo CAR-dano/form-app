@@ -65,9 +65,8 @@ class ImagePickerUtil {
     }
 
     try {
-      // Use the original path's directory and filename, but append '_compressed'
-      final String originalDirectory = pickedFile.path.substring(0, pickedFile.path.lastIndexOf(Platform.pathSeparator));
-      final String originalFileNameWithoutExtension = pickedFile.name.split('.').first;
+      final directory = await getTemporaryDirectory();
+      final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
       
       // Ensure the extension is consistent with the processed bytes
       String finalExtension = extension;
@@ -79,8 +78,9 @@ class ImagePickerUtil {
         finalExtension = 'jpg'; // Default to jpg if not png/gif
       }
 
-      final String newFileName = '${originalFileNameWithoutExtension}_compressed.$finalExtension';
-      finalImagePath = '$originalDirectory${Platform.pathSeparator}$newFileName';
+      // Generate a new filename using timestamp and '_compressed' suffix
+      final String newFileName = '${timestamp}_compressed.$finalExtension';
+      finalImagePath = '${directory.path}${Platform.pathSeparator}$newFileName';
       final File newProcessedFile = File(finalImagePath);
       await newProcessedFile.writeAsBytes(processedBytes);
       if (kDebugMode) {
@@ -110,12 +110,23 @@ class ImagePickerUtil {
         }
       }
 
+      // Generate a shorter, unique filename for the original image
+      final directory = await getTemporaryDirectory();
+      final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+      String extension = imageXFile.name.split('.').last.toLowerCase();
+      final String newFileName = 'IMG_$timestamp.$extension'; // e.g., IMG_16789012345.jpg
+      final String newFilePath = '${directory.path}/$newFileName';
+
+      // Copy the original image to the new path
+      final File originalFile = File(imageXFile.path);
+      final File newFileForGallery = await originalFile.copy(newFilePath);
+
       if (kDebugMode) {
-        print('Attempting to save original camera image to gallery: ${imageXFile.path}');
+        print('Attempting to save original camera image to gallery from new path: ${newFileForGallery.path}');
       }
-      await Gal.putImage(imageXFile.path);
+      await Gal.putImage(newFileForGallery.path);
       if (kDebugMode) {
-        print('Image successfully saved to gallery via Gal package.');
+        print('Image successfully saved to gallery via Gal package with new name.');
       }
     } catch (e) {
       if (kDebugMode) {
