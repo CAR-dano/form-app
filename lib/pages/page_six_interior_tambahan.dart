@@ -51,6 +51,7 @@ class _PageSixInteriorTambahanState extends ConsumerState<PageSixInteriorTambaha
       child: FocusScope(
         node: _focusScopeNode,
         child: SingleChildScrollView(
+          clipBehavior: Clip.none,
           key: const PageStorageKey<String>('pageSixInteriorTambahanScrollKey'),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

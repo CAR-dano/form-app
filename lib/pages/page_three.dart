@@ -30,6 +30,7 @@ class _PageThreeState extends ConsumerState<PageThree> with AutomaticKeepAliveCl
 
     // Basic structure, replace with actual content later
     return SingleChildScrollView(
+      clipBehavior: Clip.none,
       key: const PageStorageKey<String>('pageThreeScrollKey'), // This key remains important
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

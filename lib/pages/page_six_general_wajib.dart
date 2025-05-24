@@ -65,6 +65,7 @@ class _PageSixGeneralWajibState extends ConsumerState<PageSixGeneralWajib> with 
     return Column(
       children: [
         SingleChildScrollView(
+          clipBehavior: Clip.none,
           key: const PageStorageKey<String>('pageSixGeneralWajibScrollKey'), // This key remains important
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

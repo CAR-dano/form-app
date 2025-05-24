@@ -86,6 +86,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
               _focusScopeNode.unfocus(); // Unfocus on tap outside text fields
             },
             child: SingleChildScrollView(
+              clipBehavior: Clip.none,
               key: const PageStorageKey<String>('pageTwoScrollKey'), // Add PageStorageKey here
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

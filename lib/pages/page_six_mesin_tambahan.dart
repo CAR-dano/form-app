@@ -51,6 +51,7 @@ class _PageSixMesinTambahanState extends ConsumerState<PageSixMesinTambahan>
       child: FocusScope(
         node: _focusScopeNode,
         child: SingleChildScrollView(
+          clipBehavior: Clip.none,
           key: const PageStorageKey<String>('pageSixMesinTambahanScrollKey'),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

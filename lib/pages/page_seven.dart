@@ -28,6 +28,7 @@ class _PageSevenState extends ConsumerState<PageSeven> with AutomaticKeepAliveCl
   Widget build(BuildContext context) {
     super.build(context);
     return SingleChildScrollView(
+      clipBehavior: Clip.none,
       key: const PageStorageKey<String>('pageSevenScrollKey'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

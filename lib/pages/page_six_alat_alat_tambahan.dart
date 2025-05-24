@@ -51,6 +51,7 @@ class _PageSixAlatAlatTambahanState extends ConsumerState<PageSixAlatAlatTambaha
       child: FocusScope(
         node: _focusScopeNode,
         child: SingleChildScrollView(
+          clipBehavior: Clip.none,
           key: const PageStorageKey<String>('pageSixAlatAlatTambahanScrollKey'),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

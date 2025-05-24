@@ -249,6 +249,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
       children: [
         Expanded( // Makes the main content area scrollable
           child: SingleChildScrollView(
+            clipBehavior: Clip.none,
             key: const PageStorageKey<String>('pageNineScrollKey'),
             child: Padding( // Add padding to the scrollable content
               padding: const EdgeInsets.symmetric(horizontal: 0), // Match CommonLayout padding
