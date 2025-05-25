@@ -114,12 +114,6 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       final XFile? imageXFile = await _picker.pickImage(source: source);
       if (imageXFile != null) {
         await ImagePickerUtil.saveImageToGallery(imageXFile);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Gambar disimpan ke galeri.'), duration: Duration(seconds: 2)),
-          );
-        }
-
         final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageXFile);
         if (processedPath != null) {
           final newTambahanImage = TambahanImageData(
