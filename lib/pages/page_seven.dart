@@ -44,7 +44,6 @@ class _PageSevenState extends ConsumerState<PageSeven> with AutomaticKeepAliveCl
             showNeedAttention: false,
             isMandatory: true, // Set isMandatory to true for Page Seven
             formSubmitted: widget.formSubmitted,
-            defaultLabel: widget.defaultLabel, // Pass the defaultLabel
           ),
       
           const SizedBox(height: 32.0),
