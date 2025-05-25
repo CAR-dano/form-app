@@ -33,12 +33,6 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
 
     if (pickedImageXFile != null) {
       await ImagePickerUtil.saveImageToGallery(pickedImageXFile);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gambar disimpan ke galeri.'), duration: Duration(seconds: 2)),
-        );
-      }
-
       final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile);
       if (processedPath != null) {
         widget.onImagePicked?.call(File(processedPath));

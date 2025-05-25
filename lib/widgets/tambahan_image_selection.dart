@@ -24,7 +24,7 @@ class TambahanImageSelection extends ConsumerStatefulWidget {
     this.showNeedAttention = true,
     this.isMandatory = false,
     this.formSubmitted,
-    this.defaultLabel = 'Foto Tambahan',
+    this.defaultLabel = '',
   });
 
   @override
@@ -69,12 +69,15 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
       final currentImage = images[_currentIndex];
-      if (_labelController.text != currentImage.label) {
-        _labelController.text = currentImage.label;
+      // If the current image's label is the default, display an empty string in the text field.
+      // Otherwise, display the actual label.
+      final String displayedLabel = (currentImage.label == widget.defaultLabel) ? '' : currentImage.label;
+      if (_labelController.text != displayedLabel) {
+        _labelController.text = displayedLabel;
         _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
       }
     } else {
-      _labelController.clear();
+      _labelController.clear(); // Clear if no images
     }
     if (widget.formSubmitted?.value ?? false) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -114,12 +117,6 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       final XFile? imageXFile = await _picker.pickImage(source: source);
       if (imageXFile != null) {
         await ImagePickerUtil.saveImageToGallery(imageXFile);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Gambar disimpan ke galeri.'), duration: Duration(seconds: 2)),
-          );
-        }
-
         final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageXFile);
         if (processedPath != null) {
           final newTambahanImage = TambahanImageData(
@@ -197,14 +194,14 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   }
 
   void _onLabelChanged(String newLabel) {
-    // Use widget.identifier for the provider
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
       final currentImage = images[_currentIndex];
-      // Use widget.identifier for the provider
+      // If the new label is empty, save the defaultLabel. Otherwise, save the newLabel.
+      final String labelToSave = newLabel.trim().isEmpty ? widget.defaultLabel : newLabel;
       ref
           .read(tambahanImageDataProvider(widget.identifier).notifier)
-          .updateImageAtIndex(_currentIndex, currentImage.copyWith(label: newLabel));
+          .updateImageAtIndex(_currentIndex, currentImage.copyWith(label: labelToSave));
     }
   }
 
@@ -217,6 +214,10 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       ref.read(tambahanImageDataProvider(widget.identifier).notifier).updateImageAtIndex(
           _currentIndex, currentImage.copyWith(needAttention: newAttentionStatus));
     }
+  }
+
+  String _getDisplayLabel(String? label) {
+    return (label == widget.defaultLabel) ? '' : (label ?? '');
   }
 
   @override
@@ -243,14 +244,17 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
             _updateControllersForCurrentIndex();
           });
         }
-        // Synchronize label controller if currentImage changes
+        // Synchronize label controller if currentImage changes, respecting the "empty if default" rule
         final currentImageForController = currentImagesList.isNotEmpty && _currentIndex < currentImagesList.length
             ? currentImagesList[_currentIndex]
             : null;
 
-        if (currentImageForController != null && _labelController.text != currentImageForController.label) {
-           _labelController.text = currentImageForController.label;
-           _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
+        if (currentImageForController != null) {
+          final String displayedLabel = _getDisplayLabel(currentImageForController.label);
+          if (_labelController.text != displayedLabel) {
+            _labelController.text = displayedLabel;
+            _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
+          }
         } else if (currentImageForController == null && _labelController.text.isNotEmpty) {
             _labelController.clear();
         }
