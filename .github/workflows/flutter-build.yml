@@ -8,41 +8,41 @@ jobs:
   build_and_release_on_main:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: read
+      contents: write      # Required to create releases and tags
+      pull-requests: read # Required by actions/github-script to read PR details
 
     steps:
-      # Checks out the repository code.
+      # Step 1: Check out the repository code
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # Sets up the Flutter environment.
+      # Step 2: Set up Flutter environment
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.32.0' # Specify your project's Flutter version
+          flutter-version: '3.29.3'
           channel: 'stable'
 
-      # Creates a dummy .env file for CI analysis and testing.
+      # Step 3: Prepare for CI checks
       - name: Create dummy .env file for analysis and testing
         run: |
           echo "API_BASE_URL=http://dummy.api.for.ci" > .env
 
-      # Installs Flutter project dependencies.
+      # Step 4: Install Flutter dependencies
       - name: Install dependencies
         run: flutter pub get
 
-      # Analyzes the Flutter project for potential issues.
+      # Step 5: Run static analysis
       - name: Analyze project
         run: flutter analyze
 
-      # Runs all tests in the Flutter project.
+      # Step 6: Run tests
       - name: Run tests
         run: flutter test
 
-      # Reads the semantic version from pubspec.yaml.
+      # Step 7: Extract version from pubspec.yaml
       - name: Read pubspec.yaml semantic version
         id: pubspec
         run: |
@@ -50,55 +50,71 @@ jobs:
           SEMANTIC_VERSION=$(echo "$VERSION_LINE" | sed 's/version: //g' | sed 's/+\.*//g' | tr -d '[:space:]')
           echo "semantic_version=$SEMANTIC_VERSION" >> $GITHUB_OUTPUT
 
-      # Creates the .env file with the actual API base URL for the release build.
+      # Step 8: Create actual .env file for builds
       - name: Create .env file for Release Build
         run: |
           echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" > .env
         env:
-          API_BASE_URL: ${{ secrets.API_BASE_URL }} # Ensure this secret is configured
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
 
-      # Builds the release APKs, split by ABI.
-      - name: Build Release APKs (Split per ABI)
-        run: flutter build apk --release --split-per-abi --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ github.run_number }}
+      # Step 9: Build ABI-Specific Release APKs
+      - name: Build ABI-Specific Release APKs
+        run: flutter build apk --split-per-abi --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ github.run_number }}
+        # Outputs: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk, etc.
 
-      # Builds the debug APK.
+      # Step 10: Build Universal (Fat) Release APK
+      - name: Build Universal (Fat) Release APK
+        run: flutter build apk --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ github.run_number }}
+        # Outputs: build/app/outputs/flutter-apk/app-release.apk
+
+      # Step 11: Build Debug APK
       - name: Build Debug APK
         run: flutter build apk --debug
+        # Outputs: build/app/outputs/flutter-apk/app-debug.apk
 
-      # Renames the debug APK for consistent release naming.
-      - name: Rename Debug APK for Release
+      # Step 12: Rename Universal Release APK for clarity in assets
+      - name: Rename Universal Release APK
+        id: universal_release_apk_details
+        run: |
+          original_path="build/app/outputs/flutter-apk/app-release.apk"
+          new_name="app-universal-release-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}.apk"
+          new_path="build/app/outputs/flutter-apk/$new_name"
+          mv "$original_path" "$new_path"
+          echo "path=$new_path" >> $GITHUB_OUTPUT
+          echo "name=$new_name" >> $GITHUB_OUTPUT
+
+      # Step 13: Rename Debug APK for clarity in assets
+      - name: Rename Debug APK
         id: debug_apk_details
         run: |
-          original_debug_apk_path="build/app/outputs/flutter-apk/app-debug.apk"
-          new_debug_apk_name="app-debug-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}.apk"
-          new_debug_apk_path="build/app/outputs/flutter-apk/${new_debug_apk_name}"
-          if [ -f "$original_debug_apk_path" ]; then
-            mv "$original_debug_apk_path" "$new_debug_apk_path"
-            echo "path=$new_debug_apk_path" >> $GITHUB_OUTPUT
-            echo "name=$new_debug_apk_name" >> $GITHUB_OUTPUT
-          else
-            echo "Debug APK not found, skipping rename."
-            echo "path=" >> $GITHUB_OUTPUT
-            echo "name=" >> $GITHUB_OUTPUT
-          fi
+          original_path="build/app/outputs/flutter-apk/app-debug.apk"
+          new_name="app-debug-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}.apk"
+          new_path="build/app/outputs/flutter-apk/$new_name"
+          mv "$original_path" "$new_path"
+          echo "path=$new_path" >> $GITHUB_OUTPUT
+          echo "name=$new_name" >> $GITHUB_OUTPUT
 
-      # Creates the release tag name based on semantic version and run number.
+      # Step 14: Generate a unique tag name for the release
       - name: Create Release Tag Name
         id: create_tag
         run: |
           TAG_NAME="v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}"
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
 
-      # Prepares the release body content, including PR details if applicable.
+      # Step 15: Prepare the body/notes for the GitHub Release
       - name: Prepare Release Body
         id: prep_release_body
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { COMMIT_SHA, ACTOR, SEMANTIC_VERSION, RUN_NUMBER, REPO_URL, HEAD_COMMIT_MESSAGE } = process.env;
+            const {
+              COMMIT_SHA, ACTOR, SEMANTIC_VERSION, RUN_NUMBER, REPO_URL, HEAD_COMMIT_MESSAGE
+            } = process.env;
+
             let main_release_content = "";
             let pr_details_for_footer = "";
+
             const pr_regex_merge = /Merge pull request #(\d+)/;
             const pr_regex_squash_title = /\(#(\d+)\)(?:$|\n)/;
             let match = HEAD_COMMIT_MESSAGE.match(pr_regex_merge);
@@ -106,31 +122,44 @@ jobs:
               const first_line_of_commit = HEAD_COMMIT_MESSAGE.split('\n')[0];
               match = first_line_of_commit.match(pr_regex_squash_title);
             }
+
             if (match && match[1]) {
               const pr_number = match[1];
+              core.info(`Attempting to fetch details for PR #${pr_number}`);
               try {
                 const { data: pr } = await github.rest.pulls.get({
-                  owner: context.repo.owner, repo: context.repo.repo, pull_number: pr_number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr_number,
                 });
                 main_release_content = pr.body || "No description provided for this Pull Request.";
                 pr_details_for_footer += `**Pull Request:** [#${pr_number}: ${pr.title}](${pr.html_url})\n`;
                 pr_details_for_footer += `**PR Author:** @${pr.user.login}\n`;
               } catch (error) {
-                core.warning(`Could not fetch PR #${pr_number} details: ${error.message}`);
-                main_release_content = `Could not automatically fetch Pull Request description for PR #${pr_number}.\n\nAssociated PR: [#${pr_number}](${REPO_URL}/pull/${pr_number})\n`;
+                core.warning(`Could not fetch details for PR #${pr_number}: ${error.message}`);
+                main_release_content = `Could not automatically fetch Pull Request description for PR #${pr_number}. Please refer to the PR or commit message directly.\n\n`;
+                main_release_content += `Associated PR: [#${pr_number}](${REPO_URL}/pull/${pr_number})\n`;
               }
             } else {
+              core.info("Could not determine PR from commit message. Using commit message as main content.");
               const commit_title = HEAD_COMMIT_MESSAGE.split('\n')[0];
               let commit_body_part = HEAD_COMMIT_MESSAGE.substring(commit_title.length).trim();
-              main_release_content = commit_body_part ? `**${commit_title}**\n\n${commit_body_part}` : HEAD_COMMIT_MESSAGE;
+              if (commit_body_part) {
+                main_release_content = `**${commit_title}**\n\n${commit_body_part}`;
+              } else {
+                main_release_content = HEAD_COMMIT_MESSAGE;
+              }
             }
+
             let footer_info = "\n\n---\n\n";
             footer_info += `**Version:** v${SEMANTIC_VERSION}+${RUN_NUMBER}\n`;
             footer_info += `**Released by:** @${ACTOR}\n`;
             footer_info += pr_details_for_footer;
             footer_info += `**Commit:** [${COMMIT_SHA.substring(0,7)}](${REPO_URL}/commit/${COMMIT_SHA})\n`;
             footer_info += `\n**Full Commit Message:**\n\`\`\`\n${HEAD_COMMIT_MESSAGE}\n\`\`\`\n`;
-            core.setOutput("body", main_release_content + footer_info);
+
+            const release_body = main_release_content + footer_info;
+            core.setOutput("body", release_body);
         env:
           SEMANTIC_VERSION: ${{ steps.pubspec.outputs.semantic_version }}
           RUN_NUMBER: ${{ github.run_number }}
@@ -139,7 +168,7 @@ jobs:
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
           HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
 
-      # Creates a new GitHub release.
+      # Step 16: Create the GitHub Release
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -152,34 +181,41 @@ jobs:
           draft: false
           prerelease: false
 
-      # Uploads the ABI-specific release APKs as assets to the GitHub Release.
-      - name: Upload ABI-specific Release APK Assets
+      # Step 17: Upload Universal (Fat) Release APK Asset
+      - name: Upload Universal Release APK
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          APK_DIR="build/app/outputs/flutter-apk"
-          VERSION_TAG="v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}"
-          # Upload each ABI-specific and the universal release APK
-          for apk_file in $APK_DIR/app-*-release.apk $APK_DIR/app-release.apk; do
-            if [ -f "$apk_file" ]; then
-              # Construct a unique name to avoid collision if app-release.apk is also an ABI (e.g. universal)
-              # For app-arm64-v8a-release.apk -> app-arm64-v8a-release-vX.Y.Z+B.apk
-              # For app-release.apk -> app-universal-release-vX.Y.Z+B.apk (assuming it's universal)
-              base_name=$(basename "$apk_file" .apk)
-              if [[ "$base_name" == "app-release" ]]; then
-                asset_name="app-universal-release-$VERSION_TAG.apk"
-              else
-                asset_name="${base_name}-$VERSION_TAG.apk"
-              fi
-              echo "Uploading $asset_name from $apk_file"
-              gh release upload "${{ steps.create_tag.outputs.tag_name }}" "$apk_file" --name "$asset_name" --clobber
-            fi
-          done
-        # Ensure GitHub CLI (gh) is available. It usually is on ubuntu-latest.
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.universal_release_apk_details.outputs.path }}
+          asset_name: ${{ steps.universal_release_apk_details.outputs.name }}
+          asset_content_type: application/vnd.android.package-archive
 
-      # Uploads the debug APK as an asset to the GitHub Release.
+      # Step 18: Upload ABI-specific Release APK Assets
+      - name: Upload arm64-v8a Release APK
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          asset_name: app-arm64-v8a-release-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}.apk
+          asset_content_type: application/vnd.android.package-archive
+
+      - name: Upload armeabi-v7a Release APK
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+          asset_name: app-armeabi-v7a-release-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}.apk
+          asset_content_type: application/vnd.android.package-archive
+      # Add more for other ABIs like x86_64 if needed
+
+      # Step 19: Upload the Debug APK as a release asset
       - name: Upload Debug APK Asset
-        if: steps.debug_apk_details.outputs.path != ''
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -189,21 +225,21 @@ jobs:
           asset_name: ${{ steps.debug_apk_details.outputs.name }}
           asset_content_type: application/vnd.android.package-archive
 
-      # Uploads all release APKs as a build artifact.
+      # Step 20: Upload All Release APKs (Universal and ABI-specific) as Build Artifact
       - name: Upload All Release APKs as Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: release-apks-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}
-          path: |
-            build/app/outputs/flutter-apk/*-release.apk
-            build/app/outputs/flutter-apk/app-release.apk # Ensure universal is included if named this way
-          if-no-files-found: warn # Don't fail if app-release.apk doesn't exist (e.g. only ABI splits)
+          path: | # Using a multiline path to include specific files or patterns
+            ${{ steps.universal_release_apk_details.outputs.path }}
+            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+            build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+            # Add other ABI paths if built, e.g.: build/app/outputs/flutter-apk/app-x86_64-release.apk
+          if-no-files-found: warn # Default is error, warn is softer
 
-      # Uploads the debug build artifact.
+      # Step 21: Upload Debug APK as a build artifact
       - name: Upload Debug Build Artifact
-        if: steps.debug_apk_details.outputs.path != ''
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}
           path: ${{ steps.debug_apk_details.outputs.path }}
-          if-no-files-found: warn
