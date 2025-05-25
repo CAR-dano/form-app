@@ -24,7 +24,7 @@ class TambahanImageSelection extends ConsumerStatefulWidget {
     this.showNeedAttention = true,
     this.isMandatory = false,
     this.formSubmitted,
-    this.defaultLabel = 'Foto Tambahan',
+    this.defaultLabel = '',
   });
 
   @override
