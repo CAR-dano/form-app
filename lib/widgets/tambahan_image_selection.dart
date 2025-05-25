@@ -216,6 +216,10 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     }
   }
 
+  String _getDisplayLabel(String? label) {
+    return (label == widget.defaultLabel) ? '' : (label ?? '');
+  }
+
   @override
   Widget build(BuildContext context) {
      // Use widget.identifier to watch the correct provider instance
@@ -246,7 +250,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
             : null;
 
         if (currentImageForController != null) {
-          final String displayedLabel = (currentImageForController.label == widget.defaultLabel) ? '' : currentImageForController.label;
+          final String displayedLabel = _getDisplayLabel(currentImageForController.label);
           if (_labelController.text != displayedLabel) {
             _labelController.text = displayedLabel;
             _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
