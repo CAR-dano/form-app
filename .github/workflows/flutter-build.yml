@@ -22,7 +22,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.3' # Specify your project's Flutter version
+          flutter-version: '3.32.0' # Specify your project's Flutter version
           channel: 'stable'
 
       # Creates a dummy .env file for CI analysis and testing.
