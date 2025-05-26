@@ -41,6 +41,12 @@ class MultiStepFormScreen extends ConsumerStatefulWidget {
 }
 
 class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
+  // ... (other existing properties like _formKeys, _pageController, etc.)
+
+  // Add this flag:
+  bool _isProgrammaticallyMovingPage = false; // To manage programmatic vs. user-driven page changes
+  bool _isPostFrameCallbackScheduled = false; // To prevent scheduling multiple post-frame callbacks
+
   final List<GlobalKey<FormState>> _formKeys = List.generate(27, (_) => GlobalKey<FormState>());
 
   // ValueNotifiers to control when validation messages are shown for specific pages
@@ -77,11 +83,52 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     13: 'Foto Dokumen',
   };
 
-
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: ref.read(formStepProvider));
+    int initialStep = ref.read(formStepProvider);
+    _pageController = PageController(initialPage: initialStep);
+
+    // This flag will be true when we expect the PageController to be on initialStep
+    // due to initialization or a reset from FinishedPage.
+    _isProgrammaticallyMovingPage = true;
+
+    if (!_isPostFrameCallbackScheduled) {
+        _isPostFrameCallbackScheduled = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+        _isPostFrameCallbackScheduled = false; // Reset flag
+        if (mounted && _pageController.hasClients) {
+            final currentStepFromProvider = ref.read(formStepProvider);
+            final currentPageOnController = _pageController.page?.round();
+
+            if (currentPageOnController != currentStepFromProvider) {
+            // If the controller isn't on the page the provider dictates,
+            // forcefully jump to it. This is crucial for the reset.
+            _pageController.jumpToPage(currentStepFromProvider);
+            }
+            // After ensuring the PageController is settled on the correct page,
+            // allow onPageChanged events to be processed normally.
+            // We use a microtask to ensure this runs after jumpToPage has had its effect
+            // within the current event loop, before any potential onPageChanged from the jump.
+            Future.microtask(() {
+                if (mounted) {
+                    setState(() { // Or just assign if no UI element depends on it for rebuild
+                        _isProgrammaticallyMovingPage = false;
+                    });
+                }
+            });
+        } else if (mounted) {
+            // If controller is already on the correct page, we can allow onPageChanged.
+             Future.microtask(() {
+                if (mounted) {
+                    setState(() {
+                        _isProgrammaticallyMovingPage = false;
+                    });
+                }
+            });
+        }
+        });
+    }
 
     _formPages = [
       PageOne(formKey: _formKeys[0], formSubmitted: _formSubmittedPageOne),
@@ -91,14 +138,14 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       const PageSixMesinWajib(),
       const PageSixKakiKakiWajib(),
       const PageSixAlatAlatWajib(),
-      PageSixGeneralTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 7
-      PageSixEksteriorTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 8
-      PageSixInteriorTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 9
-      PageSixMesinTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 10
-      PageSixKakiKakiTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 11
-      PageSixAlatAlatTambahan(formSubmitted: _formSubmittedTambahanImages), // Index 12
-      PageSeven(formSubmitted: _formSubmittedTambahanImages, defaultLabel: 'Foto Dokumen'), // Index 13
-      PageTwo(formKey: _formKeys[14], formSubmitted: _formSubmittedPageTwo), // Index 14
+      PageSixGeneralTambahan(formSubmitted: _formSubmittedTambahanImages),
+      PageSixEksteriorTambahan(formSubmitted: _formSubmittedTambahanImages),
+      PageSixInteriorTambahan(formSubmitted: _formSubmittedTambahanImages),
+      PageSixMesinTambahan(formSubmitted: _formSubmittedTambahanImages),
+      PageSixKakiKakiTambahan(formSubmitted: _formSubmittedTambahanImages),
+      PageSixAlatAlatTambahan(formSubmitted: _formSubmittedTambahanImages),
+      PageSeven(formSubmitted: _formSubmittedTambahanImages, defaultLabel: _defaultTambahanLabel),
+      PageTwo(formKey: _formKeys[14], formSubmitted: _formSubmittedPageTwo),
       const PageThree(),
       const PageFour(),
       const PageFiveOne(),
@@ -125,63 +172,32 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   }
 
   @override
-  void dispose() {
-    _pageController.dispose();
-    _formSubmittedPageOne.dispose();
-    _formSubmittedPageTwo.dispose();
-    _formSubmittedTambahanImages.dispose();
-    super.dispose();
-  }
-
-  // Function to validate a specific page
-  String? _validatePage(int pageIndex) {
-    // Validation for pages with GlobalKey<FormState>
-    if (_formKeys[pageIndex].currentState != null) {
-      if (!(_formKeys[pageIndex].currentState!.validate())) {
-        return 'Harap lengkapi data di Halaman ${pageIndex + 1}';
-      }
-    }
-
-    // Validation for pages with TambahanImageSelection
-    if (_tambahanImagePageIdentifiers.containsKey(pageIndex)) {
-      final identifier = _tambahanImagePageIdentifiers[pageIndex]!;
-      final images = ref.read(tambahanImageDataProvider(identifier));
-      if (images.any((image) => image.label.trim().isEmpty)) {
-        return 'Harap isi semua label gambar di Halaman ${pageIndex + 1}';
-      }
-    }
-    return null;
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // Listener for formStepProvider to handle programmatic page changes
     ref.listen<int>(formStepProvider, (previous, next) {
-      // Only animate if the controller is attached and the page actually needs to change
       if (_pageController.hasClients && _pageController.page?.round() != next) {
-        // And critically, only if the previous state was not null (i.e., it's not the initial setup)
-        if (previous != null && previous != next) { // <-- ADD THIS CHECK
-          _pageController.animateToPage(
-            next,
-            duration: const Duration(milliseconds: 150), // Consider making this slightly longer or using jumpToPage for resets
-            curve: Curves.easeInOut,
-          );
-        } else if (previous == null && next != _pageController.page?.round()) {
-          // If it's the initial setup (previous is null) and the target page is different
-          // from the current page controller page, then jump. This handles cases where
-          // the provider might be updated before the PageController fully initializes.
-          _pageController.jumpToPage(next);
-        }
+        // Set flag before programmatically moving the page
+        _isProgrammaticallyMovingPage = true;
+        
+        _pageController.animateToPage(
+          next,
+          duration: const Duration(milliseconds: 150), // Slightly increased duration
+          curve: Curves.easeInOut,
+        ).then((_) {
+          // After animation completes, allow onPageChanged again for user swipes
+          // Important: Check if mounted before calling setState
+          if (mounted) {
+            setState(() { // Or just assign if no UI element depends on it
+              _isProgrammaticallyMovingPage = false;
+            });
+          }
+        });
       }
     });
 
-    final currentPageIndex = ref.watch(formStepProvider); // Watch the current step
-
-    // Determine the physics for the PageView
+    final currentPageIndex = ref.watch(formStepProvider);
     ScrollPhysics pageViewPhysics;
-    // PageNine is at index 25, FinishedPage is at index 26.
-    // _formPages.length - 2 is the index of PageNine.
-    // _formPages.length - 1 is the index of FinishedPage.
-    if (currentPageIndex >= _formPages.length - 2) { // If current page is PageNine or FinishedPage
+    if (currentPageIndex >= _formPages.length - 2) {
       pageViewPhysics = const NeverScrollableScrollPhysics();
     } else {
       pageViewPhysics = const PageScrollPhysics();
@@ -191,14 +207,29 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       resizeToAvoidBottomInset: true,
       body: PageView(
         controller: _pageController,
-        physics: pageViewPhysics, // Use the conditionally set physics
+        physics: pageViewPhysics,
         onPageChanged: (int page) {
-          // Prevent swiping from PageNine to FinishedPage manually
-          if (currentPageIndex == _formPages.length - 2 && page == _formPages.length - 1) {
-            // If on PageNine and trying to swipe to FinishedPage, jump back to PageNine
-            _pageController.jumpToPage(currentPageIndex);
+          // If the page change was initiated by our programmatic scroll/jump,
+          // or if we are still in the initial settling phase, don't update the provider from here.
+          if (_isProgrammaticallyMovingPage) {
+            return;
+          }
+
+          final currentActualStep = ref.read(formStepProvider);
+          // Prevent swipe from PageNine to FinishedPage
+          if (currentActualStep == _formPages.length - 2 && page == _formPages.length - 1) {
+            // We might still need to set the _isProgrammaticallyMovingPage flag here if jumpToPage also triggers onPageChanged
+            _isProgrammaticallyMovingPage = true;
+            _pageController.jumpToPage(currentActualStep);
+            Future.microtask(() {
+                if(mounted) {
+                    setState(() => _isProgrammaticallyMovingPage = false);
+                }
+            });
           } else {
-            ref.read(formStepProvider.notifier).state = page;
+            if (currentActualStep != page) {
+              ref.read(formStepProvider.notifier).state = page;
+            }
           }
         },
         children: _formPages.map((pageContent) {
@@ -206,5 +237,43 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         }).toList(),
       ),
     );
+  }
+
+  // dispose and _validatePage methods remain the same
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _formSubmittedPageOne.dispose();
+    _formSubmittedPageTwo.dispose();
+    _formSubmittedTambahanImages.dispose();
+    super.dispose();
+  }
+
+  String? _validatePage(int pageIndex) {
+    if (_formKeys[pageIndex].currentState != null) {
+      if (!(_formKeys[pageIndex].currentState!.validate())) {
+        return 'Harap lengkapi data di Halaman ${_pageNames[pageIndex] ?? pageIndex + 1}';
+      }
+    }
+    if (_tambahanImagePageIdentifiers.containsKey(pageIndex)) {
+      final identifier = _tambahanImagePageIdentifiers[pageIndex]!;
+      final images = ref.read(tambahanImageDataProvider(identifier));
+      // Ensure defaultTambahanLabel is used correctly in comparison.
+      // If an image has the default label, it's considered "empty" or not yet customized by the user.
+      // The validation should check if a label is present *and* not the default placeholder if a custom one is expected.
+      // For 'Foto Dokumen', isMandatory is true, so it must have *some* label if an image is present.
+      // If an image is present, its label should not be the default if the user was supposed to change it.
+      // Or, if the default label IS the intended final label, then this check is fine.
+      // The current logic implies that if an image is present, a non-default label is expected.
+      if (images.any((image) => image.label == _defaultTambahanLabel || image.label.trim().isEmpty )) {
+         // If category is 'Foto Dokumen' and default label implies empty, then validate.
+         if (identifier == 'Foto Dokumen' && images.any((image) => image.label == _defaultTambahanLabel && image.imagePath.isNotEmpty)) {
+            return 'Label untuk "Foto Dokumen" belum diubah dari default atau kosong.';
+         } else if (identifier != 'Foto Dokumen' && images.any((image) => image.label.trim().isEmpty && image.imagePath.isNotEmpty)){
+            return 'Harap isi semua label gambar di Halaman ${_pageNames[pageIndex] ?? pageIndex + 1}';
+         }
+      }
+    }
+    return null;
   }
 }
