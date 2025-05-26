@@ -3,13 +3,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:form_app/statics/app_styles.dart';
 import 'dart:io';
 // For kDebugMode
+import 'package:flutter/foundation.dart'; // Ensure kDebugMode is available
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/image_data_provider.dart';
 import 'package:form_app/models/image_data.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/widgets/image_preview_dialog.dart';
-import 'package:form_app/utils/image_picker_util.dart'; // Import the new utility
+import 'package:form_app/utils/image_picker_util.dart';
 
 class ImageInputWidget extends ConsumerStatefulWidget {
   final String label;
@@ -32,13 +33,24 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
     final pickedImageXFile = await picker.pickImage(source: ImageSource.camera);
 
     if (pickedImageXFile != null) {
+      // No UI indicator needed here as per user request
+      // The actual processing is now offloaded by ImagePickerUtil.processAndSaveImage
       await ImagePickerUtil.saveImageToGallery(pickedImageXFile);
-      final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile);
-      if (processedPath != null) {
+      final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile); // This now runs heavy work in an isolate
+
+      if (mounted && processedPath != null) {
         widget.onImagePicked?.call(File(processedPath));
         ref
             .read(imageDataListProvider.notifier)
             .updateImageDataByLabel(widget.label, imagePath: processedPath);
+      } else if (mounted && processedPath == null) {
+        // Handle error or inform user if processing failed
+        if (kDebugMode) {
+          print("Image processing failed for camera image.");
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal memproses gambar dari kamera.'))
+        );
       }
     }
   }
@@ -48,12 +60,21 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
     final pickedImageXFile = await ImagePickerUtil.pickImageFromGallery();
 
     if (pickedImageXFile != null) {
-      final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile);
-      if (processedPath != null) {
+      // No UI indicator needed here
+      final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile); // Offloads work
+
+      if (mounted && processedPath != null) {
         widget.onImagePicked?.call(File(processedPath));
         ref
             .read(imageDataListProvider.notifier)
             .updateImageDataByLabel(widget.label, imagePath: processedPath);
+      } else if (mounted && processedPath == null) {
+        if (kDebugMode) {
+          print("Image processing failed for gallery image.");
+        }
+         ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal memproses gambar dari galeri.'))
+        );
       }
     }
   }
@@ -80,6 +101,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
   }
 
   void _deleteImageConfirmed() {
+    if (!mounted) return;
     widget.onImagePicked?.call(null);
     ref
         .read(imageDataListProvider.notifier)
@@ -95,8 +117,8 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
         label: widget.label,
         imagePath: '',
         needAttention: false,
-        category: '', // Default value
-        isMandatory: true, // Default value
+        category: '', 
+        isMandatory: true,
       ),
     );
 
@@ -123,7 +145,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                     child: GestureDetector(
                       onTap: _takePictureFromCamera,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0), // Inlined padding
+                        padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0), 
                         decoration: BoxDecoration(
                           color: toggleOptionSelectedLengkapColor,
                           borderRadius: BorderRadius.circular(8.0),
@@ -138,8 +160,8 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                           children: [
                             SvgPicture.asset(
                               'assets/images/camera.svg',
-                              width: 30.0, // Inlined icon size
-                              height: 30.0, // Inlined icon size
+                              width: 30.0, 
+                              height: 30.0, 
                               colorFilter: ColorFilter.mode(buttonTextColor, BlendMode.srcIn),
                             ),
                             const SizedBox(width: 8),
@@ -148,7 +170,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                               style: labelStyle.copyWith(
                                 color: buttonTextColor,
                                 fontWeight: FontWeight.bold,
-                                height: 1.2, // Inlined text line height
+                                height: 1.2, 
                               ),
                             ),
                           ],
@@ -161,7 +183,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                     child: GestureDetector(
                       onTap: _takePictureFromGallery,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0), // Inlined padding
+                        padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0), 
                         decoration: BoxDecoration(
                           color: toggleOptionSelectedLengkapColor,
                           borderRadius: BorderRadius.circular(8.0),
@@ -176,8 +198,8 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                           children: [
                             SvgPicture.asset(
                               'assets/images/gallery-white.svg',
-                              width: 30.0, // Inlined icon size
-                              height: 30.0, // Inlined icon size
+                              width: 30.0, 
+                              height: 30.0, 
                             ),
                             const SizedBox(width: 8),
                             Text(
@@ -185,7 +207,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                               style: labelStyle.copyWith(
                                 color: buttonTextColor,
                                 fontWeight: FontWeight.bold,
-                                height: 1.2, // Inlined text line height
+                                height: 1.2, 
                               ),
                             ),
                           ],
@@ -206,8 +228,8 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                   children: [
                     SvgPicture.asset(
                       'assets/images/galeri.svg',
-                      width: 22.0, // Inlined icon size
-                      height: 22.0, // Inlined icon size
+                      width: 22.0, 
+                      height: 22.0, 
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -215,7 +237,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                         storedImage.path.split('/').last,
                         style: inputTextStyling.copyWith(
                           fontWeight: FontWeight.w300,
-                          height: 1.2, // Inlined text line height
+                          height: 1.2, 
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -230,7 +252,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                           decoration: TextDecoration.underline,
                           decorationColor: toggleOptionSelectedLengkapColor,
                           decorationThickness: 1.5,
-                          height: 1.2, // Inlined text line height
+                          height: 1.2, 
                         ),
                       ),
                     ),
@@ -243,11 +265,11 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                             return DeleteConfirmationDialog(
                               message: 'Apakah anda yakin ingin menghapus gambar tersebut?',
                               onConfirm: () {
-                                Navigator.of(context).pop(); // Close the confirmation dialog
-                                _deleteImageConfirmed(); // Perform deletion
+                                Navigator.of(context).pop(); 
+                                _deleteImageConfirmed(); 
                               },
                               onCancel: () {
-                                Navigator.of(context).pop(); // Close the confirmation dialog
+                                Navigator.of(context).pop(); 
                               },
                             );
                           },
@@ -255,8 +277,8 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                       },
                       child: SvgPicture.asset(
                         'assets/images/trashcan.svg',
-                        width: 26.0, // Inlined icon size (or 20.0 if you prefer trashcan slightly larger)
-                        height: 26.0, // Inlined icon size
+                        width: 26.0, 
+                        height: 26.0, 
                       ),
                     ),
                   ],

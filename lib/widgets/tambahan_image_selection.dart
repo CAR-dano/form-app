@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:flutter/foundation.dart'; // For kDebugMode
 import 'package:form_app/statics/app_styles.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
@@ -88,24 +89,31 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
 
   Future<void> _pickImage(ImageSource source) async {
     if (source == ImageSource.gallery) {
-      final List<XFile> images = await ImagePickerUtil.pickMultiImagesFromGallery();
-      if (images.isNotEmpty) {
+      final List<XFile> imagesXFiles = await ImagePickerUtil.pickMultiImagesFromGallery();
+      if (imagesXFiles.isNotEmpty && mounted) {
         List<TambahanImageData> newImagesData = [];
-        for (var imageFileXFile in images) {
-          final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageFileXFile);
-          if (processedPath != null) {
+        for (var imageFileXFile in imagesXFiles) {
+          // No UI indicator needed here
+          final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageFileXFile); // Offloads work
+          if (mounted && processedPath != null) {
             final newTambahanImage = TambahanImageData(
               imagePath: processedPath,
-              label: widget.defaultLabel, // Use defaultLabel here
+              label: widget.defaultLabel,
               needAttention: false,
               category: widget.identifier,
               isMandatory: widget.isMandatory,
             );
             newImagesData.add(newTambahanImage);
+            // Add to provider one by one or batch update if provider supports
             ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
+          } else if (mounted && processedPath == null) {
+            if (kDebugMode) print("Image processing failed for gallery image: ${imageFileXFile.name}");
+             ScaffoldMessenger.of(context).showSnackBar(
+               SnackBar(content: Text('Gagal memproses gambar: ${imageFileXFile.name}'))
+             );
           }
         }
-        if (newImagesData.isNotEmpty) {
+        if (newImagesData.isNotEmpty && mounted) {
           setState(() {
             _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - newImagesData.length;
             if (_currentIndex < 0) _currentIndex = 0;
@@ -115,13 +123,14 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       }
     } else { // Camera
       final XFile? imageXFile = await _picker.pickImage(source: source);
-      if (imageXFile != null) {
+      if (imageXFile != null && mounted) {
         await ImagePickerUtil.saveImageToGallery(imageXFile);
-        final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageXFile);
-        if (processedPath != null) {
+        // No UI indicator needed here
+        final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageXFile); // Offloads work
+        if (mounted && processedPath != null) {
           final newTambahanImage = TambahanImageData(
             imagePath: processedPath,
-            label: widget.defaultLabel, // Use defaultLabel here
+            label: widget.defaultLabel,
             needAttention: false,
             category: widget.identifier,
             isMandatory: widget.isMandatory,
@@ -131,6 +140,11 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
             _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - 1;
             _updateControllersForCurrentIndex();
           });
+        } else if (mounted && processedPath == null) {
+           if (kDebugMode) print("Image processing failed for camera image.");
+            ScaffoldMessenger.of(context).showSnackBar(
+             SnackBar(content: Text('Gagal memproses gambar dari kamera.'))
+           );
         }
       }
     }
