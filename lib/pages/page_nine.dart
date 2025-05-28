@@ -13,6 +13,7 @@ import 'package:form_app/widgets/form_confirmation.dart';
 import 'package:form_app/providers/form_step_provider.dart';
 import 'package:form_app/providers/image_data_provider.dart';
 import 'package:form_app/widgets/loading_indicator_widget.dart';
+import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
 
 // Placeholder for Page Nine
 class PageNine extends ConsumerStatefulWidget {
@@ -65,6 +66,22 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
 
   Future<void> _submitForm() async {
     if (_isLoading) return;
+
+    final isImageProcessing = ref.read(imageProcessingServiceProvider.notifier).isProcessing;
+    if (isImageProcessing) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Pemrosesan gambar masih berjalan. Harap tunggu hingga selesai.',
+            style: subTitleTextStyle.copyWith(color: Colors.white),
+          ),
+          backgroundColor: Colors.orange,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
     if (!_isChecked) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

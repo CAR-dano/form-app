@@ -11,6 +11,7 @@ import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/utils/image_picker_util.dart'; // Import the new utility
+import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -93,24 +94,39 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       if (imagesXFiles.isNotEmpty && mounted) {
         List<TambahanImageData> newImagesData = [];
         for (var imageFileXFile in imagesXFiles) {
-          // No UI indicator needed here
-          final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageFileXFile); // Offloads work
-          if (mounted && processedPath != null) {
-            final newTambahanImage = TambahanImageData(
-              imagePath: processedPath,
-              label: widget.defaultLabel,
-              needAttention: false,
-              category: widget.identifier,
-              isMandatory: widget.isMandatory,
-            );
-            newImagesData.add(newTambahanImage);
-            // Add to provider one by one or batch update if provider supports
-            ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
-          } else if (mounted && processedPath == null) {
-            if (kDebugMode) print("Image processing failed for gallery image: ${imageFileXFile.name}");
-             ScaffoldMessenger.of(context).showSnackBar(
-               SnackBar(content: Text('Gagal memproses gambar: ${imageFileXFile.name}'))
-             );
+          ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment
+          String? processedPath;
+          try {
+            processedPath = await ImagePickerUtil.processAndSaveImage(imageFileXFile);
+            if (mounted && processedPath != null) {
+              final newTambahanImage = TambahanImageData(
+                imagePath: processedPath,
+                label: widget.defaultLabel,
+                needAttention: false,
+                category: widget.identifier,
+                isMandatory: widget.isMandatory,
+              );
+              newImagesData.add(newTambahanImage);
+              ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
+            } else if (mounted && processedPath == null) {
+              if (kDebugMode) print("Image processing failed for gallery image: ${imageFileXFile.name}");
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Gagal memproses gambar: ${imageFileXFile.name}'))
+              );
+            }
+          } catch (e) {
+             if (mounted && kDebugMode) {
+                if (kDebugMode) {
+                  print("Error during multi-gallery image processing: $e");
+                }
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Terjadi kesalahan memproses gambar: $e'))
+                );
+             }
+          } finally {
+            if (mounted) {
+              ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement
+            }
           }
         }
         if (newImagesData.isNotEmpty && mounted) {
@@ -124,27 +140,42 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     } else { // Camera
       final XFile? imageXFile = await _picker.pickImage(source: source);
       if (imageXFile != null && mounted) {
-        await ImagePickerUtil.saveImageToGallery(imageXFile);
-        // No UI indicator needed here
-        final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageXFile); // Offloads work
-        if (mounted && processedPath != null) {
-          final newTambahanImage = TambahanImageData(
-            imagePath: processedPath,
-            label: widget.defaultLabel,
-            needAttention: false,
-            category: widget.identifier,
-            isMandatory: widget.isMandatory,
-          );
-          ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
-          setState(() {
-            _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - 1;
-            _updateControllersForCurrentIndex();
-          });
-        } else if (mounted && processedPath == null) {
-           if (kDebugMode) print("Image processing failed for camera image.");
+        ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment
+        try {
+          await ImagePickerUtil.saveImageToGallery(imageXFile);
+          final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageXFile);
+          if (mounted && processedPath != null) {
+            final newTambahanImage = TambahanImageData(
+              imagePath: processedPath,
+              label: widget.defaultLabel,
+              needAttention: false,
+              category: widget.identifier,
+              isMandatory: widget.isMandatory,
+            );
+            ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
+            setState(() {
+              _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - 1;
+              _updateControllersForCurrentIndex();
+            });
+          } else if (mounted && processedPath == null) {
+            if (kDebugMode) print("Image processing failed for camera image.");
             ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(content: Text('Gagal memproses gambar dari kamera.'))
-           );
+              const SnackBar(content: Text('Gagal memproses gambar dari kamera.'))
+            );
+          }
+        } catch (e) {
+          if (mounted && kDebugMode) {
+            if (kDebugMode) {
+              print("Error during camera image processing in Tambahan: $e");
+            }
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Terjadi kesalahan memproses gambar kamera: $e'))
+            );
+          }
+        } finally {
+          if (mounted) {
+            ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement
+          }
         }
       }
     }

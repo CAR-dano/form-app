@@ -11,6 +11,7 @@ import 'package:form_app/models/image_data.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/widgets/image_preview_dialog.dart';
 import 'package:form_app/utils/image_picker_util.dart';
+import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
 
 class ImageInputWidget extends ConsumerStatefulWidget {
   final String label;
@@ -33,24 +34,37 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
     final pickedImageXFile = await picker.pickImage(source: ImageSource.camera);
 
     if (pickedImageXFile != null) {
-      // No UI indicator needed here as per user request
-      // The actual processing is now offloaded by ImagePickerUtil.processAndSaveImage
-      await ImagePickerUtil.saveImageToGallery(pickedImageXFile);
-      final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile); // This now runs heavy work in an isolate
+      ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment counter
+      try {
+        await ImagePickerUtil.saveImageToGallery(pickedImageXFile);
+        final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile);
 
-      if (mounted && processedPath != null) {
-        widget.onImagePicked?.call(File(processedPath));
-        ref
-            .read(imageDataListProvider.notifier)
-            .updateImageDataByLabel(widget.label, imagePath: processedPath);
-      } else if (mounted && processedPath == null) {
-        // Handle error or inform user if processing failed
-        if (kDebugMode) {
-          print("Image processing failed for camera image.");
+        if (mounted && processedPath != null) {
+          widget.onImagePicked?.call(File(processedPath));
+          ref
+              .read(imageDataListProvider.notifier)
+              .updateImageDataByLabel(widget.label, imagePath: processedPath);
+        } else if (mounted && processedPath == null) {
+          if (kDebugMode) {
+            print("Image processing failed for camera image.");
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Gagal memproses gambar dari kamera.'))
+          );
         }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal memproses gambar dari kamera.'))
-        );
+      } catch (e) {
+        if (mounted && kDebugMode) {
+          if (kDebugMode) {
+            print("Error during camera image processing or saving: $e");
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Terjadi kesalahan saat memproses gambar kamera: $e'))
+          );
+        }
+      } finally {
+        if (mounted) {
+          ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement counter
+        }
       }
     }
   }
@@ -60,21 +74,36 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
     final pickedImageXFile = await ImagePickerUtil.pickImageFromGallery();
 
     if (pickedImageXFile != null) {
-      // No UI indicator needed here
-      final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile); // Offloads work
+      ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment counter
+      try {
+        final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile);
 
-      if (mounted && processedPath != null) {
-        widget.onImagePicked?.call(File(processedPath));
-        ref
-            .read(imageDataListProvider.notifier)
-            .updateImageDataByLabel(widget.label, imagePath: processedPath);
-      } else if (mounted && processedPath == null) {
-        if (kDebugMode) {
-          print("Image processing failed for gallery image.");
+        if (mounted && processedPath != null) {
+          widget.onImagePicked?.call(File(processedPath));
+          ref
+              .read(imageDataListProvider.notifier)
+              .updateImageDataByLabel(widget.label, imagePath: processedPath);
+        } else if (mounted && processedPath == null) {
+          if (kDebugMode) {
+            print("Image processing failed for gallery image.");
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Gagal memproses gambar dari galeri.'))
+          );
         }
-         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal memproses gambar dari galeri.'))
-        );
+      } catch (e) {
+        if (mounted && kDebugMode) {
+          if (kDebugMode) {
+            print("Error during gallery image processing: $e");
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Terjadi kesalahan saat memproses gambar galeri: $e'))
+          );
+        }
+      } finally {
+        if (mounted) {
+          ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement counter
+        }
       }
     }
   }
