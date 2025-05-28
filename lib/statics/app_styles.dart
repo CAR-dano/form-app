@@ -139,3 +139,16 @@ final TextStyle subTitleTextStyle = GoogleFonts.rubik(
   fontWeight: FontWeight.w400,
   color: Colors.black, // Default color, will be overridden by snackbar
 );
+
+// Delete All Tambahan Photos Button Styles
+const Color deleteButtonBorderColor = Color(0xFFF24091);
+const double deleteButtonBorderWidth = 3.0;
+const double deleteButtonIconSize = 28.0;
+const double deleteButtonHorizontalPadding = 8.0;
+const double deleteButtonVerticalPadding = 6.0;
+
+final TextStyle deleteButtonTextStyle = GoogleFonts.rubik(
+  color: deleteButtonBorderColor,
+  fontSize: 20,
+  fontWeight: FontWeight.w500,
+);

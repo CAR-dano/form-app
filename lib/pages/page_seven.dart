@@ -6,6 +6,8 @@ import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/tambahan_image_selection.dart';
 import 'package:form_app/providers/form_step_provider.dart';
+import 'package:form_app/widgets/delete_all_tambahan_photos_button.dart';
+import 'package:form_app/providers/tambahan_image_data_provider.dart'; // Import this
 
 // Foto Dokumen Page (formerly Page Seven)
 class PageSeven extends ConsumerStatefulWidget { 
@@ -29,18 +31,37 @@ class _PageSevenState extends ConsumerState<PageSeven> with AutomaticKeepAliveCl
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    const String pageIdentifier = 'Foto Dokumen'; // Define identifier
+
     return SingleChildScrollView(
       clipBehavior: Clip.none,
       key: const PageStorageKey<String>('pageSevenScrollKey'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(data: '14/26'),
+          Consumer(
+            builder: (context, ref, child) {
+              final images = ref.watch(tambahanImageDataProvider(pageIdentifier));
+              final bool hasImages = images.length > 1;
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center, // Align items vertically
+                children: [
+                  const PageNumber(data: '14/26'),
+                  if (hasImages) // Conditionally show the button
+                    DeleteAllTambahanPhotosButton(
+                      tambahanImageIdentifier: pageIdentifier,
+                      dialogMessage: 'Yakin ingin menghapus semua Foto Dokumen?',
+                    ),
+                ],
+              );
+            },
+          ),
           const SizedBox(height: 4),
-          PageTitle(data: 'Foto Dokumen'),
+          const PageTitle(data: 'Foto Dokumen'),
           const SizedBox(height: 6.0),
           TambahanImageSelection(
-            identifier: 'Foto Dokumen',
+            identifier: pageIdentifier, // Use the defined identifier
             showNeedAttention: false,
             isMandatory: true, // Set isMandatory to true for Page Seven
             formSubmitted: widget.formSubmitted,
@@ -53,7 +74,7 @@ class _PageSevenState extends ConsumerState<PageSeven> with AutomaticKeepAliveCl
             onNextPressed: () => ref.read(formStepProvider.notifier).state++,
           ),
           const SizedBox(height: 24.0),
-          Footer(),
+          const Footer(),
         ],
       ),
     );
