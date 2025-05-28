@@ -7,6 +7,8 @@ import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/tambahan_image_selection.dart';
 import 'package:form_app/providers/form_step_provider.dart';
+import 'package:form_app/widgets/delete_all_tambahan_photos_button.dart';
+import 'package:form_app/providers/tambahan_image_data_provider.dart'; // Import this
 
 class PageSixAlatAlatTambahan extends ConsumerStatefulWidget {
   final ValueNotifier<bool> formSubmitted;
@@ -42,6 +44,8 @@ class _PageSixAlatAlatTambahanState extends ConsumerState<PageSixAlatAlatTambaha
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    const String pageIdentifier = 'Alat-alat Tambahan'; // Define identifier
+
     return PopScope(
       onPopInvokedWithResult: (bool didPop, dynamic result) {
         if (didPop) {
@@ -56,14 +60,31 @@ class _PageSixAlatAlatTambahanState extends ConsumerState<PageSixAlatAlatTambaha
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PageNumber(data: '13/26'),
+              Consumer(
+                builder: (context, ref, child) {
+                  final images = ref.watch(tambahanImageDataProvider(pageIdentifier));
+                  final bool hasImages = images.length > 1;
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center, // Align items vertically
+                    children: [
+                      const PageNumber(data: '13/26'),
+                      if (hasImages) // Conditionally show the button
+                        DeleteAllTambahanPhotosButton(
+                          tambahanImageIdentifier: pageIdentifier,
+                          dialogMessage: 'Yakin ingin menghapus semua foto tambahan Alat-alat?',
+                        ),
+                    ],
+                  );
+                },
+              ),
               const SizedBox(height: 4),
-              PageTitle(data: 'Foto Alat-alat'),
+              const PageTitle(data: 'Foto Alat-alat'),
               const SizedBox(height: 6.0),
-              HeadingOne(text: 'Tambahan'),
+              const HeadingOne(text: 'Tambahan'),
               const SizedBox(height: 16.0),
               TambahanImageSelection(
-                identifier: 'Alat-alat Tambahan',
+                identifier: pageIdentifier, // Use the defined identifier
                 formSubmitted: widget.formSubmitted,
               ),
               const SizedBox(height: 32.0),
@@ -72,7 +93,7 @@ class _PageSixAlatAlatTambahanState extends ConsumerState<PageSixAlatAlatTambaha
                 onNextPressed: () => ref.read(formStepProvider.notifier).state++,
               ),
               const SizedBox(height: 24.0),
-              Footer(),
+              const Footer(),
             ],
           ),
         ),

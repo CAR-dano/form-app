@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:flutter/foundation.dart'; // For kDebugMode
 import 'package:form_app/statics/app_styles.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
@@ -10,6 +11,7 @@ import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/utils/image_picker_util.dart'; // Import the new utility
+import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -76,6 +78,18 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         _labelController.text = displayedLabel;
         _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
       }
+
+      // Pre-cache next and previous images
+      if (mounted) {
+        // Pre-cache next image
+        if (_currentIndex + 1 < images.length) {
+          precacheImage(FileImage(File(images[_currentIndex + 1].imagePath)), context);
+        }
+        // Pre-cache previous image
+        if (_currentIndex - 1 >= 0) {
+          precacheImage(FileImage(File(images[_currentIndex - 1].imagePath)), context);
+        }
+      }
     } else {
       _labelController.clear(); // Clear if no images
     }
@@ -88,24 +102,50 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
 
   Future<void> _pickImage(ImageSource source) async {
     if (source == ImageSource.gallery) {
-      final List<XFile> images = await ImagePickerUtil.pickMultiImagesFromGallery();
-      if (images.isNotEmpty) {
+      final List<XFile> imagesXFiles = await ImagePickerUtil.pickMultiImagesFromGallery();
+      if (imagesXFiles.isNotEmpty && mounted) {
         List<TambahanImageData> newImagesData = [];
-        for (var imageFileXFile in images) {
-          final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageFileXFile);
-          if (processedPath != null) {
-            final newTambahanImage = TambahanImageData(
-              imagePath: processedPath,
-              label: widget.defaultLabel, // Use defaultLabel here
-              needAttention: false,
-              category: widget.identifier,
-              isMandatory: widget.isMandatory,
-            );
-            newImagesData.add(newTambahanImage);
-            ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
+        for (var imageFileXFile in imagesXFiles) {
+          ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment
+          String? processedPath;
+          try {
+            processedPath = await ImagePickerUtil.processAndSaveImage(imageFileXFile);
+            if (mounted && processedPath != null) {
+              final newTambahanImage = TambahanImageData(
+                imagePath: processedPath,
+                label: widget.defaultLabel,
+                needAttention: false,
+                category: widget.identifier,
+                isMandatory: widget.isMandatory,
+              );
+              newImagesData.add(newTambahanImage);
+              ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
+              // Pre-cache the newly added image
+              if (mounted) {
+                precacheImage(FileImage(File(processedPath)), context);
+              }
+            } else if (mounted && processedPath == null) {
+              if (kDebugMode) print("Image processing failed for gallery image: ${imageFileXFile.name}");
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Gagal memproses gambar: ${imageFileXFile.name}'))
+              );
+            }
+          } catch (e) {
+             if (mounted && kDebugMode) {
+                if (kDebugMode) {
+                  print("Error during multi-gallery image processing: $e");
+                }
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Terjadi kesalahan memproses gambar: $e'))
+                );
+             }
+          } finally {
+            if (mounted) {
+              ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement
+            }
           }
         }
-        if (newImagesData.isNotEmpty) {
+        if (newImagesData.isNotEmpty && mounted) {
           setState(() {
             _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - newImagesData.length;
             if (_currentIndex < 0) _currentIndex = 0;
@@ -115,22 +155,47 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       }
     } else { // Camera
       final XFile? imageXFile = await _picker.pickImage(source: source);
-      if (imageXFile != null) {
-        await ImagePickerUtil.saveImageToGallery(imageXFile);
-        final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageXFile);
-        if (processedPath != null) {
-          final newTambahanImage = TambahanImageData(
-            imagePath: processedPath,
-            label: widget.defaultLabel, // Use defaultLabel here
-            needAttention: false,
-            category: widget.identifier,
-            isMandatory: widget.isMandatory,
-          );
-          ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
-          setState(() {
-            _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - 1;
-            _updateControllersForCurrentIndex();
-          });
+      if (imageXFile != null && mounted) {
+        ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment
+        try {
+          await ImagePickerUtil.saveImageToGallery(imageXFile);
+          final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageXFile);
+          if (mounted && processedPath != null) {
+            final newTambahanImage = TambahanImageData(
+              imagePath: processedPath,
+              label: widget.defaultLabel,
+              needAttention: false,
+              category: widget.identifier,
+              isMandatory: widget.isMandatory,
+            );
+            ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
+            // Pre-cache the newly added image
+            if (mounted) {
+              precacheImage(FileImage(File(processedPath)), context);
+            }
+            setState(() {
+              _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - 1;
+              _updateControllersForCurrentIndex();
+            });
+          } else if (mounted && processedPath == null) {
+            if (kDebugMode) print("Image processing failed for camera image.");
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Gagal memproses gambar dari kamera.'))
+            );
+          }
+        } catch (e) {
+          if (mounted && kDebugMode) {
+            if (kDebugMode) {
+              print("Error during camera image processing in Tambahan: $e");
+            }
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Terjadi kesalahan memproses gambar kamera: $e'))
+            );
+          }
+        } finally {
+          if (mounted) {
+            ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement
+          }
         }
       }
     }
