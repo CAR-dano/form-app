@@ -89,6 +89,13 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     int initialStep = ref.read(formStepProvider);
     _pageController = PageController(initialPage: initialStep);
 
+    // Pre-cache checker.png
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        precacheImage(const AssetImage('assets/images/checker.png'), context);
+      }
+    });
+
     // This flag will be true when we expect the PageController to be on initialStep
     // due to initialization or a reset from FinishedPage.
     _isProgrammaticallyMovingPage = true;
@@ -131,32 +138,33 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     }
 
     _formPages = [
-      PageOne(formKey: _formKeys[0], formSubmitted: _formSubmittedPageOne),
-      const PageSixGeneralWajib(),
-      const PageSixEksteriorWajib(),
-      const PageSixInteriorWajib(),
-      const PageSixMesinWajib(),
-      const PageSixKakiKakiWajib(),
-      const PageSixAlatAlatWajib(),
-      PageSixGeneralTambahan(formSubmitted: _formSubmittedTambahanImages),
-      PageSixEksteriorTambahan(formSubmitted: _formSubmittedTambahanImages),
-      PageSixInteriorTambahan(formSubmitted: _formSubmittedTambahanImages),
-      PageSixMesinTambahan(formSubmitted: _formSubmittedTambahanImages),
-      PageSixKakiKakiTambahan(formSubmitted: _formSubmittedTambahanImages),
-      PageSixAlatAlatTambahan(formSubmitted: _formSubmittedTambahanImages),
-      PageSeven(formSubmitted: _formSubmittedTambahanImages, defaultLabel: _defaultTambahanLabel),
-      PageTwo(formKey: _formKeys[14], formSubmitted: _formSubmittedPageTwo),
-      const PageThree(),
-      const PageFour(),
-      const PageFiveOne(),
-      const PageFiveTwo(),
-      const PageFiveThree(),
-      const PageFiveFour(),
-      const PageFiveFive(),
-      const PageFiveSix(),
-      const PageFiveSeven(),
-      const PageEight(),
+      PageOne(key: const ValueKey('PageOne'), formKey: _formKeys[0], formSubmitted: _formSubmittedPageOne),
+      const PageSixGeneralWajib(key: ValueKey('PageSixGeneralWajib')),
+      const PageSixEksteriorWajib(key: ValueKey('PageSixEksteriorWajib')),
+      const PageSixInteriorWajib(key: ValueKey('PageSixInteriorWajib')),
+      const PageSixMesinWajib(key: ValueKey('PageSixMesinWajib')),
+      const PageSixKakiKakiWajib(key: ValueKey('PageSixKakiKakiWajib')),
+      const PageSixAlatAlatWajib(key: ValueKey('PageSixAlatAlatWajib')),
+      PageSixGeneralTambahan(key: const ValueKey('PageSixGeneralTambahan'), formSubmitted: _formSubmittedTambahanImages),
+      PageSixEksteriorTambahan(key: const ValueKey('PageSixEksteriorTambahan'), formSubmitted: _formSubmittedTambahanImages),
+      PageSixInteriorTambahan(key: const ValueKey('PageSixInteriorTambahan'), formSubmitted: _formSubmittedTambahanImages),
+      PageSixMesinTambahan(key: const ValueKey('PageSixMesinTambahan'), formSubmitted: _formSubmittedTambahanImages),
+      PageSixKakiKakiTambahan(key: const ValueKey('PageSixKakiKakiTambahan'), formSubmitted: _formSubmittedTambahanImages),
+      PageSixAlatAlatTambahan(key: const ValueKey('PageSixAlatAlatTambahan'), formSubmitted: _formSubmittedTambahanImages),
+      PageSeven(key: const ValueKey('PageSeven'), formSubmitted: _formSubmittedTambahanImages, defaultLabel: _defaultTambahanLabel),
+      PageTwo(key: const ValueKey('PageTwo'), formKey: _formKeys[14], formSubmitted: _formSubmittedPageTwo),
+      const PageThree(key: ValueKey('PageThree')),
+      const PageFour(key: ValueKey('PageFour')),
+      const PageFiveOne(key: ValueKey('PageFiveOne')),
+      const PageFiveTwo(key: ValueKey('PageFiveTwo')),
+      const PageFiveThree(key: ValueKey('PageFiveThree')),
+      const PageFiveFour(key: ValueKey('PageFiveFour')),
+      const PageFiveFive(key: ValueKey('PageFiveFive')),
+      const PageFiveSix(key: ValueKey('PageFiveSix')),
+      const PageFiveSeven(key: ValueKey('PageFiveSeven')),
+      const PageEight(key: ValueKey('PageEight')),
       PageNine(
+        key: const ValueKey('PageNine'),
         formKeyPageOne: _formKeys[0],
         formKeyPageTwo: _formKeys[14],
         formSubmittedPageOne: _formSubmittedPageOne,
@@ -167,7 +175,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         tambahanImagePageIdentifiers: _tambahanImagePageIdentifiers,
         defaultTambahanLabel: _defaultTambahanLabel,
       ),
-      const FinishedPage(),
+      const FinishedPage(key: ValueKey('FinishedPage')),
     ];
   }
 
