@@ -78,6 +78,18 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         _labelController.text = displayedLabel;
         _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
       }
+
+      // Pre-cache next and previous images
+      if (mounted) {
+        // Pre-cache next image
+        if (_currentIndex + 1 < images.length) {
+          precacheImage(FileImage(File(images[_currentIndex + 1].imagePath)), context);
+        }
+        // Pre-cache previous image
+        if (_currentIndex - 1 >= 0) {
+          precacheImage(FileImage(File(images[_currentIndex - 1].imagePath)), context);
+        }
+      }
     } else {
       _labelController.clear(); // Clear if no images
     }
@@ -108,6 +120,10 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
               );
               newImagesData.add(newTambahanImage);
               ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
+              // Pre-cache the newly added image
+              if (mounted) {
+                precacheImage(FileImage(File(processedPath)), context);
+              }
             } else if (mounted && processedPath == null) {
               if (kDebugMode) print("Image processing failed for gallery image: ${imageFileXFile.name}");
               ScaffoldMessenger.of(context).showSnackBar(
@@ -153,6 +169,10 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
               isMandatory: widget.isMandatory,
             );
             ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
+            // Pre-cache the newly added image
+            if (mounted) {
+              precacheImage(FileImage(File(processedPath)), context);
+            }
             setState(() {
               _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - 1;
               _updateControllersForCurrentIndex();
