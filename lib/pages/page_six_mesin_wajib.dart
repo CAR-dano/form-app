@@ -21,7 +21,7 @@ class PageSixMesinWajib extends ConsumerStatefulWidget { // Changed to ConsumerS
     'Celah Kap Mesin',
     'Baut Kap Mesin',
     'Rangka Mesin Mobil',
-    'Las Listrik',
+    'Las Titik',
     'Bulatan Pada Rangka',
     'Radiator (Penyok/Tidak)',
     'Dip Stick Oli Mesin',
