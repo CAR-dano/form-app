@@ -69,6 +69,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
 
     final isImageProcessing = ref.read(imageProcessingServiceProvider.notifier).isProcessing;
     if (isImageProcessing) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar(); // Dismiss any current snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -83,6 +84,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
     }
 
     if (!_isChecked) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar(); // Dismiss any current snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -119,6 +121,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
 
     if (validationErrors.isNotEmpty) {
       if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar(); // Dismiss any current snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(validationErrors.join('\n'), style: subTitleTextStyle.copyWith(color: Colors.white)),
@@ -238,6 +241,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
 
     } catch (e) {
       if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar(); // Dismiss any current snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
