@@ -911,6 +911,14 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(catKiriFenderBelakang: value);
   }
 
+  void updateCatKiriSideSkirt(String? value) {
+    state = state.copyWith(catKiriSideSkirt: value);
+  }
+
+  void updateCatKananSideSkirt(String? value) {
+    state = state.copyWith(catKananSideSkirt: value);
+  }
+
   Future<String> _getFilePath() async {
     final directory = await getApplicationDocumentsDirectory();
     return '${directory.path}/$_fileName';

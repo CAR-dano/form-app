@@ -165,7 +165,16 @@ class _PageEightState extends ConsumerState<PageEight>
                         ),
                       ],
                     ),
-                    Image.asset('assets/images/kanan.png'),
+                    Image.asset('assets/images/kanan_baru.png'),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 30.0),
+                      child: PaintThicknessInputField(
+                        initialValue: formData.catKananSideSkirt,
+                        onChanged: (value) {
+                          formNotifier.updateCatKananSideSkirt(value);
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -206,7 +215,16 @@ class _PageEightState extends ConsumerState<PageEight>
                         ),
                       ],
                     ),
-                    Image.asset('assets/images/kiri.png'),
+                    Image.asset('assets/images/kiri_baru.png'),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 30.0),
+                      child: PaintThicknessInputField(
+                        initialValue: formData.catKiriSideSkirt,
+                        onChanged: (value) {
+                          formNotifier.updateCatKiriSideSkirt(value);
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),

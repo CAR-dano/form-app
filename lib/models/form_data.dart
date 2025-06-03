@@ -212,7 +212,9 @@ class FormData {
   String? catKiriFenderDepan;
   String? catKiriPintuDepan;
   String? catKiriPintuBelakang;
-  String? catKiriFenderBelakang; 
+  String? catKiriFenderBelakang;
+  String? catKiriSideSkirt;
+  String? catKananSideSkirt;
 
 
   FormData({
@@ -399,6 +401,8 @@ class FormData {
     this.catKiriPintuDepan,
     this.catKiriPintuBelakang,
     this.catKiriFenderBelakang,
+    this.catKiriSideSkirt,
+    this.catKananSideSkirt,
   });
   // Add methods to update data if needed, or update directly
 
@@ -584,6 +588,8 @@ class FormData {
       'catKiriPintuDepan': catKiriPintuDepan,
       'catKiriPintuBelakang': catKiriPintuBelakang,
       'catKiriFenderBelakang': catKiriFenderBelakang,
+      'catKiriSideSkirt': catKiriSideSkirt,
+      'catKananSideSkirt': catKananSideSkirt,
     };
   }
 
@@ -779,6 +785,8 @@ class FormData {
       catKiriPintuDepan: json['catKiriPintuDepan'] as String?,
       catKiriPintuBelakang: json['catKiriPintuBelakang'] as String?,
       catKiriFenderBelakang: json['catKiriFenderBelakang'] as String?,
+      catKiriSideSkirt: json['catKiriSideSkirt'] as String?,
+      catKananSideSkirt: json['catKananSideSkirt'] as String?,
     );
   }
 
@@ -964,6 +972,8 @@ class FormData {
     String? catKiriPintuDepan,
     String? catKiriPintuBelakang,
     String? catKiriFenderBelakang,
+    String? catKiriSideSkirt,
+    String? catKananSideSkirt,
   }) {
     return FormData(
       namaInspektor: namaInspektor ?? this.namaInspektor,
@@ -1150,6 +1160,8 @@ class FormData {
       catKiriPintuDepan: catKiriPintuDepan ?? this.catKiriPintuDepan,
       catKiriPintuBelakang: catKiriPintuBelakang ?? this.catKiriPintuBelakang,
       catKiriFenderBelakang: catKiriFenderBelakang ?? this.catKiriFenderBelakang,
+      catKiriSideSkirt: catKiriSideSkirt ?? this.catKiriSideSkirt,
+      catKananSideSkirt: catKananSideSkirt ?? this.catKananSideSkirt,
     );
   }
 }
