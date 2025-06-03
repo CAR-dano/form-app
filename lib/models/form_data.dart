@@ -50,7 +50,6 @@ class FormData {
   int? eksteriorSelectedValue;
   int? kakiKakiSelectedValue;
   int? mesinSelectedValue;
-  int? penilaianKeseluruhanSelectedValue;
 
   // NEW: Fields for ExpandableTextField data (as List<String>)
   List<String>? keteranganInterior;
@@ -254,7 +253,6 @@ class FormData {
     this.eksteriorSelectedValue,
     this.kakiKakiSelectedValue,
     this.mesinSelectedValue,
-    this.penilaianKeseluruhanSelectedValue,
     this.keteranganInterior = const [],
     this.keteranganEksterior = const [],
     this.keteranganKakiKaki = const [],
@@ -442,7 +440,6 @@ class FormData {
       'eksteriorSelectedValue': eksteriorSelectedValue,
       'kakiKakiSelectedValue': kakiKakiSelectedValue,
       'mesinSelectedValue': mesinSelectedValue,
-      'penilaianKeseluruhanSelectedValue': penilaianKeseluruhanSelectedValue,
       'keteranganInterior': keteranganInterior,
       'keteranganEksterior': keteranganEksterior,
       'keteranganKakiKaki': keteranganKakiKaki,
@@ -636,7 +633,6 @@ class FormData {
       eksteriorSelectedValue: json['eksteriorSelectedValue'] as int?,
       kakiKakiSelectedValue: json['kakiKakiSelectedValue'] as int?,
       mesinSelectedValue: json['mesinSelectedValue'] as int?,
-      penilaianKeseluruhanSelectedValue: json['penilaianKeseluruhanSelectedValue'] as int?,
       keteranganInterior: (json['keteranganInterior'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const [],
       keteranganEksterior: (json['keteranganEksterior'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const [],
       keteranganKakiKaki: (json['keteranganKakiKaki'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const [],
@@ -824,7 +820,6 @@ class FormData {
     int? eksteriorSelectedValue,
     int? kakiKakiSelectedValue,
     int? mesinSelectedValue,
-    int? penilaianKeseluruhanSelectedValue,
     List<String>? keteranganInterior,
     List<String>? keteranganEksterior,
     List<String>? keteranganKakiKaki,
@@ -1008,7 +1003,6 @@ class FormData {
       eksteriorSelectedValue: eksteriorSelectedValue ?? this.eksteriorSelectedValue,
       kakiKakiSelectedValue: kakiKakiSelectedValue ?? this.kakiKakiSelectedValue,
       mesinSelectedValue: mesinSelectedValue ?? this.mesinSelectedValue,
-      penilaianKeseluruhanSelectedValue: penilaianKeseluruhanSelectedValue ?? this.penilaianKeseluruhanSelectedValue,
       keteranganInterior: keteranganInterior ?? this.keteranganInterior,
       keteranganEksterior: keteranganEksterior ?? this.keteranganEksterior,
       keteranganKakiKaki: keteranganKakiKaki ?? this.keteranganKakiKaki,

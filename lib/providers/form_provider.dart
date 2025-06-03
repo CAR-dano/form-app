@@ -241,10 +241,6 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(mesinSelectedValue: value);
   }
 
-  void updatePenilaianKeseluruhanSelectedValue(int value) {
-    state = state.copyWith(penilaianKeseluruhanSelectedValue: value);
-  }
-
   // NEW: Update methods for ExpandableTextField data
   void updateKeteranganInterior(List<String> lines) {
     state = state.copyWith(keteranganInterior: lines);
