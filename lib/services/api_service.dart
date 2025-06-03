@@ -62,6 +62,16 @@ class ApiService {
     );
   }
 
+  int _calculateOverallRating(FormData formData) {
+    final int interiorScore = formData.interiorSelectedValue ?? 0;
+    final int eksteriorScore = formData.eksteriorSelectedValue ?? 0;
+    final int kakiKakiScore = formData.kakiKakiSelectedValue ?? 0;
+    final int mesinScore = formData.mesinSelectedValue ?? 0;
+
+    final int sum = interiorScore + eksteriorScore + kakiKakiScore + mesinScore;
+    return sum ~/ 4; // Integer division for average
+  }
+
   Future<List<InspectionBranch>> getInspectionBranches() async {
     // ... (your existing implementation)
     try {
@@ -100,7 +110,7 @@ class ApiService {
         data: { 
           "vehiclePlateNumber": formData.platNomor,
           "inspectionDate": formData.tanggalInspeksi?.toIso8601String() ?? '-',
-          "overallRating": formData.penilaianKeseluruhanSelectedValue ?? 0,
+          "overallRating": _calculateOverallRating(formData),
           "identityDetails": {
             "namaInspektor": formData.inspectorId ?? '-', 
             "namaCustomer": formData.namaCustomer,
@@ -139,7 +149,7 @@ class ApiService {
             "kakiKakiNotes": formData.keteranganKakiKaki ?? [],
             "mesinScore": formData.mesinSelectedValue ?? 0,
             "mesinNotes": formData.keteranganMesin ?? [],
-            "penilaianKeseluruhanScore": formData.penilaianKeseluruhanSelectedValue ?? 0,
+            "penilaianKeseluruhanScore": _calculateOverallRating(formData),
             "deskripsiKeseluruhan": formData.deskripsiKeseluruhan ?? [],
             "indikasiTabrakan": formData.indikasiTabrakan == "Terindikasi",
             "indikasiBanjir": formData.indikasiBanjir == "Terindikasi",
@@ -235,9 +245,9 @@ class ApiService {
               "sistemAudio": formData.sistemAudioSelectedValue ?? 0,
               "powerWindow": formData.powerWindowSelectedValue ?? 0,
               "sistemAC": formData.sistemAcSelectedValue ?? 0,
-              "interior1": formData.centralLockSelectedValue ?? 0, 
-              "interior2": formData.electricMirrorSelectedValue ?? 0, 
-              "interior3": formData.remAbsSelectedValue ?? 0,
+              "centralLock": formData.centralLockSelectedValue ?? 0, 
+              "electricMirror": formData.electricMirrorSelectedValue ?? 0, 
+              "remAbs": formData.remAbsSelectedValue ?? 0,
               "catatan": formData.fiturCatatanList ?? [],
             },
             "hasilInspeksiMesin": {
@@ -310,12 +320,14 @@ class ApiService {
               "frontDoor": formData.catKananPintuDepan ?? '-',
               "rearDoor": formData.catKananPintuBelakang ?? '-',
               "rearFender": formData.catKananFenderBelakang ?? '-',
+              "sideSkirt": formData.catKananSideSkirt ?? '-',
             },
             "left" : {
               "frontFender": formData.catKiriFenderDepan ?? '-',
               "frontDoor": formData.catKiriPintuDepan ?? '-',
               "rearDoor": formData.catKiriPintuBelakang ?? '-',
               "rearFender": formData.catKiriFenderBelakang ?? '-',
+              "sideSkirt": formData.catKiriSideSkirt ?? '-',
             },
           },
         },

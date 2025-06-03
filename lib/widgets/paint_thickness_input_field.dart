@@ -109,7 +109,7 @@ class _PaintThicknessInputFieldState extends State<PaintThicknessInputField> {
             ),
           ),
         ),
-        const SizedBox(width: 4.0), // Spacing between text field and "mm"
+        const SizedBox(width: 3.0), // Spacing between text field and "mm"
         Text(
           'mm',
           style: inputTextStyling, // Adjust style as needed

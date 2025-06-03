@@ -241,10 +241,6 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(mesinSelectedValue: value);
   }
 
-  void updatePenilaianKeseluruhanSelectedValue(int value) {
-    state = state.copyWith(penilaianKeseluruhanSelectedValue: value);
-  }
-
   // NEW: Update methods for ExpandableTextField data
   void updateKeteranganInterior(List<String> lines) {
     state = state.copyWith(keteranganInterior: lines);
@@ -913,6 +909,14 @@ class FormNotifier extends StateNotifier<FormData> {
 
   void updateCatKiriFenderBelakang(String? value) {
     state = state.copyWith(catKiriFenderBelakang: value);
+  }
+
+  void updateCatKiriSideSkirt(String? value) {
+    state = state.copyWith(catKiriSideSkirt: value);
+  }
+
+  void updateCatKananSideSkirt(String? value) {
+    state = state.copyWith(catKananSideSkirt: value);
   }
 
   Future<String> _getFilePath() async {

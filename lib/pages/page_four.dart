@@ -150,16 +150,6 @@ class _PageFourState extends ConsumerState<PageFour> with AutomaticKeepAliveClie
                     formNotifier.updateKeteranganMesin(lines);
                   },
                 ),
-                const SizedBox(height: 24.0),
-                NumberedButtonList(
-                  label: 'Penilaian Keseluruhan',
-                  count: 10, // Assuming 10 options based on the image
-                  selectedValue: formData.penilaianKeseluruhanSelectedValue ?? -1,
-                  onItemSelected: (value) {
-                    final formNotifier = ref.read(formProvider.notifier);
-                    formNotifier.updatePenilaianKeseluruhanSelectedValue(value == formData.penilaianKeseluruhanSelectedValue ? -1 : value);
-                  },
-                ),
                 const SizedBox(height: 12.0),
                 ExpandableTextField(
                   label: 'Deskripsi Keseluruhan', // Placeholder label

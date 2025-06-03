@@ -50,7 +50,6 @@ class FormData {
   int? eksteriorSelectedValue;
   int? kakiKakiSelectedValue;
   int? mesinSelectedValue;
-  int? penilaianKeseluruhanSelectedValue;
 
   // NEW: Fields for ExpandableTextField data (as List<String>)
   List<String>? keteranganInterior;
@@ -213,7 +212,9 @@ class FormData {
   String? catKiriFenderDepan;
   String? catKiriPintuDepan;
   String? catKiriPintuBelakang;
-  String? catKiriFenderBelakang; 
+  String? catKiriFenderBelakang;
+  String? catKiriSideSkirt;
+  String? catKananSideSkirt;
 
 
   FormData({
@@ -254,7 +255,6 @@ class FormData {
     this.eksteriorSelectedValue,
     this.kakiKakiSelectedValue,
     this.mesinSelectedValue,
-    this.penilaianKeseluruhanSelectedValue,
     this.keteranganInterior = const [],
     this.keteranganEksterior = const [],
     this.keteranganKakiKaki = const [],
@@ -401,6 +401,8 @@ class FormData {
     this.catKiriPintuDepan,
     this.catKiriPintuBelakang,
     this.catKiriFenderBelakang,
+    this.catKiriSideSkirt,
+    this.catKananSideSkirt,
   });
   // Add methods to update data if needed, or update directly
 
@@ -442,7 +444,6 @@ class FormData {
       'eksteriorSelectedValue': eksteriorSelectedValue,
       'kakiKakiSelectedValue': kakiKakiSelectedValue,
       'mesinSelectedValue': mesinSelectedValue,
-      'penilaianKeseluruhanSelectedValue': penilaianKeseluruhanSelectedValue,
       'keteranganInterior': keteranganInterior,
       'keteranganEksterior': keteranganEksterior,
       'keteranganKakiKaki': keteranganKakiKaki,
@@ -587,6 +588,8 @@ class FormData {
       'catKiriPintuDepan': catKiriPintuDepan,
       'catKiriPintuBelakang': catKiriPintuBelakang,
       'catKiriFenderBelakang': catKiriFenderBelakang,
+      'catKiriSideSkirt': catKiriSideSkirt,
+      'catKananSideSkirt': catKananSideSkirt,
     };
   }
 
@@ -636,7 +639,6 @@ class FormData {
       eksteriorSelectedValue: json['eksteriorSelectedValue'] as int?,
       kakiKakiSelectedValue: json['kakiKakiSelectedValue'] as int?,
       mesinSelectedValue: json['mesinSelectedValue'] as int?,
-      penilaianKeseluruhanSelectedValue: json['penilaianKeseluruhanSelectedValue'] as int?,
       keteranganInterior: (json['keteranganInterior'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const [],
       keteranganEksterior: (json['keteranganEksterior'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const [],
       keteranganKakiKaki: (json['keteranganKakiKaki'] as List<dynamic>?)?.map((e) => e as String).toList() ?? const [],
@@ -783,6 +785,8 @@ class FormData {
       catKiriPintuDepan: json['catKiriPintuDepan'] as String?,
       catKiriPintuBelakang: json['catKiriPintuBelakang'] as String?,
       catKiriFenderBelakang: json['catKiriFenderBelakang'] as String?,
+      catKiriSideSkirt: json['catKiriSideSkirt'] as String?,
+      catKananSideSkirt: json['catKananSideSkirt'] as String?,
     );
   }
 
@@ -824,7 +828,6 @@ class FormData {
     int? eksteriorSelectedValue,
     int? kakiKakiSelectedValue,
     int? mesinSelectedValue,
-    int? penilaianKeseluruhanSelectedValue,
     List<String>? keteranganInterior,
     List<String>? keteranganEksterior,
     List<String>? keteranganKakiKaki,
@@ -969,6 +972,8 @@ class FormData {
     String? catKiriPintuDepan,
     String? catKiriPintuBelakang,
     String? catKiriFenderBelakang,
+    String? catKiriSideSkirt,
+    String? catKananSideSkirt,
   }) {
     return FormData(
       namaInspektor: namaInspektor ?? this.namaInspektor,
@@ -1008,7 +1013,6 @@ class FormData {
       eksteriorSelectedValue: eksteriorSelectedValue ?? this.eksteriorSelectedValue,
       kakiKakiSelectedValue: kakiKakiSelectedValue ?? this.kakiKakiSelectedValue,
       mesinSelectedValue: mesinSelectedValue ?? this.mesinSelectedValue,
-      penilaianKeseluruhanSelectedValue: penilaianKeseluruhanSelectedValue ?? this.penilaianKeseluruhanSelectedValue,
       keteranganInterior: keteranganInterior ?? this.keteranganInterior,
       keteranganEksterior: keteranganEksterior ?? this.keteranganEksterior,
       keteranganKakiKaki: keteranganKakiKaki ?? this.keteranganKakiKaki,
@@ -1156,6 +1160,8 @@ class FormData {
       catKiriPintuDepan: catKiriPintuDepan ?? this.catKiriPintuDepan,
       catKiriPintuBelakang: catKiriPintuBelakang ?? this.catKiriPintuBelakang,
       catKiriFenderBelakang: catKiriFenderBelakang ?? this.catKiriFenderBelakang,
+      catKiriSideSkirt: catKiriSideSkirt ?? this.catKiriSideSkirt,
+      catKananSideSkirt: catKananSideSkirt ?? this.catKananSideSkirt,
     );
   }
 }
