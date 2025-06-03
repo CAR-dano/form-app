@@ -99,33 +99,48 @@ class _PageEightState extends ConsumerState<PageEight>
               // Section 2: Belakang
               HeadingOne(text: 'Belakang'),
               Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start, // Change to start
-                      children: [
-                        SizedBox(width: MediaQuery.of(context).size.width * 0.38), // Offset for first field
-                        PaintThicknessInputField(
+                child: SizedBox( // Define a fixed size for the Stack area
+                  width: 300, // Max width of the image
+                  height: 200, // Estimated height to contain image and inputs
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      // Image - centered within the SizedBox
+                      Positioned(
+                        top: 30.0, // Move image 30 pixels down
+                        left: 0,
+                        right: 0,
+                        child: Align( // Keep Align to center the image horizontally within the Positioned bounds
+                          alignment: Alignment.center,
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 300),
+                            child: Image.asset('assets/images/belakang.png'),
+                          ),
+                        ),
+                      ),
+                      // First PaintThicknessInputField (catBelakangBumper)
+                      Positioned(
+                        left: 125.0, // Approximate left position
+                        child: PaintThicknessInputField(
                           initialValue: formData.catBelakangBumper,
                           onChanged: (value) {
                             formNotifier.updateCatBelakangBumper(value);
                           },
                         ),
-                        SizedBox(width: MediaQuery.of(context).size.width * 0.04), // Reduced space to move second field left
-                        PaintThicknessInputField(
+                      ),
+                      // Second PaintThicknessInputField (catBelakangTrunk)
+                      Positioned(
+                        top: 22.0, // 10 + 50 pixels down
+                        left: 226.0, // Approximate left position (further right than first)
+                        child: PaintThicknessInputField(
                           initialValue: formData.catBelakangTrunk,
                           onChanged: (value) {
                             formNotifier.updateCatBelakangTrunk(value);
                           },
                         ),
-                      ],
-                    ),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 300), // Limit image width
-                      child: Image.asset('assets/images/belakang.png'),
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 16.0),
