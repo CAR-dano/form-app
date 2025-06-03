@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import ConsumerWidget
-import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_app/providers/form_step_provider.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
@@ -9,9 +9,7 @@ import 'package:form_app/widgets/heading_one.dart';
 import 'package:form_app/widgets/paint_thickness_input_field.dart';
 import 'package:form_app/providers/form_provider.dart';
 
-// Placeholder for Page Eight
 class PageEight extends ConsumerStatefulWidget {
-  // Changed to ConsumerStatefulWidget
   const PageEight({super.key});
 
   @override
@@ -20,11 +18,10 @@ class PageEight extends ConsumerStatefulWidget {
 
 class _PageEightState extends ConsumerState<PageEight>
     with AutomaticKeepAliveClientMixin {
-  // Add mixin
   late FocusScopeNode _focusScopeNode;
 
   @override
-  bool get wantKeepAlive => true; // Override wantKeepAlive
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -42,11 +39,9 @@ class _PageEightState extends ConsumerState<PageEight>
   Widget build(BuildContext context) {
     super.build(
       context,
-    ); // Call super.build(context) for AutomaticKeepAliveClientMixin
-    final formData = ref.watch(formProvider); // Watch the form data
-    final formNotifier = ref.read(formProvider.notifier); // Read the notifier
-    // ref is available directly in ConsumerStatefulWidget state classes
-    // Basic structure, replace with actual content later
+    );
+    final formData = ref.watch(formProvider);
+    final formNotifier = ref.read(formProvider.notifier);
 
     return PopScope(
       onPopInvokedWithResult: (bool didPop, dynamic result) {
@@ -60,13 +55,13 @@ class _PageEightState extends ConsumerState<PageEight>
           clipBehavior: Clip.none,
           key: const PageStorageKey<String>(
             'pageEightScrollKey',
-          ), // This key remains important
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               PageNumber(data: '25/26'),
               const SizedBox(height: 4),
-              PageTitle(data: 'Ketebalan Cat'), // Updated Title
+              PageTitle(data: 'Ketebalan Cat'),
               const SizedBox(height: 6.0),
               
               // Section 1: Depan
@@ -78,7 +73,7 @@ class _PageEightState extends ConsumerState<PageEight>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(width: MediaQuery.of(context).size.width * 0.08), // Responsive offset, slightly less to move left
+                        SizedBox(width: MediaQuery.of(context).size.width * 0.08),
                         PaintThicknessInputField(
                           initialValue: formData.catDepanKap,
                           onChanged: (value) {
@@ -88,7 +83,7 @@ class _PageEightState extends ConsumerState<PageEight>
                       ],
                     ),
                     ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 300), // Limit image width
+                      constraints: const BoxConstraints(maxWidth: 300),
                       child: Image.asset('assets/images/depan.png'),
                     ),
                   ],
@@ -99,18 +94,17 @@ class _PageEightState extends ConsumerState<PageEight>
               // Section 2: Belakang
               HeadingOne(text: 'Belakang'),
               Center(
-                child: SizedBox( // Define a fixed size for the Stack area
-                  width: 300, // Max width of the image
-                  height: 200, // Estimated height to contain image and inputs
+                child: SizedBox(
+                  width: 300,
+                  height: 200,
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      // Image - centered within the SizedBox
                       Positioned(
-                        top: 30.0, // Move image 30 pixels down
+                        top: 30.0,
                         left: 0,
                         right: 0,
-                        child: Align( // Keep Align to center the image horizontally within the Positioned bounds
+                        child: Align(
                           alignment: Alignment.center,
                           child: ConstrainedBox(
                             constraints: const BoxConstraints(maxWidth: 300),
@@ -118,9 +112,8 @@ class _PageEightState extends ConsumerState<PageEight>
                           ),
                         ),
                       ),
-                      // First PaintThicknessInputField (catBelakangBumper)
                       Positioned(
-                        left: 125.0, // Approximate left position
+                        left: 125.0,
                         child: PaintThicknessInputField(
                           initialValue: formData.catBelakangBumper,
                           onChanged: (value) {
@@ -128,10 +121,9 @@ class _PageEightState extends ConsumerState<PageEight>
                           },
                         ),
                       ),
-                      // Second PaintThicknessInputField (catBelakangTrunk)
                       Positioned(
-                        top: 22.0, // 10 + 50 pixels down
-                        left: 226.0, // Approximate left position (further right than first)
+                        top: 22.0,
+                        left: 226.0,
                         child: PaintThicknessInputField(
                           initialValue: formData.catBelakangTrunk,
                           onChanged: (value) {
@@ -251,8 +243,7 @@ class _PageEightState extends ConsumerState<PageEight>
               ),
               const SizedBox(
                 height: 24.0,
-              ), // Optional spacing below the content
-              // Footer
+              ),
               Footer(),
             ],
           ),
