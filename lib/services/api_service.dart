@@ -245,9 +245,9 @@ class ApiService {
               "sistemAudio": formData.sistemAudioSelectedValue ?? 0,
               "powerWindow": formData.powerWindowSelectedValue ?? 0,
               "sistemAC": formData.sistemAcSelectedValue ?? 0,
-              "interior1": formData.centralLockSelectedValue ?? 0, 
-              "interior2": formData.electricMirrorSelectedValue ?? 0, 
-              "interior3": formData.remAbsSelectedValue ?? 0,
+              "centralLock": formData.centralLockSelectedValue ?? 0, 
+              "electricMirror": formData.electricMirrorSelectedValue ?? 0, 
+              "remAbs": formData.remAbsSelectedValue ?? 0,
               "catatan": formData.fiturCatatanList ?? [],
             },
             "hasilInspeksiMesin": {
