@@ -135,7 +135,7 @@ class _PageEightState extends ConsumerState<PageEight>
                   ),
                 ),
               ),
-              const SizedBox(height: 45.0),
+              const SizedBox(height: 46.0),
 
               // Section 3: Samping Kanan
               HeadingOne(text: 'Samping Kanan'),
