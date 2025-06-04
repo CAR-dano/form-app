@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:camera/camera.dart'; // Import camera package
 import 'package:flutter/foundation.dart'; // For kDebugMode
 import 'package:form_app/statics/app_styles.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
@@ -12,6 +13,7 @@ import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/utils/image_picker_util.dart'; // Import the new utility
 import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
+import 'package:form_app/pages/custom_camera_screen.dart'; // Import CustomCameraScreen
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -34,16 +36,21 @@ class TambahanImageSelection extends ConsumerStatefulWidget {
 }
 
 class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection> {
-  final ImagePicker _picker = ImagePicker();
   int _currentIndex = 0;
   final TextEditingController _labelController = TextEditingController();
   final GlobalKey<FormFieldState<String>> _labelFieldKey = GlobalKey<FormFieldState<String>>();
 
   VoidCallback? _formSubmittedListener;
+  
+  List<CameraDescription>? _cameras;
+  ValueNotifier<CameraController?>? _cameraControllerNotifier;
+  int _currentCameraIndex = 0; // Track selected camera index
 
   @override
   void initState() {
     super.initState();
+    _cameraControllerNotifier = ValueNotifier(null); // Initialize the notifier
+    _initializeCameras(); // Initialize cameras when widget starts
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateControllersForCurrentIndex();
     });
@@ -58,12 +65,82 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     }
   }
 
+  Future<void> _initializeCameras() async {
+    try {
+      _cameras = await availableCameras();
+      if (_cameras == null || _cameras!.isEmpty) {
+        if (kDebugMode) print("No cameras available.");
+        return;
+      }
+
+      // Find the index of the rear camera, or default to the first camera
+      _currentCameraIndex = _cameras!.indexWhere((camera) => camera.lensDirection == CameraLensDirection.back);
+      if (_currentCameraIndex == -1) {
+        _currentCameraIndex = 0; // Fallback to the first available camera
+      }
+
+      _cameraControllerNotifier!.value = CameraController(
+        _cameras![_currentCameraIndex],
+        ResolutionPreset.high, // Keep high resolution for now, aspect ratio is handled in CustomCameraScreen
+        enableAudio: false,
+      );
+      await _cameraControllerNotifier!.value!.initialize();
+      if (mounted) {
+        setState(() {}); // Rebuild to show camera preview if needed
+      }
+    } on CameraException catch (e) {
+      if (kDebugMode) {
+        print("Error initializing cameras: $e");
+      }
+      // Handle error, e.g., show a message to the user
+    }
+  }
+
+  Future<void> _switchCamera() async {
+    if (_cameras == null || _cameras!.length < 2) {
+      // No other camera to switch to
+      return;
+    }
+
+    if (_cameraControllerNotifier!.value != null) {
+      await _cameraControllerNotifier!.value!.dispose();
+    }
+
+    setState(() {
+      _currentCameraIndex = (_currentCameraIndex + 1) % _cameras!.length;
+    });
+
+    _cameraControllerNotifier!.value = CameraController(
+      _cameras![_currentCameraIndex],
+      ResolutionPreset.high, // Keep high resolution for now
+      enableAudio: false,
+    );
+
+    try {
+      await _cameraControllerNotifier!.value!.initialize();
+      if (mounted) {
+        setState(() {});
+      }
+    } on CameraException catch (e) {
+      if (kDebugMode) {
+        print("Error switching camera: $e");
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Terjadi kesalahan saat mengganti kamera: $e'))
+        );
+      }
+    }
+  }
+
   @override
   void dispose() {
     _labelController.dispose();
     if (widget.formSubmitted != null && _formSubmittedListener != null) {
       widget.formSubmitted!.removeListener(_formSubmittedListener!);
     }
+    _cameraControllerNotifier?.value?.dispose(); // Dispose the camera controller
+    _cameraControllerNotifier?.dispose(); // Dispose the notifier itself
     super.dispose();
   }
 
@@ -154,40 +231,56 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         }
       }
     } else { // Camera
-      final XFile? imageXFile = await _picker.pickImage(source: source);
-      if (imageXFile != null && mounted) {
+      if (_cameraControllerNotifier!.value == null || !_cameraControllerNotifier!.value!.value.isInitialized) {
+        // If camera is not initialized, try to initialize it first
+        await _initializeCameras();
+        if (_cameraControllerNotifier!.value == null || !_cameraControllerNotifier!.value!.value.isInitialized) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Kamera tidak dapat diinisialisasi.'))
+            );
+          }
+          return;
+        }
+      }
+
+      if (!mounted) return;
+
+      final String? imagePath = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CustomCameraScreen(
+            controllerNotifier: _cameraControllerNotifier!, // Pass the notifier
+            onCameraSwitchPressed: _switchCamera, // Pass the camera switch callback
+          ),
+        ),
+      );
+
+      if (imagePath != null && mounted) {
+        final XFile imageXFile = XFile(imagePath);
+
         ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment
         try {
           await ImagePickerUtil.saveImageToGallery(imageXFile);
-          final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageXFile);
-          if (mounted && processedPath != null) {
-            final newTambahanImage = TambahanImageData(
-              imagePath: processedPath,
-              label: widget.defaultLabel,
-              needAttention: false,
-              category: widget.identifier,
-              isMandatory: widget.isMandatory,
-            );
-            ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
-            // Pre-cache the newly added image
-            if (mounted) {
-              precacheImage(FileImage(File(processedPath)), context);
-            }
-            setState(() {
-              _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - 1;
-              _updateControllersForCurrentIndex();
-            });
-          } else if (mounted && processedPath == null) {
-            if (kDebugMode) print("Image processing failed for camera image.");
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Gagal memproses gambar dari kamera.'))
-            );
+
+          final newTambahanImage = TambahanImageData(
+            imagePath: imagePath,
+            label: widget.defaultLabel,
+            needAttention: false,
+            category: widget.identifier,
+            isMandatory: widget.isMandatory,
+          );
+          ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
+          if (mounted) {
+            precacheImage(FileImage(File(imagePath)), context);
           }
+          setState(() {
+            _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - 1;
+            _updateControllersForCurrentIndex();
+          });
         } catch (e) {
           if (mounted && kDebugMode) {
-            if (kDebugMode) {
-              print("Error during camera image processing in Tambahan: $e");
-            }
+            debugPrint("Error during custom camera image processing in Tambahan: $e");
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Terjadi kesalahan memproses gambar kamera: $e'))
             );

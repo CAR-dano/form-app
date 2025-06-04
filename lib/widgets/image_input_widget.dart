@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:form_app/statics/app_styles.dart';
 import 'dart:io';
+import 'package:camera/camera.dart'; // Import camera package
 // For kDebugMode
 import 'package:flutter/foundation.dart'; // Ensure kDebugMode is available
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/image_data_provider.dart';
 import 'package:form_app/models/image_data.dart';
@@ -12,6 +12,7 @@ import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/widgets/image_preview_dialog.dart';
 import 'package:form_app/utils/image_picker_util.dart';
 import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
+import 'package:form_app/pages/custom_camera_screen.dart'; // Import CustomCameraScreen
 
 class ImageInputWidget extends ConsumerStatefulWidget {
   final String label;
@@ -28,35 +29,136 @@ class ImageInputWidget extends ConsumerStatefulWidget {
 }
 
 class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
+  List<CameraDescription>? _cameras;
+  ValueNotifier<CameraController?>? _cameraControllerNotifier;
+  int _currentCameraIndex = 0; // Track selected camera index
+
+  @override
+  void initState() {
+    super.initState();
+    _cameraControllerNotifier = ValueNotifier(null); // Initialize the notifier
+    _initializeCameras(); // Initialize cameras when widget starts
+  }
+
+  Future<void> _initializeCameras() async {
+    try {
+      _cameras = await availableCameras();
+      if (_cameras == null || _cameras!.isEmpty) {
+        if (kDebugMode) debugPrint("No cameras available.");
+        return;
+      }
+
+      // Find the index of the rear camera, or default to the first camera
+      _currentCameraIndex = _cameras!.indexWhere((camera) => camera.lensDirection == CameraLensDirection.back);
+      if (_currentCameraIndex == -1) {
+        _currentCameraIndex = 0; // Fallback to the first available camera
+      }
+
+      _cameraControllerNotifier!.value = CameraController(
+        _cameras![_currentCameraIndex],
+        ResolutionPreset.high, // Keep high resolution for now, aspect ratio is handled in CustomCameraScreen
+        enableAudio: false,
+      );
+      await _cameraControllerNotifier!.value!.initialize();
+      if (mounted) {
+        setState(() {}); // Rebuild to show camera preview if needed
+      }
+    } on CameraException catch (e) {
+      if (kDebugMode) {
+        debugPrint("Error initializing cameras: $e");
+      }
+      // Handle error, e.g., show a message to the user
+    }
+  }
+
+  Future<void> _switchCamera() async {
+    if (_cameras == null || _cameras!.length < 2) {
+      // No other camera to switch to
+      return;
+    }
+
+    if (_cameraControllerNotifier!.value != null) {
+      await _cameraControllerNotifier!.value!.dispose();
+    }
+
+    setState(() {
+      _currentCameraIndex = (_currentCameraIndex + 1) % _cameras!.length;
+    });
+
+    _cameraControllerNotifier!.value = CameraController(
+      _cameras![_currentCameraIndex],
+      ResolutionPreset.high, // Keep high resolution for now
+      enableAudio: false,
+    );
+
+    try {
+      await _cameraControllerNotifier!.value!.initialize();
+      if (mounted) {
+        setState(() {});
+      }
+    } on CameraException catch (e) {
+      if (kDebugMode) {
+        debugPrint("Error switching camera: $e");
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Terjadi kesalahan saat mengganti kamera: $e'))
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _cameraControllerNotifier?.value?.dispose(); // Dispose the camera controller
+    _cameraControllerNotifier?.dispose(); // Dispose the notifier itself
+    super.dispose();
+  }
+
   Future<void> _takePictureFromCamera() async {
     FocusScope.of(context).unfocus();
-    final picker = ImagePicker();
-    final pickedImageXFile = await picker.pickImage(source: ImageSource.camera);
 
-    if (pickedImageXFile != null) {
+    if (_cameraControllerNotifier!.value == null || !_cameraControllerNotifier!.value!.value.isInitialized) {
+      // If camera is not initialized, try to initialize it first
+      await _initializeCameras();
+      if (_cameraControllerNotifier!.value == null || !_cameraControllerNotifier!.value!.value.isInitialized) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Kamera tidak dapat diinisialisasi.'))
+          );
+        }
+        return;
+      }
+    }
+
+    if (!mounted) return; // Guard against BuildContext across async gaps
+
+    final String? imagePath = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CustomCameraScreen(
+          controllerNotifier: _cameraControllerNotifier!, // Pass the notifier
+          onCameraSwitchPressed: _switchCamera, // Pass the camera switch callback
+        ),
+      ),
+    );
+
+    if (imagePath != null) {
+      final XFile imageXFile = XFile(imagePath);
+
       ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment counter
       try {
-        await ImagePickerUtil.saveImageToGallery(pickedImageXFile);
-        final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile);
+        await ImagePickerUtil.saveImageToGallery(imageXFile);
 
-        if (mounted && processedPath != null) {
-          widget.onImagePicked?.call(File(processedPath));
+        if (mounted) {
+          widget.onImagePicked?.call(File(imagePath));
           ref
               .read(imageDataListProvider.notifier)
-              .updateImageDataByLabel(widget.label, imagePath: processedPath);
-        } else if (mounted && processedPath == null) {
-          if (kDebugMode) {
-            print("Image processing failed for camera image.");
-          }
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Gagal memproses gambar dari kamera.'))
-          );
+              .updateImageDataByLabel(widget.label, imagePath: imagePath);
         }
       } catch (e) {
         if (mounted && kDebugMode) {
-          if (kDebugMode) {
-            print("Error during camera image processing or saving: $e");
-          }
+          debugPrint("Error during custom camera image processing or saving: $e");
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Terjadi kesalahan saat memproses gambar kamera: $e'))
           );
@@ -85,20 +187,24 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
               .updateImageDataByLabel(widget.label, imagePath: processedPath);
         } else if (mounted && processedPath == null) {
           if (kDebugMode) {
-            print("Image processing failed for gallery image.");
+            debugPrint("Image processing failed for gallery image.");
           }
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Gagal memproses gambar dari galeri.'))
-          );
+          if (mounted) { // Added mounted check
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Gagal memproses gambar dari galeri.'))
+            );
+          }
         }
       } catch (e) {
         if (mounted && kDebugMode) {
           if (kDebugMode) {
-            print("Error during gallery image processing: $e");
+            debugPrint("Error during gallery image processing: $e");
           }
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Terjadi kesalahan saat memproses gambar galeri: $e'))
-          );
+          if (mounted) { // Added mounted check
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Terjadi kesalahan saat memproses gambar galeri: $e'))
+            );
+          }
         }
       } finally {
         if (mounted) {
