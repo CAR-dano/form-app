@@ -7,7 +7,7 @@ class LabeledDateInputField extends StatefulWidget {
   final String label;
   final String hintText;
   final TextEditingController? controller;
-  final ValueChanged<String>? onChanged;
+  final ValueChanged<DateTime?>? onChanged;
   final FormFieldValidator<String>? validator;
   final FocusNode? focusNode;
   final bool formSubmitted;
@@ -38,6 +38,24 @@ class _LabeledDateInputFieldState extends State<LabeledDateInputField> {
   void initState() {
     super.initState();
     _internalController = widget.controller ?? TextEditingController(text: widget.initialValue);
+  }
+
+  DateTime? _parseDateString(String? dateString) {
+    if (dateString == null || dateString.isEmpty || dateString.length != 10) {
+      return null;
+    }
+    try {
+      final parts = dateString.split('/');
+      if (parts.length == 3) {
+        final day = int.parse(parts[0]);
+        final month = int.parse(parts[1]);
+        final year = int.parse(parts[2]);
+        return DateTime(year, month, day);
+      }
+    } catch (e) {
+      // Invalid date format, return null
+    }
+    return null;
   }
 
   @override
@@ -138,7 +156,8 @@ class _LabeledDateInputFieldState extends State<LabeledDateInputField> {
             DateInputFormatter(),
           ],
           onChanged: (value) {
-            widget.onChanged?.call(value);
+            final parsedDate = _parseDateString(value);
+            widget.onChanged?.call(parsedDate);
             if (widget.formSubmitted || (_errorText != null && widget.validator != null)) {
               _formFieldKey.currentState?.validate();
             }
