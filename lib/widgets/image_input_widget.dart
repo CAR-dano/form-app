@@ -33,13 +33,13 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
 
   Future<void> _takePictureFromCamera() async {
     FocusScope.of(context).unfocus();
-    setState(() {
-      _isLoadingCamera = true;
-    });
     final picker = ImagePicker();
     final pickedImageXFile = await picker.pickImage(source: ImageSource.camera);
 
     if (pickedImageXFile != null) {
+      setState(() {
+        _isLoadingCamera = true;
+      });
       ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment counter
       try {
         await ImagePickerUtil.saveImageToGallery(pickedImageXFile);
@@ -84,12 +84,12 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
 
   Future<void> _takePictureFromGallery() async {
     FocusScope.of(context).unfocus();
-    setState(() {
-      _isLoadingGallery = true;
-    });
     final pickedImageXFile = await ImagePickerUtil.pickImageFromGallery();
 
     if (pickedImageXFile != null) {
+      setState(() {
+        _isLoadingGallery = true;
+      });
       ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment counter
       try {
         final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile);
