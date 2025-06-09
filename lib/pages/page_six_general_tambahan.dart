@@ -22,8 +22,7 @@ class PageSixGeneralTambahan extends ConsumerStatefulWidget {
   ConsumerState<PageSixGeneralTambahan> createState() => _PageSixGeneralTambahanState();
 }
 
-class _PageSixGeneralTambahanState extends ConsumerState<PageSixGeneralTambahan>
-    with AutomaticKeepAliveClientMixin {
+class _PageSixGeneralTambahanState extends ConsumerState<PageSixGeneralTambahan> {
   late FocusScopeNode _focusScopeNode;
 
   @override
@@ -39,11 +38,7 @@ class _PageSixGeneralTambahanState extends ConsumerState<PageSixGeneralTambahan>
   }
 
   @override
-  bool get wantKeepAlive => true; // Override wantKeepAlive
-
-  @override
   Widget build(BuildContext context) {
-    super.build(context);
     const String pageIdentifier = 'General Tambahan'; // Define identifier
 
     return PopScope(
