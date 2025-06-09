@@ -1,53 +1,49 @@
 import 'package:flutter/services.dart';
 
+/// Formats text for a date input in `DD/MM/YYYY` format.
 class DateInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    final text = newValue.text;
-    
-    // Remove any non-digits
-    final digitsOnly = text.replaceAll(RegExp(r'[^0-9]'), '');
-    
-    // Limit to 8 digits (DDMMYYYY)
-    final limitedDigits = digitsOnly.length > 8 ? digitsOnly.substring(0, 8) : digitsOnly;
-      // Format with slashes - add slash immediately after 2nd and 4th digits
-    String formattedText = '';
-    for (int i = 0; i < limitedDigits.length; i++) {
-      formattedText += limitedDigits[i];
-      if (i == 1 || i == 3) {
-        formattedText += '/';
+    // Determine if the user is adding or removing text.
+    final bool isAdding = newValue.text.length > oldValue.text.length;
+
+    // 1. Extract and limit the number of digits.
+    String digitsOnly = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+    if (digitsOnly.length > 8) {
+      digitsOnly = digitsOnly.substring(0, 8);
+    }
+
+    // 2. Build the formatted string with slashes.
+    final buffer = StringBuffer();
+    for (int i = 0; i < digitsOnly.length; i++) {
+      buffer.write(digitsOnly[i]);
+      // Add a slash after the day (i=1) and month (i=3).
+      // The condition `isAdding || digitsOnly.length > i + 1` ensures a slash
+      // is added immediately when the 2nd or 4th digit is typed, but not
+      // when a user is deleting a slash.
+      if ((i == 1 && (isAdding || digitsOnly.length > 2)) ||
+          (i == 3 && (isAdding || digitsOnly.length > 4))) {
+        buffer.write('/');
       }
     }
-    
-    // Calculate cursor position
-    int cursorPosition = formattedText.length;
-    
-    // Adjust cursor position if user is typing in the middle
-    if (newValue.selection.baseOffset < oldValue.text.length) {
-      // User is editing in the middle, try to maintain relative position
-      final oldCursorPos = newValue.selection.baseOffset;
-      final oldDigitsBeforeCursor = oldValue.text.substring(0, oldCursorPos).replaceAll(RegExp(r'[^0-9]'), '').length;
-      
-      int newCursorPos = 0;
-      int digitCount = 0;
-      for (int i = 0; i < formattedText.length; i++) {
-        if (formattedText[i] != '/') {
-          digitCount++;
-        }
-        if (digitCount >= oldDigitsBeforeCursor + (digitsOnly.length > oldValue.text.replaceAll(RegExp(r'[^0-9]'), '').length ? 1 : 0)) {
-          newCursorPos = i + 1;
-          break;
-        }
-      }
-      cursorPosition = newCursorPos.clamp(0, formattedText.length);
-    }
-    
+
+    final String formattedText = buffer.toString();
+
+    // 3. Calculate the new cursor position.
+    // This simple calculation adjusts the cursor's position based on the
+    // difference in length between the raw input and the final formatted text.
+    final int selectionIndex =
+        newValue.selection.end + (formattedText.length - newValue.text.length);
+
     return TextEditingValue(
       text: formattedText,
-      selection: TextSelection.collapsed(offset: cursorPosition),
+      selection: TextSelection.collapsed(
+        // Ensure the cursor position is within the valid range of the text.
+        offset: selectionIndex.clamp(0, formattedText.length),
+      ),
     );
   }
 }
