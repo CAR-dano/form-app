@@ -13,14 +13,13 @@ class DateInputFormatter extends TextInputFormatter {
     
     // Limit to 8 digits (DDMMYYYY)
     final limitedDigits = digitsOnly.length > 8 ? digitsOnly.substring(0, 8) : digitsOnly;
-    
-    // Format with slashes
+      // Format with slashes - add slash immediately after 2nd and 4th digits
     String formattedText = '';
     for (int i = 0; i < limitedDigits.length; i++) {
-      if (i == 2 || i == 4) {
+      formattedText += limitedDigits[i];
+      if (i == 1 || i == 3) {
         formattedText += '/';
       }
-      formattedText += limitedDigits[i];
     }
     
     // Calculate cursor position
