@@ -1,97 +1,80 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:image_picker/image_picker.dart'; // For gallery access
-import 'package:form_app/utils/image_picker_util.dart'; // Import ImagePickerUtil
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:form_app/utils/image_picker_util.dart';
+import 'package:form_app/providers/camera_provider.dart'; // Import the new provider
+import 'package:flutter/foundation.dart'; // For kDebugMode
 
-class CustomCameraScreen extends StatefulWidget {
-  final ValueNotifier<CameraController?> controllerNotifier; // Change to ValueNotifier
-  final VoidCallback onCameraSwitchPressed; // New callback for camera switch
-
-  const CustomCameraScreen({
-    super.key,
-    required this.controllerNotifier, // Make it required
-    required this.onCameraSwitchPressed, // Make it required
-  });
+class CustomCameraScreen extends ConsumerStatefulWidget {
+  const CustomCameraScreen({super.key});
 
   @override
-  State<CustomCameraScreen> createState() => _CustomCameraScreenState();
+  ConsumerState<CustomCameraScreen> createState() => _CustomCameraScreenState();
 }
 
-class _CustomCameraScreenState extends State<CustomCameraScreen> {
-  CameraController? _controller; // Make it nullable
+class _CustomCameraScreenState extends ConsumerState<CustomCameraScreen> {
   bool _isFlashOn = false;
-  bool _isManualCapture = true; // Default to Manual capture
+  bool _isManualCapture = true;
 
   @override
   void initState() {
     super.initState();
-    _controller = widget.controllerNotifier.value; // Get initial controller
-
-    // Listen to changes in the controller notifier
-    widget.controllerNotifier.addListener(_onControllerNotifierChanged);
-
-    _controller?.addListener(_onCameraControllerChanged); // Listen to controller's value changes
+    // Initialize camera when the screen is opened
+    _initializeCameraForScreen();
   }
 
-  void _onControllerNotifierChanged() {
-    if (_controller != widget.controllerNotifier.value) {
-      // Dispose old controller listeners if controller changes
-      _controller?.removeListener(_onCameraControllerChanged);
-      _controller = widget.controllerNotifier.value;
-      _controller?.addListener(_onCameraControllerChanged);
+  Future<void> _initializeCameraForScreen() async {
+    final cameraService = ref.read(cameraServiceProvider.notifier);
+    try {
+      await cameraService.initializeCamera();
       if (mounted) {
-        setState(() {}); // Rebuild when controller changes
+        setState(() {}); // Rebuild to show camera preview
       }
-    }
-  }
-
-  void _onCameraControllerChanged() {
-    if (mounted) {
-      setState(() {});
-    }
-    if (_controller?.value.hasError ?? false) {
-      // Handle camera errors
-      if (kDebugMode) {
-        print('Camera error: ${_controller!.value.errorDescription}');
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to initialize camera: $e'))
+        );
+        Navigator.pop(context); // Pop on error
       }
     }
   }
 
   @override
   void dispose() {
-    widget.controllerNotifier.removeListener(_onControllerNotifierChanged); // Remove listener
-    _controller?.removeListener(_onCameraControllerChanged); // Remove controller listener
-    // The controller is managed by the calling widget, so we don't dispose it here.
+    // Dispose the camera controller when the screen is disposed
+    ref.read(cameraServiceProvider.notifier).dispose();
     super.dispose();
   }
 
   Future<void> _toggleFlash() async {
-    if (_controller == null || !_controller!.value.isInitialized) {
+    final controller = ref.read(cameraServiceProvider);
+    if (controller == null || !controller.value.isInitialized) {
       return;
     }
     try {
       final newFlashMode = _isFlashOn ? FlashMode.off : FlashMode.torch;
-      await _controller!.setFlashMode(newFlashMode);
+      await controller.setFlashMode(newFlashMode);
       setState(() {
         _isFlashOn = !_isFlashOn;
       });
     } on CameraException catch (e) {
       if (kDebugMode) {
-        print('Error toggling flash: $e');
+        debugPrint('Error toggling flash: $e');
       }
     }
   }
 
   Future<void> _takePicture() async {
-    if (_controller == null || !_controller!.value.isInitialized || _controller!.value.isTakingPicture) {
+    final controller = ref.read(cameraServiceProvider);
+    if (controller == null || !controller.value.isInitialized || controller.value.isTakingPicture) {
       return;
     }
 
     try {
-      final XFile image = await _controller!.takePicture();
+      final XFile image = await controller.takePicture();
       
-      // Process and save the image using ImagePickerUtil
       final String? processedPath = await ImagePickerUtil.processAndSaveImage(image);
 
       if (mounted) {
@@ -99,24 +82,23 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
           Navigator.pop(context, processedPath);
         } else {
           if (kDebugMode) {
-            print("Image processing failed in CustomCameraScreen.");
+            debugPrint("Image processing failed in CustomCameraScreen.");
           }
-          // Optionally show a snackbar or error message
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Gagal memproses gambar.'))
           );
-          Navigator.pop(context); // Pop without returning a path on failure
+          Navigator.pop(context);
         }
       }
     } on CameraException catch (e) {
       if (kDebugMode) {
-        print('Error taking picture: $e');
+        debugPrint('Error taking picture: $e');
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Terjadi kesalahan saat mengambil gambar: $e'))
         );
-        Navigator.pop(context); // Pop on error
+        Navigator.pop(context);
       }
     }
   }
@@ -131,22 +113,20 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // No loading indicator needed, as controller is passed already initialized.
+    final cameraController = ref.watch(cameraServiceProvider);
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // Camera Preview
           Positioned.fill(
-            child: _controller != null && _controller!.value.isInitialized
+            child: cameraController != null && cameraController.value.isInitialized
                 ? AspectRatio(
-                    aspectRatio: 4 / 3, // Set aspect ratio to 4:3
-                    child: CameraPreview(_controller!),
+                    aspectRatio: 4 / 3,
+                    child: CameraPreview(cameraController),
                   )
-                : const Center(child: CircularProgressIndicator()), // Show loading indicator or black screen
+                : const Center(child: CircularProgressIndicator()),
           ),
-
-          // Top controls (Close and Flash)
           Positioned(
             top: 40,
             left: 20,
@@ -171,18 +151,15 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
               ],
             ),
           ),
-
-          // Bottom controls
           Positioned(
             bottom: 0,
             left: 0,
             right: 0,
             child: Container(
-              color: Colors.black.withAlpha(128), // Semi-transparent background for controls (replaces withOpacity)
+              color: Colors.black.withAlpha(128),
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Column(
                 children: [
-                  // Manual/Auto Capture Toggle
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.grey[800],
@@ -240,12 +217,10 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      // Gallery Button
                       IconButton(
                         icon: const Icon(Icons.image, color: Colors.white, size: 40),
                         onPressed: _pickImageFromGallery,
                       ),
-                      // Capture Button
                       GestureDetector(
                         onTap: _takePicture,
                         child: Container(
@@ -260,10 +235,14 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
                           ),
                         ),
                       ),
-                      // Camera switch button
                       IconButton(
                         icon: const Icon(Icons.cameraswitch, color: Colors.white, size: 40),
-                        onPressed: widget.onCameraSwitchPressed, // Call the callback
+                        onPressed: () async {
+                          await ref.read(cameraServiceProvider.notifier).switchCamera();
+                          if (mounted) {
+                            setState(() {}); // Rebuild to reflect camera switch
+                          }
+                        },
                       ),
                     ],
                   ),

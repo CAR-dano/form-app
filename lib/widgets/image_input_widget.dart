@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:form_app/statics/app_styles.dart';
 import 'dart:io';
-import 'package:camera/camera.dart'; // Import camera package
-// For kDebugMode
-import 'package:flutter/foundation.dart'; // Ensure kDebugMode is available
+import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/image_data_provider.dart';
 import 'package:form_app/models/image_data.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/widgets/image_preview_dialog.dart';
 import 'package:form_app/utils/image_picker_util.dart';
-import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
-import 'package:form_app/pages/custom_camera_screen.dart'; // Import CustomCameraScreen
+import 'package:form_app/providers/image_processing_provider.dart';
+import 'package:form_app/pages/custom_camera_screen.dart';
+import 'package:form_app/providers/camera_provider.dart'; // Import the new provider
 
 class ImageInputWidget extends ConsumerStatefulWidget {
   final String label;
@@ -29,124 +29,44 @@ class ImageInputWidget extends ConsumerStatefulWidget {
 }
 
 class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
-  List<CameraDescription>? _cameras;
-  ValueNotifier<CameraController?>? _cameraControllerNotifier;
-  int _currentCameraIndex = 0; // Track selected camera index
-
   @override
   void initState() {
     super.initState();
-    _cameraControllerNotifier = ValueNotifier(null); // Initialize the notifier
-    _initializeCameras(); // Initialize cameras when widget starts
-  }
-
-  Future<void> _initializeCameras() async {
-    try {
-      _cameras = await availableCameras();
-      if (_cameras == null || _cameras!.isEmpty) {
-        if (kDebugMode) debugPrint("No cameras available.");
-        return;
-      }
-
-      // Find the index of the rear camera, or default to the first camera
-      _currentCameraIndex = _cameras!.indexWhere((camera) => camera.lensDirection == CameraLensDirection.back);
-      if (_currentCameraIndex == -1) {
-        _currentCameraIndex = 0; // Fallback to the first available camera
-      }
-
-      _cameraControllerNotifier!.value = CameraController(
-        _cameras![_currentCameraIndex],
-        ResolutionPreset.high, // Keep high resolution for now, aspect ratio is handled in CustomCameraScreen
-        enableAudio: false,
-      );
-      await _cameraControllerNotifier!.value!.initialize();
-      if (mounted) {
-        setState(() {}); // Rebuild to show camera preview if needed
-      }
-    } on CameraException catch (e) {
-      if (kDebugMode) {
-        debugPrint("Error initializing cameras: $e");
-      }
-      // Handle error, e.g., show a message to the user
-    }
-  }
-
-  Future<void> _switchCamera() async {
-    if (_cameras == null || _cameras!.length < 2) {
-      // No other camera to switch to
-      return;
-    }
-
-    if (_cameraControllerNotifier!.value != null) {
-      await _cameraControllerNotifier!.value!.dispose();
-    }
-
-    setState(() {
-      _currentCameraIndex = (_currentCameraIndex + 1) % _cameras!.length;
-    });
-
-    _cameraControllerNotifier!.value = CameraController(
-      _cameras![_currentCameraIndex],
-      ResolutionPreset.high, // Keep high resolution for now
-      enableAudio: false,
-    );
-
-    try {
-      await _cameraControllerNotifier!.value!.initialize();
-      if (mounted) {
-        setState(() {});
-      }
-    } on CameraException catch (e) {
-      if (kDebugMode) {
-        debugPrint("Error switching camera: $e");
-      }
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Terjadi kesalahan saat mengganti kamera: $e'))
-        );
-      }
-    }
   }
 
   @override
   void dispose() {
-    _cameraControllerNotifier?.value?.dispose(); // Dispose the camera controller
-    _cameraControllerNotifier?.dispose(); // Dispose the notifier itself
     super.dispose();
   }
 
   Future<void> _takePictureFromCamera() async {
     FocusScope.of(context).unfocus();
 
-    if (_cameraControllerNotifier!.value == null || !_cameraControllerNotifier!.value!.value.isInitialized) {
-      // If camera is not initialized, try to initialize it first
-      await _initializeCameras();
-      if (_cameraControllerNotifier!.value == null || !_cameraControllerNotifier!.value!.value.isInitialized) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Kamera tidak dapat diinisialisasi.'))
-          );
-        }
-        return;
+    final cameraService = ref.read(cameraServiceProvider.notifier);
+    try {
+      await cameraService.initializeCamera();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Kamera tidak dapat diinisialisasi: $e'))
+        );
       }
+      return;
     }
 
-    if (!mounted) return; // Guard against BuildContext across async gaps
+    if (!mounted) return;
 
     final String? imagePath = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CustomCameraScreen(
-          controllerNotifier: _cameraControllerNotifier!, // Pass the notifier
-          onCameraSwitchPressed: _switchCamera, // Pass the camera switch callback
-        ),
+        builder: (context) => const CustomCameraScreen(), // No longer pass controllerNotifier or onCameraSwitchPressed
       ),
     );
 
     if (imagePath != null) {
       final XFile imageXFile = XFile(imagePath);
 
-      ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment counter
+      ref.read(imageProcessingServiceProvider.notifier).taskStarted();
       try {
         await ImagePickerUtil.saveImageToGallery(imageXFile);
 
@@ -165,7 +85,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
         }
       } finally {
         if (mounted) {
-          ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement counter
+          ref.read(imageProcessingServiceProvider.notifier).taskFinished();
         }
       }
     }

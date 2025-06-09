@@ -3,17 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:camera/camera.dart'; // Import camera package
-import 'package:flutter/foundation.dart'; // For kDebugMode
+import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:form_app/statics/app_styles.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
 import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart';
-import 'package:form_app/utils/image_picker_util.dart'; // Import the new utility
-import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
-import 'package:form_app/pages/custom_camera_screen.dart'; // Import CustomCameraScreen
+import 'package:form_app/utils/image_picker_util.dart';
+import 'package:form_app/providers/image_processing_provider.dart';
+import 'package:form_app/pages/custom_camera_screen.dart';
+import 'package:form_app/providers/camera_provider.dart'; // Import the new provider
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -42,15 +43,9 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
 
   VoidCallback? _formSubmittedListener;
   
-  List<CameraDescription>? _cameras;
-  ValueNotifier<CameraController?>? _cameraControllerNotifier;
-  int _currentCameraIndex = 0; // Track selected camera index
-
   @override
   void initState() {
     super.initState();
-    _cameraControllerNotifier = ValueNotifier(null); // Initialize the notifier
-    _initializeCameras(); // Initialize cameras when widget starts
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateControllersForCurrentIndex();
     });
@@ -65,82 +60,12 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     }
   }
 
-  Future<void> _initializeCameras() async {
-    try {
-      _cameras = await availableCameras();
-      if (_cameras == null || _cameras!.isEmpty) {
-        if (kDebugMode) print("No cameras available.");
-        return;
-      }
-
-      // Find the index of the rear camera, or default to the first camera
-      _currentCameraIndex = _cameras!.indexWhere((camera) => camera.lensDirection == CameraLensDirection.back);
-      if (_currentCameraIndex == -1) {
-        _currentCameraIndex = 0; // Fallback to the first available camera
-      }
-
-      _cameraControllerNotifier!.value = CameraController(
-        _cameras![_currentCameraIndex],
-        ResolutionPreset.high, // Keep high resolution for now, aspect ratio is handled in CustomCameraScreen
-        enableAudio: false,
-      );
-      await _cameraControllerNotifier!.value!.initialize();
-      if (mounted) {
-        setState(() {}); // Rebuild to show camera preview if needed
-      }
-    } on CameraException catch (e) {
-      if (kDebugMode) {
-        print("Error initializing cameras: $e");
-      }
-      // Handle error, e.g., show a message to the user
-    }
-  }
-
-  Future<void> _switchCamera() async {
-    if (_cameras == null || _cameras!.length < 2) {
-      // No other camera to switch to
-      return;
-    }
-
-    if (_cameraControllerNotifier!.value != null) {
-      await _cameraControllerNotifier!.value!.dispose();
-    }
-
-    setState(() {
-      _currentCameraIndex = (_currentCameraIndex + 1) % _cameras!.length;
-    });
-
-    _cameraControllerNotifier!.value = CameraController(
-      _cameras![_currentCameraIndex],
-      ResolutionPreset.high, // Keep high resolution for now
-      enableAudio: false,
-    );
-
-    try {
-      await _cameraControllerNotifier!.value!.initialize();
-      if (mounted) {
-        setState(() {});
-      }
-    } on CameraException catch (e) {
-      if (kDebugMode) {
-        print("Error switching camera: $e");
-      }
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Terjadi kesalahan saat mengganti kamera: $e'))
-        );
-      }
-    }
-  }
-
   @override
   void dispose() {
     _labelController.dispose();
     if (widget.formSubmitted != null && _formSubmittedListener != null) {
       widget.formSubmitted!.removeListener(_formSubmittedListener!);
     }
-    _cameraControllerNotifier?.value?.dispose(); // Dispose the camera controller
-    _cameraControllerNotifier?.dispose(); // Dispose the notifier itself
     super.dispose();
   }
 
@@ -148,27 +73,22 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
       final currentImage = images[_currentIndex];
-      // If the current image's label is the default, display an empty string in the text field.
-      // Otherwise, display the actual label.
       final String displayedLabel = (currentImage.label == widget.defaultLabel) ? '' : currentImage.label;
       if (_labelController.text != displayedLabel) {
         _labelController.text = displayedLabel;
         _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
       }
 
-      // Pre-cache next and previous images
       if (mounted) {
-        // Pre-cache next image
         if (_currentIndex + 1 < images.length) {
           precacheImage(FileImage(File(images[_currentIndex + 1].imagePath)), context);
         }
-        // Pre-cache previous image
         if (_currentIndex - 1 >= 0) {
           precacheImage(FileImage(File(images[_currentIndex - 1].imagePath)), context);
         }
       }
     } else {
-      _labelController.clear(); // Clear if no images
+      _labelController.clear();
     }
     if (widget.formSubmitted?.value ?? false) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -183,7 +103,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       if (imagesXFiles.isNotEmpty && mounted) {
         List<TambahanImageData> newImagesData = [];
         for (var imageFileXFile in imagesXFiles) {
-          ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment
+          ref.read(imageProcessingServiceProvider.notifier).taskStarted();
           String? processedPath;
           try {
             processedPath = await ImagePickerUtil.processAndSaveImage(imageFileXFile);
@@ -197,28 +117,25 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
               );
               newImagesData.add(newTambahanImage);
               ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
-              // Pre-cache the newly added image
               if (mounted) {
                 precacheImage(FileImage(File(processedPath)), context);
               }
             } else if (mounted && processedPath == null) {
-              if (kDebugMode) print("Image processing failed for gallery image: ${imageFileXFile.name}");
+              if (kDebugMode) debugPrint("Image processing failed for gallery image: ${imageFileXFile.name}");
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Gagal memproses gambar: ${imageFileXFile.name}'))
               );
             }
           } catch (e) {
              if (mounted && kDebugMode) {
-                if (kDebugMode) {
-                  print("Error during multi-gallery image processing: $e");
-                }
+                debugPrint("Error during multi-gallery image processing: $e");
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Terjadi kesalahan memproses gambar: $e'))
                 );
              }
           } finally {
             if (mounted) {
-              ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement
+              ref.read(imageProcessingServiceProvider.notifier).taskFinished();
             }
           }
         }
@@ -231,17 +148,16 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         }
       }
     } else { // Camera
-      if (_cameraControllerNotifier!.value == null || !_cameraControllerNotifier!.value!.value.isInitialized) {
-        // If camera is not initialized, try to initialize it first
-        await _initializeCameras();
-        if (_cameraControllerNotifier!.value == null || !_cameraControllerNotifier!.value!.value.isInitialized) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Kamera tidak dapat diinisialisasi.'))
-            );
-          }
-          return;
+      final cameraService = ref.read(cameraServiceProvider.notifier);
+      try {
+        await cameraService.initializeCamera();
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Kamera tidak dapat diinisialisasi: $e'))
+          );
         }
+        return;
       }
 
       if (!mounted) return;
@@ -249,17 +165,14 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       final String? imagePath = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => CustomCameraScreen(
-            controllerNotifier: _cameraControllerNotifier!, // Pass the notifier
-            onCameraSwitchPressed: _switchCamera, // Pass the camera switch callback
-          ),
+          builder: (context) => const CustomCameraScreen(), // No longer pass controllerNotifier or onCameraSwitchPressed
         ),
       );
 
       if (imagePath != null && mounted) {
         final XFile imageXFile = XFile(imagePath);
 
-        ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment
+        ref.read(imageProcessingServiceProvider.notifier).taskStarted();
         try {
           await ImagePickerUtil.saveImageToGallery(imageXFile);
 
@@ -287,7 +200,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
           }
         } finally {
           if (mounted) {
-            ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement
+            ref.read(imageProcessingServiceProvider.notifier).taskFinished();
           }
         }
       }
