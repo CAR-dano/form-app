@@ -37,7 +37,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   final ImagePicker _picker = ImagePicker();
   int _currentIndex = 0;
   final TextEditingController _labelController = TextEditingController();
-  final GlobalKey<FormFieldState<String>> _labelFieldKey = GlobalKey<FormFieldState<String>>();
+  final GlobalKey<FormFieldState<String>> _labelFieldKey = GlobalKey<FormFieldState<String>>(); // Corrected type
+  bool _isLoading = false; // Local loading state
 
   VoidCallback? _formSubmittedListener;
 
@@ -104,6 +105,9 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     if (source == ImageSource.gallery) {
       final List<XFile> imagesXFiles = await ImagePickerUtil.pickMultiImagesFromGallery();
       if (imagesXFiles.isNotEmpty && mounted) {
+        setState(() {
+          _isLoading = true; // Start loading for this instance
+        });
         List<TambahanImageData> newImagesData = [];
         for (var imageFileXFile in imagesXFiles) {
           ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment
@@ -153,9 +157,15 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
           });
         }
       }
+      setState(() {
+        _isLoading = false; // End loading for this instance
+      });
     } else { // Camera
       final XFile? imageXFile = await _picker.pickImage(source: source);
       if (imageXFile != null && mounted) {
+        setState(() {
+          _isLoading = true; // Start loading for this instance
+        });
         ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment
         try {
           await ImagePickerUtil.saveImageToGallery(imageXFile);
@@ -195,8 +205,15 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         } finally {
           if (mounted) {
             ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement
+            setState(() {
+              _isLoading = false; // End loading for this instance
+            });
           }
         }
+      } else {
+        setState(() {
+          _isLoading = false; // End loading if no image picked
+        });
       }
     }
   }
@@ -326,6 +343,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       }
     });
 
+    final isProcessingImage = _isLoading; // Use local loading state
+
     return Column(
       children: [
         Row(
@@ -374,7 +393,16 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
             ),
           ],
         ),
-        const SizedBox(height: 16.0),
+        if (isProcessingImage)
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0), // Add some spacing
+            child: LinearProgressIndicator(
+              backgroundColor: Colors.grey[300],
+              valueColor: AlwaysStoppedAnimation<Color>(toggleOptionSelectedLengkapColor),
+              minHeight: 5.0,
+            ),
+          ),
+        const SizedBox(height: 16.0), // Keep spacing consistent
         Container(
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
