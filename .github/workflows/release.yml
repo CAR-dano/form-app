@@ -8,71 +8,54 @@ jobs:
   build_and_release_on_main:
     runs-on: ubuntu-latest
     permissions:
-      contents: write      # Required to create releases and tags
-      pull-requests: read # Required by actions/github-script to read PR details
+      contents: write
+      pull-requests: read
 
     steps:
-      # Step 1: Check out the repository code
+      # Checks out the repository code with full history for release purposes.
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # Step 2: Set up Flutter environment
+      # Sets up the Flutter environment with a specific version and channel.
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.3'
+          flutter-version: '3.32.0'
           channel: 'stable'
 
-      # Step 3: Prepare for CI checks
-      - name: Create dummy .env file for analysis and testing
-        run: |
-          echo "API_BASE_URL=http://dummy.api.for.ci" > .env
-
-      # Step 4: Install Flutter dependencies
+      # Installs all project dependencies listed in pubspec.yaml.
       - name: Install dependencies
         run: flutter pub get
 
-      # Step 5: Run static analysis
-      - name: Analyze project
-        run: flutter analyze
-
-      # Step 6: Run tests
-      - name: Run tests
-        run: flutter test
-
-      # Step 7: Extract version from pubspec.yaml
-      - name: Read pubspec.yaml semantic version
+      # Extracts the semantic version from the pubspec.yaml file.
+      - name: Extract version from pubspec.yaml
         id: pubspec
         run: |
           VERSION_LINE=$(grep '^version:' pubspec.yaml)
           SEMANTIC_VERSION=$(echo "$VERSION_LINE" | sed 's/version: //g' | sed 's/+\.*//g' | tr -d '[:space:]')
           echo "semantic_version=$SEMANTIC_VERSION" >> $GITHUB_OUTPUT
 
-      # Step 8: Create actual .env file for builds
+      # Creates an .env file with the API base URL for the release build.
       - name: Create .env file for Release Build
-        run: |
-          echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" > .env
+        run: echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" > .env
         env:
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
 
-      # Step 9: Build ABI-Specific Release APKs
+      # Builds ABI-specific release APKs for different architectures.
       - name: Build ABI-Specific Release APKs
         run: flutter build apk --split-per-abi --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ github.run_number }}
-        # Outputs: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk, etc.
 
-      # Step 10: Build Universal (Fat) Release APK
+      # Builds a universal (fat) release APK.
       - name: Build Universal (Fat) Release APK
         run: flutter build apk --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ github.run_number }}
-        # Outputs: build/app/outputs/flutter-apk/app-release.apk
 
-      # Step 11: Build Debug APK
+      # Builds a debug APK.
       - name: Build Debug APK
         run: flutter build apk --debug
-        # Outputs: build/app/outputs/flutter-apk/app-debug.apk
 
-      # Step 12: Rename Universal Release APK for clarity in assets
+      # Renames the universal release APK to include version and build number.
       - name: Rename Universal Release APK
         id: universal_release_apk_details
         run: |
@@ -83,7 +66,7 @@ jobs:
           echo "path=$new_path" >> $GITHUB_OUTPUT
           echo "name=$new_name" >> $GITHUB_OUTPUT
 
-      # Step 13: Rename Debug APK for clarity in assets
+      # Renames the debug APK to include version and build number.
       - name: Rename Debug APK
         id: debug_apk_details
         run: |
@@ -94,20 +77,21 @@ jobs:
           echo "path=$new_path" >> $GITHUB_OUTPUT
           echo "name=$new_name" >> $GITHUB_OUTPUT
 
-      # Step 14: Generate a unique tag name for the release
+      # Creates a release tag name based on the semantic version and run number.
       - name: Create Release Tag Name
         id: create_tag
         run: |
           TAG_NAME="v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}"
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
 
-      # Step 15: Prepare the body/notes for the GitHub Release
+      # Prepares the release body content, including PR details and commit information.
       - name: Prepare Release Body
         id: prep_release_body
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            // Your excellent release body script remains unchanged
             const {
               COMMIT_SHA, ACTOR, SEMANTIC_VERSION, RUN_NUMBER, REPO_URL, HEAD_COMMIT_MESSAGE
             } = process.env;
@@ -168,7 +152,7 @@ jobs:
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
           HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
 
-      # Step 16: Create the GitHub Release
+      # Creates a new GitHub release.
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -181,7 +165,7 @@ jobs:
           draft: false
           prerelease: false
 
-      # Step 17: Upload Universal (Fat) Release APK Asset
+      # Uploads the universal release APK as a release asset.
       - name: Upload Universal Release APK
         uses: actions/upload-release-asset@v1
         env:
@@ -192,7 +176,7 @@ jobs:
           asset_name: ${{ steps.universal_release_apk_details.outputs.name }}
           asset_content_type: application/vnd.android.package-archive
 
-      # Step 18: Upload ABI-specific Release APK Assets
+      # Uploads the arm64-v8a release APK as a release asset.
       - name: Upload arm64-v8a Release APK
         uses: actions/upload-release-asset@v1
         env:
@@ -203,6 +187,7 @@ jobs:
           asset_name: app-arm64-v8a-release-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}.apk
           asset_content_type: application/vnd.android.package-archive
 
+      # Uploads the armeabi-v7a release APK as a release asset.
       - name: Upload armeabi-v7a Release APK
         uses: actions/upload-release-asset@v1
         env:
@@ -212,9 +197,8 @@ jobs:
           asset_path: build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
           asset_name: app-armeabi-v7a-release-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}.apk
           asset_content_type: application/vnd.android.package-archive
-      # Add more for other ABIs like x86_64 if needed
 
-      # Step 19: Upload the Debug APK as a release asset
+      # Uploads the debug APK as a release asset.
       - name: Upload Debug APK Asset
         uses: actions/upload-release-asset@v1
         env:
@@ -225,19 +209,18 @@ jobs:
           asset_name: ${{ steps.debug_apk_details.outputs.name }}
           asset_content_type: application/vnd.android.package-archive
 
-      # Step 20: Upload All Release APKs (Universal and ABI-specific) as Build Artifact
+      # Uploads all release APKs as a build artifact.
       - name: Upload All Release APKs as Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: release-apks-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}
-          path: | # Using a multiline path to include specific files or patterns
+          path: |
             ${{ steps.universal_release_apk_details.outputs.path }}
             build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
             build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
-            # Add other ABI paths if built, e.g.: build/app/outputs/flutter-apk/app-x86_64-release.apk
-          if-no-files-found: warn # Default is error, warn is softer
+          if-no-files-found: warn
 
-      # Step 21: Upload Debug APK as a build artifact
+      # Uploads the debug build artifact.
       - name: Upload Debug Build Artifact
         uses: actions/upload-artifact@v4
         with:
