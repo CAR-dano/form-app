@@ -4,7 +4,7 @@ import 'package:form_app/providers/form_provider.dart'; // Import the provider
 import 'package:form_app/models/form_data.dart'; // Import FormData
 import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/widgets/footer.dart';
-import 'package:form_app/widgets/labeled_date_field.dart';
+import 'package:form_app/widgets/labeled_date_input_field.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
@@ -230,7 +230,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
       },
       {
         'label': 'Pajak 1 Tahun s.d.',
-        'hintText': 'Pilih tanggal',
+        'hintText': 'DD/MM/YYYY',
         'isDateField': true,
         'initialValue': formData.pajak1TahunDate,
         'onChanged': (date) => formNotifier.updatePajak1TahunDate(date),
@@ -243,7 +243,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
       },
       {
         'label': 'Pajak 5 Tahun s.d.',
-        'hintText': 'Pilih tanggal',
+        'hintText': 'DD/MM/YYYY',
         'isDateField': true,
         'initialValue': formData.pajak5TahunDate,
         'onChanged': (date) => formNotifier.updatePajak5TahunDate(date),
@@ -274,14 +274,15 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
       if (fieldData['isDateField'] == true) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 16.0),
-          child: LabeledDateField(
+          child: LabeledDateInputField(
             label: fieldData['label'],
             hintText: fieldData['hintText'],
             onChanged: fieldData['onChanged'],
             validator: fieldData['validator'],
-            initialDate: fieldData['initialValue'],
+            initialValue: fieldData['initialValue'] != null
+                ? '${(fieldData['initialValue'] as DateTime).day.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).month.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).year}'
+                : null,
             formSubmitted: widget.formSubmitted.value,
-            lastDate: DateTime.now().add(const Duration(days: 365 * 20)),
           ),
         );
       } else {

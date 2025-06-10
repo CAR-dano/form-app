@@ -28,12 +28,18 @@ class ImageInputWidget extends ConsumerStatefulWidget {
 }
 
 class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
+  bool _isLoadingCamera = false;
+  bool _isLoadingGallery = false;
+
   Future<void> _takePictureFromCamera() async {
     FocusScope.of(context).unfocus();
     final picker = ImagePicker();
     final pickedImageXFile = await picker.pickImage(source: ImageSource.camera);
 
     if (pickedImageXFile != null) {
+      setState(() {
+        _isLoadingCamera = true;
+      });
       ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment counter
       try {
         await ImagePickerUtil.saveImageToGallery(pickedImageXFile);
@@ -64,8 +70,15 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
       } finally {
         if (mounted) {
           ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement counter
+          setState(() {
+            _isLoadingCamera = false;
+          });
         }
       }
+    } else {
+      setState(() {
+        _isLoadingCamera = false;
+      });
     }
   }
 
@@ -74,6 +87,9 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
     final pickedImageXFile = await ImagePickerUtil.pickImageFromGallery();
 
     if (pickedImageXFile != null) {
+      setState(() {
+        _isLoadingGallery = true;
+      });
       ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment counter
       try {
         final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile);
@@ -103,8 +119,15 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
       } finally {
         if (mounted) {
           ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement counter
+          setState(() {
+            _isLoadingGallery = false;
+          });
         }
       }
+    } else {
+      setState(() {
+        _isLoadingGallery = false;
+      });
     }
   }
 
@@ -183,27 +206,38 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                             width: 1.0,
                           ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              'assets/images/camera.svg',
-                              width: 30.0, 
-                              height: 30.0, 
-                              colorFilter: ColorFilter.mode(buttonTextColor, BlendMode.srcIn),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Kamera',
-                              style: labelStyle.copyWith(
-                                color: buttonTextColor,
-                                fontWeight: FontWeight.bold,
-                                height: 1.2, 
+                        child: _isLoadingCamera
+                            ? const Center(
+                                child: SizedBox(
+                                  height: 30.0, // Match icon size
+                                  width: 30.0,  // Match icon size
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 3.0,
+                                  ),
+                                ),
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    'assets/images/camera.svg',
+                                    width: 30.0, 
+                                    height: 30.0, 
+                                    colorFilter: ColorFilter.mode(buttonTextColor, BlendMode.srcIn),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Kamera',
+                                    style: labelStyle.copyWith(
+                                      color: buttonTextColor,
+                                      fontWeight: FontWeight.bold,
+                                      height: 1.2, 
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
                       ),
                     ),
                   ),
@@ -221,26 +255,37 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                             width: 1.0,
                           ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              'assets/images/gallery-white.svg',
-                              width: 30.0, 
-                              height: 30.0, 
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Galeri',
-                              style: labelStyle.copyWith(
-                                color: buttonTextColor,
-                                fontWeight: FontWeight.bold,
-                                height: 1.2, 
+                        child: _isLoadingGallery
+                            ? const Center(
+                                child: SizedBox(
+                                  height: 30.0, // Match icon size
+                                  width: 30.0,  // Match icon size
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 3.0,
+                                  ),
+                                ),
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    'assets/images/gallery-white.svg',
+                                    width: 30.0, 
+                                    height: 30.0, 
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Galeri',
+                                    style: labelStyle.copyWith(
+                                      color: buttonTextColor,
+                                      fontWeight: FontWeight.bold,
+                                      height: 1.2, 
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
                       ),
                     ),
                   ),
