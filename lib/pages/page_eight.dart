@@ -16,12 +16,8 @@ class PageEight extends ConsumerStatefulWidget {
   ConsumerState<PageEight> createState() => _PageEightState();
 }
 
-class _PageEightState extends ConsumerState<PageEight>
-    with AutomaticKeepAliveClientMixin {
+class _PageEightState extends ConsumerState<PageEight>{
   late FocusScopeNode _focusScopeNode;
-
-  @override
-  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -37,9 +33,6 @@ class _PageEightState extends ConsumerState<PageEight>
 
   @override
   Widget build(BuildContext context) {
-    super.build(
-      context,
-    );
     final formData = ref.watch(formProvider);
     final formNotifier = ref.read(formProvider.notifier);
 

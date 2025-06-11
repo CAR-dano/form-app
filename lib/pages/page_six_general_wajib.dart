@@ -25,9 +25,7 @@ class PageSixGeneralWajib extends ConsumerStatefulWidget { // Changed to Consume
   ConsumerState<PageSixGeneralWajib> createState() => _PageSixGeneralWajibState();
 }
 
-class _PageSixGeneralWajibState extends ConsumerState<PageSixGeneralWajib> with AutomaticKeepAliveClientMixin { // Add mixin
-  @override
-  bool get wantKeepAlive => true; // Override wantKeepAlive
+class _PageSixGeneralWajibState extends ConsumerState<PageSixGeneralWajib>{ // Add mixin
 
   // Moved _handleImagePicked into the State class
   void _handleImagePicked(String label, File? imageFile) { // ref is available via this.ref
@@ -61,7 +59,6 @@ class _PageSixGeneralWajibState extends ConsumerState<PageSixGeneralWajib> with 
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
     return Column(
       children: [
         SingleChildScrollView(

@@ -24,13 +24,11 @@ class PageSeven extends ConsumerStatefulWidget {
   ConsumerState<PageSeven> createState() => _PageSevenState();
 }
 
-class _PageSevenState extends ConsumerState<PageSeven> with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
+class _PageSevenState extends ConsumerState<PageSeven>{
+
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     const String pageIdentifier = 'Foto Dokumen'; // Define identifier
 
     return SingleChildScrollView(

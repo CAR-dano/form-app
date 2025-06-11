@@ -24,11 +24,9 @@ class PageTwo extends ConsumerStatefulWidget {
   ConsumerState<PageTwo> createState() => _PageTwoState();
 }
 
-class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClientMixin {
+class _PageTwoState extends ConsumerState<PageTwo> {
   late FocusScopeNode _focusScopeNode;
 
-  @override
-  bool get wantKeepAlive => true;
 
   // Removed _formSubmitted local state
 
@@ -63,7 +61,6 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
     final formData = ref.watch(formProvider); // Watch the form data
     final formNotifier = ref.read(formProvider.notifier); // Read the notifier
 

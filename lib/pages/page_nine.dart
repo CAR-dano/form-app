@@ -44,7 +44,7 @@ class PageNine extends ConsumerStatefulWidget {
   ConsumerState<PageNine> createState() => _PageNineState();
 }
 
-class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClientMixin {
+class _PageNineState extends ConsumerState<PageNine>{
   bool _isChecked = false;
   bool _isLoading = false;
   // New state variables for detailed progress
@@ -59,10 +59,6 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
     14, // PageTwo
     // Removed validation for Tambahan Image pages as per user request
   ];
-
-
-  @override
-  bool get wantKeepAlive => true;
 
   Future<void> _submitForm() async {
     if (_isLoading) return;
@@ -266,7 +262,6 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Column(
       children: [
         Expanded( // Makes the main content area scrollable

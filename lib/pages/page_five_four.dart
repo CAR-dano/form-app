@@ -18,11 +18,8 @@ class PageFiveFour extends ConsumerStatefulWidget {
   ConsumerState<PageFiveFour> createState() => _PageFiveFourState();
 }
 
-class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepAliveClientMixin { // Add mixin
+class _PageFiveFourState extends ConsumerState<PageFiveFour>{
   late FocusScopeNode _focusScopeNode;
-
-  @override
-  bool get wantKeepAlive => true; // Override wantKeepAlive
 
   @override
   void initState() {
@@ -38,7 +35,6 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
     final formData = ref.watch(formProvider);
     final formNotifier = ref.read(formProvider.notifier);
 

@@ -35,9 +35,7 @@ class PageSixKakiKakiWajib extends ConsumerStatefulWidget { // Changed to Consum
   ConsumerState<PageSixKakiKakiWajib> createState() => _PageSixKakiKakiWajibState();
 }
 
-class _PageSixKakiKakiWajibState extends ConsumerState<PageSixKakiKakiWajib> with AutomaticKeepAliveClientMixin { // Add mixin
-  @override
-  bool get wantKeepAlive => true; // Override wantKeepAlive
+class _PageSixKakiKakiWajibState extends ConsumerState<PageSixKakiKakiWajib>{ // Add mixin
 
   void _handleImagePicked(String label, File? imageFile) { // ref is available via this.ref
     final imageDataListNotifier = ref.read(imageDataListProvider.notifier);
@@ -63,7 +61,6 @@ class _PageSixKakiKakiWajibState extends ConsumerState<PageSixKakiKakiWajib> wit
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
     // ref is available directly in ConsumerStatefulWidget state classes
     return SingleChildScrollView(
       clipBehavior: Clip.none,

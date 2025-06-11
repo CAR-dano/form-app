@@ -18,13 +18,9 @@ class PageThree extends ConsumerStatefulWidget { // Changed to ConsumerStatefulW
   ConsumerState<PageThree> createState() => _PageThreeState(); // Create state
 }
 
-class _PageThreeState extends ConsumerState<PageThree> with AutomaticKeepAliveClientMixin { // Add mixin
-  @override
-  bool get wantKeepAlive => true; // Override wantKeepAlive
-
+class _PageThreeState extends ConsumerState<PageThree> {
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
     final formData = ref.watch(formProvider); // Watch the form data
     final formNotifier = ref.read(formProvider.notifier); // Read the notifier
 

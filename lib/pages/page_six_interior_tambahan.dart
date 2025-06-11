@@ -22,8 +22,7 @@ class PageSixInteriorTambahan extends ConsumerStatefulWidget {
   ConsumerState<PageSixInteriorTambahan> createState() => _PageSixInteriorTambahanState();
 }
 
-class _PageSixInteriorTambahanState extends ConsumerState<PageSixInteriorTambahan> 
-    with AutomaticKeepAliveClientMixin {
+class _PageSixInteriorTambahanState extends ConsumerState<PageSixInteriorTambahan>{
   late FocusScopeNode _focusScopeNode;
 
   @override
@@ -38,12 +37,9 @@ class _PageSixInteriorTambahanState extends ConsumerState<PageSixInteriorTambaha
     super.dispose();
   }
 
-  @override
-  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     const String pageIdentifier = 'Interior Tambahan'; // Define identifier
 
     return PopScope(

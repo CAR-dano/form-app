@@ -28,11 +28,8 @@ class PageOne extends ConsumerStatefulWidget {
   ConsumerState<PageOne> createState() => _PageOneState();
 }
 
-class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClientMixin {
+class _PageOneState extends ConsumerState<PageOne> {
   late FocusScopeNode _focusScopeNode;
-
-  @override
-  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -48,7 +45,6 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     final formData = ref.watch(formProvider);
     final formNotifier = ref.read(formProvider.notifier);
     // No longer need to watch inspectionBranchesProvider directly here for the UI part of the dropdown.

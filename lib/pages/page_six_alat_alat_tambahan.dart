@@ -22,8 +22,7 @@ class PageSixAlatAlatTambahan extends ConsumerStatefulWidget {
   ConsumerState<PageSixAlatAlatTambahan> createState() => _PageSixAlatAlatTambahanState();
 }
 
-class _PageSixAlatAlatTambahanState extends ConsumerState<PageSixAlatAlatTambahan> 
-    with AutomaticKeepAliveClientMixin {
+class _PageSixAlatAlatTambahanState extends ConsumerState<PageSixAlatAlatTambahan>{
   late FocusScopeNode _focusScopeNode;
 
   @override
@@ -39,11 +38,7 @@ class _PageSixAlatAlatTambahanState extends ConsumerState<PageSixAlatAlatTambaha
   }
 
   @override
-  bool get wantKeepAlive => true;
-
-  @override
   Widget build(BuildContext context) {
-    super.build(context);
     const String pageIdentifier = 'Alat-alat Tambahan'; // Define identifier
 
     return PopScope(
