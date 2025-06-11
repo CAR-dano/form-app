@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_app/pages/multi_step_form_screen.dart'; // Import MultiStepFormScreen
+import 'package:form_app/pages/home_page.dart'; // Import FormDashboardScreen
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import flutter_dotenv
 import 'package:form_app/providers/tambahan_image_data_provider.dart'; // Import the provider
 import 'dart:io'; // For FileImage
@@ -62,10 +62,11 @@ class _FormAppState extends ConsumerState<FormApp> {
     return MaterialApp(
       title: 'Palapa Inspeksi',
       theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: const MultiStepFormScreen(), // Set MultiStepFormScreen as home
+      home: const HomePage(), // Set FormDashboardScreen as home
     );
   }
 }

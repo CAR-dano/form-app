@@ -1,7 +1,9 @@
 import 'package:form_app/models/inspector_data.dart'; // Import Inspector model
 import 'package:form_app/models/inspection_branch.dart'; // Import InspectionBranch model
+import 'package:uuid/uuid.dart';
 
 class FormData {
+  String id; // Unique ID for the form instance
   // Page One Data
   String? namaInspektor;
   String? inspectorId;
@@ -218,6 +220,7 @@ class FormData {
 
 
   FormData({
+    String? id, // Make id optional in constructor for existing data
     this.inspectorId,
     this.namaInspektor,
     this.selectedInspector,
@@ -403,11 +406,12 @@ class FormData {
     this.catKiriFenderBelakang,
     this.catKiriSideSkirt,
     this.catKananSideSkirt,
-  });
+  }) : id = id ?? const Uuid().v4(); // Generate ID if not provided
   // Add methods to update data if needed, or update directly
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id, // Include id in toJson
       'namaInspektor': namaInspektor,
       'inspectorId': inspectorId,
       'namaCustomer': namaCustomer,
@@ -595,6 +599,7 @@ class FormData {
 
   factory FormData.fromJson(Map<String, dynamic> json) {
     return FormData(
+      id: json['id'] as String?, // Parse id from json
       namaInspektor: json['namaInspektor'] as String?,
       inspectorId: json['inspectorId'] as String?,
       namaCustomer: json['namaCustomer'] as String? ?? '',
@@ -976,6 +981,7 @@ class FormData {
     String? catKananSideSkirt,
   }) {
     return FormData(
+      id: id, // Include id in copyWith
       namaInspektor: namaInspektor ?? this.namaInspektor,
       inspectorId: inspectorId ?? this.inspectorId,
       selectedInspector: selectedInspector ?? this.selectedInspector,

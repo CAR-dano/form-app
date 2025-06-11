@@ -3,49 +3,60 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspector_data.dart';
 import 'package:form_app/providers/inspection_branches_provider.dart';
-import 'package:form_app/providers/inspector_provider.dart'; // Import inspection branches provider
+import 'package:form_app/providers/inspector_provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:convert';
-import 'package:form_app/models/inspection_branch.dart'; // Import InspectionBranch model
+import 'package:form_app/models/inspection_branch.dart';
+import 'package:form_app/providers/form_collection_provider.dart';
 
 class FormNotifier extends StateNotifier<FormData> {
   final Ref _ref;
-  static const _fileName = 'form_data.json';
+  static const _fileNamePrefix = 'form_data_';
+  static const _fileExtension = '.json';
 
   FormNotifier(this._ref) : super(FormData()) {
-    // Load initial data first
-    _loadFormData().then((_) {
-      // Then setup listeners and perform initial validation with loaded state
-      _ref.listen<AsyncValue<List<InspectionBranch>>>(inspectionBranchesProvider, (previous, next) {
-        next.whenData((availableBranches) {
-          _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
-        });
+    // Initial load based on currently selected form (if any)
+    final initialSelectedIdentifier = _ref.read(selectedFormIdentifierProvider);
+    if (initialSelectedIdentifier != null) {
+      _loadFormData(initialSelectedIdentifier).then((_) {
+        _setupListeners();
       });
-      final initialBranchesAsync = _ref.read(inspectionBranchesProvider);
-      initialBranchesAsync.whenData((availableBranches) {
+    } else {
+      _setupListeners();
+    }
+
+    // Listen to changes in selected form identifier
+    _ref.listen<String?>(selectedFormIdentifierProvider, (previous, next) {
+      if (next != null) {
+        _loadFormData(next); // Load data for the newly selected form
+      } else {
+        state = FormData(); // Reset to empty form if no form is selected
+      }
+    });
+  }
+
+  void _setupListeners() {
+    // Setup listeners for inspection branches and inspectors
+    _ref.listen<AsyncValue<List<InspectionBranch>>>(inspectionBranchesProvider, (previous, next) {
+      next.whenData((availableBranches) {
         _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
       });
+    });
+    // No need for initialBranchesAsync here, as _loadFormData handles initial state.
 
-      _ref.listen<AsyncValue<List<Inspector>>>(inspectorProvider, (previous, next) {
-        next.whenData((availableInspectors) {
-          // Pass the currently loaded/set inspectorId from state
-          _validateAndUpdateSelectedInspector(state.inspectorId, availableInspectors);
-        });
-      });
-      final initialInspectorsAsync = _ref.read(inspectorProvider);
-      initialInspectorsAsync.whenData((availableInspectors) {
-        // Pass the currently loaded/set inspectorId from state
+    _ref.listen<AsyncValue<List<Inspector>>>(inspectorProvider, (previous, next) {
+      next.whenData((availableInspectors) {
         _validateAndUpdateSelectedInspector(state.inspectorId, availableInspectors);
       });
     });
+    // No need for initialInspectorsAsync here, as _loadFormData handles initial state.
   }
 
   void _validateAndUpdateCabangInspeksi(InspectionBranch? currentCabang, List<InspectionBranch> availableBranches) {
     if (currentCabang != null) {
-      // Check if the current branch's ID exists in the available branches
       if (availableBranches.isNotEmpty && !availableBranches.any((branch) => branch.id == currentCabang.id)) {
-        if (state.cabangInspeksi != null) { // Check if a change is actually needed
+        if (state.cabangInspeksi != null) {
           state = state.copyWith(cabangInspeksi: null);
         }
       }
@@ -62,15 +73,15 @@ class FormNotifier extends StateNotifier<FormData> {
         resolvedInspector = availableInspectors.firstWhere((inspector) => inspector.id == currentInspectorId);
         resolvedNamaInspektor = resolvedInspector.name;
         resolvedInspectorId = resolvedInspector.id;
-      } catch (e) { // Not found
+      } catch (e) {
         resolvedInspector = null;
         resolvedNamaInspektor = null;
         resolvedInspectorId = null;
       }
     } else {
-        resolvedInspector = null;
-        resolvedNamaInspektor = null;
-        resolvedInspectorId = null;
+      resolvedInspector = null;
+      resolvedNamaInspektor = null;
+      resolvedInspectorId = null;
     }
 
     if (state.selectedInspector != resolvedInspector ||
@@ -83,7 +94,6 @@ class FormNotifier extends StateNotifier<FormData> {
       );
     }
   }
-
 
   void updateSelectedInspector(Inspector? newSelectedInspector) {
     if (newSelectedInspector != null) {
@@ -101,9 +111,19 @@ class FormNotifier extends StateNotifier<FormData> {
     }
   }
 
-
   void updateNamaCustomer(String name) {
-    state = state.copyWith(namaCustomer: name);
+    final oldIdentifier = _ref.read(selectedFormIdentifierProvider);
+    final currentFormData = state.copyWith(namaCustomer: name); // Create new FormData with updated name
+
+    if (oldIdentifier != null && oldIdentifier.startsWith('Form_')) {
+      // If the form identifier is temporary, update it with the customer name
+      _ref.read(formCollectionProvider.notifier).renameForm(oldIdentifier, currentFormData); // Pass currentFormData
+      _ref.read(selectedFormIdentifierProvider.notifier).state = currentFormData.id; // Update selected identifier to the new ID
+      state = currentFormData; // Update the current state of this notifier
+    } else {
+      // For existing forms, just update the name and let the @override set state handle saving
+      state = currentFormData;
+    }
   }
 
   void updateCabangInspeksi(InspectionBranch? cabang) {
@@ -413,121 +433,97 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(stirSelectedValue: value);
   }
 
-
   void updateRemTanganSelectedValue(int? value) {
     state = state.copyWith(remTanganSelectedValue: value);
   }
-
 
   void updatePedalSelectedValue(int? value) {
     state = state.copyWith(pedalSelectedValue: value);
   }
 
-
   void updateSwitchWiperSelectedValue(int? value) {
     state = state.copyWith(switchWiperSelectedValue: value);
   }
-
 
   void updateLampuHazardSelectedValue(int? value) {
     state = state.copyWith(lampuHazardSelectedValue: value);
   }
 
-
   void updatePanelDashboardSelectedValue(int? value) {
     state = state.copyWith(panelDashboardSelectedValue: value);
   }
-
 
   void updatePembukaKapMesinSelectedValue(int? value) {
     state = state.copyWith(pembukaKapMesinSelectedValue: value);
   }
 
-
   void updatePembukaBagasiSelectedValue(int? value) {
     state = state.copyWith(pembukaBagasiSelectedValue: value);
   }
-
 
   void updateJokDepanSelectedValue(int? value) {
     state = state.copyWith(jokDepanSelectedValue: value);
   }
 
-
   void updateAromaInteriorSelectedValue(int? value) {
     state = state.copyWith(aromaInteriorSelectedValue: value);
   }
-
 
   void updateHandlePintuSelectedValue(int? value) {
     state = state.copyWith(handlePintuSelectedValue: value);
   }
 
-
   void updateConsoleBoxSelectedValue(int? value) {
     state = state.copyWith(consoleBoxSelectedValue: value);
   }
-
 
   void updateSpionTengahSelectedValue(int? value) {
     state = state.copyWith(spionTengahSelectedValue: value);
   }
 
-
   void updateTuasPersnelingSelectedValue(int? value) {
     state = state.copyWith(tuasPersnelingSelectedValue: value);
   }
-
 
   void updateJokBelakangSelectedValue(int? value) {
     state = state.copyWith(jokBelakangSelectedValue: value);
   }
 
-
   void updatePanelIndikatorSelectedValue(int? value) {
     state = state.copyWith(panelIndikatorSelectedValue: value);
   }
-
 
   void updateSwitchLampuSelectedValue(int? value) {
     state = state.copyWith(switchLampuSelectedValue: value);
   }
 
-
   void updateKarpetDasarSelectedValue(int? value) {
     state = state.copyWith(karpetDasarSelectedValue: value);
   }
-
 
   void updateKlaksonSelectedValue(int? value) {
     state = state.copyWith(klaksonSelectedValue: value);
   }
 
-
   void updateSunVisorSelectedValue(int? value) {
     state = state.copyWith(sunVisorSelectedValue: value);
   }
-
 
   void updateTuasTangkiBensinSelectedValue(int? value) {
     state = state.copyWith(tuasTangkiBensinSelectedValue: value);
   }
 
-
   void updateSabukPengamanSelectedValue(int? value) {
     state = state.copyWith(sabukPengamanSelectedValue: value);
   }
-
 
   void updateTrimInteriorSelectedValue(int? value) {
     state = state.copyWith(trimInteriorSelectedValue: value);
   }
 
-
   void updatePlafonSelectedValue(int? value) {
     state = state.copyWith(plafonSelectedValue: value);
   }
-
 
   void updateInteriorCatatanList(List<String> lines) {
     state = state.copyWith(interiorCatatanList: lines);
@@ -538,151 +534,121 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(bumperDepanSelectedValue: value);
   }
 
-
   void updateKapMesinSelectedValue(int? value) {
     state = state.copyWith(kapMesinSelectedValue: value);
   }
-
 
   void updateLampuUtamaSelectedValue(int? value) {
     state = state.copyWith(lampuUtamaSelectedValue: value);
   }
 
-
   void updatePanelAtapSelectedValue(int? value) {
     state = state.copyWith(panelAtapSelectedValue: value);
   }
-
 
   void updateGrillSelectedValue(int? value) {
     state = state.copyWith(grillSelectedValue: value);
   }
 
-
   void updateLampuFoglampSelectedValue(int? value) {
     state = state.copyWith(lampuFoglampSelectedValue: value);
   }
-
 
   void updateKacaBeningSelectedValue(int? value) {
     state = state.copyWith(kacaBeningSelectedValue: value);
   }
 
-
   void updateWiperBelakangSelectedValue(int? value) {
     state = state.copyWith(wiperBelakangSelectedValue: value);
   }
-
 
   void updateBumperBelakangSelectedValue(int? value) {
     state = state.copyWith(bumperBelakangSelectedValue: value);
   }
 
-
   void updateLampuBelakangSelectedValue(int? value) {
     state = state.copyWith(lampuBelakangSelectedValue: value);
   }
-
 
   void updateTrunklidSelectedValue(int? value) {
     state = state.copyWith(trunklidSelectedValue: value);
   }
 
-
   void updateKacaDepanSelectedValue(int? value) {
     state = state.copyWith(kacaDepanSelectedValue: value);
   }
-
 
   void updateFenderKananSelectedValue(int? value) {
     state = state.copyWith(fenderKananSelectedValue: value);
   }
 
-
   void updateQuarterPanelKananSelectedValue(int? value) {
     state = state.copyWith(quarterPanelKananSelectedValue: value);
   }
-
 
   void updatePintuBelakangKananSelectedValue(int? value) {
     state = state.copyWith(pintuBelakangKananSelectedValue: value);
   }
 
-
   void updateSpionKananSelectedValue(int? value) {
     state = state.copyWith(spionKananSelectedValue: value);
   }
-
 
   void updateLisplangKananSelectedValue(int? value) {
     state = state.copyWith(lisplangKananSelectedValue: value);
   }
 
-
   void updateSideSkirtKananSelectedValue(int? value) {
     state = state.copyWith(sideSkirtKananSelectedValue: value);
   }
-
 
   void updateDaunWiperSelectedValue(int? value) {
     state = state.copyWith(daunWiperSelectedValue: value);
   }
 
-
   void updatePintuBelakangSelectedValue(int? value) {
     state = state.copyWith(pintuBelakangSelectedValue: value);
   }
-
 
   void updateFenderKiriSelectedValue(int? value) {
     state = state.copyWith(fenderKiriSelectedValue: value);
   }
 
-
   void updateQuarterPanelKiriSelectedValue(int? value) {
     state = state.copyWith(quarterPanelKiriSelectedValue: value);
   }
-
 
   void updatePintuDepanSelectedValue(int? value) {
     state = state.copyWith(pintuDepanSelectedValue: value);
   }
 
-
   void updateKacaJendelaKananSelectedValue(int? value) {
     state = state.copyWith(kacaJendelaKananSelectedValue: value);
   }
-
 
   void updatePintuBelakangKiriSelectedValue(int? value) {
     state = state.copyWith(pintuBelakangKiriSelectedValue: value);
   }
 
-
   void updateSpionKiriSelectedValue(int? value) {
     state = state.copyWith(spionKiriSelectedValue: value);
   }
-
 
   void updatePintuDepanKiriSelectedValue(int? value) {
     state = state.copyWith(pintuDepanKiriSelectedValue: value);
   }
 
-
   void updateKacaJendelaKiriSelectedValue(int? value) {
     state = state.copyWith(kacaJendelaKiriSelectedValue: value);
   }
-
 
   void updateLisplangKiriSelectedValue(int? value) {
     state = state.copyWith(lisplangKiriSelectedValue: value);
   }
 
-
   void updateSideSkirtKiriSelectedValue(int? value) {
     state = state.copyWith(sideSkirtKiriSelectedValue: value);
   }
-
 
   void updateEksteriorCatatanList(List<String> lines) {
     state = state.copyWith(eksteriorCatatanList: lines);
@@ -697,86 +663,69 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(banDepanSelectedValue: value);
   }
 
-
   void updateVelgDepanSelectedValue(int? value) {
     state = state.copyWith(velgDepanSelectedValue: value);
   }
-
 
   void updateDiscBrakeSelectedValue(int? value) {
     state = state.copyWith(discBrakeSelectedValue: value);
   }
 
-
   void updateMasterRemSelectedValue(int? value) {
     state = state.copyWith(masterRemSelectedValue: value);
   }
-
 
   void updateTieRodSelectedValue(int? value) {
     state = state.copyWith(tieRodSelectedValue: value);
   }
 
-
   void updateGardanSelectedValue(int? value) {
     state = state.copyWith(gardanSelectedValue: value);
   }
-
 
   void updateBanBelakangSelectedValue(int? value) {
     state = state.copyWith(banBelakangSelectedValue: value);
   }
 
-
   void updateVelgBelakangSelectedValue(int? value) {
     state = state.copyWith(velgBelakangSelectedValue: value);
   }
-
 
   void updateBrakePadSelectedValue(int? value) {
     state = state.copyWith(brakePadSelectedValue: value);
   }
 
-
   void updateCrossmemberSelectedValue(int? value) {
     state = state.copyWith(crossmemberSelectedValue: value);
   }
-
 
   void updateKnalpotSelectedValue(int? value) {
     state = state.copyWith(knalpotSelectedValue: value);
   }
 
-
   void updateBalljointSelectedValue(int? value) {
     state = state.copyWith(balljointSelectedValue: value);
   }
-
 
   void updateRocksteerSelectedValue(int? value) {
     state = state.copyWith(rocksteerSelectedValue: value);
   }
 
-
   void updateKaretBootSelectedValue(int? value) {
     state = state.copyWith(karetBootSelectedValue: value);
   }
-
 
   void updateUpperLowerArmSelectedValue(int? value) {
     state = state.copyWith(upperLowerArmSelectedValue: value);
   }
 
-
   void updateShockBreakerSelectedValue(int? value) {
     state = state.copyWith(shockBreakerSelectedValue: value);
   }
 
-
   void updateLinkStabilizerSelectedValue(int? value) {
     state = state.copyWith(linkStabilizerSelectedValue: value);
   }
-
 
   void updateBanDanKakiKakiCatatanList(List<String> lines) {
     state = state.copyWith(banDanKakiKakiCatatanList: lines);
@@ -787,36 +736,29 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(bunyiGetaranSelectedValue: value);
   }
 
-
   void updatePerformaStirSelectedValue(int? value) {
     state = state.copyWith(performaStirSelectedValue: value);
   }
-
 
   void updatePerpindahanTransmisiSelectedValue(int? value) {
     state = state.copyWith(perpindahanTransmisiSelectedValue: value);
   }
 
-
   void updateStirBalanceSelectedValue(int? value) {
     state = state.copyWith(stirBalanceSelectedValue: value);
   }
-
 
   void updatePerformaSuspensiSelectedValue(int? value) {
     state = state.copyWith(performaSuspensiSelectedValue: value);
   }
 
-
   void updatePerformaKoplingSelectedValue(int? value) {
     state = state.copyWith(performaKoplingSelectedValue: value);
   }
 
-
   void updateRpmSelectedValue(int? value) {
     state = state.copyWith(rpmSelectedValue: value);
   }
-
 
   void updateTestDriveCatatanList(List<String> lines) {
     state = state.copyWith(testDriveCatatanList: lines);
@@ -827,41 +769,33 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(tebalCatBodyDepanSelectedValue: value);
   }
 
-
   void updateTebalCatBodyKiriSelectedValue(int? value) {
     state = state.copyWith(tebalCatBodyKiriSelectedValue: value);
   }
-
 
   void updateTemperatureAcMobilSelectedValue(int? value) {
     state = state.copyWith(temperatureAcMobilSelectedValue: value);
   }
 
-
   void updateTebalCatBodyKananSelectedValue(int? value) {
     state = state.copyWith(tebalCatBodyKananSelectedValue: value);
   }
-
 
   void updateTebalCatBodyBelakangSelectedValue(int? value) {
     state = state.copyWith(tebalCatBodyBelakangSelectedValue: value);
   }
 
-
   void updateObdScannerSelectedValue(int? value) {
     state = state.copyWith(obdScannerSelectedValue: value);
   }
-
 
   void updateTebalCatBodyAtapSelectedValue(int? value) {
     state = state.copyWith(tebalCatBodyAtapSelectedValue: value);
   }
 
-
   void updateTestAccuSelectedValue(int? value) {
     state = state.copyWith(testAccuSelectedValue: value);
   }
-
 
   void updateToolsTestCatatanList(List<String> lines) {
     state = state.copyWith(toolsTestCatatanList: lines);
@@ -919,38 +853,36 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(catKananSideSkirt: value);
   }
 
-  Future<String> _getFilePath() async {
+  Future<String> _getFilePath(String identifier) async {
     final directory = await getApplicationDocumentsDirectory();
-    return '${directory.path}/$_fileName';
+    return '${directory.path}/$_fileNamePrefix$identifier$_fileExtension';
   }
 
-  Future<void> _loadFormData() async {
+  Future<void> _loadFormData(String identifier) async {
     try {
-      final filePath = await _getFilePath();
+      final filePath = await _getFilePath(identifier);
       final file = File(filePath);
       if (await file.exists()) {
         final jsonString = await file.readAsString();
         final jsonMap = json.decode(jsonString);
-        super.state = FormData.fromJson(jsonMap);
+        state = FormData.fromJson(jsonMap);
       }
     } catch (e) {
-      // Handle errors during file loading
       if (kDebugMode) {
-        print('Error loading form data: $e');
+        print('Error loading form data for $identifier: $e');
       }
     }
   }
 
-  Future<void> _saveFormData() async {
+  Future<void> _saveFormData(String identifier) async {
     try {
-      final filePath = await _getFilePath();
+      final filePath = await _getFilePath(identifier);
       final file = File(filePath);
       final jsonString = json.encode(state.toJson());
       await file.writeAsString(jsonString);
     } catch (e) {
-      // Handle errors during file saving
       if (kDebugMode) {
-        print('Error saving form data: $e');
+        print('Error saving form data for $identifier: $e');
       }
     }
   }
@@ -958,15 +890,23 @@ class FormNotifier extends StateNotifier<FormData> {
   @override
   set state(FormData value) {
     super.state = value;
-    _saveFormData();
+    final selectedIdentifier = _ref.read(selectedFormIdentifierProvider);
+    if (selectedIdentifier != null) {
+      _ref.read(formCollectionProvider.notifier).updateForm(selectedIdentifier, value);
+      _saveFormData(selectedIdentifier);
+    }
   }
 
   void resetFormData() {
     state = FormData();
-    _saveFormData();
+    final selectedIdentifier = _ref.read(selectedFormIdentifierProvider);
+    if (selectedIdentifier != null) {
+      _ref.read(formCollectionProvider.notifier).updateForm(selectedIdentifier, state);
+      _saveFormData(selectedIdentifier);
+    }
   }
 }
 
 final formProvider = StateNotifierProvider<FormNotifier, FormData>((ref) {
-  return FormNotifier(ref); // Pass ref to the constructor
+  return FormNotifier(ref);
 });
