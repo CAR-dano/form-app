@@ -18,15 +18,15 @@ import 'package:form_app/pages/page_five_six.dart';
 import 'package:form_app/pages/page_five_seven.dart';
 import 'package:form_app/pages/page_six_general_wajib.dart';
 import 'package:form_app/pages/page_six_general_tambahan.dart';
-import 'package:form_app/pages/page_six_eksterior_wajib.dart';
+// import 'package:form_app/pages/page_six_eksterior_wajib.dart';
 import 'package:form_app/pages/page_six_eksterior_tambahan.dart';
-import 'package:form_app/pages/page_six_interior_wajib.dart';
+// import 'package:form_app/pages/page_six_interior_wajib.dart';
 import 'package:form_app/pages/page_six_interior_tambahan.dart';
-import 'package:form_app/pages/page_six_mesin_wajib.dart';
+// import 'package:form_app/pages/page_six_mesin_wajib.dart';
 import 'package:form_app/pages/page_six_mesin_tambahan.dart';
-import 'package:form_app/pages/page_six_kaki_kaki_wajib.dart';
+// import 'package:form_app/pages/page_six_kaki_kaki_wajib.dart';
 import 'package:form_app/pages/page_six_kaki_kaki_tambahan.dart';
-import 'package:form_app/pages/page_six_alat_alat_wajib.dart';
+// import 'package:form_app/pages/page_six_alat_alat_wajib.dart';
 import 'package:form_app/pages/page_six_alat_alat_tambahan.dart';
 import 'package:form_app/pages/page_seven.dart';
 import 'package:form_app/pages/page_eight.dart';
@@ -140,11 +140,11 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     _formPages = [
       PageOne(key: const ValueKey('PageOne'), formKey: _formKeys[0], formSubmitted: _formSubmittedPageOne),
       const PageSixGeneralWajib(key: ValueKey('PageSixGeneralWajib')),
-      const PageSixEksteriorWajib(key: ValueKey('PageSixEksteriorWajib')),
-      const PageSixInteriorWajib(key: ValueKey('PageSixInteriorWajib')),
-      const PageSixMesinWajib(key: ValueKey('PageSixMesinWajib')),
-      const PageSixKakiKakiWajib(key: ValueKey('PageSixKakiKakiWajib')),
-      const PageSixAlatAlatWajib(key: ValueKey('PageSixAlatAlatWajib')),
+      // const PageSixEksteriorWajib(key: ValueKey('PageSixEksteriorWajib')),
+      // const PageSixInteriorWajib(key: ValueKey('PageSixInteriorWajib')),
+      // const PageSixMesinWajib(key: ValueKey('PageSixMesinWajib')),
+      // const PageSixKakiKakiWajib(key: ValueKey('PageSixKakiKakiWajib')),
+      // const PageSixAlatAlatWajib(key: ValueKey('PageSixAlatAlatWajib')),
       PageSixGeneralTambahan(key: const ValueKey('PageSixGeneralTambahan'), formSubmitted: _formSubmittedTambahanImages),
       PageSixEksteriorTambahan(key: const ValueKey('PageSixEksteriorTambahan'), formSubmitted: _formSubmittedTambahanImages),
       PageSixInteriorTambahan(key: const ValueKey('PageSixInteriorTambahan'), formSubmitted: _formSubmittedTambahanImages),
