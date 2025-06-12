@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_app/providers/form_step_provider.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart'; // Import the provider
+import 'package:form_app/providers/form_provider.dart'; // Import formProvider
 import 'package:form_app/widgets/common_layout.dart';
 
 // Import all form pages
@@ -41,8 +41,6 @@ class MultiStepFormScreen extends ConsumerStatefulWidget {
 }
 
 class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
-  // ... (other existing properties like _formKeys, _pageController, etc.)
-
   // Add this flag:
   bool _isProgrammaticallyMovingPage = false; // To manage programmatic vs. user-driven page changes
   bool _isPostFrameCallbackScheduled = false; // To prevent scheduling multiple post-frame callbacks
@@ -86,7 +84,10 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   @override
   void initState() {
     super.initState();
-    int initialStep = ref.read(formStepProvider);
+    // Read the current form data to get the saved page index
+    final formData = ref.read(formProvider);
+    int initialStep = formData.currentPageIndex; // Use the saved page index
+
     _pageController = PageController(initialPage: initialStep);
 
     // Pre-cache checker.png
@@ -105,13 +106,13 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
         _isPostFrameCallbackScheduled = false; // Reset flag
         if (mounted && _pageController.hasClients) {
-            final currentStepFromProvider = ref.read(formStepProvider);
+            final currentStepFromFormData = ref.read(formProvider).currentPageIndex; // Read from FormData
             final currentPageOnController = _pageController.page?.round();
 
-            if (currentPageOnController != currentStepFromProvider) {
+            if (currentPageOnController != currentStepFromFormData) {
             // If the controller isn't on the page the provider dictates,
             // forcefully jump to it. This is crucial for the reset.
-            _pageController.jumpToPage(currentStepFromProvider);
+            _pageController.jumpToPage(currentStepFromFormData);
             }
             // After ensuring the PageController is settled on the correct page,
             // allow onPageChanged events to be processed normally.
@@ -181,29 +182,26 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Listener for formStepProvider to handle programmatic page changes
-    ref.listen<int>(formStepProvider, (previous, next) {
-      if (_pageController.hasClients && _pageController.page?.round() != next) {
-        // Set flag before programmatically moving the page
-        _isProgrammaticallyMovingPage = true;
-        
-        _pageController.animateToPage(
-          next,
-          duration: const Duration(milliseconds: 150), // Slightly increased duration
-          curve: Curves.easeInOut,
-        ).then((_) {
-          // After animation completes, allow onPageChanged again for user swipes
-          // Important: Check if mounted before calling setState
-          if (mounted) {
-            setState(() { // Or just assign if no UI element depends on it
-              _isProgrammaticallyMovingPage = false;
-            });
-          }
-        });
-      }
-    });
+    // Listener for formStepProvider is removed as it's replaced by formData.currentPageIndex
+    // ref.listen<int>(formStepProvider, (previous, next) {
+    //   if (_pageController.hasClients && _pageController.page?.round() != next) {
+    //     _isProgrammaticallyMovingPage = true;
+    //     _pageController.animateToPage(
+    //       next,
+    //       duration: const Duration(milliseconds: 150),
+    //       curve: Curves.easeInOut,
+    //     ).then((_) {
+    //       if (mounted) {
+    //         setState(() {
+    //           _isProgrammaticallyMovingPage = false;
+    //         });
+    //       }
+    //     });
+    //   }
+    // });
 
-    final currentPageIndex = ref.watch(formStepProvider);
+    final currentFormData = ref.watch(formProvider); // Watch the form data
+    final currentPageIndex = currentFormData.currentPageIndex; // Get current page from form data
     ScrollPhysics pageViewPhysics;
     if (currentPageIndex >= _formPages.length - 2) {
       pageViewPhysics = const NeverScrollableScrollPhysics();
@@ -223,7 +221,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
             return;
           }
 
-          final currentActualStep = ref.read(formStepProvider);
+          final currentActualStep = ref.read(formProvider).currentPageIndex; // Read from form data
           // Prevent swipe from PageNine to FinishedPage
           if (currentActualStep == _formPages.length - 2 && page == _formPages.length - 1) {
             // We might still need to set the _isProgrammaticallyMovingPage flag here if jumpToPage also triggers onPageChanged
@@ -236,7 +234,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
             });
           } else {
             if (currentActualStep != page) {
-              ref.read(formStepProvider.notifier).state = page;
+              ref.read(formProvider.notifier).updateCurrentPageIndex(page); // Update current page in form data
             }
           }
         },
@@ -247,13 +245,13 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     );
   }
 
-  // dispose and _validatePage methods remain the same
   @override
   void dispose() {
     _pageController.dispose();
     _formSubmittedPageOne.dispose();
     _formSubmittedPageTwo.dispose();
     _formSubmittedTambahanImages.dispose();
+    // No need to dispose formStepProvider as it's no longer directly watched here
     super.dispose();
   }
 

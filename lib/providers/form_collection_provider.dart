@@ -37,11 +37,11 @@ class FormCollectionNotifier extends StateNotifier<Map<String, FormData>> {
       if (await file.exists()) {
         final jsonString = await file.readAsString();
         final List<dynamic> identifiers = json.decode(jsonString);
-        // Initialize state with empty FormData for each identifier; will be populated later
-        final initialState = Map<String, FormData>.fromEntries(
-          identifiers.map((id) => MapEntry(id.toString(), FormData(id: id.toString())))
+        // Initialize state with null FormData for each identifier; will be populated later
+        final initialState = Map<String, FormData?>.fromEntries(
+          identifiers.map((id) => MapEntry(id.toString(), null))
         );
-        state = initialState;
+        state = initialState.cast<String, FormData>(); // Cast to Map<String, FormData>
       }
     } catch (e) {
       if (kDebugMode) {
@@ -52,18 +52,18 @@ class FormCollectionNotifier extends StateNotifier<Map<String, FormData>> {
 
   Future<void> _loadAllForms() async {
     try {
-      final currentState = Map<String, FormData>.from(state);
-      for (final identifier in currentState.keys) {
+      final Map<String, FormData> loadedForms = {};
+      for (final identifier in state.keys) { // Iterate over existing keys
         final filePath = await _getFormFilePath(identifier);
         final file = File(filePath);
         if (await file.exists()) {
           final jsonString = await file.readAsString();
           final jsonMap = json.decode(jsonString);
           final loadedFormData = FormData.fromJson(jsonMap);
-          currentState[loadedFormData.id] = loadedFormData; // Use formData.id as key
+          loadedForms[loadedFormData.id] = loadedFormData;
         }
       }
-      state = currentState;
+      state = loadedForms; // Set the state to only loaded forms
     } catch (e) {
       if (kDebugMode) {
         print('Error loading all forms: $e');

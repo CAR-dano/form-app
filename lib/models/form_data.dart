@@ -217,10 +217,12 @@ class FormData {
   String? catKiriFenderBelakang;
   String? catKiriSideSkirt;
   String? catKananSideSkirt;
+  int currentPageIndex; // New field to store the current page index
 
 
   FormData({
     String? id, // Make id optional in constructor for existing data
+    this.currentPageIndex = 0, // Initialize with 0
     this.inspectorId,
     this.namaInspektor,
     this.selectedInspector,
@@ -594,12 +596,14 @@ class FormData {
       'catKiriFenderBelakang': catKiriFenderBelakang,
       'catKiriSideSkirt': catKiriSideSkirt,
       'catKananSideSkirt': catKananSideSkirt,
+      'currentPageIndex': currentPageIndex, // Include in toJson
     };
   }
 
   factory FormData.fromJson(Map<String, dynamic> json) {
     return FormData(
       id: json['id'] as String?, // Parse id from json
+      currentPageIndex: json['currentPageIndex'] as int? ?? 0, // Parse from json, default to 0
       namaInspektor: json['namaInspektor'] as String?,
       inspectorId: json['inspectorId'] as String?,
       namaCustomer: json['namaCustomer'] as String? ?? '',
@@ -979,9 +983,11 @@ class FormData {
     String? catKiriFenderBelakang,
     String? catKiriSideSkirt,
     String? catKananSideSkirt,
+    int? currentPageIndex, // Add to copyWith
   }) {
     return FormData(
       id: id, // Include id in copyWith
+      currentPageIndex: currentPageIndex ?? this.currentPageIndex, // Copy current page index
       namaInspektor: namaInspektor ?? this.namaInspektor,
       inspectorId: inspectorId ?? this.inspectorId,
       selectedInspector: selectedInspector ?? this.selectedInspector,

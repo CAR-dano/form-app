@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/providers/form_collection_provider.dart';
+import 'package:form_app/providers/form_step_provider.dart'; // Import formStepProvider
 import 'package:form_app/pages/multi_step_form_screen.dart';
 
 class HomePage extends ConsumerWidget {
@@ -98,6 +99,7 @@ class HomePage extends ConsumerWidget {
                 final newFormData = FormData(); // Create a new FormData object
                 ref.read(formCollectionProvider.notifier).addForm(newFormData); // Pass the FormData object
                 ref.read(selectedFormIdentifierProvider.notifier).state = newFormData.id; // Use newFormData.id
+                ref.read(formStepProvider.notifier).state = 0; // Reset to the first page for a new form
                 Navigator.push(
                   context,
                   MaterialPageRoute(

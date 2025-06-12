@@ -1,35 +1,22 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspector_data.dart';
 import 'package:form_app/providers/inspection_branches_provider.dart';
 import 'package:form_app/providers/inspector_provider.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-import 'dart:convert';
 import 'package:form_app/models/inspection_branch.dart';
 import 'package:form_app/providers/form_collection_provider.dart';
 
 class FormNotifier extends StateNotifier<FormData> {
   final Ref _ref;
-  static const _fileNamePrefix = 'form_data_';
-  static const _fileExtension = '.json';
 
   FormNotifier(this._ref) : super(FormData()) {
-    // Initial load based on currently selected form (if any)
-    final initialSelectedIdentifier = _ref.read(selectedFormIdentifierProvider);
-    if (initialSelectedIdentifier != null) {
-      _loadFormData(initialSelectedIdentifier).then((_) {
-        _setupListeners();
-      });
-    } else {
-      _setupListeners();
-    }
+    _setupListeners();
 
     // Listen to changes in selected form identifier
     _ref.listen<String?>(selectedFormIdentifierProvider, (previous, next) {
       if (next != null) {
-        _loadFormData(next); // Load data for the newly selected form
+        final formData = _ref.read(formCollectionProvider)[next];
+        state = formData ?? FormData();
       } else {
         state = FormData(); // Reset to empty form if no form is selected
       }
@@ -853,48 +840,17 @@ class FormNotifier extends StateNotifier<FormData> {
     state = state.copyWith(catKananSideSkirt: value);
   }
 
-  Future<String> _getFilePath(String identifier) async {
-    final directory = await getApplicationDocumentsDirectory();
-    return '${directory.path}/$_fileNamePrefix$identifier$_fileExtension';
-  }
-
-  Future<void> _loadFormData(String identifier) async {
-    try {
-      final filePath = await _getFilePath(identifier);
-      final file = File(filePath);
-      if (await file.exists()) {
-        final jsonString = await file.readAsString();
-        final jsonMap = json.decode(jsonString);
-        state = FormData.fromJson(jsonMap);
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error loading form data for $identifier: $e');
-      }
-    }
-  }
-
-  Future<void> _saveFormData(String identifier) async {
-    try {
-      final filePath = await _getFilePath(identifier);
-      final file = File(filePath);
-      final jsonString = json.encode(state.toJson());
-      await file.writeAsString(jsonString);
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error saving form data for $identifier: $e');
-      }
-    }
-  }
-
   @override
   set state(FormData value) {
     super.state = value;
     final selectedIdentifier = _ref.read(selectedFormIdentifierProvider);
     if (selectedIdentifier != null) {
       _ref.read(formCollectionProvider.notifier).updateForm(selectedIdentifier, value);
-      _saveFormData(selectedIdentifier);
     }
+  }
+
+  void updateCurrentPageIndex(int index) {
+    state = state.copyWith(currentPageIndex: index);
   }
 
   void resetFormData() {
@@ -902,7 +858,6 @@ class FormNotifier extends StateNotifier<FormData> {
     final selectedIdentifier = _ref.read(selectedFormIdentifierProvider);
     if (selectedIdentifier != null) {
       _ref.read(formCollectionProvider.notifier).updateForm(selectedIdentifier, state);
-      _saveFormData(selectedIdentifier);
     }
   }
 }
