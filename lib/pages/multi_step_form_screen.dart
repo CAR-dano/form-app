@@ -147,6 +147,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       // const PageSixAlatAlatWajib(key: ValueKey('PageSixAlatAlatWajib')),
       PageSixGeneralTambahan(key: const ValueKey('PageSixGeneralTambahan'), formSubmitted: _formSubmittedTambahanImages),
       PageSixEksteriorTambahan(key: const ValueKey('PageSixEksteriorTambahan'), formSubmitted: _formSubmittedTambahanImages),
+      const PageEight(key: ValueKey('PageEight')), // Moved PageEight here
       PageSixInteriorTambahan(key: const ValueKey('PageSixInteriorTambahan'), formSubmitted: _formSubmittedTambahanImages),
       PageSixMesinTambahan(key: const ValueKey('PageSixMesinTambahan'), formSubmitted: _formSubmittedTambahanImages),
       PageSixKakiKakiTambahan(key: const ValueKey('PageSixKakiKakiTambahan'), formSubmitted: _formSubmittedTambahanImages),
@@ -162,7 +163,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       const PageFiveFive(key: ValueKey('PageFiveFive')),
       const PageFiveSix(key: ValueKey('PageFiveSix')),
       const PageFiveSeven(key: ValueKey('PageFiveSeven')),
-      const PageEight(key: ValueKey('PageEight')),
       PageNine(
         key: const ValueKey('PageNine'),
         formKeyPageOne: _formKeys[0],
