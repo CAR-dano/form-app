@@ -17,7 +17,7 @@ import 'package:form_app/pages/page_five_five.dart';
 import 'package:form_app/pages/page_five_six.dart';
 import 'package:form_app/pages/page_five_seven.dart';
 import 'package:form_app/pages/page_six_general_wajib.dart';
-import 'package:form_app/pages/page_six_general_tambahan.dart';
+//import 'package:form_app/pages/page_six_general_tambahan.dart';
 // import 'package:form_app/pages/page_six_eksterior_wajib.dart';
 import 'package:form_app/pages/page_six_eksterior_tambahan.dart';
 // import 'package:form_app/pages/page_six_interior_wajib.dart';
@@ -145,7 +145,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       // const PageSixMesinWajib(key: ValueKey('PageSixMesinWajib')),
       // const PageSixKakiKakiWajib(key: ValueKey('PageSixKakiKakiWajib')),
       // const PageSixAlatAlatWajib(key: ValueKey('PageSixAlatAlatWajib')),
-      PageSixGeneralTambahan(key: const ValueKey('PageSixGeneralTambahan'), formSubmitted: _formSubmittedTambahanImages),
+      //PageSixGeneralTambahan(key: const ValueKey('PageSixGeneralTambahan'), formSubmitted: _formSubmittedTambahanImages),
       PageSixEksteriorTambahan(key: const ValueKey('PageSixEksteriorTambahan'), formSubmitted: _formSubmittedTambahanImages),
       const PageEight(key: ValueKey('PageEight')), // Moved PageEight here
       PageSixInteriorTambahan(key: const ValueKey('PageSixInteriorTambahan'), formSubmitted: _formSubmittedTambahanImages),
