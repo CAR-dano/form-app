@@ -403,7 +403,8 @@ class FormData {
     this.catKiriFenderBelakang,
     this.catKiriSideSkirt,
     this.catKananSideSkirt,
-  });
+  }) {
+    tanggalInspeksi ??= DateTime.now();} // Set default to today if null
   // Add methods to update data if needed, or update directly
 
   Map<String, dynamic> toJson() {
