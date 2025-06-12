@@ -5,7 +5,7 @@ import 'package:form_app/providers/form_provider.dart'; // Import the provider
 import 'package:form_app/providers/inspection_branches_provider.dart'; // Import the provider for branches
 import 'package:form_app/providers/inspector_provider.dart';
 import 'package:form_app/widgets/footer.dart';
-import 'package:form_app/widgets/labeled_date_input_field.dart';
+import 'package:form_app/widgets/labeled_date_field.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/models/inspection_branch.dart';
@@ -151,17 +151,14 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                     errorHintText: 'Gagal memuat cabang',
                   ),
                   const SizedBox(height: 16.0),
-                  LabeledDateInputField(
+                  LabeledDateField(
                     label: 'Tanggal Inspeksi',
-                    hintText: 'DD/MM/YYYY',
-                    initialValue: formData.tanggalInspeksi != null 
-                        ? '${formData.tanggalInspeksi!.day.toString().padLeft(2, '0')}/${formData.tanggalInspeksi!.month.toString().padLeft(2, '0')}/${formData.tanggalInspeksi!.year}'
-                        : null,
+                    initialDate: formData.tanggalInspeksi,
                     onChanged: (date) {
                       formNotifier.updateTanggalInspeksi(date);
                     },
-                    validator: (dateString) {
-                      if (widget.formSubmitted.value && (dateString == null || dateString.isEmpty)) {
+                    validator: (date) {
+                      if (widget.formSubmitted.value && date == null) {
                         return 'Tanggal Inspeksi belum terisi';
                       }
                       return null;
