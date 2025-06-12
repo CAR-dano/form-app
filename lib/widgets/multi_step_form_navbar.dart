@@ -38,8 +38,8 @@ class MultiStepFormNavbar extends ConsumerWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.white.withOpacity(0.0), // More transparent at the top
-                Colors.white.withOpacity(0.6), // More opaque at the bottom
+                Colors.white.withAlpha(0), // More transparent at the top (0 opacity)
+                Colors.white.withAlpha(153), // More opaque at the bottom (0.6 * 255 = 153)
               ],
             ),
           ),
