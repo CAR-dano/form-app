@@ -33,7 +33,16 @@ class MultiStepFormNavbar extends ConsumerWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), // Apply blur effect
         child: Container(
-          color: Colors.white.withOpacity(0.4), // Reduced opacity for more visible blur
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.white.withOpacity(0.0), // More transparent at the top
+                Colors.white.withOpacity(0.6), // More opaque at the bottom
+              ],
+            ),
+          ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
             child: NavigationButtonRow(
