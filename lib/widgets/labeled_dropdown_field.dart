@@ -134,9 +134,7 @@ class _LabeledDropdownFieldState<T>
       hint: hint != null
           ? Text(hint,
               style: hintTextStyling.copyWith(
-                  color: _hasValidationOrApiError && ref.read(widget.itemsProvider) is! AsyncLoading // Show error color on hint only if not loading
-                    ? errorBorderColor 
-                    : hintTextStyling.color, 
+                  color: hintTextStyling.color, 
                   overflow: TextOverflow.ellipsis))
           : null,
       items: items.map((itemValue) {
@@ -161,7 +159,7 @@ class _LabeledDropdownFieldState<T>
       isExpanded: true,
       selectedItemBuilder: (BuildContext context) {
         if (widget.value == null && hint != null) {
-           return [ Text(hint, style: hintTextStyling.copyWith(color: _hasValidationOrApiError ? errorBorderColor : null, overflow: TextOverflow.ellipsis)) ];
+           return [ Text(hint, style: hintTextStyling.copyWith(overflow: TextOverflow.ellipsis)) ];
         }
         return items.map<Widget>((T item) {
           return Text(
