@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_step_provider.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart'; // Import the provider
 import 'package:form_app/widgets/common_layout.dart';
-
+import 'package:form_app/widgets/multi_step_form_navbar.dart';
 // Import all form pages
 import 'package:form_app/pages/page_one.dart';
 import 'package:form_app/pages/page_two.dart';
@@ -32,6 +32,19 @@ import 'package:form_app/pages/page_seven.dart';
 import 'package:form_app/pages/page_eight.dart';
 import 'package:form_app/pages/page_nine.dart';
 import 'package:form_app/pages/finished.dart';
+import 'package:flutter/foundation.dart'; // For kDebugMode
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_app/providers/form_step_provider.dart';
+import 'package:form_app/providers/tambahan_image_data_provider.dart';
+import 'package:form_app/widgets/common_layout.dart';
+import 'package:form_app/widgets/navigation_button_row.dart';
+import 'package:form_app/providers/form_provider.dart'; // For form data
+import 'package:form_app/services/api_service.dart'; // For API calls
+import 'package:form_app/statics/app_styles.dart'; // For text styles
+import 'package:form_app/providers/image_data_provider.dart'; // For wajib images
+import 'package:form_app/widgets/loading_indicator_widget.dart'; // For loading indicator
+import 'package:form_app/providers/image_processing_provider.dart'; // For image processing status
 import 'package:form_app/providers/page_navigation_provider.dart'; // Import the provider
 
 class MultiStepFormScreen extends ConsumerStatefulWidget {
@@ -48,6 +61,19 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   static const String _defaultTambahanLabel = 'Foto Tambahan';
   final ValueNotifier<bool> _formSubmittedPageTwo = ValueNotifier<bool>(false);
   final ValueNotifier<bool> _formSubmittedTambahanImages = ValueNotifier<bool>(false);
+
+  // State variables for submission logic (moved from PageNine)
+  bool _isChecked = false; // For the confirmation checkbox on PageNine
+  bool _isLoading = false;
+  String _loadingMessage = 'Mengirim data...';
+  double _currentProgress = 0.0;
+
+  // Combined list of page indices that need validation (moved from PageNine)
+  List<int> get _pagesToValidate => [
+    0, // PageOne
+    14, // PageTwo
+    // Removed validation for Tambahan Image pages as per user request
+  ];
 
   late final List<Widget> _formPages;
 
@@ -106,15 +132,16 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       const PageFiveSeven(key: ValueKey('PageFiveSeven')),
       PageNine(
         key: const ValueKey('PageNine'),
-        formKeyPageOne: _formKeys[0],
-        formKeyPageTwo: _formKeys[14],
-        formSubmittedPageOne: _formSubmittedPageOne,
-        formSubmittedPageTwo: _formSubmittedPageTwo,
-        formSubmittedTambahanImages: _formSubmittedTambahanImages,
-        pageNames: _pageNames,
-        validatePage: _validatePage,
-        tambahanImagePageIdentifiers: _tambahanImagePageIdentifiers,
-        defaultTambahanLabel: _defaultTambahanLabel,
+        // Pass callbacks for PageNine's internal state management
+        onCheckedChange: (newValue) {
+          if (!_isLoading) {
+            setState(() { _isChecked = newValue; });
+          }
+        },
+        isChecked: _isChecked,
+        isLoading: _isLoading,
+        loadingMessage: _loadingMessage,
+        currentProgress: _currentProgress,
       ),
       const FinishedPage(key: ValueKey('FinishedPage')),
     ];
@@ -133,6 +160,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
+      extendBody: true, // Extend body behind the bottom navigation bar for blur effect
       body: PageView(
         controller: pageController,
         physics: pageViewPhysics,
@@ -151,6 +179,41 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           return CommonLayout(child: pageContent);
         }).toList(),
       ),
+      bottomNavigationBar: currentPageIndex < _formPages.length - 1
+          ? MultiStepFormNavbar(
+              currentPageIndex: currentPageIndex,
+              formPagesLength: _formPages.length,
+              onNextPressed: () {
+                if (currentPageIndex == _formPages.length - 2) { // PageNine
+                  _submitForm(); // Call the submission logic
+                } else {
+                  // Validate current page before moving to the next for other pages
+                  final validationMessage = _validatePage(currentPageIndex);
+                  if (validationMessage != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(validationMessage)),
+                    );
+                    // Set formSubmitted to true for the current page to show validation errors
+                    if (currentPageIndex == 0) {
+                      _formSubmittedPageOne.value = true;
+                    } else if (currentPageIndex == 14) { // PageTwo
+                      _formSubmittedPageTwo.value = true;
+                    } else if (_tambahanImagePageIdentifiers.containsKey(currentPageIndex)) {
+                      _formSubmittedTambahanImages.value = true;
+                    }
+                    return; // Stop if validation fails
+                  }
+                  ref.read(pageNavigationProvider.notifier).goToNextPage();
+                }
+              },
+              onBackPressed: () {
+                ref.read(pageNavigationProvider.notifier).goToPreviousPage();
+              },
+              isLoading: _isLoading,
+              isChecked: _isChecked,
+              // Removed other parameters as they are no longer needed in MultiStepFormNavbar
+            )
+          : null, // Hide navigation buttons on the FinishedPage
     );
   }
 
@@ -188,5 +251,189 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       }
     }
     return null;
+  }
+
+  // Moved _submitForm logic from PageNine to MultiStepFormScreen
+  Future<void> _submitForm() async {
+    if (_isLoading) return;
+
+    final isImageProcessing = ref.read(imageProcessingServiceProvider.notifier).isProcessing;
+    if (isImageProcessing) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Pemrosesan gambar masih berjalan. Harap tunggu hingga selesai.',
+            style: subTitleTextStyle.copyWith(color: Colors.white),
+          ),
+          backgroundColor: Colors.orange,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
+    if (!_isChecked) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Harap setujui pernyataan di atas sebelum melanjutkan.',
+            style: subTitleTextStyle.copyWith(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _loadingMessage = 'Memvalidasi data...';
+      _currentProgress = 0.0;
+    });
+
+    _formSubmittedPageOne.value = true;
+    _formSubmittedPageTwo.value = true;
+    _formSubmittedTambahanImages.value = true;
+
+    List<String> validationErrors = [];
+    int? firstErrorPageIndex;
+
+    for (int pageIndex in _pagesToValidate) {
+      final error = _validatePage(pageIndex); // Use _validatePage from MultiStepFormScreen
+      if (error != null) {
+        validationErrors.add(error);
+        firstErrorPageIndex ??= pageIndex;
+      }
+    }
+
+    if (validationErrors.isNotEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(validationErrors.join('\n'), style: subTitleTextStyle.copyWith(color: Colors.white)),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+      if (firstErrorPageIndex != null) {
+        ref.read(formStepProvider.notifier).state = firstErrorPageIndex;
+      }
+      setState(() { _isLoading = false; });
+      return;
+    }
+
+    String? inspectionId;
+    try {
+      final formDataToSubmit = ref.read(formProvider);
+      final apiService = ApiService();
+
+      setState(() {
+        _loadingMessage = 'Mengirim data formulir...';
+        _currentProgress = 0.1;
+      });
+
+      final Map<String, dynamic> formDataResponse = await apiService.submitFormData(formDataToSubmit);
+      inspectionId = formDataResponse['id'] as String?;
+
+      if (inspectionId == null || inspectionId.isEmpty) {
+        throw Exception('Inspection ID not received from server.');
+      }
+
+      setState(() {
+        _loadingMessage = 'Data formulir terkirim. Mengumpulkan gambar...';
+        _currentProgress = 0.2;
+      });
+
+      if (!mounted) return;
+
+      List<UploadableImage> allImagesToUpload = [];
+      final wajibImages = ref.read(imageDataListProvider);
+      for (var imgData in wajibImages) {
+        if (imgData.imagePath.isNotEmpty) {
+          allImagesToUpload.add(UploadableImage(
+            imagePath: imgData.imagePath, label: imgData.label, needAttention: imgData.needAttention,
+            category: imgData.category, isMandatory: imgData.isMandatory,
+          ));
+        }
+      }
+
+      for (final identifier in _tambahanImagePageIdentifiers.values) { // Use _tambahanImagePageIdentifiers from MultiStepFormScreen
+        final tambahanImagesList = ref.read(tambahanImageDataProvider(identifier));
+        for (var imgData in tambahanImagesList) {
+          if (imgData.imagePath.isNotEmpty) {
+            final String labelToUse = imgData.label.isEmpty ? _defaultTambahanLabel : imgData.label; // Use _defaultTambahanLabel from MultiStepFormScreen
+            allImagesToUpload.add(UploadableImage(
+              imagePath: imgData.imagePath, label: labelToUse, needAttention: imgData.needAttention,
+              category: imgData.category, isMandatory: imgData.isMandatory,
+            ));
+          }
+        }
+      }
+
+      if (kDebugMode) {
+        print('Total images to upload: ${allImagesToUpload.length}');
+        for (var img in allImagesToUpload) {
+          print('Image: ${img.label}, Path: ${img.imagePath}, Category: ${img.category}, Mandatory: ${img.isMandatory}');
+        }
+      }
+
+      if (allImagesToUpload.isNotEmpty) {
+        final double formDataWeight = 0.2;
+        final double imagesWeight = 0.8;
+
+        await apiService.uploadImagesInBatches(inspectionId, allImagesToUpload,
+          (int currentBatch, int totalBatchesFromCallback) {
+          if (!mounted) return;
+          setState(() {
+            if (totalBatchesFromCallback > 0) {
+              _loadingMessage = 'Mengunggah gambar batch $currentBatch dari $totalBatchesFromCallback...';
+              _currentProgress = formDataWeight + ( (currentBatch / totalBatchesFromCallback.toDouble()) * imagesWeight );
+            } else {
+                 _loadingMessage = 'Tidak ada batch gambar untuk diunggah.';
+                 _currentProgress = 1.0;
+            }
+            if (currentBatch >= totalBatchesFromCallback && totalBatchesFromCallback > 0) {
+                _loadingMessage = 'Unggahan gambar selesai.';
+                _currentProgress = 1.0;
+            }
+          });
+        });
+      } else {
+         if (kDebugMode) print('No images to upload.');
+         setState(() {
+           _loadingMessage = 'Tidak ada gambar untuk diunggah. Proses Selesai.';
+           _currentProgress = 1.0;
+         });
+      }
+
+      setState(() { _loadingMessage = 'Menyelesaikan...'; _currentProgress = 1.0; });
+      ref.read(formProvider.notifier).resetFormData();
+      ref.read(imageDataListProvider.notifier).clearImageData();
+      for (final identifier in _tambahanImagePageIdentifiers.values) { // Use _tambahanImagePageIdentifiers from MultiStepFormScreen
+        ref.read(tambahanImageDataProvider(identifier).notifier).clearAll();
+      }
+
+      if (!mounted) return;
+      ref.read(formStepProvider.notifier).state++; // Navigate to FinishedPage
+
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Terjadi kesalahan: $e',
+            style: subTitleTextStyle.copyWith(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
+      setState(() { _isLoading = false; });
+    }
   }
 }
