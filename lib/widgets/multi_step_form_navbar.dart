@@ -49,7 +49,7 @@ class MultiStepFormNavbar extends ConsumerWidget {
               isBackButtonEnabled: currentPageIndex > 0,
               isLastPage: currentPageIndex == formPagesLength - 2, // PageNine
               onNextPressed: onNextPressed, // Simply call the passed-in callback
-              onBackPressed: onBackPressed, // Simply call the passed-in callback
+              onBackPressed: isLoading ? null : onBackPressed, // Disable back button when loading
               isLoading: isLoading, // Pass loading state to the button
               isFormConfirmed: isChecked, // Pass confirmation state for button styling
             ),

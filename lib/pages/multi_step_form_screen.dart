@@ -32,18 +32,10 @@ import 'package:form_app/pages/page_seven.dart';
 import 'package:form_app/pages/page_eight.dart';
 import 'package:form_app/pages/page_nine.dart';
 import 'package:form_app/pages/finished.dart';
-import 'package:flutter/foundation.dart'; // For kDebugMode
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_app/providers/form_step_provider.dart';
-import 'package:form_app/providers/tambahan_image_data_provider.dart';
-import 'package:form_app/widgets/common_layout.dart';
-import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/providers/form_provider.dart'; // For form data
 import 'package:form_app/services/api_service.dart'; // For API calls
 import 'package:form_app/statics/app_styles.dart'; // For text styles
 import 'package:form_app/providers/image_data_provider.dart'; // For wajib images
-import 'package:form_app/widgets/loading_indicator_widget.dart'; // For loading indicator
 import 'package:form_app/providers/image_processing_provider.dart'; // For image processing status
 import 'package:form_app/providers/page_navigation_provider.dart'; // Import the provider
 
@@ -374,11 +366,9 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         }
       }
 
-      if (kDebugMode) {
-        print('Total images to upload: ${allImagesToUpload.length}');
-        for (var img in allImagesToUpload) {
-          print('Image: ${img.label}, Path: ${img.imagePath}, Category: ${img.category}, Mandatory: ${img.isMandatory}');
-        }
+      debugPrint('Total images to upload: ${allImagesToUpload.length}');
+      for (var img in allImagesToUpload) {
+        debugPrint('Image: ${img.label}, Path: ${img.imagePath}, Category: ${img.category}, Mandatory: ${img.isMandatory}');
       }
 
       if (allImagesToUpload.isNotEmpty) {
@@ -403,7 +393,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           });
         });
       } else {
-         if (kDebugMode) print('No images to upload.');
+         debugPrint('No images to upload.');
          setState(() {
            _loadingMessage = 'Tidak ada gambar untuk diunggah. Proses Selesai.';
            _currentProgress = 1.0;
