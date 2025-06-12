@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
 import 'package:form_app/models/form_data.dart'; // Import FormData
-import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/labeled_date_input_field.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
-import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 
@@ -99,16 +97,6 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
                   ..._buildInputFields(formData, formNotifier),
 
                   const SizedBox(height: 32.0), // Spacing before buttons
-                  NavigationButtonRow(
-                    onBackPressed: () {
-                      _focusScopeNode.unfocus();
-                      ref.read(formStepProvider.notifier).state--;
-                    },
-                    onNextPressed: () {
-                      _focusScopeNode.unfocus();
-                      ref.read(formStepProvider.notifier).state++;
-                    },
-                  ),
                   const SizedBox(height: 24.0),
                   Footer(),
                 ],

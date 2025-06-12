@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/tambahan_image_selection.dart';
-import 'package:form_app/providers/form_step_provider.dart';
 import 'package:form_app/widgets/delete_all_tambahan_photos_button.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart'; // Import this
 
@@ -69,10 +67,6 @@ class _PageSevenState extends ConsumerState<PageSeven> with AutomaticKeepAliveCl
           ),
       
           const SizedBox(height: 32.0),
-          NavigationButtonRow(
-            onBackPressed: () => ref.read(formStepProvider.notifier).state--,
-            onNextPressed: () => ref.read(formStepProvider.notifier).state++,
-          ),
           const SizedBox(height: 24.0),
           const Footer(),
         ],

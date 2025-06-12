@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/inspector_data.dart';
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
-import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/providers/inspection_branches_provider.dart'; // Import the provider for branches
 import 'package:form_app/providers/inspector_provider.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/labeled_date_input_field.dart';
-import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/models/inspection_branch.dart';
@@ -171,15 +169,8 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                     formSubmitted: widget.formSubmitted.value,
                   ),
                   const SizedBox(height: 32.0),
-                  NavigationButtonRow(
-                    isBackButtonEnabled: false,
-                    onNextPressed: () {
-                      _focusScopeNode.unfocus();
-                      ref.read(formStepProvider.notifier).state++;
-                    },
-                  ),
-                  const SizedBox(height: 24.0),
-                  Footer(),
+                  
+                  Footer()
                 ],
               ),
             ),
