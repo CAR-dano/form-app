@@ -54,6 +54,12 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   final ValueNotifier<bool> _formSubmittedPageTwo = ValueNotifier<bool>(false);
   final ValueNotifier<bool> _formSubmittedTambahanImages = ValueNotifier<bool>(false);
 
+  // Mapping from _formKeys index to _formPages index
+  final Map<int, int> _formKeyIndexToPageIndex = {
+    0: 0, // _formKeys[0] (PageOne) is at _formPages[0]
+    14: 9, // _formKeys[14] (PageTwo) is at _formPages[9]
+  };
+
   // State variables for submission logic (moved from PageNine)
   bool _isChecked = false; // For the confirmation checkbox on PageNine
   bool _isLoading = false;
@@ -299,7 +305,14 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         ),
       );
       if (firstErrorPageIndex != null) {
-        ref.read(formStepProvider.notifier).state = firstErrorPageIndex;
+        final int? pageViewIndex = _formKeyIndexToPageIndex[firstErrorPageIndex];
+        if (pageViewIndex != null) {
+          ref.read(pageNavigationProvider.notifier).jumpToPage(pageViewIndex);
+        } else {
+          // Fallback or log error if mapping is missing
+          debugPrint('Error: No PageView index found for form key index $firstErrorPageIndex');
+          ref.read(pageNavigationProvider.notifier).jumpToPage(0); // Jump to first page as a fallback
+        }
       }
       setState(() { _isLoading = false; });
       return;

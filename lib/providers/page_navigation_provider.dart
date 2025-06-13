@@ -32,6 +32,9 @@ class PageNavigationController extends StateNotifier<PageController> {
   }
 
   void jumpToPage(int page) {
+    if (state.hasClients) {
+      state.jumpToPage(page);
+    }
     _ref.read(formStepProvider.notifier).state = page;
   }
 
