@@ -275,7 +275,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
             initialValue: fieldData['initialValue'] != null
                 ? '${(fieldData['initialValue'] as DateTime).day.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).month.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).year}'
                 : null,
-            formSubmitted: widget.formSubmitted.value,
+            formSubmitted: widget.formSubmitted, // Pass the ValueNotifier directly
           ),
         );
       } else {

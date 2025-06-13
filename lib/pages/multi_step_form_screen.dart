@@ -181,22 +181,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
                 if (currentPageIndex == _formPages.length - 2) { // PageNine
                   _submitForm(); // Call the submission logic
                 } else {
-                  // Validate current page before moving to the next for other pages
-                  final validationMessage = _validatePage(currentPageIndex);
-                  if (validationMessage != null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(validationMessage)),
-                    );
-                    // Set formSubmitted to true for the current page to show validation errors
-                    if (currentPageIndex == 0) {
-                      _formSubmittedPageOne.value = true;
-                    } else if (currentPageIndex == 14) { // PageTwo
-                      _formSubmittedPageTwo.value = true;
-                    } else if (_tambahanImagePageIdentifiers.containsKey(currentPageIndex)) {
-                      _formSubmittedTambahanImages.value = true;
-                    }
-                    return; // Stop if validation fails
-                  }
+                  // For pages other than PageNine, simply go to the next page without validation
                   ref.read(pageNavigationProvider.notifier).goToNextPage();
                 }
               },
