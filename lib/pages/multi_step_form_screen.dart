@@ -38,6 +38,7 @@ import 'package:form_app/statics/app_styles.dart'; // For text styles
 import 'package:form_app/providers/image_data_provider.dart'; // For wajib images
 import 'package:form_app/providers/image_processing_provider.dart'; // For image processing status
 import 'package:form_app/providers/page_navigation_provider.dart'; // Import the provider
+import 'package:form_app/providers/submission_status_provider.dart'; // Import the new provider
 
 class MultiStepFormScreen extends ConsumerStatefulWidget {
   const MultiStepFormScreen({super.key});
@@ -62,9 +63,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
   // State variables for submission logic (moved from PageNine)
   bool _isChecked = false; // For the confirmation checkbox on PageNine
-  bool _isLoading = false;
-  String _loadingMessage = 'Mengirim data...';
-  double _currentProgress = 0.0;
 
   // Combined list of page indices that need validation (moved from PageNine)
   List<int> get _pagesToValidate => [
@@ -132,14 +130,12 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         key: const ValueKey('PageNine'),
         // Pass callbacks for PageNine's internal state management
         onCheckedChange: (newValue) {
-          if (!_isLoading) {
+          final submissionStatus = ref.read(submissionStatusProvider); // Read the current state
+          if (!submissionStatus.isLoading) {
             setState(() { _isChecked = newValue; });
           }
         },
         isChecked: _isChecked,
-        isLoading: _isLoading,
-        loadingMessage: _loadingMessage,
-        currentProgress: _currentProgress,
         currentPage: 20, // PageNine is the last page before FinishedPage
         totalPages: 20,
       ),
@@ -158,6 +154,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       pageViewPhysics = const PageScrollPhysics();
     }
 
+    final submissionStatus = ref.watch(submissionStatusProvider);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       extendBody: true, // Extend body behind the bottom navigation bar for blur effect
@@ -194,7 +191,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
               onBackPressed: () {
                 ref.read(pageNavigationProvider.notifier).goToPreviousPage();
               },
-              isLoading: _isLoading,
+              isLoading: submissionStatus.isLoading,
               isChecked: _isChecked,
               // Removed other parameters as they are no longer needed in MultiStepFormNavbar
             )
@@ -250,7 +247,9 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
   // Moved _submitForm logic from PageNine to MultiStepFormScreen
   Future<void> _submitForm() async {
-    if (_isLoading) return;
+    final submissionStatus = ref.read(submissionStatusProvider); // Read the current state
+    final submissionStatusNotifier = ref.read(submissionStatusProvider.notifier);
+    if (submissionStatus.isLoading) return;
 
     final isImageProcessing = ref.read(imageProcessingServiceProvider.notifier).isProcessing;
     if (isImageProcessing) {
@@ -283,11 +282,11 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-      _loadingMessage = 'Memvalidasi data...';
-      _currentProgress = 0.0;
-    });
+    submissionStatusNotifier.setLoading(
+      isLoading: true,
+      message: 'Memvalidasi data...',
+      progress: 0.0,
+    );
 
     _formSubmittedPageOne.value = true;
     _formSubmittedPageTwo.value = true;
@@ -328,7 +327,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           ref.read(pageNavigationProvider.notifier).jumpToPage(0); // Jump to first page as a fallback
         }
       }
-      setState(() { _isLoading = false; });
+      submissionStatusNotifier.setLoading(isLoading: false);
       return;
     }
 
@@ -337,10 +336,11 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       final formDataToSubmit = ref.read(formProvider);
       final apiService = ApiService();
 
-      setState(() {
-        _loadingMessage = 'Mengirim data formulir...';
-        _currentProgress = 0.1;
-      });
+      submissionStatusNotifier.setLoading(
+        isLoading: true,
+        message: 'Mengirim data formulir...',
+        progress: 0.1,
+      );
 
       final Map<String, dynamic> formDataResponse = await apiService.submitFormData(formDataToSubmit);
       inspectionId = formDataResponse['id'] as String?;
@@ -349,10 +349,11 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         throw Exception('Inspection ID not received from server.');
       }
 
-      setState(() {
-        _loadingMessage = 'Data formulir terkirim. Mengumpulkan gambar...';
-        _currentProgress = 0.2;
-      });
+      submissionStatusNotifier.setLoading(
+        isLoading: true,
+        message: 'Data formulir terkirim. Mengumpulkan gambar...',
+        progress: 0.2,
+      );
 
       if (!mounted) return;
 
@@ -392,29 +393,33 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         await apiService.uploadImagesInBatches(inspectionId, allImagesToUpload,
           (int currentBatch, int totalBatchesFromCallback) {
           if (!mounted) return;
-          setState(() {
-            if (totalBatchesFromCallback > 0) {
-              _loadingMessage = 'Mengunggah gambar batch $currentBatch dari $totalBatchesFromCallback...';
-              _currentProgress = formDataWeight + ( (currentBatch / totalBatchesFromCallback.toDouble()) * imagesWeight );
-            } else {
-                 _loadingMessage = 'Tidak ada batch gambar untuk diunggah.';
-                 _currentProgress = 1.0;
-            }
-            if (currentBatch >= totalBatchesFromCallback && totalBatchesFromCallback > 0) {
-                _loadingMessage = 'Unggahan gambar selesai.';
-                _currentProgress = 1.0;
-            }
-          });
+          submissionStatusNotifier.setLoading(
+            isLoading: true,
+            message: totalBatchesFromCallback > 0
+                ? 'Mengunggah gambar batch $currentBatch dari $totalBatchesFromCallback...'
+                : 'Tidak ada batch gambar untuk diunggah.',
+            progress: totalBatchesFromCallback > 0
+                ? formDataWeight + ((currentBatch / totalBatchesFromCallback.toDouble()) * imagesWeight)
+                : 1.0,
+          );
+          if (currentBatch >= totalBatchesFromCallback && totalBatchesFromCallback > 0) {
+            submissionStatusNotifier.setLoading(
+              isLoading: true,
+              message: 'Unggahan gambar selesai.',
+              progress: 1.0,
+            );
+          }
         });
       } else {
-         debugPrint('No images to upload.');
-         setState(() {
-           _loadingMessage = 'Tidak ada gambar untuk diunggah. Proses Selesai.';
-           _currentProgress = 1.0;
-         });
+        debugPrint('No images to upload.');
+        submissionStatusNotifier.setLoading(
+          isLoading: true,
+          message: 'Tidak ada gambar untuk diunggah. Proses Selesai.',
+          progress: 1.0,
+        );
       }
 
-      setState(() { _loadingMessage = 'Menyelesaikan...'; _currentProgress = 1.0; });
+      submissionStatusNotifier.setLoading(isLoading: true, message: 'Menyelesaikan...', progress: 1.0);
       ref.read(formProvider.notifier).resetFormData();
       ref.read(imageDataListProvider.notifier).clearImageData();
       for (final identifier in _tambahanImagePageIdentifiers.values) { // Use _tambahanImagePageIdentifiers from MultiStepFormScreen
@@ -437,7 +442,9 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           duration: const Duration(seconds: 5),
         ),
       );
-      setState(() { _isLoading = false; });
+      submissionStatusNotifier.setLoading(isLoading: false);
+    } finally {
+      submissionStatusNotifier.reset(); // Ensure loading state is reset on completion or error
     }
   }
 }

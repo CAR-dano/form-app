@@ -6,6 +6,7 @@ import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
 import 'package:form_app/widgets/loading_indicator_widget.dart';
+import 'package:form_app/providers/submission_status_provider.dart'; // Import the new provider
 
 // Placeholder for Page Nine
 class PageNine extends ConsumerStatefulWidget {
@@ -16,9 +17,6 @@ class PageNine extends ConsumerStatefulWidget {
   // New parameters to receive state and callbacks from MultiStepFormScreen
   final void Function(bool newValue) onCheckedChange;
   final bool isChecked;
-  final bool isLoading;
-  final String loadingMessage;
-  final double currentProgress;
   final int currentPage;
   final int totalPages;
 
@@ -29,9 +27,6 @@ class PageNine extends ConsumerStatefulWidget {
     required this.totalPages,
     required this.onCheckedChange,
     required this.isChecked,
-    required this.isLoading,
-    required this.loadingMessage,
-    required this.currentProgress,
   });
 
   @override
@@ -45,6 +40,8 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final submissionStatus = ref.watch(submissionStatusProvider);
+
     return Column(
       children: [
         Expanded( // Makes the main content area scrollable
@@ -79,10 +76,10 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
           ),
         ),
         // Loading Indicator (moved from PageNine's original NavigationButtonRow section)
-        if (widget.isLoading)
+        if (submissionStatus.isLoading)
           LoadingIndicatorWidget(
-            message: widget.loadingMessage,
-            progress: widget.currentProgress,
+            message: submissionStatus.message,
+            progress: submissionStatus.progress,
           ),
         const SizedBox(height: 24.0), // Add space where NavigationButtonRow used to be
         const Footer(),
