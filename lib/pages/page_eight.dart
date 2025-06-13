@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_app/providers/form_step_provider.dart';
-import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
@@ -10,7 +8,14 @@ import 'package:form_app/widgets/paint_thickness_input_field.dart';
 import 'package:form_app/providers/form_provider.dart';
 
 class PageEight extends ConsumerStatefulWidget {
-  const PageEight({super.key});
+  final int currentPage;
+  final int totalPages;
+
+  const PageEight({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+  });
 
   @override
   ConsumerState<PageEight> createState() => _PageEightState();
@@ -59,7 +64,7 @@ class _PageEightState extends ConsumerState<PageEight>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PageNumber(data: '25/26'),
+              PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
               const SizedBox(height: 4),
               PageTitle(data: 'Ketebalan Cat'),
               const SizedBox(height: 6.0),
@@ -236,11 +241,6 @@ class _PageEightState extends ConsumerState<PageEight>
                 ),
               ),
               const SizedBox(height: 32.0),
-
-              NavigationButtonRow(
-                onBackPressed: () => ref.read(formStepProvider.notifier).state--,
-                onNextPressed: () => ref.read(formStepProvider.notifier).state++,
-              ),
               const SizedBox(
                 height: 24.0,
               ),

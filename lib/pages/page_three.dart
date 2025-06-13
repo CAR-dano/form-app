@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
-import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
-import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
@@ -11,8 +9,15 @@ import 'package:form_app/widgets/toggle_option_widget.dart';
 // Import other necessary widgets like CommonLayout if you plan to use it here
 
 // Placeholder for Page Three
-class PageThree extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
-  const PageThree({super.key});
+class PageThree extends ConsumerStatefulWidget { 
+  final int currentPage;
+  final int totalPages;
+
+  const PageThree({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+});
 
   @override
   ConsumerState<PageThree> createState() => _PageThreeState(); // Create state
@@ -35,7 +40,7 @@ class _PageThreeState extends ConsumerState<PageThree> with AutomaticKeepAliveCl
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(data: '16/26'),
+          PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
           const SizedBox(height: 4),
           PageTitle(data: 'Kelengkapan'),
           const SizedBox(height: 6.0),
@@ -43,10 +48,6 @@ class _PageThreeState extends ConsumerState<PageThree> with AutomaticKeepAliveCl
           ..._buildToggleOptions(formData, formNotifier),
 
           const SizedBox(height: 32.0),
-          NavigationButtonRow(
-            onBackPressed: () => ref.read(formStepProvider.notifier).state--,
-            onNextPressed: () => ref.read(formStepProvider.notifier).state++,
-          ),
           const SizedBox(height: 24.0), // Optional spacing below the content
           // Footer
           Footer(),

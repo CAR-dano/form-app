@@ -66,6 +66,14 @@ class _LabeledDateFieldState extends State<LabeledDateField> {
         }
         _focusNode = widget.focusNode ?? FocusNode();
     }
+    // If formSubmitted state changes to true, re-validate
+    if (widget.formSubmitted && !oldWidget.formSubmitted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _fieldKey.currentState?.validate();
+        }
+      });
+    }
   }
 
   @override

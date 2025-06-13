@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/widgets/heading_one.dart';
-import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
@@ -9,10 +8,16 @@ import 'package:form_app/widgets/image_input_widget.dart'; // Keep import in cas
 import 'dart:io'; // Keep import in case needed later
 import 'package:form_app/models/image_data.dart'; // Keep import in case needed later
 import 'package:form_app/providers/image_data_provider.dart'; // Keep import in case needed later
-import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 
-class PageSixMesinWajib extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
-  const PageSixMesinWajib({super.key});
+class PageSixMesinWajib extends ConsumerStatefulWidget {
+  final int currentPage;
+  final int totalPages;
+
+  const PageSixMesinWajib({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+  });
 
   final List<String> imageInputLabels = const [
     'Sealer Kap Mesin',
@@ -87,7 +92,7 @@ class _PageSixMesinWajibState extends ConsumerState<PageSixMesinWajib> with Auto
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(data: '5/26'),
+          PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
           const SizedBox(height: 4),
           PageTitle(data: 'Foto Mesin'),
           const SizedBox(height: 6.0),
@@ -106,10 +111,6 @@ class _PageSixMesinWajibState extends ConsumerState<PageSixMesinWajib> with Auto
           )),
       
           const SizedBox(height: 32.0),
-          NavigationButtonRow(
-            onBackPressed: () => ref.read(formStepProvider.notifier).state--,
-            onNextPressed: () => ref.read(formStepProvider.notifier).state++,
-          ),
           const SizedBox(height: 24.0),
           Footer(),
         ],

@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/form_data.dart'; // Import FormData
 import 'package:form_app/widgets/heading_one.dart';
-import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/providers/form_provider.dart';
-import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
 import 'package:form_app/widgets/expandable_text_field.dart';
 
 class PageFiveFour extends ConsumerStatefulWidget {
-  const PageFiveFour({super.key});
+  final int currentPage;
+  final int totalPages;
+
+  const PageFiveFour({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+  });
 
   @override
   ConsumerState<PageFiveFour> createState() => _PageFiveFourState();
@@ -60,7 +65,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageNumber(data: '21/26'),
+                PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
                 const SizedBox(height: 4),
                 PageTitle(data: 'Penilaian (4)'),
                 const SizedBox(height: 6.0),
@@ -78,17 +83,6 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                   },
                 ),
                 const SizedBox(height: 32.0),
-
-                NavigationButtonRow(
-                  onBackPressed: () {
-                    _focusScopeNode.unfocus();
-                    ref.read(formStepProvider.notifier).state--;
-                  },
-                  onNextPressed: () {
-                    _focusScopeNode.unfocus();
-                    ref.read(formStepProvider.notifier).state++;
-                  },
-                ),
                 const SizedBox(height: 24.0),
                 Footer(),
               ],

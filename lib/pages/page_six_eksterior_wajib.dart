@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/widgets/heading_one.dart';
-import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
@@ -9,10 +8,16 @@ import 'package:form_app/widgets/image_input_widget.dart';
 import 'dart:io';
 import 'package:form_app/models/image_data.dart';
 import 'package:form_app/providers/image_data_provider.dart';
-import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 
-class PageSixEksteriorWajib extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
-  const PageSixEksteriorWajib({super.key});
+class PageSixEksteriorWajib extends ConsumerStatefulWidget {
+  final int currentPage;
+  final int totalPages;
+
+  const PageSixEksteriorWajib({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+  });
 
   final List<String> imageInputLabels = const [
     'Cat Samping Kanan dan Kiri (Pintu Mobil)',
@@ -76,7 +81,7 @@ class _PageSixEksteriorWajibState extends ConsumerState<PageSixEksteriorWajib> w
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(data: '3/26'),
+          PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
           const SizedBox(height: 4),
           PageTitle(data: 'Foto Eksterior'),
           const SizedBox(height: 6.0),
@@ -94,10 +99,6 @@ class _PageSixEksteriorWajibState extends ConsumerState<PageSixEksteriorWajib> w
           )),
       
           const SizedBox(height: 32.0),
-          NavigationButtonRow(
-            onBackPressed: () => ref.read(formStepProvider.notifier).state--,
-            onNextPressed: () => ref.read(formStepProvider.notifier).state++,
-          ),
           const SizedBox(height: 24.0),
           Footer(),
         ],

@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
 import 'package:form_app/models/form_data.dart'; // Import FormData
-import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/labeled_date_input_field.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
-import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 
 class PageTwo extends ConsumerStatefulWidget {
+  final int currentPage;
+  final int totalPages;
   final GlobalKey<FormState> formKey;
   final ValueNotifier<bool> formSubmitted; // New parameter
 
@@ -18,6 +18,9 @@ class PageTwo extends ConsumerStatefulWidget {
     super.key,
     required this.formKey,
     required this.formSubmitted, // Update constructor
+    required this.currentPage,
+    required this.totalPages,
+
   });
 
   @override
@@ -26,11 +29,10 @@ class PageTwo extends ConsumerStatefulWidget {
 
 class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClientMixin {
   late FocusScopeNode _focusScopeNode;
+  bool _hasValidatedOnSubmit = false; // Declare the state variable
 
   @override
   bool get wantKeepAlive => true;
-
-  // Removed _formSubmitted local state
 
   @override
   void initState() {
@@ -43,23 +45,6 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
     _focusScopeNode.dispose();
     super.dispose();
   }
-
-  // void moveToNextPage() {
-  //   // Navigation is now handled by MultiStepFormScreen
-  // }
-
-  // void moveToPreviousPage() {
-  //   // Navigation is now handled by MultiStepFormScreen
-  // }
-
-  // void validateAndMoveToNextPage() { // Keep validation logic, but remove navigation
-  //   setState(() {
-  //     _formSubmitted = true; // Mark the form as submitted
-  //   });
-  //   if (widget.formKey.currentState!.validate()) { // Use widget.formKey
-  //     // Navigation is now handled by MultiStepFormScreen
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -77,9 +62,24 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
       },
       child: FocusScope(
         node: _focusScopeNode,
-        child: Form(
-          // Wrap with Form widget
-          key: widget.formKey, // Use the passed formKey
+        child: ValueListenableBuilder<bool>( // Add ValueListenableBuilder here
+          valueListenable: widget.formSubmitted,
+          builder: (context, isFormSubmitted, child) {
+            if (isFormSubmitted && !_hasValidatedOnSubmit) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  widget.formKey.currentState?.validate();
+                  setState(() {
+                    _hasValidatedOnSubmit = true;
+                  });
+                }
+              });
+            }
+            return Form(
+              key: widget.formKey, // Use the passed formKey
+              child: child!, // Pass the original child
+            );
+          },
           child: GestureDetector(
             // Wrap with GestureDetector
             onTap: () {
@@ -91,7 +91,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(data: '15/26'),
+                  PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
                   const SizedBox(height: 4),
                   PageTitle(data: 'Data Kendaraan'), // Updated Title
                   const SizedBox(height: 6.0),
@@ -99,16 +99,6 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
                   ..._buildInputFields(formData, formNotifier),
 
                   const SizedBox(height: 32.0), // Spacing before buttons
-                  NavigationButtonRow(
-                    onBackPressed: () {
-                      _focusScopeNode.unfocus();
-                      ref.read(formStepProvider.notifier).state--;
-                    },
-                    onNextPressed: () {
-                      _focusScopeNode.unfocus();
-                      ref.read(formStepProvider.notifier).state++;
-                    },
-                  ),
                   const SizedBox(height: 24.0),
                   Footer(),
                 ],
@@ -282,7 +272,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
             initialValue: fieldData['initialValue'] != null
                 ? '${(fieldData['initialValue'] as DateTime).day.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).month.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).year}'
                 : null,
-            formSubmitted: widget.formSubmitted.value,
+            formSubmitted: widget.formSubmitted.value, // Pass the boolean value
           ),
         );
       } else {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/widgets/heading_one.dart';
-import 'package:form_app/widgets/navigation_button_row.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
@@ -9,16 +8,22 @@ import 'package:form_app/widgets/image_input_widget.dart';
 import 'dart:io';
 import 'package:form_app/models/image_data.dart';
 import 'package:form_app/providers/image_data_provider.dart';
-import 'package:form_app/providers/form_step_provider.dart'; // Import form_step_provider
 
 class PageSixGeneralWajib extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
-  const PageSixGeneralWajib({super.key});
+  final int currentPage; // New parameter
+  final int totalPages; // New parameter
+
+  const PageSixGeneralWajib({
+    super.key,
+    required this.currentPage, // Update constructor
+    required this.totalPages, // Update constructor
+  });
 
   final List<String> imageInputLabels = const [ // This can stay here or move to state if preferred
     'Tampak Depan',
-    'Tampak Belakang',
     'Tampak Samping Kanan',
     'Tampak Samping Kiri',
+    'Tampak Belakang',
   ];
 
   @override
@@ -70,7 +75,7 @@ class _PageSixGeneralWajibState extends ConsumerState<PageSixGeneralWajib> with 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-          PageNumber(data: '2/26'),
+          PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
               const SizedBox(height: 4),
               PageTitle(data: 'Foto General'),
               const SizedBox(height: 6.0),
@@ -94,10 +99,6 @@ class _PageSixGeneralWajibState extends ConsumerState<PageSixGeneralWajib> with 
           ),
         ),
         Spacer(),
-        NavigationButtonRow(
-          onBackPressed: () => ref.read(formStepProvider.notifier).state--,
-          onNextPressed: () => ref.read(formStepProvider.notifier).state++,
-        ),
         const SizedBox(height: 24.0),
         Footer(),
       ],

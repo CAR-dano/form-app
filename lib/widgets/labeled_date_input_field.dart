@@ -32,12 +32,19 @@ class LabeledDateInputField extends StatefulWidget {
 class _LabeledDateInputFieldState extends State<LabeledDateInputField> {
   final _formFieldKey = GlobalKey<FormFieldState<String>>();
   late TextEditingController _internalController;
-  String? _errorText;
 
   @override
   void initState() {
     super.initState();
     _internalController = widget.controller ?? TextEditingController(text: widget.initialValue);
+  }
+
+  @override
+  void dispose() {
+    if (widget.controller == null) {
+      _internalController.dispose();
+    }
+    super.dispose();
   }
 
   DateTime? _parseDateString(String? dateString) {
@@ -82,31 +89,17 @@ class _LabeledDateInputFieldState extends State<LabeledDateInputField> {
         });
       }
     }
-    if (widget.formSubmitted && !oldWidget.formSubmitted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          _formFieldKey.currentState?.validate();
-        }
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    if (widget.controller == null) {
-      _internalController.dispose();
-    }
-    super.dispose();
+    // The formSubmitted logic is now handled by the validator directly
   }
 
   String? _validateDate(String? value) {
-    if (value == null || value.isEmpty) {
-      return null; // Let other validators handle empty validation
+    if (widget.formSubmitted && (value == null || value.isEmpty)) {
+      return 'Tanggal belum terisi'; // Return error for empty
     }
 
     // Check if format matches DD/MM/YYYY
     final RegExp dateRegex = RegExp(r'^\d{2}/\d{2}/\d{4}$');
-    if (!dateRegex.hasMatch(value)) {
+    if (value == null || !dateRegex.hasMatch(value)) {
       return 'Format tanggal harus DD/MM/YYYY';
     }
 
@@ -158,30 +151,20 @@ class _LabeledDateInputFieldState extends State<LabeledDateInputField> {
           onChanged: (value) {
             final parsedDate = _parseDateString(value);
             widget.onChanged?.call(parsedDate);
-            if (widget.formSubmitted || (_errorText != null && widget.validator != null)) {
+            // Validate on change if form has already been marked as submitted
+            if (widget.formSubmitted) {
               _formFieldKey.currentState?.validate();
             }
           },
           validator: (value) {
-            String? error;
-            
             // First run custom date validation
             final dateError = _validateDate(value);
             if (dateError != null) {
-              error = dateError;
-            } else {
-              // Then run user-provided validator
-              error = widget.validator?.call(value);
+              return dateError;
             }
-
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted && _errorText != error) {
-                setState(() {
-                  _errorText = error;
-                });
-              }
-            });
-            return null;
+            // Then run user-provided validator
+            // Pass the formSubmitted value to the page_two validator
+            return widget.validator?.call(value);
           },
           style: inputTextStyling,
           focusNode: widget.focusNode,
@@ -193,24 +176,15 @@ class _LabeledDateInputFieldState extends State<LabeledDateInputField> {
             alignLabelWithHint: true,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: _errorText != null ? errorBorderColor : borderColor,
-                width: 1.5
-              ),
+              borderSide: const BorderSide(color: borderColor, width: 1.5),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: _errorText != null ? errorBorderColor : borderColor,
-                width: 1.5
-              ),
+              borderSide: const BorderSide(color: borderColor, width: 1.5),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: _errorText != null ? errorBorderColor : borderColor,
-                width: 2.0
-              ),
+              borderSide: const BorderSide(color: borderColor, width: 2.0),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
@@ -220,17 +194,11 @@ class _LabeledDateInputFieldState extends State<LabeledDateInputField> {
               borderRadius: BorderRadius.circular(8.0),
               borderSide: const BorderSide(color: errorBorderColor, width: 2.0),
             ),
-            errorStyle: const TextStyle(height: 0, fontSize: 0),
+            errorStyle: const TextStyle(color: errorBorderColor, fontSize: 12.0, height: 1.2),
+            errorMaxLines: 2,
           ),
         ),
-        if (_errorText != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 4.0, left: 12.0),
-            child: Text(
-              _errorText!,
-              style: const TextStyle(color: errorBorderColor, fontSize: 12.0),
-            ),
-          ),      ],
+      ],
     );
   }
 }
