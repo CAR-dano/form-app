@@ -29,11 +29,10 @@ class PageTwo extends ConsumerStatefulWidget {
 
 class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClientMixin {
   late FocusScopeNode _focusScopeNode;
+  bool _hasValidatedOnSubmit = false; // Declare the state variable
 
   @override
   bool get wantKeepAlive => true;
-
-  // Removed _formSubmitted local state
 
   @override
   void initState() {
@@ -46,23 +45,6 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
     _focusScopeNode.dispose();
     super.dispose();
   }
-
-  // void moveToNextPage() {
-  //   // Navigation is now handled by MultiStepFormScreen
-  // }
-
-  // void moveToPreviousPage() {
-  //   // Navigation is now handled by MultiStepFormScreen
-  // }
-
-  // void validateAndMoveToNextPage() { // Keep validation logic, but remove navigation
-  //   setState(() {
-  //     _formSubmitted = true; // Mark the form as submitted
-  //   });
-  //   if (widget.formKey.currentState!.validate()) { // Use widget.formKey
-  //     // Navigation is now handled by MultiStepFormScreen
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +62,24 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
       },
       child: FocusScope(
         node: _focusScopeNode,
-        child: Form(
-          // Wrap with Form widget
-          key: widget.formKey, // Use the passed formKey
+        child: ValueListenableBuilder<bool>( // Add ValueListenableBuilder here
+          valueListenable: widget.formSubmitted,
+          builder: (context, isFormSubmitted, child) {
+            if (isFormSubmitted && !_hasValidatedOnSubmit) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  widget.formKey.currentState?.validate();
+                  setState(() {
+                    _hasValidatedOnSubmit = true;
+                  });
+                }
+              });
+            }
+            return Form(
+              key: widget.formKey, // Use the passed formKey
+              child: child!, // Pass the original child
+            );
+          },
           child: GestureDetector(
             // Wrap with GestureDetector
             onTap: () {
@@ -275,7 +272,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
             initialValue: fieldData['initialValue'] != null
                 ? '${(fieldData['initialValue'] as DateTime).day.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).month.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).year}'
                 : null,
-            formSubmitted: widget.formSubmitted, // Pass the ValueNotifier directly
+            formSubmitted: widget.formSubmitted.value, // Pass the boolean value
           ),
         );
       } else {
