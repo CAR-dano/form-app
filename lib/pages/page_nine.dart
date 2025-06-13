@@ -19,9 +19,14 @@ class PageNine extends ConsumerStatefulWidget {
   final bool isLoading;
   final String loadingMessage;
   final double currentProgress;
+  final int currentPage;
+  final int totalPages;
+
 
   const PageNine({
     super.key,
+    required this.currentPage,
+    required this.totalPages,
     required this.onCheckedChange,
     required this.isChecked,
     required this.isLoading,
@@ -51,7 +56,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(data: '26/26'), // Consider making this dynamic
+                  PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
                   const SizedBox(height: 4),
                   PageTitle(data: 'Finalisasi'),
                   const SizedBox(height: 6.0),

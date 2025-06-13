@@ -9,8 +9,15 @@ import 'dart:io';
 import 'package:form_app/models/image_data.dart';
 import 'package:form_app/providers/image_data_provider.dart';
 
-class PageSixEksteriorWajib extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
-  const PageSixEksteriorWajib({super.key});
+class PageSixEksteriorWajib extends ConsumerStatefulWidget {
+  final int currentPage;
+  final int totalPages;
+
+  const PageSixEksteriorWajib({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+  });
 
   final List<String> imageInputLabels = const [
     'Cat Samping Kanan dan Kiri (Pintu Mobil)',
@@ -74,7 +81,7 @@ class _PageSixEksteriorWajibState extends ConsumerState<PageSixEksteriorWajib> w
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(data: '3/26'),
+          PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
           const SizedBox(height: 4),
           PageTitle(data: 'Foto Eksterior'),
           const SizedBox(height: 6.0),

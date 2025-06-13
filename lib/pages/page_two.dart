@@ -9,6 +9,8 @@ import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 
 class PageTwo extends ConsumerStatefulWidget {
+  final int currentPage;
+  final int totalPages;
   final GlobalKey<FormState> formKey;
   final ValueNotifier<bool> formSubmitted; // New parameter
 
@@ -16,6 +18,9 @@ class PageTwo extends ConsumerStatefulWidget {
     super.key,
     required this.formKey,
     required this.formSubmitted, // Update constructor
+    required this.currentPage,
+    required this.totalPages,
+
   });
 
   @override
@@ -89,7 +94,7 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(data: '15/26'),
+                  PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
                   const SizedBox(height: 4),
                   PageTitle(data: 'Data Kendaraan'), // Updated Title
                   const SizedBox(height: 6.0),

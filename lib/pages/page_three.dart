@@ -9,8 +9,15 @@ import 'package:form_app/widgets/toggle_option_widget.dart';
 // Import other necessary widgets like CommonLayout if you plan to use it here
 
 // Placeholder for Page Three
-class PageThree extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
-  const PageThree({super.key});
+class PageThree extends ConsumerStatefulWidget { 
+  final int currentPage;
+  final int totalPages;
+
+  const PageThree({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+});
 
   @override
   ConsumerState<PageThree> createState() => _PageThreeState(); // Create state
@@ -33,7 +40,7 @@ class _PageThreeState extends ConsumerState<PageThree> with AutomaticKeepAliveCl
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(data: '16/26'),
+          PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
           const SizedBox(height: 4),
           PageTitle(data: 'Kelengkapan'),
           const SizedBox(height: 6.0),

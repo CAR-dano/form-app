@@ -10,7 +10,14 @@ import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
 import 'package:form_app/widgets/expandable_text_field.dart';
 
 class PageFiveFive extends ConsumerStatefulWidget {
-  const PageFiveFive({super.key});
+  final int currentPage;
+  final int totalPages;
+
+  const PageFiveFive({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+  });
 
   @override
   ConsumerState<PageFiveFive> createState() => _PageFiveFiveState();
@@ -58,7 +65,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageNumber(data: '22/26'),
+                PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
                 const SizedBox(height: 4),
                 PageTitle(data: 'Penilaian (5)'),
                 const SizedBox(height: 6.0),

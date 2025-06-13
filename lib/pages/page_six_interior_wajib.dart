@@ -9,8 +9,15 @@ import 'dart:io'; // Keep import in case needed later
 import 'package:form_app/models/image_data.dart'; // Keep import in case needed later
 import 'package:form_app/providers/image_data_provider.dart'; // Keep import in case needed later
 
-class PageSixInteriorWajib extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
-  const PageSixInteriorWajib({super.key});
+class PageSixInteriorWajib extends ConsumerStatefulWidget { 
+  final int currentPage;
+  final int totalPages;
+
+  const PageSixInteriorWajib({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+  });
 
   final List<String> imageInputLabels = const [
     'Transmisi',
@@ -67,7 +74,7 @@ class _PageSixInteriorWajibState extends ConsumerState<PageSixInteriorWajib> wit
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(data: '4/26'),
+          PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
           const SizedBox(height: 4),
           PageTitle(data: 'Foto Interior'),
           const SizedBox(height: 6.0),

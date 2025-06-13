@@ -13,7 +13,14 @@ import 'package:form_app/widgets/labeled_text_field.dart';
 
 // Placeholder for Page Four
 class PageFour extends ConsumerStatefulWidget { // Change to ConsumerStatefulWidget
-  const PageFour({super.key});
+  const PageFour({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+  });
+  final int currentPage;
+  final int totalPages;
+
 
   @override
   ConsumerState<PageFour> createState() => _PageFourState(); // Change to ConsumerState
@@ -65,7 +72,7 @@ class _PageFourState extends ConsumerState<PageFour> with AutomaticKeepAliveClie
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageNumber(data: '17/26'),
+                PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
                 const SizedBox(height: 4),
                 PageTitle(data: 'Hasil Inspeksi'), // Placeholder Title
                 const SizedBox(height: 6.0),

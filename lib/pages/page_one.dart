@@ -14,12 +14,16 @@ import 'package:form_app/widgets/labeled_dropdown_field.dart'; // Use the refact
 
 class PageOne extends ConsumerStatefulWidget {
   final GlobalKey<FormState> formKey;
-  final ValueNotifier<bool> formSubmitted; // New parameter
+  final ValueNotifier<bool> formSubmitted;
+  final int currentPage; // New parameter
+  final int totalPages; // New parameter
 
   const PageOne({
     super.key,
     required this.formKey,
-    required this.formSubmitted, // Update constructor
+    required this.formSubmitted,
+    required this.currentPage, // Update constructor
+    required this.totalPages, // Update constructor
   });
 
   @override
@@ -76,7 +80,7 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(data: '1/26'),
+                  PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
                   const SizedBox(height: 4),
                   PageTitle(data: 'Identitas'),
                   const SizedBox(height: 6.0),

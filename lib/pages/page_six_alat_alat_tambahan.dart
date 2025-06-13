@@ -10,9 +10,14 @@ import 'package:form_app/providers/tambahan_image_data_provider.dart'; // Import
 
 class PageSixAlatAlatTambahan extends ConsumerStatefulWidget {
   final ValueNotifier<bool> formSubmitted;
+  final int currentPage;
+  final int totalPages;
+
 
   const PageSixAlatAlatTambahan({
     super.key,
+    required this.currentPage,
+    required this.totalPages,
     required this.formSubmitted,
   });
 
@@ -66,7 +71,7 @@ class _PageSixAlatAlatTambahanState extends ConsumerState<PageSixAlatAlatTambaha
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center, // Align items vertically
                     children: [
-                      const PageNumber(data: '13/26'),
+                      PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
                       if (hasImages) // Conditionally show the button
                         DeleteAllTambahanPhotosButton(
                           tambahanImageIdentifier: pageIdentifier,

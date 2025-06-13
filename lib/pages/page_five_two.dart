@@ -10,7 +10,15 @@ import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
 import 'package:form_app/widgets/expandable_text_field.dart';
 
 class PageFiveTwo extends ConsumerStatefulWidget {
-  const PageFiveTwo({super.key});
+  final int currentPage;
+  final int totalPages;
+
+
+  const PageFiveTwo({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+  });
 
   @override
   ConsumerState<PageFiveTwo> createState() => _PageFiveTwoState();
@@ -18,6 +26,7 @@ class PageFiveTwo extends ConsumerStatefulWidget {
 
 class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAliveClientMixin { // Add mixin
   late FocusScopeNode _focusScopeNode;
+
 
   @override
   bool get wantKeepAlive => true; // Override wantKeepAlive
@@ -61,7 +70,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageNumber(data: '19/26'),
+                PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
                 const SizedBox(height: 4),
                 PageTitle(data: 'Penilaian (2)'),
                 const SizedBox(height: 6.0),

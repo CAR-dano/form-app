@@ -9,8 +9,15 @@ import 'dart:io'; // Keep import in case needed later
 import 'package:form_app/models/image_data.dart'; // Keep import in case needed later
 import 'package:form_app/providers/image_data_provider.dart'; // Keep import in case needed later
 
-class PageSixKakiKakiWajib extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
-  const PageSixKakiKakiWajib({super.key});
+class PageSixKakiKakiWajib extends ConsumerStatefulWidget { 
+  final int currentPage;
+  final int totalPages;
+
+  const PageSixKakiKakiWajib({
+    super.key,
+    required this.currentPage,
+    required this.totalPages,
+  });
 
   final List<String> imageInputLabels = const [
     'Cakram',
@@ -69,7 +76,7 @@ class _PageSixKakiKakiWajibState extends ConsumerState<PageSixKakiKakiWajib> wit
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(data: '6/26'),
+          PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
           const SizedBox(height: 4),
           PageTitle(data: 'Foto Kaki-kaki'),
           const SizedBox(height: 6.0),
