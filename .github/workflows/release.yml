@@ -51,6 +51,12 @@ jobs:
       - name: Build Universal (Fat) Release APK
         run: flutter build apk --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ github.run_number }}
 
+      # Creates an .env file with the API base URL for the debug build.
+      - name: Create .env file for Debug Build
+        run: echo "API_BASE_URL_DEBUG=${{ secrets.API_BASE_URL_DEBUG }}" > .env
+        env:
+          API_BASE_URL_DEBUG: ${{ secrets.API_BASE_URL_DEBUG }}
+
       # Builds a debug APK.
       - name: Build Debug APK
         run: flutter build apk --debug

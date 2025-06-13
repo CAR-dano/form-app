@@ -40,7 +40,13 @@ class UploadableImage {
 class ApiService {
   final dio.Dio _dioInst;
 
-  String get _baseApiUrl => dotenv.env['API_BASE_URL']!;
+  String get _baseApiUrl {
+    if (kDebugMode) {
+      return dotenv.env['API_BASE_URL_DEBUG']!;
+    }
+    return dotenv.env['API_BASE_URL']!;
+  }
+
   String get _inspectionsUrl => '$_baseApiUrl/inspections';
   String get _inspectionBranchesUrl => '$_baseApiUrl/inspection-branches';
   String get _inspectorsUrl => '$_baseApiUrl/public/users/inspectors';
