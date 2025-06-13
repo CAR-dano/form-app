@@ -211,10 +211,20 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   }
 
   String? _validatePage(int pageIndex) {
+    debugPrint('Validating page index: $pageIndex');
     if (_formKeys[pageIndex].currentState != null) {
-      if (!(_formKeys[pageIndex].currentState!.validate())) {
+      debugPrint('FormState for page $pageIndex is NOT null.');
+      final isValid = _formKeys[pageIndex].currentState!.validate();
+      debugPrint('Validation result for page $pageIndex: $isValid');
+      if (!isValid) {
         return 'Harap lengkapi data di Halaman ${_pageNames[pageIndex] ?? pageIndex + 1}';
       }
+    } else {
+      debugPrint('FormState for page $pageIndex IS null.');
+      // This case should ideally not happen for pages that are expected to be rendered.
+      // If it does, it means the Form widget hasn't registered its state yet.
+      // For now, we'll return an error if the form state is null for a validated page.
+      return 'Form tidak siap untuk Halaman ${_pageNames[pageIndex] ?? pageIndex + 1}';
     }
     if (_tambahanImagePageIdentifiers.containsKey(pageIndex)) {
       final identifier = _tambahanImagePageIdentifiers[pageIndex]!;
@@ -282,6 +292,10 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     _formSubmittedPageOne.value = true;
     _formSubmittedPageTwo.value = true;
     _formSubmittedTambahanImages.value = true;
+
+    // Allow a microtask to complete, ensuring ValueNotifiers trigger rebuilds
+    // and PageOne's ValueListenableBuilder has a chance to call validate()
+    await Future.microtask(() {});
 
     List<String> validationErrors = [];
     int? firstErrorPageIndex;

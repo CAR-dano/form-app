@@ -32,6 +32,7 @@ class PageOne extends ConsumerStatefulWidget {
 
 class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClientMixin {
   late FocusScopeNode _focusScopeNode;
+  bool _hasValidatedOnSubmit = false; // Declare the state variable
 
   @override
   bool get wantKeepAlive => true;
@@ -66,10 +67,25 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
       },
       child: FocusScope(
         node: _focusScopeNode,
-        child: Form(
-          // Wrap with Form widget
-          key: widget.formKey, // Use the passed formKey
-          child: GestureDetector(
+        child: ValueListenableBuilder<bool>( // Add ValueListenableBuilder here
+          valueListenable: widget.formSubmitted,
+          builder: (context, isFormSubmitted, child) {
+            if (isFormSubmitted && !_hasValidatedOnSubmit) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  widget.formKey.currentState?.validate();
+                  setState(() {
+                    _hasValidatedOnSubmit = true;
+                  });
+                }
+              });
+            }
+            return Form(
+              key: widget.formKey,
+              child: child!, // Pass the original child
+            );
+          },
+          child: GestureDetector( // This becomes the child of ValueListenableBuilder
             // Wrap with GestureDetector
             onTap: () {
               _focusScopeNode.unfocus(); // Unfocus on tap outside text fields
@@ -156,7 +172,7 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                       formNotifier.updateTanggalInspeksi(date);
                     },
                     validator: (date) {
-                      if (widget.formSubmitted.value && date == null) {
+                      if (date == null) {
                         return 'Tanggal Inspeksi belum terisi';
                       }
                       return null;

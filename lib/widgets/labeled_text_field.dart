@@ -43,7 +43,6 @@ class LabeledTextField extends StatefulWidget {
 class _LabeledTextFieldState extends State<LabeledTextField> {
   final _formFieldKey = GlobalKey<FormFieldState<String>>(); // Changed to FormFieldState<String>
   late TextEditingController _internalController;
-  String? _errorText; // To store the error text
 
   @override
   void initState() {
@@ -110,24 +109,13 @@ class _LabeledTextFieldState extends State<LabeledTextField> {
           onChanged: (value) {
             widget.onChanged?.call(value);
             // Validate on change if form has already been marked as submitted for this field
-            if (widget.formSubmitted || (_errorText != null && widget.validator !=null) ) {
+            if (widget.formSubmitted) { // Only validate if form has been submitted
                _formFieldKey.currentState?.validate();
             }
           },
           validator: (value) {
-            final error = widget.validator?.call(value);
-            // Update the local error state and trigger a rebuild of the outer Column
-            // to show/hide the custom error text.
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted && _errorText != error) {
-                setState(() {
-                  _errorText = error;
-                });
-              }
-            });
-            // Return null to prevent TextFormField from showing its own error text.
-            // The border will still change based on FormFieldState's hasError.
-            return null;
+            // Directly return the error from the provided validator
+            return widget.validator?.call(value);
           },
           maxLines: widget.maxLines,
           style: inputTextStyling,
@@ -145,21 +133,21 @@ class _LabeledTextFieldState extends State<LabeledTextField> {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: BorderSide(
-                color: _errorText != null ? errorBorderColor : borderColor, // Use _errorText for border color
+                color: _formFieldKey.currentState?.hasError == true ? errorBorderColor : borderColor, // Use FormFieldState for border color
                 width: 1.5
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: BorderSide(
-                color: _errorText != null ? errorBorderColor : borderColor, // Use _errorText for border color
+                color: _formFieldKey.currentState?.hasError == true ? errorBorderColor : borderColor, // Use FormFieldState for border color
                 width: 1.5
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: BorderSide(
-                color: _errorText != null ? errorBorderColor : borderColor, // Use _errorText for border color
+                color: _formFieldKey.currentState?.hasError == true ? errorBorderColor : borderColor, // Use FormFieldState for border color
                 width: 2.0
               ),
             ),
@@ -171,8 +159,8 @@ class _LabeledTextFieldState extends State<LabeledTextField> {
               borderRadius: BorderRadius.circular(8.0),
               borderSide: const BorderSide(color: errorBorderColor, width: 2.0),
             ),
-            // Remove errorStyle to prevent default error display
-            errorStyle: const TextStyle(height: 0, fontSize: 0), // Hide default error text area
+            // Hide default error text area
+            errorStyle: const TextStyle(height: 0, fontSize: 0),
             prefix: widget.prefixText != null
                 ? Padding(
                     padding: const EdgeInsets.only(right: 8.0),
@@ -194,11 +182,11 @@ class _LabeledTextFieldState extends State<LabeledTextField> {
           ),
         ),
         // Custom error text display, similar to LabeledDateField
-        if (_errorText != null)
+        if (_formFieldKey.currentState?.hasError == true && _formFieldKey.currentState?.errorText != null)
           Padding(
             padding: const EdgeInsets.only(top: 4.0, left: 12.0),
             child: Text(
-              _errorText!,
+              _formFieldKey.currentState!.errorText!,
               style: const TextStyle(color: errorBorderColor, fontSize: 12.0),
             ),
           ),
