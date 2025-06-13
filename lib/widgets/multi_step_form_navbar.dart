@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_app/providers/form_step_provider.dart';
-import 'package:form_app/providers/page_navigation_provider.dart';
-import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/widgets/navigation_button_row.dart';
-import 'package:form_app/statics/app_styles.dart'; // Import AppStyles
 import 'dart:ui'; // For ImageFilter
 
 class MultiStepFormNavbar extends ConsumerWidget {
