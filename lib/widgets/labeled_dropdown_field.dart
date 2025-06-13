@@ -14,6 +14,7 @@ class LabeledDropdownField<T> extends ConsumerStatefulWidget {
   final FormFieldValidator<T?>? validator;
   final String Function(T item) itemText;
   final FocusNode? focusNode;
+  final bool formSubmitted; // Added this line
 
   const LabeledDropdownField({
     super.key,
@@ -28,6 +29,7 @@ class LabeledDropdownField<T> extends ConsumerStatefulWidget {
     this.validator,
     required this.itemText,
     this.focusNode,
+    this.formSubmitted = false, // Added this line with default value
   });
 
   @override
@@ -62,6 +64,14 @@ class _LabeledDropdownFieldState<T>
         _internalFocusNode.dispose();
       }
       _internalFocusNode = widget.focusNode ?? FocusNode();
+    }
+    // If formSubmitted state changes to true, re-validate
+    if (widget.formSubmitted && !oldWidget.formSubmitted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _formFieldKey.currentState?.validate();
+        }
+      });
     }
   }
 
@@ -110,10 +120,14 @@ class _LabeledDropdownFieldState<T>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && _formFieldKey.currentState != null) {
         // This will call _dropdownFormFieldValidator
-        _formFieldKey.currentState!.validate(); 
+        _formFieldKey.currentState!.validate();
+      }
+      // Validate on change if form has already been marked as submitted for this field
+      if (widget.formSubmitted || (_displayedValidationErrorText != null && widget.validator != null)) {
+        _formFieldKey.currentState?.validate();
       }
       // Optionally unfocus after selection, if desired
-      // _internalFocusNode.unfocus(); 
+      // _internalFocusNode.unfocus();
     });
   }
 

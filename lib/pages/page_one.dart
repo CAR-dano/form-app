@@ -96,11 +96,7 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                         }
                       },
                       validator: (value) {
-                        final inspectorsState = ref.read(inspectorProvider);
-                        if (widget.formSubmitted.value &&
-                            value == null &&
-                            inspectorsState is AsyncData<List<Inspector>> &&
-                            inspectorsState.value.isNotEmpty) {
+                        if (widget.formSubmitted.value && value == null) {
                           return 'Nama Inspektor belum terisi';
                         }
                         return null;
@@ -109,6 +105,7 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                       loadingHintText: 'Memuat inspektor...',
                       emptyDataHintText: 'Tidak ada inspektor tersedia',
                       errorHintText: 'Gagal memuat inspektor',
+                      formSubmitted: widget.formSubmitted.value, // Pass formSubmitted
                     ),
                   const SizedBox(height: 16.0),
                   LabeledTextField(
@@ -140,11 +137,7 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                       }
                     },
                     validator: (value) {
-                      final branchesState = ref.read(inspectionBranchesProvider);
-                      if (widget.formSubmitted.value &&
-                          value == null &&
-                          branchesState is AsyncData<List<InspectionBranch>> &&
-                          branchesState.value.isNotEmpty) {
+                      if (widget.formSubmitted.value && value == null) {
                         return 'Cabang Inspeksi belum terisi';
                       }
                       return null;
@@ -153,6 +146,7 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                     loadingHintText: 'Memuat cabang...',
                     emptyDataHintText: 'Tidak ada cabang tersedia',
                     errorHintText: 'Gagal memuat cabang',
+                    formSubmitted: widget.formSubmitted.value, // Pass formSubmitted
                   ),
                   const SizedBox(height: 16.0),
                   LabeledDateField(
@@ -167,7 +161,7 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                       }
                       return null;
                     },
-                    formSubmitted: widget.formSubmitted.value,
+                    formSubmitted: widget.formSubmitted.value, // Pass formSubmitted
                   ),
                   const SizedBox(height: 32.0),
                   
