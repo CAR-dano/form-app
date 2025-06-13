@@ -39,6 +39,7 @@ import 'package:form_app/providers/image_data_provider.dart'; // For wajib image
 import 'package:form_app/providers/image_processing_provider.dart'; // For image processing status
 import 'package:form_app/providers/page_navigation_provider.dart'; // Import the provider
 import 'package:form_app/providers/submission_status_provider.dart'; // Import the new provider
+import 'package:form_app/providers/submission_data_cache_provider.dart'; // Import the new cache provider
 
 class MultiStepFormScreen extends ConsumerStatefulWidget {
   const MultiStepFormScreen({super.key});
@@ -249,6 +250,9 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   Future<void> _submitForm() async {
     final submissionStatus = ref.read(submissionStatusProvider); // Read the current state
     final submissionStatusNotifier = ref.read(submissionStatusProvider.notifier);
+    final submissionDataCache = ref.read(submissionDataCacheProvider); // Read the cache
+    final submissionDataCacheNotifier = ref.read(submissionDataCacheProvider.notifier);
+
     if (submissionStatus.isLoading) return;
 
     final isImageProcessing = ref.read(imageProcessingServiceProvider.notifier).isProcessing;
@@ -332,28 +336,60 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     }
 
     String? inspectionId;
-    try {
-      final formDataToSubmit = ref.read(formProvider);
-      final apiService = ApiService();
+    final formDataToSubmit = ref.read(formProvider);
+    final apiService = ApiService();
 
+    // Check if form data is unchanged and an inspection ID exists
+    final bool isFormDataUnchanged = submissionDataCache.lastSubmittedFormData != null &&
+        formDataToSubmit == submissionDataCache.lastSubmittedFormData; // Use Equatable comparison
+
+    if (isFormDataUnchanged && submissionDataCache.lastSubmittedInspectionId != null) {
+      inspectionId = submissionDataCache.lastSubmittedInspectionId;
+      debugPrint('Reusing existing inspection ID: $inspectionId');
       submissionStatusNotifier.setLoading(
         isLoading: true,
-        message: 'Mengirim data formulir...',
-        progress: 0.1,
+        message: 'Data formulir tidak berubah. Melanjutkan unggah gambar...',
+        progress: 0.1, // Start progress as if form data was just sent
       );
+    } else {
+      try {
+        submissionStatusNotifier.setLoading(
+          isLoading: true,
+          message: 'Mengirim data formulir...',
+          progress: 0.1,
+        );
 
-      final Map<String, dynamic> formDataResponse = await apiService.submitFormData(formDataToSubmit);
-      inspectionId = formDataResponse['id'] as String?;
+        final Map<String, dynamic> formDataResponse = await apiService.submitFormData(formDataToSubmit);
+        inspectionId = formDataResponse['id'] as String?;
 
-      if (inspectionId == null || inspectionId.isEmpty) {
-        throw Exception('Inspection ID not received from server.');
+        // Cache the successfully submitted form data and inspection ID
+        submissionDataCacheNotifier.setCache(
+          inspectionId: inspectionId,
+          formData: formDataToSubmit,
+        );
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Terjadi kesalahan saat mengirim data formulir: $e',
+              style: subTitleTextStyle.copyWith(color: Colors.white),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+        submissionStatusNotifier.setLoading(isLoading: false);
+        return; // Exit if form data submission fails
       }
+    }
 
-      submissionStatusNotifier.setLoading(
-        isLoading: true,
-        message: 'Data formulir terkirim. Mengumpulkan gambar...',
-        progress: 0.2,
-      );
+    // Continue with image upload logic
+    try {
+      if (inspectionId == null || inspectionId.isEmpty) {
+        throw Exception('Inspection ID not received or is empty after form submission.');
+      }
 
       if (!mounted) return;
 
@@ -428,14 +464,13 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
       if (!mounted) return;
       ref.read(formStepProvider.notifier).state++; // Navigate to FinishedPage
-
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Terjadi kesalahan: $e',
+            'Terjadi kesalahan saat mengunggah gambar: $e',
             style: subTitleTextStyle.copyWith(color: Colors.white),
           ),
           backgroundColor: Colors.red,
@@ -445,6 +480,10 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       submissionStatusNotifier.setLoading(isLoading: false);
     } finally {
       submissionStatusNotifier.reset(); // Ensure loading state is reset on completion or error
+      // Only clear cache if the entire process (form + images) is successful.
+      // If image upload fails, we want to keep the inspectionId and form data in cache.
+      // The cache should only be cleared if the user explicitly resets the form or navigates away.
+      // For now, I'll remove the clearCache from finally block and rely on explicit reset.
     }
   }
 }

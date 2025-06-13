@@ -1,220 +1,221 @@
 import 'package:form_app/models/inspector_data.dart'; // Import Inspector model
 import 'package:form_app/models/inspection_branch.dart'; // Import InspectionBranch model
+import 'package:equatable/equatable.dart'; // Import Equatable
 
-class FormData {
+class FormData extends Equatable {
   // Page One Data
-  String? namaInspektor;
-  String? inspectorId;
-  Inspector? selectedInspector; // Add field for selected Inspector object
-  String namaCustomer;
-  InspectionBranch? cabangInspeksi; // Change type to InspectionBranch
-  DateTime? tanggalInspeksi;
+  final String? namaInspektor;
+  final String? inspectorId;
+  final Inspector? selectedInspector; // Add field for selected Inspector object
+  final String namaCustomer;
+  final InspectionBranch? cabangInspeksi; // Change type to InspectionBranch
+  final DateTime? tanggalInspeksi;
 
   // Page Two Data
-  String merekKendaraan;
-  String tipeKendaraan;
-  String tahun;
-  String transmisi;
-  String warnaKendaraan;
-  String odometer;
-  String kepemilikan;
-  String platNomor;
-  DateTime? pajak1TahunDate;
-  DateTime? pajak5TahunDate;
-  String biayaPajak;
+  final String merekKendaraan;
+  final String tipeKendaraan;
+  final String tahun;
+  final String transmisi;
+  final String warnaKendaraan;
+  final String odometer;
+  final String kepemilikan;
+  final String platNomor;
+  final DateTime? pajak1TahunDate;
+  final DateTime? pajak5TahunDate;
+  final String biayaPajak;
 
   // Page Three Data (Kelengkapan)
-  String? bukuService;
-  String? kunciSerep;
-  String? bukuManual;
-  String? banSerep;
-  String? bpkb;
-  String? dongkrak;
-  String? toolkit;
-  String? noRangka;
-  String? noMesin;
+  final String? bukuService;
+  final String? kunciSerep;
+  final String? bukuManual;
+  final String? banSerep;
+  final String? bpkb;
+  final String? dongkrak;
+  final String? toolkit;
+  final String? noRangka;
+  final String? noMesin;
 
   // New fields for Page Four
-  String? indikasiTabrakan;
-  String? indikasiBanjir;
-  String? indikasiOdometerReset;
+  final String? indikasiTabrakan;
+  final String? indikasiBanjir;
+  final String? indikasiOdometerReset;
 
   // New fields for Page Four text fields
-  String? posisiBan;
-  String? merk;
-  String? tipeVelg;
-  String? ketebalan;
+  final String? posisiBan;
+  final String? merk;
+  final String? tipeVelg;
+  final String? ketebalan;
 
   // New fields for inspection results
-  int? interiorSelectedValue;
-  int? eksteriorSelectedValue;
-  int? kakiKakiSelectedValue;
-  int? mesinSelectedValue;
+  final int? interiorSelectedValue;
+  final int? eksteriorSelectedValue;
+  final int? kakiKakiSelectedValue;
+  final int? mesinSelectedValue;
 
   // NEW: Fields for ExpandableTextField data (as List<String>)
-  List<String>? keteranganInterior;
-  List<String>? keteranganEksterior;
-  List<String>? keteranganKakiKaki;
-  List<String>? keteranganMesin;
-  List<String>? deskripsiKeseluruhan;
+  final List<String>? keteranganInterior;
+  final List<String>? keteranganEksterior;
+  final List<String>? keteranganKakiKaki;
+  final List<String>? keteranganMesin;
+  final List<String>? deskripsiKeseluruhan;
 
   // New fields for Page Five One
-  int? airbagSelectedValue;
-  int? sistemAudioSelectedValue;
-  int? powerWindowSelectedValue;
-  int? sistemAcSelectedValue;
-  int? centralLockSelectedValue; // New field
-  int? electricMirrorSelectedValue; // New field
-  int? remAbsSelectedValue; // New field
-  List<String>? fiturCatatanList;
+  final int? airbagSelectedValue;
+  final int? sistemAudioSelectedValue;
+  final int? powerWindowSelectedValue;
+  final int? sistemAcSelectedValue;
+  final int? centralLockSelectedValue; // New field
+  final int? electricMirrorSelectedValue; // New field
+  final int? remAbsSelectedValue; // New field
+  final List<String>? fiturCatatanList;
 
   // New fields for Page Five Two
-  int? getaranMesinSelectedValue;
-  int? suaraMesinSelectedValue;
-  int? transmisiSelectedValue;
-  int? pompaPowerSteeringSelectedValue;
-  int? coverTimingChainSelectedValue;
-  int? oliPowerSteeringSelectedValue;
-  int? accuSelectedValue;
-  int? kompressorAcSelectedValue;
-  int? fanSelectedValue;
-  int? selangSelectedValue;
-  int? karterOliSelectedValue;
-  int? oilRemSelectedValue;
-  int? kabelSelectedValue;
-  int? kondensorSelectedValue;
-  int? radiatorSelectedValue;
-  int? cylinderHeadSelectedValue;
-  int? oliMesinSelectedValue;
-  int? airRadiatorSelectedValue;
-  int? coverKlepSelectedValue;
-  int? alternatorSelectedValue;
-  int? waterPumpSelectedValue;
-  int? beltSelectedValue;
-  int? oliTransmisiSelectedValue;
-  int? cylinderBlockSelectedValue;
-  int? bushingBesarSelectedValue;
-  int? bushingKecilSelectedValue;
-  int? tutupRadiatorSelectedValue;
-  List<String>? mesinCatatanList;
+  final int? getaranMesinSelectedValue;
+  final int? suaraMesinSelectedValue;
+  final int? transmisiSelectedValue;
+  final int? pompaPowerSteeringSelectedValue;
+  final int? coverTimingChainSelectedValue;
+  final int? oliPowerSteeringSelectedValue;
+  final int? accuSelectedValue;
+  final int? kompressorAcSelectedValue;
+  final int? fanSelectedValue;
+  final int? selangSelectedValue;
+  final int? karterOliSelectedValue;
+  final int? oilRemSelectedValue;
+  final int? kabelSelectedValue;
+  final int? kondensorSelectedValue;
+  final int? radiatorSelectedValue;
+  final int? cylinderHeadSelectedValue;
+  final int? oliMesinSelectedValue;
+  final int? airRadiatorSelectedValue;
+  final int? coverKlepSelectedValue;
+  final int? alternatorSelectedValue;
+  final int? waterPumpSelectedValue;
+  final int? beltSelectedValue;
+  final int? oliTransmisiSelectedValue;
+  final int? cylinderBlockSelectedValue;
+  final int? bushingBesarSelectedValue;
+  final int? bushingKecilSelectedValue;
+  final int? tutupRadiatorSelectedValue;
+  final List<String>? mesinCatatanList;
 
   // New fields for Page Five Three
-  int? stirSelectedValue;
-  int? remTanganSelectedValue;
-  int? pedalSelectedValue;
-  int? switchWiperSelectedValue;
-  int? lampuHazardSelectedValue;
-  int? panelDashboardSelectedValue;
-  int? pembukaKapMesinSelectedValue;
-  int? pembukaBagasiSelectedValue;
-  int? jokDepanSelectedValue;
-  int? aromaInteriorSelectedValue;
-  int? handlePintuSelectedValue;
-  int? consoleBoxSelectedValue;
-  int? spionTengahSelectedValue;
-  int? tuasPersnelingSelectedValue;
-  int? jokBelakangSelectedValue;
-  int? panelIndikatorSelectedValue;
-  int? switchLampuSelectedValue;
-  int? karpetDasarSelectedValue;
-  int? klaksonSelectedValue;
-  int? sunVisorSelectedValue;
-  int? tuasTangkiBensinSelectedValue;
-  int? sabukPengamanSelectedValue;
-  int? trimInteriorSelectedValue;
-  int? plafonSelectedValue;
-  List<String>? interiorCatatanList;
+  final int? stirSelectedValue;
+  final int? remTanganSelectedValue;
+  final int? pedalSelectedValue;
+  final int? switchWiperSelectedValue;
+  final int? lampuHazardSelectedValue;
+  final int? panelDashboardSelectedValue;
+  final int? pembukaKapMesinSelectedValue;
+  final int? pembukaBagasiSelectedValue;
+  final int? jokDepanSelectedValue;
+  final int? aromaInteriorSelectedValue;
+  final int? handlePintuSelectedValue;
+  final int? consoleBoxSelectedValue;
+  final int? spionTengahSelectedValue;
+  final int? tuasPersnelingSelectedValue;
+  final int? jokBelakangSelectedValue;
+  final int? panelIndikatorSelectedValue;
+  final int? switchLampuSelectedValue;
+  final int? karpetDasarSelectedValue;
+  final int? klaksonSelectedValue;
+  final int? sunVisorSelectedValue;
+  final int? tuasTangkiBensinSelectedValue;
+  final int? sabukPengamanSelectedValue;
+  final int? trimInteriorSelectedValue;
+  final int? plafonSelectedValue;
+  final List<String>? interiorCatatanList;
 
   // New fields for Page Five Four
-  int? bumperDepanSelectedValue;
-  int? kapMesinSelectedValue;
-  int? lampuUtamaSelectedValue;
-  int? panelAtapSelectedValue;
-  int? grillSelectedValue;
-  int? lampuFoglampSelectedValue;
-  int? kacaBeningSelectedValue;
-  int? wiperBelakangSelectedValue;
-  int? bumperBelakangSelectedValue;
-  int? lampuBelakangSelectedValue;
-  int? trunklidSelectedValue;
-  int? kacaDepanSelectedValue;
-  int? fenderKananSelectedValue;
-  int? quarterPanelKananSelectedValue;
-  int? pintuBelakangKananSelectedValue;
-  int? spionKananSelectedValue;
-  int? lisplangKananSelectedValue;
-  int? sideSkirtKananSelectedValue;
-  int? daunWiperSelectedValue;
-  int? pintuBelakangSelectedValue;
-  int? fenderKiriSelectedValue;
-  int? quarterPanelKiriSelectedValue;
-  int? pintuDepanSelectedValue;
-  int? kacaJendelaKananSelectedValue;
-  int? pintuBelakangKiriSelectedValue;
-  int? spionKiriSelectedValue;
-  int? pintuDepanKiriSelectedValue;
-  int? kacaJendelaKiriSelectedValue;
-  int? lisplangKiriSelectedValue;
-  int? sideSkirtKiriSelectedValue;
-  List<String>? eksteriorCatatanList;
+  final int? bumperDepanSelectedValue;
+  final int? kapMesinSelectedValue;
+  final int? lampuUtamaSelectedValue;
+  final int? panelAtapSelectedValue;
+  final int? grillSelectedValue;
+  final int? lampuFoglampSelectedValue;
+  final int? kacaBeningSelectedValue;
+  final int? wiperBelakangSelectedValue;
+  final int? bumperBelakangSelectedValue;
+  final int? lampuBelakangSelectedValue;
+  final int? trunklidSelectedValue;
+  final int? kacaDepanSelectedValue;
+  final int? fenderKananSelectedValue;
+  final int? quarterPanelKananSelectedValue;
+  final int? pintuBelakangKananSelectedValue;
+  final int? spionKananSelectedValue;
+  final int? lisplangKananSelectedValue;
+  final int? sideSkirtKananSelectedValue;
+  final int? daunWiperSelectedValue;
+  final int? pintuBelakangSelectedValue;
+  final int? fenderKiriSelectedValue;
+  final int? quarterPanelKiriSelectedValue;
+  final int? pintuDepanSelectedValue;
+  final int? kacaJendelaKananSelectedValue;
+  final int? pintuBelakangKiriSelectedValue;
+  final int? spionKiriSelectedValue;
+  final int? pintuDepanKiriSelectedValue;
+  final int? kacaJendelaKiriSelectedValue;
+  final int? lisplangKiriSelectedValue;
+  final int? sideSkirtKiriSelectedValue;
+  final List<String>? eksteriorCatatanList;
 
   // New fields for Page Five Five
-  int? banDepanSelectedValue;
-  int? velgDepanSelectedValue;
-  int? discBrakeSelectedValue;
-  int? masterRemSelectedValue;
-  int? tieRodSelectedValue;
-  int? gardanSelectedValue;
-  int? banBelakangSelectedValue;
-  int? velgBelakangSelectedValue;
-  int? brakePadSelectedValue;
-  int? crossmemberSelectedValue;
-  int? knalpotSelectedValue;
-  int? balljointSelectedValue;
-  int? rocksteerSelectedValue;
-  int? karetBootSelectedValue;
-  int? upperLowerArmSelectedValue;
-  int? shockBreakerSelectedValue;
-  int? linkStabilizerSelectedValue;
-  List<String>? banDanKakiKakiCatatanList;
+  final int? banDepanSelectedValue;
+  final int? velgDepanSelectedValue;
+  final int? discBrakeSelectedValue;
+  final int? masterRemSelectedValue;
+  final int? tieRodSelectedValue;
+  final int? gardanSelectedValue;
+  final int? banBelakangSelectedValue;
+  final int? velgBelakangSelectedValue;
+  final int? brakePadSelectedValue;
+  final int? crossmemberSelectedValue;
+  final int? knalpotSelectedValue;
+  final int? balljointSelectedValue;
+  final int? rocksteerSelectedValue;
+  final int? karetBootSelectedValue;
+  final int? upperLowerArmSelectedValue;
+  final int? shockBreakerSelectedValue;
+  final int? linkStabilizerSelectedValue;
+  final List<String>? banDanKakiKakiCatatanList;
 
   // New fields for Page Five Six (Test Drive)
-  int? bunyiGetaranSelectedValue;
-  int? performaStirSelectedValue;
-  int? perpindahanTransmisiSelectedValue;
-  int? stirBalanceSelectedValue;
-  int? performaSuspensiSelectedValue;
-  int? performaKoplingSelectedValue;
-  int? rpmSelectedValue;
-  List<String>? testDriveCatatanList;
+  final int? bunyiGetaranSelectedValue;
+  final int? performaStirSelectedValue;
+  final int? perpindahanTransmisiSelectedValue;
+  final int? stirBalanceSelectedValue;
+  final int? performaSuspensiSelectedValue;
+  final int? performaKoplingSelectedValue;
+  final int? rpmSelectedValue;
+  final List<String>? testDriveCatatanList;
 
   // New fields for Page Five Seven (Tools Test)
-  int? tebalCatBodyDepanSelectedValue;
-  int? tebalCatBodyKiriSelectedValue;
-  int? temperatureAcMobilSelectedValue;
-  int? tebalCatBodyKananSelectedValue;
-  int? tebalCatBodyBelakangSelectedValue;
-  int? obdScannerSelectedValue;
-  int? tebalCatBodyAtapSelectedValue;
-  int? testAccuSelectedValue;
-  List<String>? toolsTestCatatanList;
+  final int? tebalCatBodyDepanSelectedValue;
+  final int? tebalCatBodyKiriSelectedValue;
+  final int? temperatureAcMobilSelectedValue;
+  final int? tebalCatBodyKananSelectedValue;
+  final int? tebalCatBodyBelakangSelectedValue;
+  final int? obdScannerSelectedValue;
+  final int? tebalCatBodyAtapSelectedValue;
+  final int? testAccuSelectedValue;
+  final List<String>? toolsTestCatatanList;
 
   // New field for repair estimations
-  List<Map<String, String>> repairEstimations;
+  final List<Map<String, String>> repairEstimations;
 
-  String? catDepanKap;
-  String? catBelakangBumper;
-  String? catBelakangTrunk;
-  String? catKananFenderDepan;
-  String? catKananPintuDepan;
-  String? catKananPintuBelakang;
-  String? catKananFenderBelakang; 
-  String? catKiriFenderDepan;
-  String? catKiriPintuDepan;
-  String? catKiriPintuBelakang;
-  String? catKiriFenderBelakang;
-  String? catKiriSideSkirt;
-  String? catKananSideSkirt;
+  final String? catDepanKap;
+  final String? catBelakangBumper;
+  final String? catBelakangTrunk;
+  final String? catKananFenderDepan;
+  final String? catKananPintuDepan;
+  final String? catKananPintuBelakang;
+  final String? catKananFenderBelakang; 
+  final String? catKiriFenderDepan;
+  final String? catKiriPintuDepan;
+  final String? catKiriPintuBelakang;
+  final String? catKiriFenderBelakang;
+  final String? catKiriSideSkirt;
+  final String? catKananSideSkirt;
 
 
   FormData({
@@ -223,7 +224,7 @@ class FormData {
     this.selectedInspector,
     this.namaCustomer = '',
     this.cabangInspeksi,
-    this.tanggalInspeksi,
+    DateTime? tanggalInspeksi, // Remove 'this.'
     this.merekKendaraan = '',
     this.tipeKendaraan = '',
     this.tahun = '',
@@ -403,9 +404,195 @@ class FormData {
     this.catKiriFenderBelakang,
     this.catKiriSideSkirt,
     this.catKananSideSkirt,
-  }) {
-    tanggalInspeksi ??= DateTime.now();} // Set default to today if null
+  }) : tanggalInspeksi = tanggalInspeksi ?? DateTime.now(); // Set default to today if null
   // Add methods to update data if needed, or update directly
+
+  @override
+  List<Object?> get props => [
+    namaInspektor,
+    inspectorId,
+    selectedInspector,
+    namaCustomer,
+    cabangInspeksi,
+    tanggalInspeksi,
+    merekKendaraan,
+    tipeKendaraan,
+    tahun,
+    transmisi,
+    warnaKendaraan,
+    odometer,
+    kepemilikan,
+    platNomor,
+    pajak1TahunDate,
+    pajak5TahunDate,
+    biayaPajak,
+    bukuService,
+    kunciSerep,
+    bukuManual,
+    banSerep,
+    bpkb,
+    dongkrak,
+    toolkit,
+    noRangka,
+    noMesin,
+    indikasiTabrakan,
+    indikasiBanjir,
+    indikasiOdometerReset,
+    posisiBan,
+    merk,
+    tipeVelg,
+    ketebalan,
+    interiorSelectedValue,
+    eksteriorSelectedValue,
+    kakiKakiSelectedValue,
+    mesinSelectedValue,
+    keteranganInterior,
+    keteranganEksterior,
+    keteranganKakiKaki,
+    keteranganMesin,
+    deskripsiKeseluruhan,
+    repairEstimations,
+    airbagSelectedValue,
+    sistemAudioSelectedValue,
+    powerWindowSelectedValue,
+    sistemAcSelectedValue,
+    centralLockSelectedValue,
+    electricMirrorSelectedValue,
+    remAbsSelectedValue,
+    fiturCatatanList,
+    getaranMesinSelectedValue,
+    suaraMesinSelectedValue,
+    transmisiSelectedValue,
+    pompaPowerSteeringSelectedValue,
+    coverTimingChainSelectedValue,
+    oliPowerSteeringSelectedValue,
+    accuSelectedValue,
+    kompressorAcSelectedValue,
+    fanSelectedValue,
+    selangSelectedValue,
+    karterOliSelectedValue,
+    oilRemSelectedValue,
+    kabelSelectedValue,
+    kondensorSelectedValue,
+    radiatorSelectedValue,
+    cylinderHeadSelectedValue,
+    oliMesinSelectedValue,
+    airRadiatorSelectedValue,
+    coverKlepSelectedValue,
+    alternatorSelectedValue,
+    waterPumpSelectedValue,
+    beltSelectedValue,
+    oliTransmisiSelectedValue,
+    cylinderBlockSelectedValue,
+    bushingBesarSelectedValue,
+    bushingKecilSelectedValue,
+    tutupRadiatorSelectedValue,
+    mesinCatatanList,
+    stirSelectedValue,
+    remTanganSelectedValue,
+    pedalSelectedValue,
+    switchWiperSelectedValue,
+    lampuHazardSelectedValue,
+    panelDashboardSelectedValue,
+    pembukaKapMesinSelectedValue,
+    pembukaBagasiSelectedValue,
+    jokDepanSelectedValue,
+    aromaInteriorSelectedValue,
+    handlePintuSelectedValue,
+    consoleBoxSelectedValue,
+    spionTengahSelectedValue,
+    tuasPersnelingSelectedValue,
+    jokBelakangSelectedValue,
+    panelIndikatorSelectedValue,
+    switchLampuSelectedValue,
+    karpetDasarSelectedValue,
+    klaksonSelectedValue,
+    sunVisorSelectedValue,
+    tuasTangkiBensinSelectedValue,
+    sabukPengamanSelectedValue,
+    trimInteriorSelectedValue,
+    plafonSelectedValue,
+    interiorCatatanList,
+    bumperDepanSelectedValue,
+    kapMesinSelectedValue,
+    lampuUtamaSelectedValue,
+    panelAtapSelectedValue,
+    grillSelectedValue,
+    lampuFoglampSelectedValue,
+    kacaBeningSelectedValue,
+    wiperBelakangSelectedValue,
+    bumperBelakangSelectedValue,
+    lampuBelakangSelectedValue,
+    trunklidSelectedValue,
+    kacaDepanSelectedValue,
+    fenderKananSelectedValue,
+    quarterPanelKananSelectedValue,
+    pintuBelakangKananSelectedValue,
+    spionKananSelectedValue,
+    lisplangKananSelectedValue,
+    sideSkirtKananSelectedValue,
+    daunWiperSelectedValue,
+    pintuBelakangSelectedValue,
+    fenderKiriSelectedValue,
+    quarterPanelKiriSelectedValue,
+    pintuDepanSelectedValue,
+    kacaJendelaKananSelectedValue,
+    pintuBelakangKiriSelectedValue,
+    spionKiriSelectedValue,
+    pintuDepanKiriSelectedValue,
+    kacaJendelaKiriSelectedValue,
+    lisplangKiriSelectedValue,
+    sideSkirtKiriSelectedValue,
+    eksteriorCatatanList,
+    banDepanSelectedValue,
+    velgDepanSelectedValue,
+    discBrakeSelectedValue,
+    masterRemSelectedValue,
+    tieRodSelectedValue,
+    gardanSelectedValue,
+    banBelakangSelectedValue,
+    velgBelakangSelectedValue,
+    brakePadSelectedValue,
+    crossmemberSelectedValue,
+    knalpotSelectedValue,
+    balljointSelectedValue,
+    rocksteerSelectedValue,
+    karetBootSelectedValue,
+    upperLowerArmSelectedValue,
+    shockBreakerSelectedValue,
+    linkStabilizerSelectedValue,
+    banDanKakiKakiCatatanList,
+    bunyiGetaranSelectedValue,
+    performaStirSelectedValue,
+    perpindahanTransmisiSelectedValue,
+    stirBalanceSelectedValue,
+    performaSuspensiSelectedValue,
+    performaKoplingSelectedValue,
+    rpmSelectedValue,
+    testDriveCatatanList,
+    tebalCatBodyDepanSelectedValue,
+    tebalCatBodyKiriSelectedValue,
+    temperatureAcMobilSelectedValue,
+    tebalCatBodyKananSelectedValue,
+    tebalCatBodyBelakangSelectedValue,
+    obdScannerSelectedValue,
+    tebalCatBodyAtapSelectedValue,
+    testAccuSelectedValue,
+    toolsTestCatatanList,
+    catDepanKap,
+    catBelakangBumper,
+    catBelakangTrunk,
+    catKananFenderDepan,
+    catKananPintuDepan,
+    catKananPintuBelakang,
+    catKananFenderBelakang,
+    catKiriFenderDepan,
+    catKiriPintuDepan,
+    catKiriPintuBelakang,
+    catKiriFenderBelakang,
+    catKiriSideSkirt,
+    catKananSideSkirt,
+  ];
 
   Map<String, dynamic> toJson() {
     return {
