@@ -19,7 +19,7 @@ class CustomMessageOverlay {
     required String message,
     required Color backgroundColor,
     IconData? icon,
-    Duration duration = const Duration(seconds: 3),
+    Duration duration = const Duration(seconds: 2), // Changed default duration to 1 second
   }) {
     if (_overlayEntry != null) {
       _timer?.cancel();
