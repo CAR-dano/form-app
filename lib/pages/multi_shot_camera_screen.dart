@@ -109,6 +109,12 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     }
 
     try {
+      if (mounted) {
+        setState(() {
+          _picturesTaken++;
+        });
+      }
+
       final XFile imageFile = await _controller!.takePicture();
 
       // Get notifiers before the async operation that might outlive the widget
@@ -123,12 +129,6 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         widget.defaultLabel,
         widget.imageIdentifier,
       );
-
-      if (mounted) {
-        setState(() {
-          _picturesTaken++;
-        });
-      }
     } on CameraException catch (e) {
       if (mounted) {
         CustomMessageOverlay(context).show(
