@@ -67,19 +67,45 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final CameraController? cameraController = _controller;
-    // If controller is null before setup or disposed, no need to proceed
-    if (state == AppLifecycleState.inactive) {
-      cameraController?.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      // If controller is null or not initialized, and cameras list has been populated, try to select.
-      if ((cameraController == null || !cameraController.value.isInitialized) &&
-          _cameras.isNotEmpty) {
-        _selectCamera(_selectedCameraIndex); // Re-initialize with the current selected camera
-      } else if (_cameras.isEmpty) {
-        // If cameras aren't even discovered yet (e.g., app was backgrounded during initial setup)
-        _setupCameras();
-      }
+    final CameraController? currentController = _controller;
+
+    switch (state) {
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.detached:
+        if (currentController != null && currentController.value.isInitialized) {
+          currentController.dispose();
+        }
+        // Set _controller to null and call setState to update UI.
+        // This ensures the build method shows the blank screen and doesn't use a disposed controller.
+        if (mounted) {
+          setState(() {
+            _controller = null;
+          });
+        } else {
+          _controller = null; // If not mounted, just nullify.
+        }
+        break;
+      case AppLifecycleState.resumed:
+        // If _controller is null, it means it was disposed (or never initialized).
+        if (_controller == null) {
+          if (_cameras.isNotEmpty) {
+            // If camera descriptions are already available, select the camera.
+            _selectCamera(_selectedCameraIndex);
+          } else {
+            // Otherwise, (re-)run the full camera setup.
+            // _setupCameras will populate _cameras and then call _selectCamera.
+            _setupCameras();
+          }
+        }
+        // It's also possible _controller is not null but became uninitialized due to an error
+        // or an extremely fast pause/resume cycle before nullification completed.
+        // _selectCamera handles re-initialization if the controller is in such a state.
+        else if (!_controller!.value.isInitialized) {
+            _selectCamera(_selectedCameraIndex);
+        }
+        break;
     }
   }
 
