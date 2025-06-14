@@ -40,6 +40,7 @@ import 'package:form_app/providers/page_navigation_provider.dart'; // Import the
 import 'package:form_app/providers/submission_status_provider.dart'; // Import the new provider
 import 'package:form_app/providers/submission_data_cache_provider.dart'; // Import the new cache provider
 import 'package:form_app/widgets/custom_message_overlay.dart'; // Import the custom message overlay
+import 'package:form_app/models/uploadable_image.dart'; // Import the UploadableImage model
 
 class MultiStepFormScreen extends ConsumerStatefulWidget {
   const MultiStepFormScreen({super.key});
