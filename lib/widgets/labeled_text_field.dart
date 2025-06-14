@@ -132,35 +132,26 @@ class _LabeledTextFieldState extends State<LabeledTextField> {
             alignLabelWithHint: true,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: _formFieldKey.currentState?.hasError == true ? errorBorderColor : borderColor, // Use FormFieldState for border color
-                width: 1.5
-              ),
+              borderSide: const BorderSide(color: borderColor, width: 1.5),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: _formFieldKey.currentState?.hasError == true ? errorBorderColor : borderColor, // Use FormFieldState for border color
-                width: 1.5
-              ),
+              borderSide: const BorderSide(color: borderColor, width: 1.5),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: _formFieldKey.currentState?.hasError == true ? errorBorderColor : borderColor, // Use FormFieldState for border color
-                width: 2.0
-              ),
+              borderSide: const BorderSide(color: borderColor, width: 2.0),
             ),
-            errorBorder: OutlineInputBorder( // This will be used if validator returns non-null
+            errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: const BorderSide(color: errorBorderColor, width: 1.5),
             ),
-            focusedErrorBorder: OutlineInputBorder( // This will be used if validator returns non-null
+            focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: const BorderSide(color: errorBorderColor, width: 2.0),
             ),
-            // Hide default error text area
-            errorStyle: const TextStyle(height: 0, fontSize: 0),
+            errorStyle: const TextStyle(color: errorBorderColor, fontSize: 12.0, height: 1.2),
+            errorMaxLines: 2,
             prefix: widget.prefixText != null
                 ? Padding(
                     padding: const EdgeInsets.only(right: 8.0),
@@ -181,15 +172,6 @@ class _LabeledTextFieldState extends State<LabeledTextField> {
                 : null,
           ),
         ),
-        // Custom error text display, similar to LabeledDateField
-        if (_formFieldKey.currentState?.hasError == true && _formFieldKey.currentState?.errorText != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 4.0, left: 12.0),
-            child: Text(
-              _formFieldKey.currentState!.errorText!,
-              style: const TextStyle(color: errorBorderColor, fontSize: 12.0),
-            ),
-          ),
       ],
     );
   }
