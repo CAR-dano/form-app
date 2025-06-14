@@ -99,6 +99,12 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         return;
       }
       _cameras = cameras;
+      if (kDebugMode) {
+        print("Available cameras:");
+        for (var i = 0; i < _cameras.length; i++) {
+          print("Camera $i: ${_cameras[i].name}, Lens Direction: ${_cameras[i].lensDirection}, Sensor Orientation: ${_cameras[i].sensorOrientation}");
+        }
+      }
 
       int initialCameraIndex = _cameras.indexWhere((c) => c.lensDirection == CameraLensDirection.back);
       if (initialCameraIndex == -1) {
@@ -412,16 +418,19 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildControlButton(Icons.close, () => Navigator.of(context).pop()),
-                 Row(
+                Row( // Group Close and Flash buttons
+                  children: [
+                    _buildControlButton(Icons.arrow_back_ios, () => Navigator.of(context).pop()),
+                    _buildControlButton(_getFlashIcon(), _onToggleFlash),
+                  ],
+                ),
+                 Row( // Group Lens Switch and Flip Camera buttons
                    children: [
-                     _buildControlButton(_getFlashIcon(), _onToggleFlash),
                      if (backCameraCount > 1) ...[
-                       const SizedBox(width: 16),
                        _buildControlButton(Icons.switch_camera_outlined, _onSwitchLens), // Lens switch
+                       const SizedBox(width: 16), // Spacing
                      ],
                      if (_cameras.length > 1) ...[ // Flip camera
-                        const SizedBox(width: 16),
                        _buildControlButton(Icons.flip_camera_ios, _onFlipCamera),
                      ]
                    ],
