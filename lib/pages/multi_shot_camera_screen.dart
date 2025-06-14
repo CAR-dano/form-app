@@ -420,7 +420,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
               children: [
                 Row( // Group Close and Flash buttons
                   children: [
-                    _buildControlButton(Icons.arrow_back_ios, () => Navigator.of(context).pop()),
+                    _buildControlButton(Icons.arrow_back, () => Navigator.of(context).pop()),
                     _buildControlButton(_getFlashIcon(), _onToggleFlash),
                   ],
                 ),
