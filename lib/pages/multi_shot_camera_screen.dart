@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -110,8 +111,18 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     try {
       final XFile imageFile = await _controller!.takePicture();
 
+      // Get notifiers before the async operation that might outlive the widget
+      final imageProcessingNotifier = ref.read(imageProcessingServiceProvider.notifier);
+      final tambahanImageNotifier = ref.read(tambahanImageDataProvider(widget.imageIdentifier).notifier);
+
       // Fire-and-forget the processing
-      _processAndAddImage(imageFile);
+      _processAndAddImage(
+        imageFile,
+        imageProcessingNotifier,
+        tambahanImageNotifier,
+        widget.defaultLabel,
+        widget.imageIdentifier,
+      );
 
       if (mounted) {
         setState(() {
@@ -129,37 +140,36 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     }
   }
 
-  Future<void> _processAndAddImage(XFile imageFile) async {
-    ref.read(imageProcessingServiceProvider.notifier).taskStarted();
+  Future<void> _processAndAddImage(
+    XFile imageFile,
+    ImageProcessingService imageProcessingNotifier,
+    TambahanImageDataListNotifier tambahanImageNotifier,
+    String defaultLabel,
+    String imageIdentifier,
+  ) async {
+    imageProcessingNotifier.taskStarted();
     try {
       await ImagePickerUtil.saveImageToGallery(imageFile);
       final String? processedPath =
           await ImagePickerUtil.processAndSaveImage(imageFile);
 
-      if (mounted && processedPath != null) {
+      if (processedPath != null) {
         final newTambahanImage = TambahanImageData(
           imagePath: processedPath,
-          label: widget.defaultLabel,
+          label: defaultLabel,
           needAttention: false,
-          category: widget.imageIdentifier,
+          category: imageIdentifier,
           isMandatory: false,
         );
-        ref
-            .read(tambahanImageDataProvider(widget.imageIdentifier).notifier)
-            .addImage(newTambahanImage);
+        tambahanImageNotifier.addImage(newTambahanImage);
       }
     } catch (e) {
-      if (mounted) {
-        CustomMessageOverlay(context).show(
-          message: 'Error processing image: $e',
-          backgroundColor: Colors.red,
-          icon: Icons.error,
-        );
+      // Log error, but don't show overlay as there's no BuildContext
+      if (kDebugMode) {
+        print("Error processing image in background: $e");
       }
     } finally {
-      if(mounted) {
-        ref.read(imageProcessingServiceProvider.notifier).taskFinished();
-      }
+      imageProcessingNotifier.taskFinished();
     }
   }
   
@@ -257,7 +267,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildControlButton(Icons.close, () => Navigator.of(context).pop()),
+                _buildControlButton(Icons.close, () => Navigator.of(context).pop()), // Revert to original pop
                  Row(
                    children: [
                      _buildControlButton(_getFlashIcon(), _onToggleFlash),

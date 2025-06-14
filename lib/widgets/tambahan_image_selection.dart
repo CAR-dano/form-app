@@ -13,6 +13,7 @@ import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/utils/image_picker_util.dart'; // Import the new utility
 import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
 import 'package:form_app/widgets/custom_message_overlay.dart';
+import 'package:form_app/pages/multi_shot_camera_screen.dart';
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -35,11 +36,9 @@ class TambahanImageSelection extends ConsumerStatefulWidget {
 }
 
 class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection> {
-  final ImagePicker _picker = ImagePicker();
   int _currentIndex = 0;
   final TextEditingController _labelController = TextEditingController();
   final GlobalKey<FormFieldState<String>> _labelFieldKey = GlobalKey<FormFieldState<String>>(); // Corrected type
-  bool _isLoading = false; // Local loading state
 
   VoidCallback? _formSubmittedListener;
 
@@ -103,12 +102,27 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   }
 
   Future<void> _pickImage(ImageSource source) async {
+    // --- NEW LOGIC FOR CAMERA ---
+    if (source == ImageSource.camera) {
+      if (!mounted) return; // Guard against BuildContext across async gaps
+      FocusScope.of(context).unfocus(); 
+            
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => MultiShotCameraScreen(
+            imageIdentifier: widget.identifier,
+            defaultLabel: widget.defaultLabel, // Pass the defaultLabel
+          ),
+        ),
+      );
+      return; // Important: Exit the function here
+    }
+    
+    // --- EXISTING LOGIC FOR GALLERY ---
     if (source == ImageSource.gallery) {
       final List<XFile> imagesXFiles = await ImagePickerUtil.pickMultiImagesFromGallery();
       if (imagesXFiles.isNotEmpty && mounted) {
-        setState(() {
-          _isLoading = true; // Start loading for this instance
-        });
+        // No need for local _isLoading, it's watched from provider
         List<TambahanImageData> newImagesData = [];
         for (var imageFileXFile in imagesXFiles) {
           ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment
@@ -154,60 +168,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
           });
         }
       }
-      setState(() {
-        _isLoading = false; // End loading for this instance
-      });
-    } else { // Camera
-      final XFile? imageXFile = await _picker.pickImage(source: source);
-      if (imageXFile != null && mounted) {
-        setState(() {
-          _isLoading = true; // Start loading for this instance
-        });
-        ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment
-        try {
-          await ImagePickerUtil.saveImageToGallery(imageXFile);
-          final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageXFile);
-          if (mounted && processedPath != null) {
-            final newTambahanImage = TambahanImageData(
-              imagePath: processedPath,
-              label: widget.defaultLabel,
-              needAttention: false,
-              category: widget.identifier,
-              isMandatory: widget.isMandatory,
-            );
-            ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
-            // Pre-cache the newly added image
-            if (mounted) {
-              precacheImage(FileImage(File(processedPath)), context);
-            }
-            setState(() {
-              _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - 1;
-              _updateControllersForCurrentIndex();
-            });
-          } else if (mounted && processedPath == null) {
-            if (kDebugMode) print("Image processing failed for camera image.");
-            CustomMessageOverlay(context).show(message: 'Gagal memproses gambar dari kamera.', backgroundColor: errorBorderColor, icon: Icons.error);
-          }
-        } catch (e) {
-          if (mounted && kDebugMode) {
-            if (kDebugMode) {
-              print("Error during camera image processing in Tambahan: $e");
-            }
-            CustomMessageOverlay(context).show(message: 'Terjadi kesalahan memproses gambar kamera: $e', backgroundColor: errorBorderColor, icon: Icons.error);
-          }
-        } finally {
-          if (mounted) {
-            ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement
-            setState(() {
-              _isLoading = false; // End loading for this instance
-            });
-          }
-        }
-      } else {
-        setState(() {
-          _isLoading = false; // End loading if no image picked
-        });
-      }
+      // No need to set _isLoading here, it's watched from provider
     }
   }
 
@@ -336,7 +297,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       }
     });
 
-    final isProcessingImage = _isLoading; // Use local loading state
+    // Watch the imageProcessingServiceProvider for global loading state
+    final isProcessingImage = ref.watch(imageProcessingServiceProvider) > 0;
 
     return Column(
       children: [
@@ -345,7 +307,9 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
           children: [
             Expanded(
               child: GestureDetector(
-                onTap: () => _pickImage(ImageSource.camera),
+                onTap: () {
+                  _pickImage(ImageSource.camera);
+                },
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
                   decoration: BoxDecoration(
