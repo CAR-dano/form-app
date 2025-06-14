@@ -74,7 +74,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         cameraIndex < _cameras.length ? cameraIndex : 0;
 
     final newController =
-        CameraController(_cameras[_selectedCameraIndex], ResolutionPreset.high, enableAudio: false);
+        CameraController(_cameras[_selectedCameraIndex], ResolutionPreset.max, enableAudio: false);
 
     _controller?.dispose();
     _controller = newController;
@@ -221,21 +221,21 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       ),
     );
   }  Widget _buildCameraPreview() {
-    var camera = _controller!.value;
-    // fetch screen size
-    final size = MediaQuery.of(context).size;
-        
-    // calculate scale depending on screen and camera ratios
-    // this is actually size.aspectRatio / (1 / camera.aspectRatio)
+    final Size screenSize = MediaQuery.of(context).size;
+    final double cameraAspectRatio = _controller!.value.aspectRatio;
+    
+    // Calculate scale depending on screen and camera ratios
+    // This is actually screenSize.aspectRatio / (1 / cameraAspectRatio)
     // because camera preview size is received as landscape
     // but we're calculating for portrait orientation
-    var scale = size.aspectRatio * camera.aspectRatio;
-
-    // to prevent scaling down, invert the value
+    var scale = screenSize.aspectRatio * cameraAspectRatio;
+    
+    // To prevent scaling down, invert the value
     if (scale < 1) scale = 1 / scale;
-
-    return AspectRatio(
-      aspectRatio: 3 / 4, // 3:4 aspect ratio
+    
+    return SizedBox(
+      width: screenSize.width,
+      height: screenSize.width / (3.0 / 4.0), // 3:4 aspect ratio using full width
       child: ClipRect(
         child: Transform.scale(
           scale: scale,
