@@ -12,6 +12,7 @@ import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/utils/image_picker_util.dart'; // Import the new utility
 import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
+import 'package:form_app/widgets/custom_message_overlay.dart';
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -130,18 +131,14 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
               }
             } else if (mounted && processedPath == null) {
               if (kDebugMode) print("Image processing failed for gallery image: ${imageFileXFile.name}");
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Gagal memproses gambar: ${imageFileXFile.name}'))
-              );
+              CustomMessageOverlay(context).show(message: 'Gagal memproses gambar: ${imageFileXFile.name}', backgroundColor: errorBorderColor, icon: Icons.photo_library);
             }
           } catch (e) {
              if (mounted && kDebugMode) {
                 if (kDebugMode) {
                   print("Error during multi-gallery image processing: $e");
                 }
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Terjadi kesalahan memproses gambar: $e'))
-                );
+                CustomMessageOverlay(context).show(message: 'Terjadi kesalahan memproses gambar: $e', backgroundColor: errorBorderColor, icon: Icons.error);
              }
           } finally {
             if (mounted) {
@@ -189,18 +186,14 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
             });
           } else if (mounted && processedPath == null) {
             if (kDebugMode) print("Image processing failed for camera image.");
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Gagal memproses gambar dari kamera.'))
-            );
+            CustomMessageOverlay(context).show(message: 'Gagal memproses gambar dari kamera.', backgroundColor: errorBorderColor, icon: Icons.error);
           }
         } catch (e) {
           if (mounted && kDebugMode) {
             if (kDebugMode) {
               print("Error during camera image processing in Tambahan: $e");
             }
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Terjadi kesalahan memproses gambar kamera: $e'))
-            );
+            CustomMessageOverlay(context).show(message: 'Terjadi kesalahan memproses gambar kamera: $e', backgroundColor: errorBorderColor, icon: Icons.error);
           }
         } finally {
           if (mounted) {
