@@ -26,7 +26,7 @@ class MultiShotCameraScreen extends ConsumerStatefulWidget {
 }
 
 class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
-    with WidgetsBindingObserver {
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   late List<CameraDescription> _cameras;
   CameraController? _controller;
   int _selectedCameraIndex = 0;
@@ -36,17 +36,32 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
   double _minZoomLevel = 1.0;
   double _maxZoomLevel = 1.0;
 
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _initializeCamera();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOut,
+      ),
+    );
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _controller?.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -343,23 +358,35 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
   }
 
   Widget _buildCaptureButton() {
-    return InkWell(
-      onTap: _onTakePicture,
-      child: Container(
-        width: 70,
-        height: 70,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.transparent,
-          border: Border.all(color: Colors.white, width: 4),
-        ),
-        child: Center(
-          child: Container(
-            width: 58,
-            height: 58,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
+    return Material(
+      color: Colors.transparent,
+      shape: const CircleBorder(),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: _onTakePicture,
+        onTapDown: (_) => _animationController.forward(),
+        onTapUp: (_) => _animationController.reverse(),
+        onTapCancel: () => _animationController.reverse(),
+        borderRadius: BorderRadius.circular(35.0), // Half of the button's width/height
+        child: Container(
+          width: 70,
+          height: 70,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.transparent,
+            border: Border.all(color: Colors.white, width: 4),
+          ),
+          child: Center(
+            child: ScaleTransition(
+              scale: _scaleAnimation,
+              child: Container(
+                width: 58,
+                height: 58,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
         ),
