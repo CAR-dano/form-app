@@ -356,9 +356,12 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
   @override
   Widget build(BuildContext context) {
     if (_controller == null || !_controller!.value.isInitialized) {
-      return const Scaffold(
-          backgroundColor: Colors.black,
-          body: Center(child: CircularProgressIndicator()));
+      // Show a blank screen or a simple placeholder while the camera is initializing
+      // instead of a loading indicator.
+      return Scaffold(
+        backgroundColor: Colors.black, // Or any other appropriate background color
+        body: Container(), // Empty container, effectively showing a blank screen
+      );
     }
     return Scaffold(
       backgroundColor: Colors.black,
