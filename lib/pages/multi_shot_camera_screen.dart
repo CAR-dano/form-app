@@ -209,18 +209,39 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     return Scaffold(
       backgroundColor: Colors.black,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
-         value: SystemUiOverlayStyle.light,
+        value: SystemUiOverlayStyle.light,
         child: Stack(
           children: [
-            Positioned.fill(
-              child: AspectRatio(
-                aspectRatio: _controller!.value.aspectRatio,
-                child: CameraPreview(_controller!),
-              ),
+            Center(
+              child: _buildCameraPreview(),
             ),
-            // UI Controls Overlay
             _buildControlsOverlay(),
           ],
+        ),
+      ),
+    );
+  }  Widget _buildCameraPreview() {
+    var camera = _controller!.value;
+    // fetch screen size
+    final size = MediaQuery.of(context).size;
+        
+    // calculate scale depending on screen and camera ratios
+    // this is actually size.aspectRatio / (1 / camera.aspectRatio)
+    // because camera preview size is received as landscape
+    // but we're calculating for portrait orientation
+    var scale = size.aspectRatio * camera.aspectRatio;
+
+    // to prevent scaling down, invert the value
+    if (scale < 1) scale = 1 / scale;
+
+    return AspectRatio(
+      aspectRatio: 3 / 4, // 3:4 aspect ratio
+      child: ClipRect(
+        child: Transform.scale(
+          scale: scale,
+          child: Center(
+            child: CameraPreview(_controller!),
+          ),
         ),
       ),
     );
