@@ -149,7 +149,13 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
             .addImage(newTambahanImage);
       }
     } catch (e) {
-      // Handle processing error
+      if (mounted) {
+        CustomMessageOverlay(context).show(
+          message: 'Error processing image: $e',
+          backgroundColor: Colors.red,
+          icon: Icons.error,
+        );
+      }
     } finally {
       if(mounted) {
         ref.read(imageProcessingServiceProvider.notifier).taskFinished();
