@@ -185,11 +185,12 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
                 if (currentPageIndex == _formPages.length - 2) { // PageNine
                   _submitForm(); // Call the submission logic
                 } else {
-                  // For pages other than PageNine, simply go to the next page without validation
+                  FocusScope.of(context).unfocus();
                   ref.read(pageNavigationProvider.notifier).goToNextPage();
                 }
               },
               onBackPressed: () {
+                FocusScope.of(context).unfocus();
                 ref.read(pageNavigationProvider.notifier).goToPreviousPage();
               },
               isLoading: submissionStatus.isLoading,
