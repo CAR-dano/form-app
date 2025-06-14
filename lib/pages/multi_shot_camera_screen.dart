@@ -247,23 +247,28 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     );
   }  Widget _buildCameraPreview() {
     final Size screenSize = MediaQuery.of(context).size;
-    final double cameraAspectRatio = _controller!.value.aspectRatio;
-    
+    // final double cameraAspectRatio = _controller!.value.aspectRatio; // Original line, not needed if scale is 1.0
+
     // Calculate scale depending on screen and camera ratios
     // This is actually screenSize.aspectRatio / (1 / cameraAspectRatio)
     // because camera preview size is received as landscape
     // but we're calculating for portrait orientation
-    var scale = screenSize.aspectRatio * cameraAspectRatio;
+    // var scale = screenSize.aspectRatio * cameraAspectRatio; // Original line
     
     // To prevent scaling down, invert the value
-    if (scale < 1) scale = 1 / scale;
+    // if (scale < 1) scale = 1 / scale; // Original line
+
+    // The SizedBox defines a 3:4 aspect ratio viewport.
+    // The CameraPreview, if the camera is 4:3 (which results in a 3:4 portrait preview),
+    // should fit this viewport correctly with a scale of 1.0.
+    const double scale = 1.0;
     
     return SizedBox(
       width: screenSize.width,
       height: screenSize.width / (3.0 / 4.0), // 3:4 aspect ratio using full width
       child: ClipRect(
         child: Transform.scale(
-          scale: scale,
+          scale: scale, // Adjusted scale to prevent zoom
           child: Center(
             child: CameraPreview(_controller!),
           ),
