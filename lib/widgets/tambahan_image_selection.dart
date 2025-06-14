@@ -397,6 +397,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
           Padding(
             padding: const EdgeInsets.only(top: 16.0), // Add some spacing
             child: LinearProgressIndicator(
+              borderRadius: BorderRadius.circular(8.0),
               backgroundColor: Colors.grey[300],
               valueColor: AlwaysStoppedAnimation<Color>(toggleOptionSelectedLengkapColor),
               minHeight: 5.0,
