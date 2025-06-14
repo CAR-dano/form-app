@@ -16,6 +16,8 @@
 		<string>This app needs access to your photo library to save images.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>This app needs access to your photo library for saving to albums.</string>
+		<key>NSCameraUsageDescription</key>
+		<string>This app needs access to your camera to take photos.</string>
 		<key>CFBundleName</key>
 		<string>form_app</string>
 		<key>CFBundlePackageType</key>
