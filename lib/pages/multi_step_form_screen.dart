@@ -34,12 +34,12 @@ import 'package:form_app/pages/page_nine.dart';
 import 'package:form_app/pages/finished.dart';
 import 'package:form_app/providers/form_provider.dart'; // For form data
 import 'package:form_app/services/api_service.dart'; // For API calls
-import 'package:form_app/statics/app_styles.dart'; // For text styles
 import 'package:form_app/providers/image_data_provider.dart'; // For wajib images
 import 'package:form_app/providers/image_processing_provider.dart'; // For image processing status
 import 'package:form_app/providers/page_navigation_provider.dart'; // Import the provider
 import 'package:form_app/providers/submission_status_provider.dart'; // Import the new provider
 import 'package:form_app/providers/submission_data_cache_provider.dart'; // Import the new cache provider
+import 'package:form_app/widgets/custom_message_overlay.dart'; // Import the custom message overlay
 
 class MultiStepFormScreen extends ConsumerStatefulWidget {
   const MultiStepFormScreen({super.key});
@@ -50,6 +50,8 @@ class MultiStepFormScreen extends ConsumerStatefulWidget {
 
 class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   final List<GlobalKey<FormState>> _formKeys = List.generate(27, (_) => GlobalKey<FormState>());
+
+  late CustomMessageOverlay _customMessageOverlay; // Declare the custom message overlay
 
   final ValueNotifier<bool> _formSubmittedPageOne = ValueNotifier<bool>(false);
   static const String _defaultTambahanLabel = 'Foto Tambahan';
@@ -99,6 +101,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   @override
   void initState() {
     super.initState();
+    _customMessageOverlay = CustomMessageOverlay(context); // Initialize the custom message overlay
 
     // Pre-cache checker.png
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -258,31 +261,19 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
     final isImageProcessing = ref.read(imageProcessingServiceProvider.notifier).isProcessing;
     if (isImageProcessing) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Pemrosesan gambar masih berjalan. Harap tunggu hingga selesai.',
-            style: subTitleTextStyle.copyWith(color: Colors.white),
-          ),
-          backgroundColor: Colors.orange,
-          duration: const Duration(seconds: 3),
-        ),
+      _customMessageOverlay.show(
+        message: 'Pemrosesan gambar masih berjalan. Harap tunggu hingga selesai.',
+        backgroundColor: Colors.orange,
+        icon: Icons.hourglass_empty,
       );
       return;
     }
 
     if (!_isChecked) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Harap setujui pernyataan di atas sebelum melanjutkan.',
-            style: subTitleTextStyle.copyWith(color: Colors.white),
-          ),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        ),
+      _customMessageOverlay.show(
+        message: 'Harap setujui pernyataan di atas sebelum melanjutkan.',
+        backgroundColor: Colors.red,
+        icon: Icons.error_outline,
       );
       return;
     }
@@ -314,13 +305,11 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
     if (validationErrors.isNotEmpty) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(validationErrors.join('\n'), style: subTitleTextStyle.copyWith(color: Colors.white)),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 5),
-        ),
+      _customMessageOverlay.show(
+        message: validationErrors.join('\n'),
+        backgroundColor: Colors.red,
+        icon: Icons.error_outline,
+        duration: const Duration(seconds: 5),
       );
       if (firstErrorPageIndex != null) {
         final int? pageViewIndex = _formKeyIndexToPageIndex[firstErrorPageIndex];
@@ -370,16 +359,11 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         );
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Terjadi kesalahan saat mengirim data formulir: $e',
-              style: subTitleTextStyle.copyWith(color: Colors.white),
-            ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
-          ),
+        _customMessageOverlay.show(
+          message: 'Terjadi kesalahan saat mengirim data formulir: $e',
+          backgroundColor: Colors.red,
+          icon: Icons.error_outline,
+          duration: const Duration(seconds: 5),
         );
         submissionStatusNotifier.setLoading(isLoading: false);
         return; // Exit if form data submission fails
@@ -467,16 +451,11 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       ref.read(formStepProvider.notifier).state++; // Navigate to FinishedPage
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Terjadi kesalahan saat mengunggah gambar: $e',
-            style: subTitleTextStyle.copyWith(color: Colors.white),
-          ),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 5),
-        ),
+      _customMessageOverlay.show(
+        message: 'Terjadi kesalahan saat mengunggah gambar: $e',
+        backgroundColor: Colors.red,
+        icon: Icons.error_outline,
+        duration: const Duration(seconds: 5),
       );
       submissionStatusNotifier.setLoading(isLoading: false);
     } finally {
