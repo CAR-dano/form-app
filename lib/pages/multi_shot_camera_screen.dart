@@ -27,9 +27,9 @@ class MultiShotCameraScreen extends ConsumerStatefulWidget {
 
 class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     with WidgetsBindingObserver, TickerProviderStateMixin {
-  late List<CameraDescription> _cameras;
+  late List<CameraDescription> _cameras = []; // Initialize as empty
   CameraController? _controller;
-  int _selectedCameraIndex = 0;
+  int _selectedCameraIndex = 0; // Default to 0
   int _picturesTaken = 0;
   FlashMode _currentFlashMode = FlashMode.off;
   double _currentZoomLevel = 1.0;
@@ -43,7 +43,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _initializeCamera();
+    _setupCameras(); // New method to discover and initialize the first camera
 
     _animationController = AnimationController(
       vsync: this,
@@ -60,7 +60,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _controller?.dispose();
+    _controller?.dispose(); // Ensure controller is disposed
     _animationController.dispose();
     super.dispose();
   }
@@ -68,44 +68,109 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final CameraController? cameraController = _controller;
-    if (cameraController == null || !cameraController.value.isInitialized) {
-      return;
-    }
+    // If controller is null before setup or disposed, no need to proceed
     if (state == AppLifecycleState.inactive) {
-      cameraController.dispose();
+      cameraController?.dispose();
     } else if (state == AppLifecycleState.resumed) {
-      _initializeCamera(
-          cameraIndex: _selectedCameraIndex); // Re-initialize with the selected camera
+      // If controller is null or not initialized, and cameras list has been populated, try to select.
+      if ((cameraController == null || !cameraController.value.isInitialized) &&
+          _cameras.isNotEmpty) {
+        _selectCamera(_selectedCameraIndex); // Re-initialize with the current selected camera
+      } else if (_cameras.isEmpty) {
+        // If cameras aren't even discovered yet (e.g., app was backgrounded during initial setup)
+        _setupCameras();
+      }
     }
   }
 
-  Future<void> _initializeCamera({int cameraIndex = 0}) async {
-    _cameras = await availableCameras();
+  Future<void> _setupCameras() async {
+    try {
+      final cameras = await availableCameras();
+      if (!mounted) return;
+
+      if (cameras.isEmpty) {
+        if (mounted) {
+          CustomMessageOverlay(context).show(
+            message: 'No cameras available.',
+            backgroundColor: Colors.orange,
+            icon: Icons.warning,
+          );
+        }
+        return;
+      }
+      _cameras = cameras;
+
+      int initialCameraIndex = _cameras.indexWhere((c) => c.lensDirection == CameraLensDirection.back);
+      if (initialCameraIndex == -1) {
+        initialCameraIndex = 0; // Fallback to the first camera overall
+      }
+      
+      await _selectCamera(initialCameraIndex);
+
+    } on CameraException catch (e) {
+      if (mounted) {
+        CustomMessageOverlay(context).show(
+          message: 'Error discovering cameras: ${e.description}',
+          backgroundColor: Colors.red,
+          icon: Icons.error,
+        );
+      }
+    }
+  }
+
+  Future<void> _selectCamera(int cameraIndex) async {
     if (_cameras.isEmpty) {
-      // Handle case where no cameras are available
+      if (kDebugMode) print("Attempted to select camera but _cameras list is empty.");
+      // Optionally, trigger _setupCameras if it hasn't run successfully.
+      // This could be risky if _setupCameras itself calls _selectCamera leading to a loop.
+      // Consider if _setupCameras should be called here if _cameras is empty.
+      // For now, if _cameras is empty, we assume _setupCameras will handle it or has failed.
+      if (_controller == null && mounted) { // If no controller exists at all, try to setup.
+          await _setupCameras();
+          // If _setupCameras populates _cameras and calls _selectCamera, this call might be redundant
+          // or could lead to issues if not handled carefully.
+          // For simplicity, let's assume _setupCameras is the entry point for camera list population.
+      }
       return;
     }
-    // Ensure the index is valid
-    _selectedCameraIndex =
-        cameraIndex < _cameras.length ? cameraIndex : 0;
+    if (cameraIndex < 0 || cameraIndex >= _cameras.length) {
+      if (kDebugMode) print("Invalid cameraIndex: $cameraIndex for _cameras length: ${_cameras.length}");
+      return;
+    }
 
-    final newController =
-        CameraController(_cameras[_selectedCameraIndex], ResolutionPreset.max, enableAudio: false);
+    // Update _selectedCameraIndex immediately, possibly within setState if UI depends on it directly
+    // setState is called later after successful initialization or for error display.
+    _selectedCameraIndex = cameraIndex;
 
-    _controller?.dispose();
-    _controller = newController;
+
+    final newController = CameraController(
+      _cameras[_selectedCameraIndex],
+      ResolutionPreset.max,
+      enableAudio: false,
+      imageFormatGroup: ImageFormatGroup.jpeg,
+    );
+
+    final CameraController? oldController = _controller;
+    _controller = newController; // Assign new controller to be used by the UI
+
+    await oldController?.dispose(); // Dispose the old controller
 
     try {
-      await _controller!.initialize();
-      // After initialization, get zoom levels
-      _minZoomLevel = await _controller!.getMinZoomLevel();
-      _maxZoomLevel = await _controller!.getMaxZoomLevel();
-      
-      // Set initial flash mode
-      await _controller!.setFlashMode(_currentFlashMode);
+      await newController.initialize();
+      if (!mounted) { // Check mounted status after await
+        await newController.dispose(); // Dispose if not mounted
+        _controller = null; // Ensure controller is null if disposed
+        return;
+      }
+
+      _minZoomLevel = await newController.getMinZoomLevel();
+      _maxZoomLevel = await newController.getMaxZoomLevel();
+      _currentZoomLevel = 1.0; // Reset zoom on camera switch
+      await newController.setZoomLevel(_currentZoomLevel);
+      await newController.setFlashMode(_currentFlashMode); // Re-apply flash mode
 
       if (mounted) {
-        setState(() {});
+        setState(() {}); // Refresh UI
       }
     } on CameraException catch (e) {
       if (mounted) {
@@ -115,8 +180,15 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
           icon: Icons.error,
         );
       }
+      // If initialization fails, newController might be unusable.
+      // oldController is already disposed. Set _controller to null.
+      _controller = null;
+      if (mounted) {
+        setState(() {}); // Refresh UI to show loading/error state
+      }
     }
   }
+
 
   Future<void> _onTakePicture() async {
     if (_controller == null || !_controller!.value.isInitialized || _controller!.value.isTakingPicture) {
@@ -189,13 +261,64 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
   }
   
   void _onFlipCamera() {
-    if (_cameras.length > 1) {
-      // Find the index of the first camera with a different lens direction
-      final currentLensDirection = _cameras[_selectedCameraIndex].lensDirection;
-      int newIndex = _cameras.indexWhere((cam) => cam.lensDirection != currentLensDirection);
-      if (newIndex == -1) newIndex = 0; // Fallback to the first camera
-      
-      _initializeCamera(cameraIndex: newIndex);
+    if (_cameras.isEmpty || _cameras.length == 1) return;
+
+    int targetIndex = -1;
+    final currentLensDirection = _cameras[_selectedCameraIndex].lensDirection;
+
+    if (currentLensDirection == CameraLensDirection.front) {
+        // Currently front, switch to primary back (first back camera found)
+        targetIndex = _cameras.indexWhere((c) => c.lensDirection == CameraLensDirection.back);
+    } else { // Covers back and external
+        // Currently back or external, switch to primary front (first front camera found)
+        targetIndex = _cameras.indexWhere((c) => c.lensDirection == CameraLensDirection.front);
+    }
+
+    // If the desired opposite isn't found (e.g., only back cameras or only front cameras)
+    // and there are multiple cameras, then cycle to the next camera.
+    if (targetIndex == -1) {
+        targetIndex = (_selectedCameraIndex + 1) % _cameras.length;
+    }
+    
+    if (targetIndex != _selectedCameraIndex) {
+        _selectCamera(targetIndex);
+    }
+  }
+
+  void _onSwitchLens() {
+    if (_cameras.isEmpty) return;
+
+    final List<MapEntry<int, CameraDescription>> backCamerasWithIndices = _cameras
+        .asMap()
+        .entries
+        .where((entry) => entry.value.lensDirection == CameraLensDirection.back)
+        .toList();
+
+    if (backCamerasWithIndices.length <= 1) {
+      // No other back lenses to switch to, or only one back camera
+      return;
+    }
+
+    final currentOverallIndex = _selectedCameraIndex;
+    final currentCamera = _cameras[currentOverallIndex];
+    int nextOverallIndex = -1;
+
+    if (currentCamera.lensDirection == CameraLensDirection.back) {
+      int currentIndexInBackList = backCamerasWithIndices.indexWhere((entry) => entry.key == currentOverallIndex);
+      if (currentIndexInBackList != -1) {
+        int nextIndexInBackList = (currentIndexInBackList + 1) % backCamerasWithIndices.length;
+        nextOverallIndex = backCamerasWithIndices[nextIndexInBackList].key;
+      } else {
+        // Fallback: current camera is back but not in list (should not happen), switch to first back.
+        nextOverallIndex = backCamerasWithIndices.first.key;
+      }
+    } else {
+      // Current camera is not back (e.g., front or external), switch to the first back camera.
+      nextOverallIndex = backCamerasWithIndices.first.key;
+    }
+
+    if (nextOverallIndex != -1 && nextOverallIndex != _selectedCameraIndex) {
+      _selectCamera(nextOverallIndex);
     }
   }
 
@@ -278,6 +401,8 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
   }
 
   Widget _buildControlsOverlay() {
+    final int backCameraCount = _cameras.where((c) => c.lensDirection == CameraLensDirection.back).length;
+
     return Column(
       children: [
         // Top controls: Close, Flash, Camera Switch
@@ -287,12 +412,18 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildControlButton(Icons.close, () => Navigator.of(context).pop()), // Revert to original pop
+                _buildControlButton(Icons.close, () => Navigator.of(context).pop()),
                  Row(
                    children: [
                      _buildControlButton(_getFlashIcon(), _onToggleFlash),
-                     const SizedBox(width: 16),
-                     if (_cameras.length > 1) _buildControlButton(Icons.flip_camera_ios, _onFlipCamera),
+                     if (backCameraCount > 1) ...[
+                       const SizedBox(width: 16),
+                       _buildControlButton(Icons.switch_camera_outlined, _onSwitchLens), // Lens switch
+                     ],
+                     if (_cameras.length > 1) ...[ // Flip camera
+                        const SizedBox(width: 16),
+                       _buildControlButton(Icons.flip_camera_ios, _onFlipCamera),
+                     ]
                    ],
                  )
               ],
