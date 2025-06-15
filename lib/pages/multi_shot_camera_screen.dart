@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io'; // Added for File and Directory
+import 'dart:io'; // Added for File and Directory, Platform
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +14,83 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:math' show pi;
 import 'package:image/image.dart' as img; // Added for image manipulation
 import 'package:path_provider/path_provider.dart'; // Added for temporary directory
+import 'dart:typed_data'; // For Uint8List
+
+// Helper class for passing data to the rotation isolate
+class _RotateImageInput {
+  final String filePath;
+  final double rotationAngle;
+  final String tempPath; // For saving the rotated image
+
+  _RotateImageInput({
+    required this.filePath,
+    required this.rotationAngle,
+    required this.tempPath,
+  });
+}
+
+// Top-level function for image rotation in an isolate
+Future<String?> _rotateImageInIsolate(_RotateImageInput input) async {
+  if (input.rotationAngle == 0.0) {
+    // No rotation needed if angle is exactly 0.0
+    // Consider a small tolerance if needed: (input.rotationAngle.abs() < 0.01)
+    return input.filePath;
+  }
+
+  try {
+    final File imageFile = File(input.filePath);
+    // Ensure Uint8List is imported or use imageFile.readAsBytesSync() if appropriate for isolate context
+    // However, async readAsBytes should be fine.
+    final Uint8List imageBytes = await imageFile.readAsBytes();
+    final img.Image? originalImage = img.decodeImage(imageBytes);
+
+    if (originalImage == null) {
+      if (kDebugMode) {
+        print("Isolate Error: Could not decode image for rotation: ${input.filePath}");
+      }
+      return input.filePath; // Return original path if decoding fails
+    }
+
+    img.Image rotatedImage;
+    // img.copyRotate expects angle in degrees.
+    // pi/2 radians = 90 degrees. -pi/2 radians = -90 degrees.
+    if (input.rotationAngle == pi / 2) {
+      // Device top is to the LEFT (landscape). Image from camera (portrait) needs to be rotated Counter-Clockwise.
+      rotatedImage = img.copyRotate(originalImage, angle: -90);
+    } else if (input.rotationAngle == -pi / 2) {
+      // Device top is to the RIGHT (landscape). Image from camera (portrait) needs to be rotated Clockwise.
+      rotatedImage = img.copyRotate(originalImage, angle: 90);
+    } else {
+      // Not a 90-degree rotation, return original path.
+      // This case should ideally not be reached if rotationAngle is only set to 0, pi/2, or -pi/2.
+      if (kDebugMode) {
+        print("Isolate Info: Non-90 degree rotation angle (${input.rotationAngle}), not rotating.");
+      }
+      return input.filePath;
+    }
+
+    // Ensure the tempPath ends with a path separator if not already, or construct carefully.
+    // Platform.pathSeparator is the correct way to do this.
+    final String newFileName = '${DateTime.now().millisecondsSinceEpoch}_rotated.jpg';
+    final String rotatedFilePath = '${input.tempPath}${Platform.pathSeparator}$newFileName';
+    
+    final File rotatedFile = File(rotatedFilePath);
+    // encodeJpg returns List<int>, which is compatible with Uint8List
+    await rotatedFile.writeAsBytes(img.encodeJpg(rotatedImage));
+
+    if (kDebugMode) {
+      print("Isolate: Image rotated by ${input.rotationAngle} rad. New path: $rotatedFilePath");
+    }
+    return rotatedFilePath;
+  } catch (e) {
+    if (kDebugMode) {
+      print("Isolate Error rotating image: $e");
+    }
+    // Fallback to original path on error during processing
+    return input.filePath;
+  }
+}
+
 
 class MultiShotCameraScreen extends ConsumerStatefulWidget {
   final String imageIdentifier;
@@ -263,29 +340,44 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     }
 
     try {
+      // Capture the image first
+      final XFile capturedImageFile = await _controller!.takePicture();
+
+      // Update UI immediately after capture
       if (mounted) {
         setState(() {
           _picturesTaken++;
         });
       }
 
-      XFile imageFile = await _controller!.takePicture();
-
-      // Rotate the image based on device orientation BEFORE further processing
-      imageFile = await _rotateImageIfNecessary(imageFile, _rotationAngle);
-
       // Get notifiers before the async operation that might outlive the widget
       final imageProcessingNotifier = ref.read(imageProcessingServiceProvider.notifier);
       final tambahanImageNotifier = ref.read(tambahanImageDataProvider(widget.imageIdentifier).notifier);
 
-      // Fire-and-forget the processing
-      _processAndAddImage(
-        imageFile,
-        imageProcessingNotifier,
-        tambahanImageNotifier,
-        widget.defaultLabel,
-        widget.imageIdentifier,
-      );
+      // Perform rotation and further processing asynchronously
+      Future(() async {
+        try {
+          // Rotate the image based on device orientation
+          final XFile imageFileAfterRotation = await _rotateImageIfNecessary(capturedImageFile, _rotationAngle);
+
+          // Process and add the image (this already handles its own async work and provider updates)
+          await _processAndAddImage( // Await here to ensure steps within _processAndAddImage complete in order
+            imageFileAfterRotation,
+            imageProcessingNotifier,
+            tambahanImageNotifier,
+            widget.defaultLabel,
+            widget.imageIdentifier,
+          );
+        } catch (e) {
+          if (kDebugMode) {
+            print("Error during async image rotation/processing: $e");
+          }
+          // If rotation or processing fails, the task in imageProcessingNotifier
+          // might need manual decrement if it's not handled robustly within _processAndAddImage's finally block.
+          // However, _processAndAddImage already has a try/finally for taskFinished.
+        }
+      });
+
     } on CameraException catch (e) {
       if (mounted) {
         CustomMessageOverlay(context).show(
@@ -298,49 +390,49 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
   }
 
   Future<XFile> _rotateImageIfNecessary(XFile imageFile, double rotationAngle) async {
-    if (rotationAngle == 0.0) {
-      // No rotation needed for portrait
+    // If rotation angle is 0 (or very close to 0), no rotation is needed.
+    // Using a small tolerance might be robust if angle calculation isn't always exact.
+    if (rotationAngle.abs() < 0.01) { // Example tolerance
       return imageFile;
     }
 
     try {
-      final Uint8List imageBytes = await imageFile.readAsBytes();
-      final img.Image? originalImage = img.decodeImage(imageBytes);
-
-      if (originalImage == null) {
-        if (kDebugMode) {
-          print("Error: Could not decode image for rotation.");
-        }
-        return imageFile; // Return original if decoding fails
-      }
-
-      img.Image rotatedImage;
-      if (rotationAngle == pi / 2) { 
-        // Device top is to the LEFT (landscape). Image from camera (portrait) needs to be rotated Counter-Clockwise (-90 degrees).
-        rotatedImage = img.copyRotate(originalImage, angle: -90);
-      } else if (rotationAngle == -pi / 2) { 
-        // Device top is to the RIGHT (landscape). Image from camera (portrait) needs to be rotated Clockwise (90 degrees).
-        rotatedImage = img.copyRotate(originalImage, angle: 90);
-      } else {
-        // Should not happen with current accelerometer logic, but as a fallback, return original.
-        return imageFile;
-      }
-
+      // getTemporaryDirectory must be called from the main isolate.
       final Directory tempDir = await getTemporaryDirectory();
-      final String tempPath = '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}_rotated.jpg';
-      final File rotatedFile = File(tempPath);
-      await rotatedFile.writeAsBytes(img.encodeJpg(rotatedImage));
+      
+      final String? rotatedPath = await compute(
+        _rotateImageInIsolate,
+        _RotateImageInput(
+          filePath: imageFile.path, // Corrected: Pass imageFile.path
+          rotationAngle: rotationAngle, // Corrected: Pass rotationAngle
+          tempPath: tempDir.path,
+        ),
+      );
 
-      if (kDebugMode) {
-        print("Image rotated by $rotationAngle rad. New path: ${rotatedFile.path}");
+      // Check if a new path was returned and it's different from the original
+      if (rotatedPath != null && rotatedPath != imageFile.path) {
+        if (kDebugMode) {
+          print("Image rotation successful. New path: $rotatedPath");
+        }
+        return XFile(rotatedPath);
+      } else if (rotatedPath == imageFile.path) {
+        // Isolate determined no rotation was needed or returned original path
+        if (kDebugMode) {
+          print("Image rotation determined unnecessary by isolate or returned original path.");
+        }
+        return imageFile;
+      } else {
+        // Rotation failed in isolate (returned null)
+        if (kDebugMode) {
+          print("Image rotation in isolate failed or returned null. Using original image.");
+        }
+        return imageFile; // Fallback to original image
       }
-      return XFile(rotatedFile.path);
-
     } catch (e) {
       if (kDebugMode) {
-        print("Error rotating image: $e");
+        print("Error setting up or during compute for image rotation: $e");
       }
-      return imageFile; // Return original on error
+      return imageFile; // Fallback to original image on error in this function
     }
   }
 
