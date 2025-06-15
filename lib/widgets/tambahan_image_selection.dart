@@ -32,13 +32,17 @@ class TambahanImageSelection extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<TambahanImageSelection> createState() => _TambahanImageSelectionState();
+  ConsumerState<TambahanImageSelection> createState() =>
+      _TambahanImageSelectionState();
 }
 
-class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection> {
+class _TambahanImageSelectionState
+    extends ConsumerState<TambahanImageSelection> {
   int _currentIndex = 0;
   final TextEditingController _labelController = TextEditingController();
-  final GlobalKey<FormFieldState<String>> _labelFieldKey = GlobalKey<FormFieldState<String>>(); // Corrected type
+  final GlobalKey<FormFieldState<String>> _labelFieldKey =
+      GlobalKey<FormFieldState<String>>();
+  bool _isLoading = false; // Local loading state
 
   VoidCallback? _formSubmittedListener;
 
@@ -72,63 +76,62 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
       final currentImage = images[_currentIndex];
-      // If the current image's label is the default, display an empty string in the text field.
-      // Otherwise, display the actual label.
-      final String displayedLabel = (currentImage.label == widget.defaultLabel) ? '' : currentImage.label;
+      final String displayedLabel =
+          (currentImage.label == widget.defaultLabel) ? '' : currentImage.label;
       if (_labelController.text != displayedLabel) {
         _labelController.text = displayedLabel;
-        _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
+        _labelController.selection =
+            TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
       }
 
-      // Pre-cache next and previous images
       if (mounted) {
-        // Pre-cache next image
         if (_currentIndex + 1 < images.length) {
           precacheImage(FileImage(File(images[_currentIndex + 1].imagePath)), context);
         }
-        // Pre-cache previous image
         if (_currentIndex - 1 >= 0) {
           precacheImage(FileImage(File(images[_currentIndex - 1].imagePath)), context);
         }
       }
     } else {
-      _labelController.clear(); // Clear if no images
+      _labelController.clear();
     }
     if (widget.formSubmitted?.value ?? false) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) _labelFieldKey.currentState?.validate();
-        });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _labelFieldKey.currentState?.validate();
+      });
     }
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    // --- NEW LOGIC FOR CAMERA ---
     if (source == ImageSource.camera) {
-      if (!mounted) return; // Guard against BuildContext across async gaps
-      FocusScope.of(context).unfocus(); 
-            
+      if (!mounted) return;
+      FocusScope.of(context).unfocus();
+
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => MultiShotCameraScreen(
             imageIdentifier: widget.identifier,
-            defaultLabel: widget.defaultLabel, // Pass the defaultLabel
+            defaultLabel: widget.defaultLabel,
           ),
         ),
       );
-      return; // Important: Exit the function here
+      return;
     }
-    
-    // --- EXISTING LOGIC FOR GALLERY ---
+
     if (source == ImageSource.gallery) {
-      final List<XFile> imagesXFiles = await ImagePickerUtil.pickMultiImagesFromGallery();
+      final List<XFile> imagesXFiles =
+          await ImagePickerUtil.pickMultiImagesFromGallery();
       if (imagesXFiles.isNotEmpty && mounted) {
-        // No need for local _isLoading, it's watched from provider
+        setState(() {
+          _isLoading = true;
+        });
         List<TambahanImageData> newImagesData = [];
         for (var imageFileXFile in imagesXFiles) {
-          ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment
+          ref.read(imageProcessingServiceProvider.notifier).taskStarted();
           String? processedPath;
           try {
-            processedPath = await ImagePickerUtil.processAndSaveImage(imageFileXFile);
+            processedPath =
+                await ImagePickerUtil.processAndSaveImage(imageFileXFile);
             if (mounted && processedPath != null) {
               final newTambahanImage = TambahanImageData(
                 imagePath: processedPath,
@@ -138,42 +141,53 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                 isMandatory: widget.isMandatory,
               );
               newImagesData.add(newTambahanImage);
-              ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
-              // Pre-cache the newly added image
+              ref
+                  .read(tambahanImageDataProvider(widget.identifier).notifier)
+                  .addImage(newTambahanImage);
               if (mounted) {
                 precacheImage(FileImage(File(processedPath)), context);
               }
             } else if (mounted && processedPath == null) {
-              if (kDebugMode) print("Image processing failed for gallery image: ${imageFileXFile.name}");
-              CustomMessageOverlay(context).show(message: 'Gagal memproses gambar: ${imageFileXFile.name}', backgroundColor: errorBorderColor, icon: Icons.photo_library);
+              debugPrint("Image processing failed for gallery image: ${imageFileXFile.name}");
+              CustomMessageOverlay(context).show(
+                  message: 'Gagal memproses gambar: ${imageFileXFile.name}',
+                  backgroundColor: errorBorderColor,
+                  icon: Icons.photo_library);
             }
           } catch (e) {
-             if (mounted && kDebugMode) {
-                if (kDebugMode) {
-                  print("Error during multi-gallery image processing: $e");
-                }
-                CustomMessageOverlay(context).show(message: 'Terjadi kesalahan memproses gambar: $e', backgroundColor: errorBorderColor, icon: Icons.error);
-             }
+            if (mounted && kDebugMode) {
+              if (kDebugMode) {
+                print("Error during multi-gallery image processing: $e");
+              }
+              CustomMessageOverlay(context).show(
+                  message: 'Terjadi kesalahan memproses gambar: $e',
+                  backgroundColor: errorBorderColor,
+                  icon: Icons.error);
+            }
           } finally {
             if (mounted) {
-              ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement
+              ref.read(imageProcessingServiceProvider.notifier).taskFinished();
             }
           }
         }
         if (newImagesData.isNotEmpty && mounted) {
           setState(() {
-            _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - newImagesData.length;
+            _currentIndex = ref
+                    .read(tambahanImageDataProvider(widget.identifier))
+                    .length -
+                newImagesData.length;
             if (_currentIndex < 0) _currentIndex = 0;
             _updateControllersForCurrentIndex();
           });
         }
       }
-      // No need to set _isLoading here, it's watched from provider
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   void _nextImage() {
-    // Use widget.identifier for the provider
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (_currentIndex < images.length - 1) {
       setState(() {
@@ -193,18 +207,17 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   }
 
   void _deleteCurrentImageConfirmed() {
-    // Use widget.identifier for the provider
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
-      // Use widget.identifier for the provider
-      ref.read(tambahanImageDataProvider(widget.identifier).notifier).removeImageAtIndex(_currentIndex);
+      ref
+          .read(tambahanImageDataProvider(widget.identifier).notifier)
+          .removeImageAtIndex(_currentIndex);
       setState(() {
-        // Adjust current index after deletion
-        final newLength = images.length - 1; // new length after potential removal
+        final newLength = images.length - 1;
         if (newLength == 0) {
           _currentIndex = 0;
         } else if (_currentIndex >= newLength) {
-          _currentIndex = newLength -1;
+          _currentIndex = newLength - 1;
         }
         _updateControllersForCurrentIndex();
       });
@@ -218,11 +231,11 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         return DeleteConfirmationDialog(
           message: 'Apakah anda yakin ingin menghapus gambar tersebut?',
           onConfirm: () {
-            Navigator.of(context).pop(); // Close the dialog
-            _deleteCurrentImageConfirmed(); // Perform deletion
+            Navigator.of(context).pop();
+            _deleteCurrentImageConfirmed();
           },
           onCancel: () {
-            Navigator.of(context).pop(); // Close the dialog
+            Navigator.of(context).pop();
           },
         );
       },
@@ -233,22 +246,23 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
       final currentImage = images[_currentIndex];
-      // If the new label is empty, save the defaultLabel. Otherwise, save the newLabel.
-      final String labelToSave = newLabel.trim().isEmpty ? widget.defaultLabel : newLabel;
+      final String labelToSave =
+          newLabel.trim().isEmpty ? widget.defaultLabel : newLabel;
       ref
           .read(tambahanImageDataProvider(widget.identifier).notifier)
-          .updateImageAtIndex(_currentIndex, currentImage.copyWith(label: labelToSave));
+          .updateImageAtIndex(
+              _currentIndex, currentImage.copyWith(label: labelToSave));
     }
   }
 
   void _onNeedAttentionChanged(bool newAttentionStatus) {
-     // Use widget.identifier for the provider
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
       final currentImage = images[_currentIndex];
-       // Use widget.identifier for the provider
-      ref.read(tambahanImageDataProvider(widget.identifier).notifier).updateImageAtIndex(
-          _currentIndex, currentImage.copyWith(needAttention: newAttentionStatus));
+      ref
+          .read(tambahanImageDataProvider(widget.identifier).notifier)
+          .updateImageAtIndex(_currentIndex,
+              currentImage.copyWith(needAttention: newAttentionStatus));
     }
   }
 
@@ -258,47 +272,51 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
 
   @override
   Widget build(BuildContext context) {
-     // Use widget.identifier to watch the correct provider instance
-    final tambahanImages = ref.watch(tambahanImageDataProvider(widget.identifier));
+    final tambahanImages =
+        ref.watch(tambahanImageDataProvider(widget.identifier));
     final TambahanImageData? currentImage =
         tambahanImages.isNotEmpty && _currentIndex < tambahanImages.length
             ? tambahanImages[_currentIndex]
             : null;
-    
-    // This logic helps keep _currentIndex valid if images are deleted externally or list becomes empty
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        final currentImagesList = ref.read(tambahanImageDataProvider(widget.identifier));
-        if (currentImagesList.isNotEmpty && _currentIndex >= currentImagesList.length) {
+        final currentImagesList =
+            ref.read(tambahanImageDataProvider(widget.identifier));
+        if (currentImagesList.isNotEmpty &&
+            _currentIndex >= currentImagesList.length) {
           setState(() {
-            _currentIndex = (currentImagesList.length - 1).clamp(0, currentImagesList.length -1);
+            _currentIndex = (currentImagesList.length - 1)
+                .clamp(0, currentImagesList.length - 1);
             _updateControllersForCurrentIndex();
           });
         } else if (currentImagesList.isEmpty && _currentIndex != 0) {
-           setState(() {
+          setState(() {
             _currentIndex = 0;
             _updateControllersForCurrentIndex();
           });
         }
-        // Synchronize label controller if currentImage changes, respecting the "empty if default" rule
-        final currentImageForController = currentImagesList.isNotEmpty && _currentIndex < currentImagesList.length
+        final currentImageForController = currentImagesList.isNotEmpty &&
+                _currentIndex < currentImagesList.length
             ? currentImagesList[_currentIndex]
             : null;
 
         if (currentImageForController != null) {
-          final String displayedLabel = _getDisplayLabel(currentImageForController.label);
+          final String displayedLabel =
+              _getDisplayLabel(currentImageForController.label);
           if (_labelController.text != displayedLabel) {
             _labelController.text = displayedLabel;
-            _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
+            _labelController.selection = TextSelection.fromPosition(
+                TextPosition(offset: _labelController.text.length));
           }
-        } else if (currentImageForController == null && _labelController.text.isNotEmpty) {
-            _labelController.clear();
+        } else if (currentImageForController == null &&
+            _labelController.text.isNotEmpty) {
+          _labelController.clear();
         }
       }
     });
 
-    // Watch the imageProcessingServiceProvider for global loading state
-    final isProcessingImage = ref.watch(imageProcessingServiceProvider) > 0;
+    final isProcessingImage = _isLoading;
 
     return Column(
       children: [
@@ -311,7 +329,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                   _pickImage(ImageSource.camera);
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
                   decoration: BoxDecoration(
                     color: toggleOptionSelectedLengkapColor,
                     borderRadius: BorderRadius.circular(8.0),
@@ -319,9 +338,17 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SvgPicture.asset('assets/images/camera.svg', width: 30.0, height: 30.0, colorFilter: const ColorFilter.mode(buttonTextColor, BlendMode.srcIn)),
+                      SvgPicture.asset('assets/images/camera.svg',
+                          width: 30.0,
+                          height: 30.0,
+                          colorFilter: const ColorFilter.mode(
+                              buttonTextColor, BlendMode.srcIn)),
                       const SizedBox(width: 8),
-                      Text('Kamera', style: labelStyle.copyWith(color: buttonTextColor, fontWeight: FontWeight.bold, height: 1.2)),
+                      Text('Kamera',
+                          style: labelStyle.copyWith(
+                              color: buttonTextColor,
+                              fontWeight: FontWeight.bold,
+                              height: 1.2)),
                     ],
                   ),
                 ),
@@ -332,7 +359,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
               child: GestureDetector(
                 onTap: () => _pickImage(ImageSource.gallery),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
                   decoration: BoxDecoration(
                     color: toggleOptionSelectedLengkapColor,
                     borderRadius: BorderRadius.circular(8.0),
@@ -340,9 +368,14 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SvgPicture.asset('assets/images/gallery-white.svg', width: 30.0, height: 30.0),
+                      SvgPicture.asset('assets/images/gallery-white.svg',
+                          width: 30.0, height: 30.0),
                       const SizedBox(width: 8),
-                      Text('Galeri', style: labelStyle.copyWith(color: buttonTextColor, fontWeight: FontWeight.bold, height: 1.2)),
+                      Text('Galeri',
+                          style: labelStyle.copyWith(
+                              color: buttonTextColor,
+                              fontWeight: FontWeight.bold,
+                              height: 1.2)),
                     ],
                   ),
                 ),
@@ -352,15 +385,16 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         ),
         if (isProcessingImage)
           Padding(
-            padding: const EdgeInsets.only(top: 16.0), // Add some spacing
+            padding: const EdgeInsets.only(top: 16.0),
             child: LinearProgressIndicator(
               borderRadius: BorderRadius.circular(8.0),
               backgroundColor: Colors.grey[300],
-              valueColor: AlwaysStoppedAnimation<Color>(toggleOptionSelectedLengkapColor),
+              valueColor:
+                  AlwaysStoppedAnimation<Color>(toggleOptionSelectedLengkapColor),
               minHeight: 5.0,
             ),
           ),
-        const SizedBox(height: 16.0), // Keep spacing consistent
+        const SizedBox(height: 16.0),
         Container(
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
@@ -387,15 +421,20 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8.0),
                         image: currentImage == null
-                            ? const DecorationImage(image: AssetImage('assets/images/checker.png'), fit: BoxFit.cover)
+                            ? const DecorationImage(
+                                image: AssetImage('assets/images/checker.png'),
+                                fit: BoxFit.cover)
                             : null,
-                        color: currentImage != null ? Colors.grey[300] : Colors.grey[200],
+                        color: currentImage != null
+                            ? Colors.grey[300]
+                            : Colors.grey[200],
                       ),
                       child: currentImage == null
                           ? const SizedBox.shrink()
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(8.0),
-                              child: Image.file(File(currentImage.imagePath), fit: BoxFit.cover),
+                              child: Image.file(File(currentImage.imagePath),
+                                  fit: BoxFit.cover),
                             ),
                     ),
                   ),
@@ -416,19 +455,18 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
               ),
               const SizedBox(height: 16.0),
               LabeledTextField(
-                // Use a dynamic key to force rebuild when currentImage changes
-                key: ValueKey<String>('label_${currentImage?.id ?? "default_label_state"}'),
+                key: ValueKey<String>(
+                    'label_${currentImage?.id ?? "default_label_state"}'),
                 label: 'Label',
-                controller: _labelController, // Controller is managed now
+                controller: _labelController,
                 hintText: 'Misal : Aki tampak atas',
                 onChanged: _onLabelChanged,
-                // initialValue: currentImage?.label ?? '', // Controller handles initial value
               ),
               const SizedBox(height: 16.0),
-              if (widget.showNeedAttention) // Conditionally render
+              if (widget.showNeedAttention)
                 FormConfirmation(
-                  // Use a dynamic key
-                  key: ValueKey<String>('attention_${currentImage?.id ?? "default_attention_state"}'),
+                  key: ValueKey<String>(
+                      'attention_${currentImage?.id ?? "default_attention_state"}'),
                   label: 'Perlu Perhatian',
                   initialValue: currentImage?.needAttention ?? false,
                   onChanged: _onNeedAttentionChanged,
@@ -451,13 +489,15 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                     onPressed: _currentIndex > 0 ? _previousImage : null,
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0)),
                       backgroundColor: buttonColor,
                       disabledBackgroundColor: Colors.grey[300],
-                      elevation: 5, // Add elevation
-                      shadowColor: buttonColor.withAlpha(102), // Add shadow color
+                      elevation: 5,
+                      shadowColor: buttonColor.withAlpha(102),
                     ),
-                    child: const Icon(Icons.arrow_back_ios_new, size: 18, color: buttonTextColor),
+                    child: const Icon(Icons.arrow_back_ios_new,
+                        size: 18, color: buttonTextColor),
                   ),
                 ),
                 Flexible(
@@ -474,16 +514,20 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                   width: 36,
                   height: 36,
                   child: ElevatedButton(
-                    onPressed: _currentIndex < tambahanImages.length - 1 ? _nextImage : null,
+                    onPressed: _currentIndex < tambahanImages.length - 1
+                        ? _nextImage
+                        : null,
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0)),
                       backgroundColor: buttonColor,
                       disabledBackgroundColor: Colors.grey[300],
-                      elevation: 5, // Add elevation
-                      shadowColor: buttonColor.withAlpha(102), // Add shadow color
+                      elevation: 5,
+                      shadowColor: buttonColor.withAlpha(102),
                     ),
-                    child: const Icon(Icons.arrow_forward_ios, size: 18, color: buttonTextColor),
+                    child: const Icon(Icons.arrow_forward_ios,
+                        size: 18, color: buttonTextColor),
                   ),
                 ),
               ],
