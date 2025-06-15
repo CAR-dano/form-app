@@ -1,28 +1,34 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/foundation.dart'; // Import for kDebugMode
+import 'package:flutter/foundation.dart';
 
-// This provider now holds a Set of unique identifiers for active tasks.
+// This provider now holds a Map to count active tasks for each identifier.
 final imageProcessingServiceProvider =
-    StateNotifierProvider<ImageProcessingService, Set<String>>((ref) {
+    StateNotifierProvider<ImageProcessingService, Map<String, int>>((ref) {
   return ImageProcessingService();
 });
 
-class ImageProcessingService extends StateNotifier<Set<String>> {
+class ImageProcessingService extends StateNotifier<Map<String, int>> {
   ImageProcessingService() : super({});
 
   void taskStarted(String identifier) {
-    state = {...state, identifier};
+    final newState = {...state};
+    // Increment the count for the identifier, or set it to 1 if it's not there.
+    newState[identifier] = (newState[identifier] ?? 0) + 1;
+    state = newState;
     if (kDebugMode) {
       print("Image processing task STARTED for: $identifier. Active tasks: $state");
     }
   }
 
   void taskFinished(String identifier) {
-    // Create a new set from the current state and remove the identifier.
     final newState = {...state};
-    newState.remove(identifier);
-    // Only update state if it has changed to avoid unnecessary rebuilds.
-    if (state.contains(identifier)) {
+    if (newState.containsKey(identifier)) {
+      // Decrement the count.
+      newState[identifier] = newState[identifier]! - 1;
+      // If the count is zero, remove the identifier from the map.
+      if (newState[identifier]! <= 0) {
+        newState.remove(identifier);
+      }
       state = newState;
     }
     if (kDebugMode) {
@@ -30,11 +36,11 @@ class ImageProcessingService extends StateNotifier<Set<String>> {
     }
   }
 
-  // Check if a specific identifier is processing.
+  // Check if a specific identifier has any active processing tasks.
   bool isProcessing(String identifier) {
-    return state.contains(identifier);
+    return state.containsKey(identifier);
   }
 
-  // Check if any task is processing.
+  // Check if any task is processing at all.
   bool get isAnyProcessing => state.isNotEmpty;
 }

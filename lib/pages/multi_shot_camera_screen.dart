@@ -14,7 +14,6 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:math' show pi;
 import 'package:image/image.dart' as img; // Added for image manipulation
 import 'package:path_provider/path_provider.dart'; // Added for temporary directory
-import 'dart:typed_data'; // For Uint8List
 
 // Helper class for passing data to the rotation isolate
 class _RotateImageInput {
@@ -161,8 +160,8 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
           }
         }
         // Only print if the angle actually changed
-        if (_rotationAngle != oldRotationAngle && kDebugMode) {
-          print('Rotation angle updated: ${_rotationAngle.toStringAsFixed(2)}');
+        if (_rotationAngle != oldRotationAngle) {
+          debugPrint('Rotation angle updated: ${_rotationAngle.toStringAsFixed(2)}');
         }
       });
     });
@@ -335,46 +334,43 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
 
 
   Future<void> _onTakePicture() async {
-    if (_controller == null || !_controller!.value.isInitialized || _controller!.value.isTakingPicture) {
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized || controller.value.isTakingPicture) {
       return;
     }
 
-    try {
-      // Capture the image first
-      final XFile capturedImageFile = await _controller!.takePicture();
+    // Capture references to notifiers while the widget is still mounted.
+    final imageProcessingNotifier = ref.read(imageProcessingServiceProvider.notifier);
+    final tambahanImageNotifier = ref.read(tambahanImageDataProvider(widget.imageIdentifier).notifier);
 
-      // Update UI immediately after capture
+    try {
+      final XFile capturedImageFile = await controller.takePicture();
+
       if (mounted) {
-        setState(() {
-          _picturesTaken++;
-        });
+        setState(() => _picturesTaken++);
       }
 
-      // Get notifiers before the async operation that might outlive the widget
-      final imageProcessingNotifier = ref.read(imageProcessingServiceProvider.notifier);
-      final tambahanImageNotifier = ref.read(tambahanImageDataProvider(widget.imageIdentifier).notifier);
+      // Start the loading indicator for this specific photo task.
+      imageProcessingNotifier.taskStarted(widget.imageIdentifier);
 
-      // Perform rotation and further processing asynchronously
+      // Perform the heavy processing in the background.
       Future(() async {
         try {
-          // Rotate the image based on device orientation
           final XFile imageFileAfterRotation = await _rotateImageIfNecessary(capturedImageFile, _rotationAngle);
-
-          // Process and add the image (this already handles its own async work and provider updates)
-          await _processAndAddImage( // Await here to ensure steps within _processAndAddImage complete in order
-            imageFileAfterRotation,
-            imageProcessingNotifier,
-            tambahanImageNotifier,
-            widget.defaultLabel,
-            widget.imageIdentifier,
+          
+          // Call the simplified processing function
+          await _processAndAddImage(
+            imageFile: imageFileAfterRotation,
+            tambahanImageNotifier: tambahanImageNotifier,
           );
         } catch (e) {
           if (kDebugMode) {
-            print("Error during async image rotation/processing: $e");
+            print("Error in processing future: $e");
           }
-          // If rotation or processing fails, the task in imageProcessingNotifier
-          // might need manual decrement if it's not handled robustly within _processAndAddImage's finally block.
-          // However, _processAndAddImage already has a try/finally for taskFinished.
+        } finally {
+          // This will now ALWAYS run for each photo, stopping the "loading forever" bug
+          // and correctly handling multiple concurrent photo processing tasks.
+          imageProcessingNotifier.taskFinished(widget.imageIdentifier);
         }
       });
 
@@ -436,36 +432,28 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     }
   }
 
-  Future<void> _processAndAddImage(
-    XFile imageFile,
-    ImageProcessingService imageProcessingNotifier,
-    TambahanImageDataListNotifier tambahanImageNotifier,
-    String defaultLabel,
-    String imageIdentifier,
-  ) async {
-    imageProcessingNotifier.taskStarted();
+ Future<void> _processAndAddImage({
+    required XFile imageFile,
+    required TambahanImageDataListNotifier tambahanImageNotifier,
+  }) async {
     try {
       await ImagePickerUtil.saveImageToGallery(imageFile);
-      final String? processedPath =
-          await ImagePickerUtil.processAndSaveImage(imageFile);
+      final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageFile);
 
       if (processedPath != null) {
         final newTambahanImage = TambahanImageData(
           imagePath: processedPath,
-          label: defaultLabel,
+          label: widget.defaultLabel,
           needAttention: false,
-          category: imageIdentifier,
+          category: widget.imageIdentifier,
           isMandatory: false,
         );
         tambahanImageNotifier.addImage(newTambahanImage);
       }
     } catch (e) {
-      // Log error, but don't show overlay as there's no BuildContext
       if (kDebugMode) {
         print("Error processing image in background: $e");
       }
-    } finally {
-      imageProcessingNotifier.taskFinished();
     }
   }
   
