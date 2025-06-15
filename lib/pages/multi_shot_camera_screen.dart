@@ -9,6 +9,8 @@ import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/utils/image_picker_util.dart';
 import 'package:form_app/widgets/custom_message_overlay.dart';
+import 'package:sensors_plus/sensors_plus.dart';
+import 'dart:math' show pi;
 
 class MultiShotCameraScreen extends ConsumerStatefulWidget {
   final String imageIdentifier;
@@ -35,6 +37,8 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
   double _currentZoomLevel = 1.0;
   double _minZoomLevel = 1.0;
   double _maxZoomLevel = 1.0;
+  double _rotationAngle = 0.0; // Added for rotation
+  StreamSubscription<AccelerometerEvent>? _accelerometerSubscription; // Added for rotation
 
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
@@ -55,6 +59,33 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         curve: Curves.easeOut,
       ),
     );
+
+    // Initialize accelerometer listener for rotation
+    _accelerometerSubscription =
+        accelerometerEventStream(samplingPeriod: SensorInterval.uiInterval)
+            .listen((AccelerometerEvent event) {
+      if (kDebugMode) {
+        print('Accelerometer event: x=${event.x.toStringAsFixed(2)}, y=${event.y.toStringAsFixed(2)}, z=${event.z.toStringAsFixed(2)}');
+      }
+      final double oldRotationAngle = _rotationAngle;
+      setState(() {
+        const double threshold = 7.0;
+
+        if (event.y.abs() > threshold && event.x.abs() < threshold) {
+          _rotationAngle = 0.0;
+        } else if (event.x.abs() > threshold && event.y.abs() < threshold) {
+          if (event.x < 0) {
+            _rotationAngle = -pi / 2;
+          } else {
+            _rotationAngle = pi / 2;
+          }
+        }
+        // Only print if the angle actually changed
+        if (_rotationAngle != oldRotationAngle && kDebugMode) {
+          print('Rotation angle updated: ${_rotationAngle.toStringAsFixed(2)}');
+        }
+      });
+    });
   }
 
   @override
@@ -62,6 +93,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     WidgetsBinding.instance.removeObserver(this);
     _controller?.dispose(); // Ensure controller is disposed
     _animationController.dispose();
+    _accelerometerSubscription?.cancel(); // Dispose accelerometer subscription
     super.dispose();
   }
 
@@ -450,17 +482,30 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
                 Row( // Group Close and Flash buttons
                   children: [
                     _buildControlButton(Icons.arrow_back, () => Navigator.of(context).pop()),
-                    _buildControlButton(_getFlashIcon(), _onToggleFlash),
+                    // Diagnostic Text widget
+                    AnimatedRotation(
+                      turns: _rotationAngle / (2 * pi),
+                      duration: const Duration(milliseconds: 300),
+                      child: _buildControlButton(_getFlashIcon(), _onToggleFlash),
+                    ),
                   ],
                 ),
                  Row( // Group Lens Switch and Flip Camera buttons
                    children: [
                      if (backCameraCount > 1) ...[
-                       _buildControlButton(Icons.switch_camera_outlined, _onSwitchLens), // Lens switch
+                       AnimatedRotation(
+                         turns: _rotationAngle / (2 * pi),
+                         duration: const Duration(milliseconds: 300),
+                         child: _buildControlButton(Icons.switch_camera_outlined, _onSwitchLens), // Lens switch
+                       ),
                        const SizedBox(width: 16), // Spacing
                      ],
                      if (_cameras.length > 1) ...[ // Flip camera
-                       _buildControlButton(Icons.flip_camera_ios, _onFlipCamera),
+                       AnimatedRotation(
+                         turns: _rotationAngle / (2 * pi),
+                         duration: const Duration(milliseconds: 300),
+                         child: _buildControlButton(Icons.flip_camera_ios, _onFlipCamera),
+                       ),
                      ]
                    ],
                  )
@@ -500,13 +545,17 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
                   _buildCaptureButton(),
                   SizedBox(
                     width: 60,
-                    child: Text(
-                      '$_picturesTaken',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
+                    child: AnimatedRotation(
+                      turns: _rotationAngle / (2 * pi),
+                      duration: const Duration(milliseconds: 300),
+                      child: Text(
+                        '$_picturesTaken',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ],

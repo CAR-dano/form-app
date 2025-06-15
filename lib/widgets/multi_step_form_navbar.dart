@@ -26,32 +26,19 @@ class MultiStepFormNavbar extends ConsumerWidget {
     return Stack(
       children: [
         Positioned.fill(
-          child: ShaderMask(
-            shaderCallback: (Rect bounds) {
-              return LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent, // Start fully transparent
-                  Colors.black,        // Become fully opaque
-                ],
-                stops: const [0.0, 0.5], // Fade from 0% to 50% of the height
-              ).createShader(bounds);
-            },
-            blendMode: BlendMode.dstIn,
-            child: ClipRect( // ClipRect is important for BackdropFilter
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), // Apply stronger blur effect
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.white.withAlpha(0), // More transparent at the top (0 opacity)
-                        Colors.white.withAlpha(153), // More opaque at the bottom (0.6 * 255 = 153)
-                      ],
-                    ),
+          child: ClipRect( // ClipRect is important for BackdropFilter
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), // Apply blur effect
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white.withOpacity(0.0), // Start fully transparent
+                      Colors.white.withOpacity(0.15), // End with semi-transparent white
+                    ],
+                    stops: const [0.0, 0.5], // Fade from 0% to 50% of the height
                   ),
                 ),
               ),
