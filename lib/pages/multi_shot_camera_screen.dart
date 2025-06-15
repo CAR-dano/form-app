@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io'; // Added for File and Directory
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,8 @@ import 'package:form_app/utils/image_picker_util.dart';
 import 'package:form_app/widgets/custom_message_overlay.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:math' show pi;
+import 'package:image/image.dart' as img; // Added for image manipulation
+import 'package:path_provider/path_provider.dart'; // Added for temporary directory
 
 class MultiShotCameraScreen extends ConsumerStatefulWidget {
   final String imageIdentifier;
@@ -266,7 +269,10 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         });
       }
 
-      final XFile imageFile = await _controller!.takePicture();
+      XFile imageFile = await _controller!.takePicture();
+
+      // Rotate the image based on device orientation BEFORE further processing
+      imageFile = await _rotateImageIfNecessary(imageFile, _rotationAngle);
 
       // Get notifiers before the async operation that might outlive the widget
       final imageProcessingNotifier = ref.read(imageProcessingServiceProvider.notifier);
@@ -288,6 +294,53 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
           icon: Icons.error,
         );
       }
+    }
+  }
+
+  Future<XFile> _rotateImageIfNecessary(XFile imageFile, double rotationAngle) async {
+    if (rotationAngle == 0.0) {
+      // No rotation needed for portrait
+      return imageFile;
+    }
+
+    try {
+      final Uint8List imageBytes = await imageFile.readAsBytes();
+      final img.Image? originalImage = img.decodeImage(imageBytes);
+
+      if (originalImage == null) {
+        if (kDebugMode) {
+          print("Error: Could not decode image for rotation.");
+        }
+        return imageFile; // Return original if decoding fails
+      }
+
+      img.Image rotatedImage;
+      if (rotationAngle == pi / 2) { 
+        // Device top is to the LEFT (landscape). Image from camera (portrait) needs to be rotated Counter-Clockwise (-90 degrees).
+        rotatedImage = img.copyRotate(originalImage, angle: -90);
+      } else if (rotationAngle == -pi / 2) { 
+        // Device top is to the RIGHT (landscape). Image from camera (portrait) needs to be rotated Clockwise (90 degrees).
+        rotatedImage = img.copyRotate(originalImage, angle: 90);
+      } else {
+        // Should not happen with current accelerometer logic, but as a fallback, return original.
+        return imageFile;
+      }
+
+      final Directory tempDir = await getTemporaryDirectory();
+      final String tempPath = '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}_rotated.jpg';
+      final File rotatedFile = File(tempPath);
+      await rotatedFile.writeAsBytes(img.encodeJpg(rotatedImage));
+
+      if (kDebugMode) {
+        print("Image rotated by $rotationAngle rad. New path: ${rotatedFile.path}");
+      }
+      return XFile(rotatedFile.path);
+
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error rotating image: $e");
+      }
+      return imageFile; // Return original on error
     }
   }
 
