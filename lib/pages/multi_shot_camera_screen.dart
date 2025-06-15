@@ -534,7 +534,11 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
               children: [
                 Row( // Group Close and Flash buttons
                   children: [
-                    _buildControlButton(Icons.arrow_back, () => Navigator.of(context).pop()),
+                    AnimatedRotation(
+                      turns: _rotationAngle / (2 * pi),
+                      duration: const Duration(milliseconds: 300),
+                      child: _buildControlButton(Icons.arrow_back, () => Navigator.of(context).pop()),
+                    ),
                     AnimatedRotation(
                       turns: _rotationAngle / (2 * pi),
                       duration: const Duration(milliseconds: 300),
