@@ -9,33 +9,11 @@ import 'package:form_app/models/inspection_branch.dart';
 import 'package:form_app/models/inspector_data.dart';
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:mime/mime.dart';
+import 'package:form_app/utils/calculation_utils.dart'; // Import the new utility
+import 'package:form_app/models/uploadable_image.dart'; // Import the UploadableImage model
 
 // Typedef for the progress callback
 typedef ImageUploadProgressCallback = void Function(int currentBatch, int totalBatches);
-
-// UploadableImage class (ensure this is defined here or imported)
-class UploadableImage {
-  final String imagePath;
-  final String label;
-  final bool needAttention;
-  final String category;
-  final bool isMandatory;
-
-  UploadableImage({
-    required this.imagePath,
-    required this.label,
-    required this.needAttention,
-    required this.category,
-    required this.isMandatory,
-  });
-
-  Map<String, dynamic> toJson() => {
-        'label': label,
-        'needAttention': needAttention,
-        'category': category,
-        'isMandatory': isMandatory,
-      };
-}
 
 class ApiService {
   final dio.Dio _dioInst;
@@ -66,16 +44,6 @@ class ApiService {
         },
       ),
     );
-  }
-
-  int _calculateOverallRating(FormData formData) {
-    final int interiorScore = formData.interiorSelectedValue ?? 0;
-    final int eksteriorScore = formData.eksteriorSelectedValue ?? 0;
-    final int kakiKakiScore = formData.kakiKakiSelectedValue ?? 0;
-    final int mesinScore = formData.mesinSelectedValue ?? 0;
-
-    final int sum = interiorScore + eksteriorScore + kakiKakiScore + mesinScore;
-    return sum ~/ 4; // Integer division for average
   }
 
   Future<List<InspectionBranch>> getInspectionBranches() async {
@@ -116,7 +84,7 @@ class ApiService {
         data: { 
           "vehiclePlateNumber": formData.platNomor,
           "inspectionDate": formData.tanggalInspeksi?.toIso8601String() ?? '-',
-          "overallRating": _calculateOverallRating(formData),
+          "overallRating": calculateOverallRating(formData),
           "identityDetails": {
             "namaInspektor": formData.inspectorId ?? '-', 
             "namaCustomer": formData.namaCustomer,
@@ -155,7 +123,7 @@ class ApiService {
             "kakiKakiNotes": formData.keteranganKakiKaki ?? [],
             "mesinScore": formData.mesinSelectedValue ?? 0,
             "mesinNotes": formData.keteranganMesin ?? [],
-            "penilaianKeseluruhanScore": _calculateOverallRating(formData),
+            "penilaianKeseluruhanScore": calculateOverallRating(formData),
             "deskripsiKeseluruhan": formData.deskripsiKeseluruhan ?? [],
             "indikasiTabrakan": formData.indikasiTabrakan == "Terindikasi",
             "indikasiBanjir": formData.indikasiBanjir == "Terindikasi",

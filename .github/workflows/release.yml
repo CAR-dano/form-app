@@ -35,7 +35,9 @@ jobs:
         run: |
           VERSION_LINE=$(grep '^version:' pubspec.yaml)
           SEMANTIC_VERSION=$(echo "$VERSION_LINE" | sed 's/version: //g' | sed 's/+\.*//g' | tr -d '[:space:]')
+          FULL_VERSION="${SEMANTIC_VERSION}.${{ github.run_number }}"
           echo "semantic_version=$SEMANTIC_VERSION" >> $GITHUB_OUTPUT
+          echo "full_version=$FULL_VERSION" >> $GITHUB_OUTPUT
 
       # Creates an .env file with the API base URL for the release build.
       - name: Create .env file for Release Build
@@ -45,11 +47,11 @@ jobs:
 
       # Builds ABI-specific release APKs for different architectures.
       - name: Build ABI-Specific Release APKs
-        run: flutter build apk --split-per-abi --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ github.run_number }}
+        run: flutter build apk --split-per-abi --release --build-name=${{ steps.pubspec.outputs.full_version }} --build-number=${{ github.run_number }}
 
       # Builds a universal (fat) release APK.
       - name: Build Universal (Fat) Release APK
-        run: flutter build apk --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ github.run_number }}
+        run: flutter build apk --release --build-name=${{ steps.pubspec.outputs.full_version }} --build-number=${{ github.run_number }}
 
       # Creates an .env file with the API base URL for the debug build.
       - name: Create .env file for Debug Build
@@ -59,14 +61,14 @@ jobs:
 
       # Builds a debug APK.
       - name: Build Debug APK
-        run: flutter build apk --debug
+        run: flutter build apk --debug --build-name=${{ steps.pubspec.outputs.full_version }} --build-number=${{ github.run_number }}
 
       # Renames the universal release APK to include version and build number.
       - name: Rename Universal Release APK
         id: universal_release_apk_details
         run: |
           original_path="build/app/outputs/flutter-apk/app-release.apk"
-          new_name="app-universal-release-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}.apk"
+          new_name="app-universal-release-v${{ steps.pubspec.outputs.full_version }}.apk"
           new_path="build/app/outputs/flutter-apk/$new_name"
           mv "$original_path" "$new_path"
           echo "path=$new_path" >> $GITHUB_OUTPUT
@@ -77,7 +79,7 @@ jobs:
         id: debug_apk_details
         run: |
           original_path="build/app/outputs/flutter-apk/app-debug.apk"
-          new_name="app-debug-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}.apk"
+          new_name="app-debug-v${{ steps.pubspec.outputs.full_version }}.apk"
           new_path="build/app/outputs/flutter-apk/$new_name"
           mv "$original_path" "$new_path"
           echo "path=$new_path" >> $GITHUB_OUTPUT
@@ -87,7 +89,7 @@ jobs:
       - name: Create Release Tag Name
         id: create_tag
         run: |
-          TAG_NAME="v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}"
+          TAG_NAME="v${{ steps.pubspec.outputs.full_version }}"
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
 
       # Prepares the release body content, including PR details and commit information.
@@ -99,7 +101,7 @@ jobs:
           script: |
             // Your excellent release body script remains unchanged
             const {
-              COMMIT_SHA, ACTOR, SEMANTIC_VERSION, RUN_NUMBER, REPO_URL, HEAD_COMMIT_MESSAGE
+              COMMIT_SHA, ACTOR, SEMANTIC_VERSION, RUN_NUMBER, REPO_URL, HEAD_COMMIT_MESSAGE, FULL_VERSION
             } = process.env;
 
             let main_release_content = "";
@@ -142,7 +144,7 @@ jobs:
             }
 
             let footer_info = "\n\n---\n\n";
-            footer_info += `**Version:** v${SEMANTIC_VERSION}+${RUN_NUMBER}\n`;
+            footer_info += `**Version:** v${FULL_VERSION}\n`;
             footer_info += `**Released by:** @${ACTOR}\n`;
             footer_info += pr_details_for_footer;
             footer_info += `**Commit:** [${COMMIT_SHA.substring(0,7)}](${REPO_URL}/commit/${COMMIT_SHA})\n`;
@@ -157,6 +159,7 @@ jobs:
           ACTOR: ${{ github.actor }}
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
           HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          FULL_VERSION: ${{ steps.pubspec.outputs.full_version }}
 
       # Creates a new GitHub release.
       - name: Create GitHub Release
@@ -166,7 +169,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.create_tag.outputs.tag_name }}
-          release_name: "Release v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}"
+          release_name: "Release v${{ steps.pubspec.outputs.full_version }}"
           body: ${{ steps.prep_release_body.outputs.body }}
           draft: false
           prerelease: false
@@ -179,7 +182,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.universal_release_apk_details.outputs.path }}
-          asset_name: ${{ steps.universal_release_apk_details.outputs.name }}
+          asset_name: app-universal-release-v${{ steps.pubspec.outputs.full_version }}.apk
           asset_content_type: application/vnd.android.package-archive
 
       # Uploads the arm64-v8a release APK as a release asset.
@@ -190,7 +193,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-          asset_name: app-arm64-v8a-release-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}.apk
+          asset_name: app-arm64-v8a-release-v${{ steps.pubspec.outputs.full_version }}.apk
           asset_content_type: application/vnd.android.package-archive
 
       # Uploads the armeabi-v7a release APK as a release asset.
@@ -201,7 +204,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
-          asset_name: app-armeabi-v7a-release-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}.apk
+          asset_name: app-armeabi-v7a-release-v${{ steps.pubspec.outputs.full_version }}.apk
           asset_content_type: application/vnd.android.package-archive
 
       # Uploads the debug APK as a release asset.
@@ -219,7 +222,7 @@ jobs:
       - name: Upload All Release APKs as Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-apks-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}
+          name: release-apks-v${{ steps.pubspec.outputs.full_version }}
           path: |
             ${{ steps.universal_release_apk_details.outputs.path }}
             build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
@@ -230,5 +233,5 @@ jobs:
       - name: Upload Debug Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: debug-apk-v${{ steps.pubspec.outputs.semantic_version }}+${{ github.run_number }}
+          name: debug-apk-v${{ steps.pubspec.outputs.full_version }}
           path: ${{ steps.debug_apk_details.outputs.path }}

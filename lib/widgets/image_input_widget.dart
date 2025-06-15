@@ -12,6 +12,7 @@ import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/widgets/image_preview_dialog.dart';
 import 'package:form_app/utils/image_picker_util.dart';
 import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
+import 'package:form_app/widgets/custom_message_overlay.dart';
 
 class ImageInputWidget extends ConsumerStatefulWidget {
   final String label;
@@ -40,7 +41,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
       setState(() {
         _isLoadingCamera = true;
       });
-      ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment counter
+      ref.read(imageProcessingServiceProvider.notifier).taskStarted(widget.label); // Increment counter
       try {
         await ImagePickerUtil.saveImageToGallery(pickedImageXFile);
         final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile);
@@ -54,22 +55,18 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
           if (kDebugMode) {
             print("Image processing failed for camera image.");
           }
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Gagal memproses gambar dari kamera.'))
-          );
+          CustomMessageOverlay(context).show(message: 'Gagal memproses gambar dari kamera.', backgroundColor: errorBorderColor, icon: Icons.error);
         }
       } catch (e) {
         if (mounted && kDebugMode) {
           if (kDebugMode) {
             print("Error during camera image processing or saving: $e");
           }
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Terjadi kesalahan saat memproses gambar kamera: $e'))
-          );
+          CustomMessageOverlay(context).show(message: 'Terjadi kesalahan saat memproses gambar kamera: $e', backgroundColor: errorBorderColor, icon: Icons.error);
         }
       } finally {
         if (mounted) {
-          ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement counter
+          ref.read(imageProcessingServiceProvider.notifier).taskFinished(widget.label); // Decrement counter
           setState(() {
             _isLoadingCamera = false;
           });
@@ -90,7 +87,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
       setState(() {
         _isLoadingGallery = true;
       });
-      ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment counter
+      ref.read(imageProcessingServiceProvider.notifier).taskStarted(widget.label); // Increment counter
       try {
         final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile);
 
@@ -103,22 +100,18 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
           if (kDebugMode) {
             print("Image processing failed for gallery image.");
           }
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Gagal memproses gambar dari galeri.'))
-          );
+          CustomMessageOverlay(context).show(message: 'Gagal memproses gambar dari galeri.', backgroundColor: errorBorderColor, icon: Icons.error);
         }
       } catch (e) {
         if (mounted && kDebugMode) {
           if (kDebugMode) {
             print("Error during gallery image processing: $e");
           }
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Terjadi kesalahan saat memproses gambar galeri: $e'))
-          );
+          CustomMessageOverlay(context).show(message: 'Terjadi kesalahan saat memproses gambar galeri: $e', backgroundColor: errorBorderColor, icon: Icons.error);
         }
       } finally {
         if (mounted) {
-          ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement counter
+          ref.read(imageProcessingServiceProvider.notifier).taskFinished(widget.label); // Decrement counter
           setState(() {
             _isLoadingGallery = false;
           });

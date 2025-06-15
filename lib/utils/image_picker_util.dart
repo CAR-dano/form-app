@@ -28,6 +28,9 @@ Future<String?> _processImageIsolate(_ProcessImageInput input) async {
     if (kDebugMode) {
       print("Error: Could not decode image ${input.pickedFilePath}");
     }
+    if (kDebugMode) {
+      print("DEBUG: _processImageIsolate returning null due to originalImage being null.");
+    }
     return null;
   }
 

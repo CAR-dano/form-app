@@ -4,9 +4,14 @@ import 'package:form_app/pages/multi_step_form_screen.dart'; // Import MultiStep
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import flutter_dotenv
 import 'package:form_app/providers/tambahan_image_data_provider.dart'; // Import the provider
 import 'dart:io'; // For FileImage
+import 'package:flutter/services.dart'; // Import for SystemChrome
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter bindings are initialized
+  await SystemChrome.setPreferredOrientations([ // Add this block
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   await dotenv.load(fileName: ".env"); // Load environment variables
   runApp(const ProviderScope(child: FormApp()));
 }
