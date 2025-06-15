@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_step_provider.dart';
-import 'package:form_app/providers/tambahan_image_data_provider.dart'; // Import the provider
+import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/widgets/common_layout.dart';
 import 'package:form_app/widgets/multi_step_form_navbar.dart';
 // Import all form pages
@@ -17,30 +17,24 @@ import 'package:form_app/pages/page_five_five.dart';
 import 'package:form_app/pages/page_five_six.dart';
 import 'package:form_app/pages/page_five_seven.dart';
 import 'package:form_app/pages/page_six_general_wajib.dart';
-//import 'package:form_app/pages/page_six_general_tambahan.dart';
-// import 'package:form_app/pages/page_six_eksterior_wajib.dart';
 import 'package:form_app/pages/page_six_eksterior_tambahan.dart';
-// import 'package:form_app/pages/page_six_interior_wajib.dart';
 import 'package:form_app/pages/page_six_interior_tambahan.dart';
-// import 'package:form_app/pages/page_six_mesin_wajib.dart';
 import 'package:form_app/pages/page_six_mesin_tambahan.dart';
-// import 'package:form_app/pages/page_six_kaki_kaki_wajib.dart';
 import 'package:form_app/pages/page_six_kaki_kaki_tambahan.dart';
-// import 'package:form_app/pages/page_six_alat_alat_wajib.dart';
 import 'package:form_app/pages/page_six_alat_alat_tambahan.dart';
 import 'package:form_app/pages/page_seven.dart';
 import 'package:form_app/pages/page_eight.dart';
 import 'package:form_app/pages/page_nine.dart';
 import 'package:form_app/pages/finished.dart';
-import 'package:form_app/providers/form_provider.dart'; // For form data
-import 'package:form_app/services/api_service.dart'; // For API calls
-import 'package:form_app/providers/image_data_provider.dart'; // For wajib images
-import 'package:form_app/providers/image_processing_provider.dart'; // For image processing status
-import 'package:form_app/providers/page_navigation_provider.dart'; // Import the provider
-import 'package:form_app/providers/submission_status_provider.dart'; // Import the new provider
-import 'package:form_app/providers/submission_data_cache_provider.dart'; // Import the new cache provider
-import 'package:form_app/widgets/custom_message_overlay.dart'; // Import the custom message overlay
-import 'package:form_app/models/uploadable_image.dart'; // Import the UploadableImage model
+import 'package:form_app/providers/form_provider.dart';
+import 'package:form_app/services/api_service.dart';
+import 'package:form_app/providers/image_data_provider.dart';
+import 'package:form_app/providers/image_processing_provider.dart';
+import 'package:form_app/providers/page_navigation_provider.dart';
+import 'package:form_app/providers/submission_status_provider.dart';
+import 'package:form_app/providers/submission_data_cache_provider.dart';
+import 'package:form_app/widgets/custom_message_overlay.dart';
+import 'package:form_app/models/uploadable_image.dart';
 
 class MultiStepFormScreen extends ConsumerStatefulWidget {
   const MultiStepFormScreen({super.key});
@@ -52,7 +46,7 @@ class MultiStepFormScreen extends ConsumerStatefulWidget {
 class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   final List<GlobalKey<FormState>> _formKeys = List.generate(27, (_) => GlobalKey<FormState>());
 
-  late CustomMessageOverlay _customMessageOverlay; // Declare the custom message overlay
+  late CustomMessageOverlay _customMessageOverlay;
 
   final ValueNotifier<bool> _formSubmittedPageOne = ValueNotifier<bool>(false);
   static const String _defaultTambahanLabel = 'Foto Tambahan';
@@ -102,7 +96,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   @override
   void initState() {
     super.initState();
-    _customMessageOverlay = CustomMessageOverlay(context); // Initialize the custom message overlay
+    _customMessageOverlay = CustomMessageOverlay(context);
 
     // Pre-cache checker.png
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -133,15 +127,14 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       const PageFiveSeven(key: ValueKey('PageFiveSeven'), currentPage: 19, totalPages: 20),
       PageNine(
         key: const ValueKey('PageNine'),
-        // Pass callbacks for PageNine's internal state management
         onCheckedChange: (newValue) {
-          final submissionStatus = ref.read(submissionStatusProvider); // Read the current state
+          final submissionStatus = ref.read(submissionStatusProvider);
           if (!submissionStatus.isLoading) {
             setState(() { _isChecked = newValue; });
           }
         },
         isChecked: _isChecked,
-        currentPage: 20, // PageNine is the last page before FinishedPage
+        currentPage: 20,
         totalPages: 20,
       ),
       const FinishedPage(key: ValueKey('FinishedPage')),
@@ -162,13 +155,12 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     final submissionStatus = ref.watch(submissionStatusProvider);
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      extendBody: true, // Extend body behind the bottom navigation bar for blur effect
+      extendBody: true,
       body: PageView(
         controller: pageController,
         physics: pageViewPhysics,
         onPageChanged: (int page) {
           final currentActualStep = ref.read(formStepProvider);
-          // Prevent swipe from PageNine to FinishedPage
           if (currentActualStep == _formPages.length - 2 && page == _formPages.length - 1) {
             pageController.jumpToPage(currentActualStep);
           } else {
@@ -186,8 +178,8 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
               currentPageIndex: currentPageIndex,
               formPagesLength: _formPages.length,
               onNextPressed: () {
-                if (currentPageIndex == _formPages.length - 2) { // PageNine
-                  _submitForm(); // Call the submission logic
+                if (currentPageIndex == _formPages.length - 2) {
+                  _submitForm();
                 } else {
                   FocusScope.of(context).unfocus();
                   ref.read(pageNavigationProvider.notifier).goToNextPage();
@@ -199,9 +191,8 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
               },
               isLoading: submissionStatus.isLoading,
               isChecked: _isChecked,
-              // Removed other parameters as they are no longer needed in MultiStepFormNavbar
             )
-          : null, // Hide navigation buttons on the FinishedPage
+          : null,
     );
   }
 
@@ -224,23 +215,12 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       }
     } else {
       debugPrint('FormState for page $pageIndex IS null.');
-      // This case should ideally not happen for pages that are expected to be rendered.
-      // If it does, it means the Form widget hasn't registered its state yet.
-      // For now, we'll return an error if the form state is null for a validated page.
       return 'Form tidak siap untuk Halaman ${_pageNames[pageIndex] ?? pageIndex + 1}';
     }
     if (_tambahanImagePageIdentifiers.containsKey(pageIndex)) {
       final identifier = _tambahanImagePageIdentifiers[pageIndex]!;
       final images = ref.read(tambahanImageDataProvider(identifier));
-      // Ensure defaultTambahanLabel is used correctly in comparison.
-      // If an image has the default label, it's considered "empty" or not yet customized by the user.
-      // The validation should check if a label is present *and* not the default placeholder if a custom one is expected.
-      // For 'Foto Dokumen', isMandatory is true, so it must have *some* label if an image is present.
-      // If an image is present, its label should not be the default if the user was supposed to change it.
-      // Or, if the default label IS the intended final label, then this check is fine.
-      // The current logic implies that if an image is present, a non-default label is expected.
       if (images.any((image) => image.label == _defaultTambahanLabel || image.label.trim().isEmpty )) {
-         // If category is 'Foto Dokumen' and default label implies empty, then validate.
          if (identifier == 'Foto Dokumen' && images.any((image) => image.label == _defaultTambahanLabel && image.imagePath.isNotEmpty)) {
             return 'Label untuk "Foto Dokumen" belum diubah dari default atau kosong.';
          } else if (identifier != 'Foto Dokumen' && images.any((image) => image.label.trim().isEmpty && image.imagePath.isNotEmpty)){
@@ -251,16 +231,15 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     return null;
   }
 
-  // Moved _submitForm logic from PageNine to MultiStepFormScreen
   Future<void> _submitForm() async {
-    final submissionStatus = ref.read(submissionStatusProvider); // Read the current state
+    final submissionStatus = ref.read(submissionStatusProvider);
     final submissionStatusNotifier = ref.read(submissionStatusProvider.notifier);
-    final submissionDataCache = ref.read(submissionDataCacheProvider); // Read the cache
+    final submissionDataCache = ref.read(submissionDataCacheProvider);
     final submissionDataCacheNotifier = ref.read(submissionDataCacheProvider.notifier);
 
     if (submissionStatus.isLoading) return;
 
-    final isImageProcessing = ref.read(imageProcessingServiceProvider.notifier).isProcessing;
+    final isImageProcessing = ref.read(imageProcessingServiceProvider.notifier).isAnyProcessing;
     if (isImageProcessing) {
       _customMessageOverlay.show(
         message: 'Pemrosesan gambar masih berjalan. Harap tunggu hingga selesai.',
@@ -289,15 +268,13 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     _formSubmittedPageTwo.value = true;
     _formSubmittedTambahanImages.value = true;
 
-    // Allow a microtask to complete, ensuring ValueNotifiers trigger rebuilds
-    // and PageOne's ValueListenableBuilder has a chance to call validate()
     await Future.microtask(() {});
 
     List<String> validationErrors = [];
     int? firstErrorPageIndex;
 
     for (int pageIndex in _pagesToValidate) {
-      final error = _validatePage(pageIndex); // Use _validatePage from MultiStepFormScreen
+      final error = _validatePage(pageIndex);
       if (error != null) {
         validationErrors.add(error);
         firstErrorPageIndex ??= pageIndex;
@@ -317,9 +294,8 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         if (pageViewIndex != null) {
           ref.read(pageNavigationProvider.notifier).jumpToPage(pageViewIndex);
         } else {
-          // Fallback or log error if mapping is missing
           debugPrint('Error: No PageView index found for form key index $firstErrorPageIndex');
-          ref.read(pageNavigationProvider.notifier).jumpToPage(0); // Jump to first page as a fallback
+          ref.read(pageNavigationProvider.notifier).jumpToPage(0);
         }
       }
       submissionStatusNotifier.setLoading(isLoading: false);
@@ -330,9 +306,8 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     final formDataToSubmit = ref.read(formProvider);
     final apiService = ApiService();
 
-    // Check if form data is unchanged and an inspection ID exists
     final bool isFormDataUnchanged = submissionDataCache.lastSubmittedFormData != null &&
-        formDataToSubmit == submissionDataCache.lastSubmittedFormData; // Use Equatable comparison
+        formDataToSubmit == submissionDataCache.lastSubmittedFormData;
 
     if (isFormDataUnchanged && submissionDataCache.lastSubmittedInspectionId != null) {
       inspectionId = submissionDataCache.lastSubmittedInspectionId;
@@ -340,7 +315,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       submissionStatusNotifier.setLoading(
         isLoading: true,
         message: 'Data formulir tidak berubah. Melanjutkan unggah gambar...',
-        progress: 0.1, // Start progress as if form data was just sent
+        progress: 0.1,
       );
     } else {
       try {
@@ -353,7 +328,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         final Map<String, dynamic> formDataResponse = await apiService.submitFormData(formDataToSubmit);
         inspectionId = formDataResponse['id'] as String?;
 
-        // Cache the successfully submitted form data and inspection ID
         submissionDataCacheNotifier.setCache(
           inspectionId: inspectionId,
           formData: formDataToSubmit,
@@ -367,11 +341,10 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           duration: const Duration(seconds: 5),
         );
         submissionStatusNotifier.setLoading(isLoading: false);
-        return; // Exit if form data submission fails
+        return;
       }
     }
 
-    // Continue with image upload logic
     try {
       if (inspectionId == null || inspectionId.isEmpty) {
         throw Exception('Inspection ID not received or is empty after form submission.');
@@ -390,11 +363,11 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         }
       }
 
-      for (final identifier in _tambahanImagePageIdentifiers.values) { // Use _tambahanImagePageIdentifiers from MultiStepFormScreen
+      for (final identifier in _tambahanImagePageIdentifiers.values) {
         final tambahanImagesList = ref.read(tambahanImageDataProvider(identifier));
         for (var imgData in tambahanImagesList) {
           if (imgData.imagePath.isNotEmpty) {
-            final String labelToUse = imgData.label.isEmpty ? _defaultTambahanLabel : imgData.label; // Use _defaultTambahanLabel from MultiStepFormScreen
+            final String labelToUse = imgData.label.isEmpty ? _defaultTambahanLabel : imgData.label;
             allImagesToUpload.add(UploadableImage(
               imagePath: imgData.imagePath, label: labelToUse, needAttention: imgData.needAttention,
               category: imgData.category, isMandatory: imgData.isMandatory,
@@ -444,12 +417,12 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       submissionStatusNotifier.setLoading(isLoading: true, message: 'Menyelesaikan...', progress: 1.0);
       ref.read(formProvider.notifier).resetFormData();
       ref.read(imageDataListProvider.notifier).clearImageData();
-      for (final identifier in _tambahanImagePageIdentifiers.values) { // Use _tambahanImagePageIdentifiers from MultiStepFormScreen
+      for (final identifier in _tambahanImagePageIdentifiers.values) {
         ref.read(tambahanImageDataProvider(identifier).notifier).clearAll();
       }
 
       if (!mounted) return;
-      ref.read(formStepProvider.notifier).state++; // Navigate to FinishedPage
+      ref.read(formStepProvider.notifier).state++;
     } catch (e) {
       if (!mounted) return;
       _customMessageOverlay.show(
@@ -460,11 +433,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       );
       submissionStatusNotifier.setLoading(isLoading: false);
     } finally {
-      submissionStatusNotifier.reset(); // Ensure loading state is reset on completion or error
-      // Only clear cache if the entire process (form + images) is successful.
-      // If image upload fails, we want to keep the inspectionId and form data in cache.
-      // The cache should only be cleared if the user explicitly resets the form or navigates away.
-      // For now, I'll remove the clearCache from finally block and rely on explicit reset.
+      submissionStatusNotifier.reset();
     }
   }
 }

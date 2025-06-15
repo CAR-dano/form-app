@@ -41,7 +41,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
       setState(() {
         _isLoadingCamera = true;
       });
-      ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment counter
+      ref.read(imageProcessingServiceProvider.notifier).taskStarted(widget.label); // Increment counter
       try {
         await ImagePickerUtil.saveImageToGallery(pickedImageXFile);
         final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile);
@@ -66,7 +66,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
         }
       } finally {
         if (mounted) {
-          ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement counter
+          ref.read(imageProcessingServiceProvider.notifier).taskFinished(widget.label); // Decrement counter
           setState(() {
             _isLoadingCamera = false;
           });
@@ -87,7 +87,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
       setState(() {
         _isLoadingGallery = true;
       });
-      ref.read(imageProcessingServiceProvider.notifier).taskStarted(); // Increment counter
+      ref.read(imageProcessingServiceProvider.notifier).taskStarted(widget.label); // Increment counter
       try {
         final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile);
 
@@ -111,7 +111,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
         }
       } finally {
         if (mounted) {
-          ref.read(imageProcessingServiceProvider.notifier).taskFinished(); // Decrement counter
+          ref.read(imageProcessingServiceProvider.notifier).taskFinished(widget.label); // Decrement counter
           setState(() {
             _isLoadingGallery = false;
           });
