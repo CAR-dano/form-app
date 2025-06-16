@@ -34,9 +34,16 @@ jobs:
         id: pubspec
         run: |
           VERSION_LINE=$(grep '^version:' pubspec.yaml)
-          SEMANTIC_VERSION=$(echo "$VERSION_LINE" | sed 's/version: //g' | sed 's/+\.*//g' | tr -d '[:space:]')
-          FULL_VERSION="${SEMANTIC_VERSION}.${{ github.run_number }}"
+          # Extract semantic version (e.g., 2.0.0)
+          SEMANTIC_VERSION=$(echo "$VERSION_LINE" | sed -E 's/version: ([0-9]+\.[0-9]+\.[0-9]+)(\+.*)?/\1/' | tr -d '[:space:]')
+          
+          # Always use GitHub run number as the full build number
+          FULL_BUILD_NUMBER="${{ github.run_number }}"
+
+          FULL_VERSION="${SEMANTIC_VERSION}+${FULL_BUILD_NUMBER}"
+
           echo "semantic_version=$SEMANTIC_VERSION" >> $GITHUB_OUTPUT
+          echo "full_build_number=$FULL_BUILD_NUMBER" >> $GITHUB_OUTPUT
           echo "full_version=$FULL_VERSION" >> $GITHUB_OUTPUT
 
       # Creates an .env file with the API base URL for the release build.
@@ -45,13 +52,13 @@ jobs:
         env:
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
 
-      # Builds ABI-specific release APKs for different architectures.
+      # Builds ABI-Specific Release APKs
       - name: Build ABI-Specific Release APKs
-        run: flutter build apk --split-per-abi --release --build-name=${{ steps.pubspec.outputs.full_version }} --build-number=${{ github.run_number }}
+        run: flutter build apk --split-per-abi --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ steps.pubspec.outputs.full_build_number }}
 
-      # Builds a universal (fat) release APK.
+      # Builds a universal (fat) Release APK.
       - name: Build Universal (Fat) Release APK
-        run: flutter build apk --release --build-name=${{ steps.pubspec.outputs.full_version }} --build-number=${{ github.run_number }}
+        run: flutter build apk --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ steps.pubspec.outputs.full_build_number }}
 
       # Creates an .env file with the API base URL for the debug build.
       - name: Create .env file for Debug Build
@@ -61,7 +68,7 @@ jobs:
 
       # Builds a debug APK.
       - name: Build Debug APK
-        run: flutter build apk --debug --build-name=${{ steps.pubspec.outputs.full_version }} --build-number=${{ github.run_number }}
+        run: flutter build apk --debug --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ steps.pubspec.outputs.full_build_number }}
 
       # Renames the universal release APK to include version and build number.
       - name: Rename Universal Release APK
@@ -161,7 +168,7 @@ jobs:
           HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           FULL_VERSION: ${{ steps.pubspec.outputs.full_version }}
 
-      # Creates a new GitHub release.
+      # Creates a new GitHub Release.
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
