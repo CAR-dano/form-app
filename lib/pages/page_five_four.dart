@@ -206,7 +206,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
         'onItemSelected': (value) => formNotifier.updateQuarterPanelKiriSelectedValue(value),
       },
       {
-        'label': 'Pintu Depan',
+        'label': 'Pintu Depan Kanan',
         'selectedValue': formData.pintuDepanSelectedValue,
         'onItemSelected': (value) => formNotifier.updatePintuDepanSelectedValue(value),
       },
