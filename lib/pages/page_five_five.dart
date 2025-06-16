@@ -156,9 +156,9 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
         'onItemSelected': (value) => formNotifier.updateBalljointSelectedValue(value),
       },
       {
-        'label': 'Rocksteer',
-        'selectedValue': formData.rocksteerSelectedValue,
-        'onItemSelected': (value) => formNotifier.updateRocksteerSelectedValue(value),
+        'label': 'Racksteer',
+        'selectedValue': formData.racksteerSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateRacksteerSelectedValue(value),
       },
       {
         'label': 'Karet Boot',

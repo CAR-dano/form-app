@@ -163,7 +163,7 @@ class ApiService {
               "crossmember": formData.crossmemberSelectedValue ?? 0,
               "knalpot": formData.knalpotSelectedValue ?? 0,
               "balljoint": formData.balljointSelectedValue ?? 0,
-              "rocksteer": formData.rocksteerSelectedValue ?? 0,
+              "racksteer": formData.racksteerSelectedValue ?? 0,
               "karetBoot": formData.karetBootSelectedValue ?? 0,
               "upperLowerArm": formData.upperLowerArmSelectedValue ?? 0,
               "shockBreaker": formData.shockBreakerSelectedValue ?? 0,

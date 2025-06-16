@@ -753,8 +753,8 @@ class FormNotifier extends StateNotifier<FormData> {
   }
 
 
-  void updateRocksteerSelectedValue(int? value) {
-    state = state.copyWith(rocksteerSelectedValue: value);
+  void updateRacksteerSelectedValue(int? value) {
+    state = state.copyWith(racksteerSelectedValue: value);
   }
 
 

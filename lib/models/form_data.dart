@@ -172,7 +172,7 @@ class FormData extends Equatable {
   final int? crossmemberSelectedValue;
   final int? knalpotSelectedValue;
   final int? balljointSelectedValue;
-  final int? rocksteerSelectedValue;
+  final int? racksteerSelectedValue;
   final int? karetBootSelectedValue;
   final int? upperLowerArmSelectedValue;
   final int? shockBreakerSelectedValue;
@@ -366,7 +366,7 @@ class FormData extends Equatable {
     this.crossmemberSelectedValue,
     this.knalpotSelectedValue,
     this.balljointSelectedValue,
-    this.rocksteerSelectedValue,
+    this.racksteerSelectedValue,
     this.karetBootSelectedValue,
     this.upperLowerArmSelectedValue,
     this.shockBreakerSelectedValue,
@@ -556,7 +556,7 @@ class FormData extends Equatable {
     crossmemberSelectedValue,
     knalpotSelectedValue,
     balljointSelectedValue,
-    rocksteerSelectedValue,
+    racksteerSelectedValue,
     karetBootSelectedValue,
     upperLowerArmSelectedValue,
     shockBreakerSelectedValue,
@@ -742,7 +742,7 @@ class FormData extends Equatable {
       'crossmemberSelectedValue': crossmemberSelectedValue,
       'knalpotSelectedValue': knalpotSelectedValue,
       'balljointSelectedValue': balljointSelectedValue,
-      'rocksteerSelectedValue': rocksteerSelectedValue,
+      'racksteerSelectedValue': racksteerSelectedValue,
       'karetBootSelectedValue': karetBootSelectedValue,
       'upperLowerArmSelectedValue': upperLowerArmSelectedValue,
       'shockBreakerSelectedValue': shockBreakerSelectedValue,
@@ -939,7 +939,7 @@ class FormData extends Equatable {
       crossmemberSelectedValue: json['crossmemberSelectedValue'] as int?,
       knalpotSelectedValue: json['knalpotSelectedValue'] as int?,
       balljointSelectedValue: json['balljointSelectedValue'] as int?,
-      rocksteerSelectedValue: json['rocksteerSelectedValue'] as int?,
+      racksteerSelectedValue: json['racksteerSelectedValue'] as int?,
       karetBootSelectedValue: json['karetBootSelectedValue'] as int?,
       upperLowerArmSelectedValue: json['upperLowerArmSelectedValue'] as int?,
       shockBreakerSelectedValue: json['shockBreakerSelectedValue'] as int?,
@@ -1126,7 +1126,7 @@ class FormData extends Equatable {
     int? crossmemberSelectedValue,
     int? knalpotSelectedValue,
     int? balljointSelectedValue,
-    int? rocksteerSelectedValue,
+    int? racksteerSelectedValue,
     int? karetBootSelectedValue,
     int? upperLowerArmSelectedValue,
     int? shockBreakerSelectedValue,
@@ -1311,7 +1311,7 @@ class FormData extends Equatable {
       crossmemberSelectedValue: crossmemberSelectedValue ?? this.crossmemberSelectedValue,
       knalpotSelectedValue: knalpotSelectedValue ?? this.knalpotSelectedValue,
       balljointSelectedValue: balljointSelectedValue ?? this.balljointSelectedValue,
-      rocksteerSelectedValue: rocksteerSelectedValue ?? this.rocksteerSelectedValue,
+      racksteerSelectedValue: racksteerSelectedValue ?? this.racksteerSelectedValue,
       karetBootSelectedValue: karetBootSelectedValue ?? this.karetBootSelectedValue,
       upperLowerArmSelectedValue: upperLowerArmSelectedValue ?? this.upperLowerArmSelectedValue,
       shockBreakerSelectedValue: shockBreakerSelectedValue ?? this.shockBreakerSelectedValue,
