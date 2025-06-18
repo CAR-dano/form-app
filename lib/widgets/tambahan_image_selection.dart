@@ -427,12 +427,12 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                 ),
               AnimatedSize(
                 duration: const Duration(milliseconds: 300),
-                curve: Curves.fastOutSlowIn, // Changed curve
+                curve: Curves.fastOutSlowIn,
                 child: AnimatedOpacity(
-                  opacity: _isNeedAttentionChecked ? 1.0 : 0.0,
+                  opacity: (_isNeedAttentionChecked || !widget.showNeedAttention) ? 1.0 : 0.0, // Adjusted condition
                   duration: const Duration(milliseconds: 300),
-                  curve: Curves.fastOutSlowIn, // Changed curve
-                  child: _isNeedAttentionChecked
+                  curve: Curves.fastOutSlowIn,
+                  child: (_isNeedAttentionChecked || !widget.showNeedAttention) // Adjusted condition
                       ? Column(
                           children: [
                             const SizedBox(height: 16.0),
@@ -445,7 +445,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                             ),
                           ],
                         )
-                      : const SizedBox.shrink(), // Use SizedBox.shrink when not visible
+                      : const SizedBox.shrink(),
                 ),
               ),
             ],
