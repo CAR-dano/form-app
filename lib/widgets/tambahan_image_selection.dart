@@ -416,7 +416,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                     ),
                 ],
               ),
-              const SizedBox(height: 16.0),
+              if (widget.showNeedAttention) const SizedBox(height: 16.0),
               if (widget.showNeedAttention)
                 FormConfirmation(
                   key: ValueKey<String>('attention_${currentImage?.id ?? "default_attention_state"}'),
