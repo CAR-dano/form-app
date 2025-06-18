@@ -427,11 +427,11 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                 ),
               AnimatedSize(
                 duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
+                curve: Curves.fastOutSlowIn, // Changed curve
                 child: AnimatedOpacity(
                   opacity: _isNeedAttentionChecked ? 1.0 : 0.0,
                   duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
+                  curve: Curves.fastOutSlowIn, // Changed curve
                   child: _isNeedAttentionChecked
                       ? Column(
                           children: [
