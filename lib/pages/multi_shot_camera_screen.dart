@@ -677,8 +677,6 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(width: 60), // Spacer
-                  _buildCaptureButton(),
                   SizedBox(
                     width: 60,
                     child: AnimatedRotation(
@@ -693,6 +691,12 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
                             fontWeight: FontWeight.bold),
                       ),
                     ),
+                  ),
+                  _buildCaptureButton(),
+                  AnimatedRotation(
+                    turns: _rotationAngle / (2 * pi),
+                    duration: const Duration(milliseconds: 300),
+                    child: _buildControlButton(Icons.check, () => Navigator.of(context).pop()),
                   ),
                 ],
               ),
