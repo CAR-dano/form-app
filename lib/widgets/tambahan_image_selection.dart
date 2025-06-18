@@ -425,16 +425,29 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                   onChanged: _onNeedAttentionChanged,
                   fontWeight: FontWeight.w300,
                 ),
-              if (_isNeedAttentionChecked) ...[ // Conditionally show label field
-                const SizedBox(height: 16.0),
-                LabeledTextField(
-                  key: ValueKey<String>('label_${currentImage?.id ?? "default_label_state"}'),
-                  label: 'Label',
-                  controller: _labelController,
-                  hintText: 'Misal : Aki tampak atas',
-                  onChanged: _onLabelChanged,
+              AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                child: AnimatedOpacity(
+                  opacity: _isNeedAttentionChecked ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  child: _isNeedAttentionChecked
+                      ? Column(
+                          children: [
+                            const SizedBox(height: 16.0),
+                            LabeledTextField(
+                              key: ValueKey<String>('label_${currentImage?.id ?? "default_label_state"}'),
+                              label: 'Label',
+                              controller: _labelController,
+                              hintText: 'Misal : Aki tampak atas',
+                              onChanged: _onLabelChanged,
+                            ),
+                          ],
+                        )
+                      : const SizedBox.shrink(), // Use SizedBox.shrink when not visible
                 ),
-              ],
+              ),
             ],
           ),
         ),
