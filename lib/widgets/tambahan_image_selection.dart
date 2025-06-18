@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:flutter/foundation.dart'; // For kDebugMode
 import 'package:form_app/statics/app_styles.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
@@ -12,8 +11,8 @@ import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/utils/image_picker_util.dart'; // Import the new utility
 import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
-import 'package:form_app/widgets/custom_message_overlay.dart';
 import 'package:form_app/pages/multi_shot_camera_screen.dart';
+import 'package:form_app/utils/image_upload_helper.dart'; // Import the new helper
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -124,53 +123,28 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
 
     // --- EXISTING LOGIC FOR GALLERY ---
     if (source == ImageSource.gallery) {
-      final List<XFile> imagesXFiles = await ImagePickerUtil.pickMultiImagesFromGallery();
-      if (imagesXFiles.isNotEmpty && mounted) {
-        ref.read(imageProcessingServiceProvider.notifier).taskStarted(widget.identifier);
-        List<TambahanImageData> newImagesData = [];
-        try {
-          for (var imageFileXFile in imagesXFiles) {
-            String? processedPath;
-            processedPath = await ImagePickerUtil.processAndSaveImage(imageFileXFile);
-            if (mounted && processedPath != null) {
-              final newTambahanImage = TambahanImageData(
-                imagePath: processedPath,
-                label: widget.defaultLabel,
-                needAttention: false,
-                category: widget.identifier,
-                isMandatory: widget.isMandatory,
-              );
-              newImagesData.add(newTambahanImage);
-              ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
-              if (mounted) {
-                precacheImage(FileImage(File(processedPath)), context);
-              }
-            } else if (mounted && processedPath == null) {
-              if (kDebugMode) print("Image processing failed for gallery image: ${imageFileXFile.name}");
-              CustomMessageOverlay(context).show(message: 'Gagal memproses gambar: ${imageFileXFile.name}', backgroundColor: errorBorderColor, icon: Icons.photo_library);
-            }
-          }
-        } catch (e) {
-           if (mounted && kDebugMode) {
-              if (kDebugMode) {
-                print("Error during multi-gallery image processing: $e");
-              }
-              CustomMessageOverlay(context).show(message: 'Terjadi kesalahan memproses gambar: $e', backgroundColor: errorBorderColor, icon: Icons.error);
-           }
-        } finally {
+      await ImageUploadHelper.processAndHandleMultiImageUpload(
+        context: context,
+        ref: ref,
+        identifier: widget.identifier,
+        pickMultiImagesFunction: () => ImagePickerUtil.pickMultiImagesFromGallery(),
+        onSuccess: (processedPath) async { // Changed to single processedPath
+          final newTambahanImage = TambahanImageData(
+            imagePath: processedPath,
+            label: widget.defaultLabel,
+            needAttention: false,
+            category: widget.identifier,
+            isMandatory: widget.isMandatory,
+          );
+          ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
           if (mounted) {
-            ref.read(imageProcessingServiceProvider.notifier).taskFinished(widget.identifier);
+            precacheImage(FileImage(File(processedPath)), context);
+            // No setState here to change _currentIndex, it should stay on the current image
+            // The _updateControllersForCurrentIndex() will be called by the build method if needed
           }
-        }
-
-        if (newImagesData.isNotEmpty && mounted) {
-          setState(() {
-            _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - newImagesData.length;
-            if (_currentIndex < 0) _currentIndex = 0;
-            _updateControllersForCurrentIndex();
-          });
-        }
-      }
+        },
+        errorMessage: 'Terjadi kesalahan memproses gambar dari galeri',
+      );
     }
   }
 

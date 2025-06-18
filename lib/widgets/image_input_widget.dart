@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:form_app/statics/app_styles.dart';
 import 'dart:io';
 // For kDebugMode
-import 'package:flutter/foundation.dart'; // Ensure kDebugMode is available
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/image_data_provider.dart';
@@ -11,8 +10,7 @@ import 'package:form_app/models/image_data.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/widgets/image_preview_dialog.dart';
 import 'package:form_app/utils/image_picker_util.dart';
-import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
-import 'package:form_app/widgets/custom_message_overlay.dart';
+import 'package:form_app/utils/image_upload_helper.dart'; // Import the new helper
 
 class ImageInputWidget extends ConsumerStatefulWidget {
   final String label;
@@ -33,95 +31,52 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
   bool _isLoadingGallery = false;
 
   Future<void> _takePictureFromCamera() async {
-    FocusScope.of(context).unfocus();
-    final picker = ImagePicker();
-    final pickedImageXFile = await picker.pickImage(source: ImageSource.camera);
-
-    if (pickedImageXFile != null) {
-      setState(() {
-        _isLoadingCamera = true;
-      });
-      ref.read(imageProcessingServiceProvider.notifier).taskStarted(widget.label); // Increment counter
-      try {
-        await ImagePickerUtil.saveImageToGallery(pickedImageXFile);
-        final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile);
-
-        if (mounted && processedPath != null) {
-          widget.onImagePicked?.call(File(processedPath));
-          ref
-              .read(imageDataListProvider.notifier)
-              .updateImageDataByLabel(widget.label, imagePath: processedPath);
-        } else if (mounted && processedPath == null) {
-          if (kDebugMode) {
-            print("Image processing failed for camera image.");
-          }
-          CustomMessageOverlay(context).show(message: 'Gagal memproses gambar dari kamera.', backgroundColor: errorBorderColor, icon: Icons.error);
+    await ImageUploadHelper.processAndHandleImageUpload(
+      context: context,
+      ref: ref,
+      identifier: widget.label,
+      pickImageFunction: () async {
+        final picker = ImagePicker();
+        final pickedImageXFile = await picker.pickImage(source: ImageSource.camera);
+        if (pickedImageXFile != null) {
+          await ImagePickerUtil.saveImageToGallery(pickedImageXFile);
         }
-      } catch (e) {
-        if (mounted && kDebugMode) {
-          if (kDebugMode) {
-            print("Error during camera image processing or saving: $e");
-          }
-          CustomMessageOverlay(context).show(message: 'Terjadi kesalahan saat memproses gambar kamera: $e', backgroundColor: errorBorderColor, icon: Icons.error);
-        }
-      } finally {
-        if (mounted) {
-          ref.read(imageProcessingServiceProvider.notifier).taskFinished(widget.label); // Decrement counter
-          setState(() {
-            _isLoadingCamera = false;
-          });
-        }
-      }
-    } else {
-      setState(() {
-        _isLoadingCamera = false;
-      });
-    }
+        return pickedImageXFile;
+      },
+      onSuccess: (processedPath) async {
+        widget.onImagePicked?.call(File(processedPath));
+        ref
+            .read(imageDataListProvider.notifier)
+            .updateImageDataByLabel(widget.label, imagePath: processedPath);
+      },
+      setLoadingState: (isLoading) {
+        setState(() {
+          _isLoadingCamera = isLoading;
+        });
+      },
+      errorMessage: 'Terjadi kesalahan saat memproses gambar kamera',
+    );
   }
 
   Future<void> _takePictureFromGallery() async {
-    FocusScope.of(context).unfocus();
-    final pickedImageXFile = await ImagePickerUtil.pickImageFromGallery();
-
-    if (pickedImageXFile != null) {
-      setState(() {
-        _isLoadingGallery = true;
-      });
-      ref.read(imageProcessingServiceProvider.notifier).taskStarted(widget.label); // Increment counter
-      try {
-        final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile);
-
-        if (mounted && processedPath != null) {
-          widget.onImagePicked?.call(File(processedPath));
-          ref
-              .read(imageDataListProvider.notifier)
-              .updateImageDataByLabel(widget.label, imagePath: processedPath);
-        } else if (mounted && processedPath == null) {
-          if (kDebugMode) {
-            print("Image processing failed for gallery image.");
-          }
-          CustomMessageOverlay(context).show(message: 'Gagal memproses gambar dari galeri.', backgroundColor: errorBorderColor, icon: Icons.error);
-        }
-      } catch (e) {
-        if (mounted && kDebugMode) {
-          if (kDebugMode) {
-            print("Error during gallery image processing: $e");
-          }
-          CustomMessageOverlay(context).show(message: 'Terjadi kesalahan saat memproses gambar galeri: $e', backgroundColor: errorBorderColor, icon: Icons.error);
-        }
-      } finally {
-        if (mounted) {
-          ref.read(imageProcessingServiceProvider.notifier).taskFinished(widget.label); // Decrement counter
-          setState(() {
-            _isLoadingGallery = false;
-          });
-        }
-      }
-    } else {
-      setState(() {
-        _isLoadingGallery = false;
-      });
-    }
+    await ImageUploadHelper.processAndHandleImageUpload(
+      context: context,
+      ref: ref,
+      identifier: widget.label,
+      pickImageFunction: () => ImagePickerUtil.pickImageFromGallery(),
+      onSuccess: (processedPath) async {
+        widget.onImagePicked?.call(File(processedPath));
+        ref
+            .read(imageDataListProvider.notifier)
+            .updateImageDataByLabel(widget.label, imagePath: processedPath);
+      },
+      setLoadingState: (isLoading) {
+        setState(() {
+          _isLoadingGallery = isLoading;
+        });
+      },
+      errorMessage: 'Terjadi kesalahan saat memproses gambar galeri',
+    );
   }
 
   void _viewImage(File imageFile) {
