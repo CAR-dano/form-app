@@ -113,7 +113,7 @@ Future<String?> _processImageIsolate(_ProcessImageInput input) async {
   }
 }
 
-class ImagePickerUtil {
+class ImageCaptureAndProcessingUtil {
   static final ImagePicker _picker = ImagePicker();
 
   static Future<String?> processAndSaveImage(XFile pickedFile) async {

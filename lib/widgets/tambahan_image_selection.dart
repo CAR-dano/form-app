@@ -3,17 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:flutter/foundation.dart'; // For kDebugMode
 import 'package:form_app/statics/app_styles.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
 import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart';
-import 'package:form_app/utils/image_picker_util.dart'; // Import the new utility
+import 'package:form_app/utils/image_capture_and_processing_util.dart'; // Import the new utility
 import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
-import 'package:form_app/widgets/custom_message_overlay.dart';
 import 'package:form_app/pages/multi_shot_camera_screen.dart';
+import 'package:form_app/utils/image_form_handler.dart'; // Import the new helper
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -39,6 +38,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   int _currentIndex = 0;
   final TextEditingController _labelController = TextEditingController();
   final GlobalKey<FormFieldState<String>> _labelFieldKey = GlobalKey<FormFieldState<String>>();
+  bool _isNeedAttentionChecked = false; // New state variable
 
   VoidCallback? _formSubmittedListener;
 
@@ -47,6 +47,11 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateControllersForCurrentIndex();
+      // Initialize _isNeedAttentionChecked based on current image data
+      final images = ref.read(tambahanImageDataProvider(widget.identifier));
+      if (images.isNotEmpty && _currentIndex < images.length) {
+        _isNeedAttentionChecked = images[_currentIndex].needAttention;
+      }
     });
 
     if (widget.formSubmitted != null) {
@@ -77,6 +82,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         _labelController.text = displayedLabel;
         _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
       }
+      // Update _isNeedAttentionChecked when current image changes
+      _isNeedAttentionChecked = currentImage.needAttention;
 
       if (mounted) {
         if (_currentIndex + 1 < images.length) {
@@ -88,6 +95,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       }
     } else {
       _labelController.clear();
+      _isNeedAttentionChecked = false; // No image, so no attention needed
     }
     if (widget.formSubmitted?.value ?? false) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -115,53 +123,28 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
 
     // --- EXISTING LOGIC FOR GALLERY ---
     if (source == ImageSource.gallery) {
-      final List<XFile> imagesXFiles = await ImagePickerUtil.pickMultiImagesFromGallery();
-      if (imagesXFiles.isNotEmpty && mounted) {
-        ref.read(imageProcessingServiceProvider.notifier).taskStarted(widget.identifier);
-        List<TambahanImageData> newImagesData = [];
-        try {
-          for (var imageFileXFile in imagesXFiles) {
-            String? processedPath;
-            processedPath = await ImagePickerUtil.processAndSaveImage(imageFileXFile);
-            if (mounted && processedPath != null) {
-              final newTambahanImage = TambahanImageData(
-                imagePath: processedPath,
-                label: widget.defaultLabel,
-                needAttention: false,
-                category: widget.identifier,
-                isMandatory: widget.isMandatory,
-              );
-              newImagesData.add(newTambahanImage);
-              ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
-              if (mounted) {
-                precacheImage(FileImage(File(processedPath)), context);
-              }
-            } else if (mounted && processedPath == null) {
-              if (kDebugMode) print("Image processing failed for gallery image: ${imageFileXFile.name}");
-              CustomMessageOverlay(context).show(message: 'Gagal memproses gambar: ${imageFileXFile.name}', backgroundColor: errorBorderColor, icon: Icons.photo_library);
-            }
-          }
-        } catch (e) {
-           if (mounted && kDebugMode) {
-              if (kDebugMode) {
-                print("Error during multi-gallery image processing: $e");
-              }
-              CustomMessageOverlay(context).show(message: 'Terjadi kesalahan memproses gambar: $e', backgroundColor: errorBorderColor, icon: Icons.error);
-           }
-        } finally {
+      await ImageFormHandler.processAndHandleMultiImageUpload(
+        context: context,
+        ref: ref,
+        identifier: widget.identifier,
+        pickMultiImagesFunction: () => ImageCaptureAndProcessingUtil.pickMultiImagesFromGallery(),
+        onSuccess: (processedPath) async { // Changed to single processedPath
+          final newTambahanImage = TambahanImageData(
+            imagePath: processedPath,
+            label: widget.defaultLabel,
+            needAttention: false,
+            category: widget.identifier,
+            isMandatory: widget.isMandatory,
+          );
+          ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
           if (mounted) {
-            ref.read(imageProcessingServiceProvider.notifier).taskFinished(widget.identifier);
+            precacheImage(FileImage(File(processedPath)), context);
+            // No setState here to change _currentIndex, it should stay on the current image
+            // The _updateControllersForCurrentIndex() will be called by the build method if needed
           }
-        }
-
-        if (newImagesData.isNotEmpty && mounted) {
-          setState(() {
-            _currentIndex = ref.read(tambahanImageDataProvider(widget.identifier)).length - newImagesData.length;
-            if (_currentIndex < 0) _currentIndex = 0;
-            _updateControllersForCurrentIndex();
-          });
-        }
-      }
+        },
+        errorMessage: 'Terjadi kesalahan memproses gambar dari galeri',
+      );
     }
   }
 
@@ -230,6 +213,9 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   }
 
   void _onNeedAttentionChanged(bool newAttentionStatus) {
+    setState(() {
+      _isNeedAttentionChecked = newAttentionStatus;
+    });
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
       final currentImage = images[_currentIndex];
@@ -404,15 +390,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                     ),
                 ],
               ),
-              const SizedBox(height: 16.0),
-              LabeledTextField(
-                key: ValueKey<String>('label_${currentImage?.id ?? "default_label_state"}'),
-                label: 'Label',
-                controller: _labelController,
-                hintText: 'Misal : Aki tampak atas',
-                onChanged: _onLabelChanged,
-              ),
-              const SizedBox(height: 16.0),
+              if (widget.showNeedAttention) const SizedBox(height: 16.0),
               if (widget.showNeedAttention)
                 FormConfirmation(
                   key: ValueKey<String>('attention_${currentImage?.id ?? "default_attention_state"}'),
@@ -421,6 +399,29 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                   onChanged: _onNeedAttentionChanged,
                   fontWeight: FontWeight.w300,
                 ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.fastOutSlowIn,
+                child: AnimatedOpacity(
+                  opacity: (_isNeedAttentionChecked || !widget.showNeedAttention) ? 1.0 : 0.0, // Adjusted condition
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.fastOutSlowIn,
+                  child: (_isNeedAttentionChecked || !widget.showNeedAttention) // Adjusted condition
+                      ? Column(
+                          children: [
+                            const SizedBox(height: 16.0),
+                            LabeledTextField(
+                              key: ValueKey<String>('label_${currentImage?.id ?? "default_label_state"}'),
+                              label: 'Label',
+                              controller: _labelController,
+                              hintText: 'Misal : Aki tampak atas',
+                              onChanged: _onLabelChanged,
+                            ),
+                          ],
+                        )
+                      : const SizedBox.shrink(),
+                ),
+              ),
             ],
           ),
         ),

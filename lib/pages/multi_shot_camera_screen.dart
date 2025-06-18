@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
-import 'package:form_app/utils/image_picker_util.dart';
+import 'package:form_app/utils/image_capture_and_processing_util.dart';
 import 'package:form_app/widgets/custom_message_overlay.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:math' show pi;
@@ -119,8 +119,10 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
   double _rotationAngle = 0.0; // Added for rotation
   StreamSubscription<AccelerometerEvent>? _accelerometerSubscription; // Added for rotation
 
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
+  late AnimationController _captureAnimationController;
+  late Animation<double> _captureOpacityAnimation;
+  late AnimationController _buttonScaleAnimationController;
+  late Animation<double> _buttonScaleAnimation;
 
   @override
   void initState() {
@@ -128,13 +130,25 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     WidgetsBinding.instance.addObserver(this);
     _setupCameras(); // New method to discover and initialize the first camera
 
-    _animationController = AnimationController(
+    _captureAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 0), // Fast flash to black
+      reverseDuration: const Duration(milliseconds: 100), // Fade back in
+    );
+    _captureOpacityAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _captureAnimationController,
+        curve: Curves.easeOut,
+      ),
+    );
+
+    _buttonScaleAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 150),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
+    _buttonScaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
       CurvedAnimation(
-        parent: _animationController,
+        parent: _buttonScaleAnimationController,
         curve: Curves.easeOut,
       ),
     );
@@ -171,7 +185,8 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _controller?.dispose(); // Ensure controller is disposed
-    _animationController.dispose();
+    _captureAnimationController.dispose(); // Dispose the new capture animation controller
+    _buttonScaleAnimationController.dispose(); // Dispose the button scale animation controller
     _accelerometerSubscription?.cancel(); // Dispose accelerometer subscription
     super.dispose();
   }
@@ -344,6 +359,15 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     final tambahanImageNotifier = ref.read(tambahanImageDataProvider(widget.imageIdentifier).notifier);
 
     try {
+      // Trigger the flash animation
+      if (mounted) {
+        _captureAnimationController.forward(from: 0.0).then((_) {
+          if (mounted) {
+            _captureAnimationController.reverse();
+          }
+        });
+      }
+
       final XFile capturedImageFile = await controller.takePicture();
 
       if (mounted) {
@@ -437,8 +461,8 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     required TambahanImageDataListNotifier tambahanImageNotifier,
   }) async {
     try {
-      await ImagePickerUtil.saveImageToGallery(imageFile);
-      final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageFile);
+      await ImageCaptureAndProcessingUtil.saveImageToGallery(imageFile);
+      final String? processedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(imageFile);
 
       if (processedPath != null) {
         final newTambahanImage = TambahanImageData(
@@ -593,7 +617,15 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         child: Transform.scale(
           scale: scale, // Adjusted scale to prevent zoom
           child: Center(
-            child: CameraPreview(_controller!),
+            child: AnimatedBuilder(
+              animation: _captureOpacityAnimation,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _captureOpacityAnimation.value,
+                  child: CameraPreview(_controller!),
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -677,8 +709,6 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(width: 60), // Spacer
-                  _buildCaptureButton(),
                   SizedBox(
                     width: 60,
                     child: AnimatedRotation(
@@ -693,6 +723,12 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
                             fontWeight: FontWeight.bold),
                       ),
                     ),
+                  ),
+                  _buildCaptureButton(),
+                  AnimatedRotation(
+                    turns: _rotationAngle / (2 * pi),
+                    duration: const Duration(milliseconds: 300),
+                    child: _buildControlButton(Icons.check, () => Navigator.of(context).pop()),
                   ),
                 ],
               ),
@@ -723,9 +759,9 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: _onTakePicture,
-        onTapDown: (_) => _animationController.forward(),
-        onTapUp: (_) => _animationController.reverse(),
-        onTapCancel: () => _animationController.reverse(),
+        onTapDown: (_) => _buttonScaleAnimationController.forward(),
+        onTapUp: (_) => _buttonScaleAnimationController.reverse(),
+        onTapCancel: () => _buttonScaleAnimationController.reverse(),
         borderRadius: BorderRadius.circular(35.0), // Half of the button's width/height
         child: Container(
           width: 70,
@@ -737,7 +773,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
           ),
           child: Center(
             child: ScaleTransition(
-              scale: _scaleAnimation,
+              scale: _buttonScaleAnimation,
               child: Container(
                 width: 58,
                 height: 58,
