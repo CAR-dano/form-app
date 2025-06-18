@@ -9,8 +9,8 @@ import 'package:form_app/providers/image_data_provider.dart';
 import 'package:form_app/models/image_data.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/widgets/image_preview_dialog.dart';
-import 'package:form_app/utils/image_picker_util.dart';
-import 'package:form_app/utils/image_upload_helper.dart'; // Import the new helper
+import 'package:form_app/utils/image_capture_and_processing_util.dart';
+import 'package:form_app/utils/image_form_handler.dart'; // Import the new helper
 
 class ImageInputWidget extends ConsumerStatefulWidget {
   final String label;
@@ -31,7 +31,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
   bool _isLoadingGallery = false;
 
   Future<void> _takePictureFromCamera() async {
-    await ImageUploadHelper.processAndHandleImageUpload(
+    await ImageFormHandler.processAndHandleImageUpload(
       context: context,
       ref: ref,
       identifier: widget.label,
@@ -39,7 +39,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
         final picker = ImagePicker();
         final pickedImageXFile = await picker.pickImage(source: ImageSource.camera);
         if (pickedImageXFile != null) {
-          await ImagePickerUtil.saveImageToGallery(pickedImageXFile);
+          await ImageCaptureAndProcessingUtil.saveImageToGallery(pickedImageXFile);
         }
         return pickedImageXFile;
       },
@@ -59,11 +59,11 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
   }
 
   Future<void> _takePictureFromGallery() async {
-    await ImageUploadHelper.processAndHandleImageUpload(
+    await ImageFormHandler.processAndHandleImageUpload(
       context: context,
       ref: ref,
       identifier: widget.label,
-      pickImageFunction: () => ImagePickerUtil.pickImageFromGallery(),
+      pickImageFunction: () => ImageCaptureAndProcessingUtil.pickImageFromGallery(),
       onSuccess: (processedPath) async {
         widget.onImagePicked?.call(File(processedPath));
         ref

@@ -9,10 +9,10 @@ import 'package:form_app/widgets/form_confirmation.dart';
 import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart';
-import 'package:form_app/utils/image_picker_util.dart'; // Import the new utility
+import 'package:form_app/utils/image_capture_and_processing_util.dart'; // Import the new utility
 import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
 import 'package:form_app/pages/multi_shot_camera_screen.dart';
-import 'package:form_app/utils/image_upload_helper.dart'; // Import the new helper
+import 'package:form_app/utils/image_form_handler.dart'; // Import the new helper
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -123,11 +123,11 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
 
     // --- EXISTING LOGIC FOR GALLERY ---
     if (source == ImageSource.gallery) {
-      await ImageUploadHelper.processAndHandleMultiImageUpload(
+      await ImageFormHandler.processAndHandleMultiImageUpload(
         context: context,
         ref: ref,
         identifier: widget.identifier,
-        pickMultiImagesFunction: () => ImagePickerUtil.pickMultiImagesFromGallery(),
+        pickMultiImagesFunction: () => ImageCaptureAndProcessingUtil.pickMultiImagesFromGallery(),
         onSuccess: (processedPath) async { // Changed to single processedPath
           final newTambahanImage = TambahanImageData(
             imagePath: processedPath,

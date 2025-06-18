@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
-import 'package:form_app/utils/image_picker_util.dart';
+import 'package:form_app/utils/image_capture_and_processing_util.dart';
 import 'package:form_app/widgets/custom_message_overlay.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:math' show pi;
@@ -461,8 +461,8 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     required TambahanImageDataListNotifier tambahanImageNotifier,
   }) async {
     try {
-      await ImagePickerUtil.saveImageToGallery(imageFile);
-      final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageFile);
+      await ImageCaptureAndProcessingUtil.saveImageToGallery(imageFile);
+      final String? processedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(imageFile);
 
       if (processedPath != null) {
         final newTambahanImage = TambahanImageData(

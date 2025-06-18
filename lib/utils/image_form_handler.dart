@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:form_app/utils/image_picker_util.dart';
+import 'package:form_app/utils/image_capture_and_processing_util.dart';
 import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/widgets/custom_message_overlay.dart';
 import 'package:form_app/statics/app_styles.dart';
 import 'package:flutter/foundation.dart'; // For kDebugMode
 
-class ImageUploadHelper {
+class ImageFormHandler {
   static Future<void> processAndHandleImageUpload({
     required BuildContext context,
     required WidgetRef ref,
@@ -26,7 +26,7 @@ class ImageUploadHelper {
       if (pickedImageXFile != null) {
         setLoadingState(true);
         ref.read(imageProcessingServiceProvider.notifier).taskStarted(identifier);
-        final String? processedPath = await ImagePickerUtil.processAndSaveImage(pickedImageXFile);
+        final String? processedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(pickedImageXFile);
 
         if (context.mounted && processedPath != null) {
           await onSuccess(processedPath);
@@ -71,7 +71,7 @@ class ImageUploadHelper {
       if (imagesXFiles.isNotEmpty) {
         ref.read(imageProcessingServiceProvider.notifier).taskStarted(identifier);
         for (var imageFileXFile in imagesXFiles) {
-          final String? processedPath = await ImagePickerUtil.processAndSaveImage(imageFileXFile);
+          final String? processedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(imageFileXFile);
           if (context.mounted && processedPath != null) {
             await onSuccess(processedPath); // Call onSuccess for each image
           } else if (context.mounted && processedPath == null) {
