@@ -39,6 +39,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   int _currentIndex = 0;
   final TextEditingController _labelController = TextEditingController();
   final GlobalKey<FormFieldState<String>> _labelFieldKey = GlobalKey<FormFieldState<String>>();
+  bool _isNeedAttentionChecked = false; // New state variable
 
   VoidCallback? _formSubmittedListener;
 
@@ -47,6 +48,11 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateControllersForCurrentIndex();
+      // Initialize _isNeedAttentionChecked based on current image data
+      final images = ref.read(tambahanImageDataProvider(widget.identifier));
+      if (images.isNotEmpty && _currentIndex < images.length) {
+        _isNeedAttentionChecked = images[_currentIndex].needAttention;
+      }
     });
 
     if (widget.formSubmitted != null) {
@@ -77,6 +83,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         _labelController.text = displayedLabel;
         _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
       }
+      // Update _isNeedAttentionChecked when current image changes
+      _isNeedAttentionChecked = currentImage.needAttention;
 
       if (mounted) {
         if (_currentIndex + 1 < images.length) {
@@ -88,6 +96,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       }
     } else {
       _labelController.clear();
+      _isNeedAttentionChecked = false; // No image, so no attention needed
     }
     if (widget.formSubmitted?.value ?? false) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -230,6 +239,9 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   }
 
   void _onNeedAttentionChanged(bool newAttentionStatus) {
+    setState(() {
+      _isNeedAttentionChecked = newAttentionStatus;
+    });
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
       final currentImage = images[_currentIndex];
@@ -405,14 +417,6 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                 ],
               ),
               const SizedBox(height: 16.0),
-              LabeledTextField(
-                key: ValueKey<String>('label_${currentImage?.id ?? "default_label_state"}'),
-                label: 'Label',
-                controller: _labelController,
-                hintText: 'Misal : Aki tampak atas',
-                onChanged: _onLabelChanged,
-              ),
-              const SizedBox(height: 16.0),
               if (widget.showNeedAttention)
                 FormConfirmation(
                   key: ValueKey<String>('attention_${currentImage?.id ?? "default_attention_state"}'),
@@ -421,6 +425,16 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                   onChanged: _onNeedAttentionChanged,
                   fontWeight: FontWeight.w300,
                 ),
+              if (_isNeedAttentionChecked) ...[ // Conditionally show label field
+                const SizedBox(height: 16.0),
+                LabeledTextField(
+                  key: ValueKey<String>('label_${currentImage?.id ?? "default_label_state"}'),
+                  label: 'Label',
+                  controller: _labelController,
+                  hintText: 'Misal : Aki tampak atas',
+                  onChanged: _onLabelChanged,
+                ),
+              ],
             ],
           ),
         ),
