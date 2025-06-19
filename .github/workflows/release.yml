@@ -170,60 +170,20 @@ jobs:
 
       # Creates a new GitHub Release.
       - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.create_tag.outputs.tag_name }}
-          release_name: "Release v${{ steps.pubspec.outputs.full_version }}"
+          name: "Release v${{ steps.pubspec.outputs.full_version }}"
           body: ${{ steps.prep_release_body.outputs.body }}
           draft: false
           prerelease: false
-
-      # Uploads the universal release APK as a release asset.
-      - name: Upload Universal Release APK
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.universal_release_apk_details.outputs.path }}
-          asset_name: app-universal-release-v${{ steps.pubspec.outputs.full_version }}.apk
-          asset_content_type: application/vnd.android.package-archive
-
-      # Uploads the arm64-v8a release APK as a release asset.
-      - name: Upload arm64-v8a Release APK
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-          asset_name: app-arm64-v8a-release-v${{ steps.pubspec.outputs.full_version }}.apk
-          asset_content_type: application/vnd.android.package-archive
-
-      # Uploads the armeabi-v7a release APK as a release asset.
-      - name: Upload armeabi-v7a Release APK
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
-          asset_name: app-armeabi-v7a-release-v${{ steps.pubspec.outputs.full_version }}.apk
-          asset_content_type: application/vnd.android.package-archive
-
-      # Uploads the debug APK as a release asset.
-      - name: Upload Debug APK Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.debug_apk_details.outputs.path }}
-          asset_name: ${{ steps.debug_apk_details.outputs.name }}
-          asset_content_type: application/vnd.android.package-archive
+          files: |
+            ${{ steps.universal_release_apk_details.outputs.path }}
+            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+            build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+            ${{ steps.debug_apk_details.outputs.path }}
 
       # Uploads all release APKs as a build artifact.
       - name: Upload All Release APKs as Build Artifact
