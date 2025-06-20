@@ -52,6 +52,10 @@ jobs:
         env:
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
 
+      # Accepts Android SDK licenses.
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses
+
       # Builds ABI-Specific Release APKs
       - name: Build ABI-Specific Release APKs
         run: flutter build apk --split-per-abi --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ steps.pubspec.outputs.full_build_number }}
