@@ -546,6 +546,8 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         _currentFlashMode = FlashMode.auto;
       } else if (_currentFlashMode == FlashMode.auto) {
         _currentFlashMode = FlashMode.always;
+      } else if (_currentFlashMode == FlashMode.always) {
+        _currentFlashMode = FlashMode.torch; // New mode: flash always on (torch)
       } else {
         _currentFlashMode = FlashMode.off;
       }
@@ -559,6 +561,8 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         return Icons.flash_auto;
       case FlashMode.always:
         return Icons.flash_on;
+      case FlashMode.torch: // Icon for the new torch mode
+        return Icons.highlight; // Or Icons.flashlight_on
       case FlashMode.off:
       default:
         return Icons.flash_off;
