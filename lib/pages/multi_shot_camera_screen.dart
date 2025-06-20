@@ -359,18 +359,15 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     final tambahanImageNotifier = ref.read(tambahanImageDataProvider(widget.imageIdentifier).notifier);
 
     try {
-      // Trigger the flash animation
+      final XFile capturedImageFile = await controller.takePicture();
+
+      // Trigger the flash animation and increment counter after picture is taken
       if (mounted) {
         _captureAnimationController.forward(from: 0.0).then((_) {
           if (mounted) {
             _captureAnimationController.reverse();
           }
         });
-      }
-
-      final XFile capturedImageFile = await controller.takePicture();
-
-      if (mounted) {
         setState(() => _picturesTaken++);
       }
 
