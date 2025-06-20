@@ -564,8 +564,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       case FlashMode.torch: // Icon for the new torch mode
         return Icons.highlight; // Or Icons.flashlight_on
       case FlashMode.off:
-      default:
-        return Icons.flash_off;
+      return Icons.flash_off;
     }
   }
 
