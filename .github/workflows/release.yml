@@ -54,6 +54,7 @@ jobs:
 
       # Accepts Android SDK licenses.
       - name: Accept Android SDK licenses
+
         run: |
           export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
           yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
