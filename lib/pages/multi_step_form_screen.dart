@@ -264,7 +264,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     if (isImageProcessing) {
       _customMessageOverlay.show(
         message: 'Pemrosesan gambar masih berjalan. Harap tunggu hingga selesai.',
-        backgroundColor: Colors.orange,
+        color: Colors.orange,
         icon: Icons.hourglass_empty,
       );
       return;
@@ -273,7 +273,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     if (!_isChecked) {
       _customMessageOverlay.show(
         message: 'Harap setujui pernyataan di atas sebelum melanjutkan.',
-        backgroundColor: Colors.red,
+        color: Colors.red,
         icon: Icons.error_outline,
       );
       return;
@@ -306,7 +306,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       if (!mounted) return;
       _customMessageOverlay.show(
         message: validationErrors.join('\n'),
-        backgroundColor: Colors.red,
+        color: Colors.red,
         icon: Icons.error_outline,
         duration: const Duration(seconds: 5),
       );
@@ -357,7 +357,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         if (!mounted) return;
         _customMessageOverlay.show(
           message: 'Terjadi kesalahan saat mengirim data formulir: $e',
-          backgroundColor: Colors.red,
+          color: Colors.red,
           icon: Icons.error_outline,
           duration: const Duration(seconds: 5),
         );
@@ -448,7 +448,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       if (!mounted) return;
       _customMessageOverlay.show(
         message: 'Terjadi kesalahan saat mengunggah gambar: $e',
-        backgroundColor: Colors.red,
+        color: Colors.red,
         icon: Icons.error_outline,
         duration: const Duration(seconds: 5),
       );

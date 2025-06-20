@@ -244,7 +244,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         if (mounted) {
           CustomMessageOverlay(context).show(
             message: 'No cameras available.',
-            backgroundColor: Colors.orange,
+            color: Colors.orange,
             icon: Icons.warning,
           );
         }
@@ -269,7 +269,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       if (mounted) {
         CustomMessageOverlay(context).show(
           message: 'Error discovering cameras: ${e.description}',
-          backgroundColor: Colors.red,
+          color: Colors.red,
           icon: Icons.error,
         );
       }
@@ -334,7 +334,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       if (mounted) {
         CustomMessageOverlay(context).show(
           message: 'Error initializing camera: ${e.description}',
-          backgroundColor: Colors.red,
+          color: Colors.red,
           icon: Icons.error,
         );
       }
@@ -399,7 +399,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       if (mounted) {
         CustomMessageOverlay(context).show(
           message: 'Error taking picture: ${e.description}',
-          backgroundColor: Colors.red,
+          color: Colors.red,
           icon: Icons.error,
         );
       }

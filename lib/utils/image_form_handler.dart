@@ -34,7 +34,7 @@ class ImageFormHandler {
           if (kDebugMode) print("Image processing failed for $identifier.");
           CustomMessageOverlay(context).show(
               message: 'Gagal memproses gambar untuk $identifier.',
-              backgroundColor: errorBorderColor,
+              color: errorBorderColor,
               icon: Icons.error);
         }
       }
@@ -43,7 +43,7 @@ class ImageFormHandler {
       if (context.mounted) {
         CustomMessageOverlay(context).show(
             message: '$errorMessage: $e',
-            backgroundColor: errorBorderColor,
+            color: errorBorderColor,
             icon: Icons.error);
       }
     } finally {
@@ -78,7 +78,7 @@ class ImageFormHandler {
             if (kDebugMode) print("Image processing failed for ${imageFileXFile.name} in $identifier.");
             CustomMessageOverlay(context).show(
                 message: 'Gagal memproses gambar: ${imageFileXFile.name}',
-                backgroundColor: errorBorderColor,
+                color: errorBorderColor,
                 icon: Icons.photo_library);
           }
         }
@@ -88,7 +88,7 @@ class ImageFormHandler {
       if (context.mounted) {
         CustomMessageOverlay(context).show(
             message: '$errorMessage: $e',
-            backgroundColor: errorBorderColor,
+            color: errorBorderColor,
             icon: Icons.error);
       }
     } finally {

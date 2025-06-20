@@ -17,9 +17,9 @@ class CustomMessageOverlay {
 
   void show({
     required String message,
-    required Color backgroundColor,
+    required Color color,
     IconData? icon,
-    Duration duration = const Duration(seconds: 2), // Changed default duration to 1 second
+    Duration duration = const Duration(seconds: 2),
   }) {
     if (_overlayEntry != null) {
       _timer?.cancel();
@@ -100,11 +100,11 @@ class CustomMessageOverlay {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                     decoration: BoxDecoration(
-                      color: backgroundColor,
+                      color: HSLColor.fromColor(color).withLightness(0.95).toColor(), // Even softer background color using HSL
                       borderRadius: BorderRadius.circular(16.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withAlpha((255 * 0.2).round()),
+                          color: color.withOpacity(0.2), // Shadow color derived from the main color
                           blurRadius: 6,
                           offset: const Offset(0, 3),
                         ),
@@ -113,13 +113,13 @@ class CustomMessageOverlay {
                     child: Row(
                       children: [
                         if (icon != null) ...[
-                          Icon(icon, color: Colors.white),
+                          Icon(icon, color: color), // Icon color matches the main color
                           const SizedBox(width: 12.0),
                         ],
                         Expanded(
                           child: Text(
                             message,
-                            style: subTitleTextStyle.copyWith(color: Colors.white),
+                            style: subTitleTextStyle.copyWith(color: color), // Text color matches the main color
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                           ),
