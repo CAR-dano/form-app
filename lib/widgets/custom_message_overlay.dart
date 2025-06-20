@@ -104,7 +104,7 @@ class CustomMessageOverlay {
                       borderRadius: BorderRadius.circular(16.0),
                       boxShadow: [
                         BoxShadow(
-                          color: color.withOpacity(0.2), // Shadow color derived from the main color
+                          color: color.withAlpha((0.2*255).round()), // Shadow color derived from the main color
                           blurRadius: 6,
                           offset: const Offset(0, 3),
                         ),
