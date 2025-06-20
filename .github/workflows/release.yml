@@ -88,6 +88,28 @@ jobs:
           echo "path=$new_path" >> $GITHUB_OUTPUT
           echo "name=$new_name" >> $GITHUB_OUTPUT
 
+      # Renames the arm64-v8a release APK to include version and build number.
+      - name: Rename arm64-v8a Release APK
+        id: arm64_v8a_release_apk_details
+        run: |
+          original_path="build/app/outputs/flutter-apk/app-arm64-v8a-release.apk"
+          new_name="app-arm64-v8a-release-v${{ steps.pubspec.outputs.full_version }}.apk"
+          new_path="build/app/outputs/flutter-apk/$new_name"
+          mv "$original_path" "$new_path"
+          echo "path=$new_path" >> $GITHUB_OUTPUT
+          echo "name=$new_name" >> $GITHUB_OUTPUT
+
+      # Renames the armeabi-v7a release APK to include version and build number.
+      - name: Rename armeabi-v7a Release APK
+        id: armeabi_v7a_release_apk_details
+        run: |
+          original_path="build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk"
+          new_name="app-armeabi-v7a-release-v${{ steps.pubspec.outputs.full_version }}.apk"
+          new_path="build/app/outputs/flutter-apk/$new_name"
+          mv "$original_path" "$new_path"
+          echo "path=$new_path" >> $GITHUB_OUTPUT
+          echo "name=$new_name" >> $GITHUB_OUTPUT
+
       # Renames the debug APK to include version and build number.
       - name: Rename Debug APK
         id: debug_apk_details
@@ -188,8 +210,8 @@ jobs:
           prerelease: false
           files: |
             ${{ steps.universal_release_apk_details.outputs.path }}
-            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-            build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+            ${{ steps.arm64_v8a_release_apk_details.outputs.path }}
+            ${{ steps.armeabi_v7a_release_apk_details.outputs.path }}
             ${{ steps.debug_apk_details.outputs.path }}
 
       # Uploads all release APKs as a build artifact.
@@ -199,8 +221,8 @@ jobs:
           name: release-apks-v${{ steps.pubspec.outputs.full_version }}
           path: |
             ${{ steps.universal_release_apk_details.outputs.path }}
-            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-            build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+            ${{ steps.arm64_v8a_release_apk_details.outputs.path }}
+            ${{ steps.armeabi_v7a_release_apk_details.outputs.path }}
           if-no-files-found: warn
 
       # Uploads the debug build artifact.
