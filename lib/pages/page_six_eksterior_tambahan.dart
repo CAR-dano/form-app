@@ -1,23 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/widgets/heading_one.dart';
-import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/tambahan_image_selection.dart';
-import 'package:form_app/widgets/delete_all_tambahan_photos_button.dart';
-import 'package:form_app/providers/tambahan_image_data_provider.dart'; // Import this
 
 class PageSixEksteriorTambahan extends ConsumerStatefulWidget {
   final ValueNotifier<bool> formSubmitted;
-  final int currentPage;
-  final int totalPages;
 
   const PageSixEksteriorTambahan({
     super.key,
     required this.formSubmitted,
-    required this.currentPage,
-    required this.totalPages,
   });
 
   @override
@@ -62,24 +55,6 @@ class _PageSixEksteriorTambahanState extends ConsumerState<PageSixEksteriorTamba
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Consumer(
-                builder: (context, ref, child) {
-                  final images = ref.watch(tambahanImageDataProvider(pageIdentifier));
-                  final bool hasImages = images.length > 1;
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center, // Align items vertically
-                    children: [
-                      PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
-                      if (hasImages) // Conditionally show the button
-                        DeleteAllTambahanPhotosButton(
-                          tambahanImageIdentifier: pageIdentifier,
-                          dialogMessage: 'Yakin ingin menghapus semua foto tambahan Eksterior?',
-                        ),
-                    ],
-                  );
-                },
-              ),
               const SizedBox(height: 4),
               const PageTitle(data: 'Foto Eksterior'),
               const SizedBox(height: 6.0),

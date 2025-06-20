@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
-import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/toggle_option_widget.dart';
@@ -10,13 +9,8 @@ import 'package:form_app/widgets/toggle_option_widget.dart';
 
 // Placeholder for Page Three
 class PageThree extends ConsumerStatefulWidget { 
-  final int currentPage;
-  final int totalPages;
-
   const PageThree({
     super.key,
-    required this.currentPage,
-    required this.totalPages,
 });
 
   @override
@@ -40,8 +34,6 @@ class _PageThreeState extends ConsumerState<PageThree> with AutomaticKeepAliveCl
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
-          const SizedBox(height: 4),
           PageTitle(data: 'Kelengkapan'),
           const SizedBox(height: 6.0),
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/statics/app_styles.dart';
-import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/form_confirmation.dart';
@@ -17,14 +16,9 @@ class PageNine extends ConsumerStatefulWidget {
   // New parameters to receive state and callbacks from MultiStepFormScreen
   final void Function(bool newValue) onCheckedChange;
   final bool isChecked;
-  final int currentPage;
-  final int totalPages;
-
 
   const PageNine({
     super.key,
-    required this.currentPage,
-    required this.totalPages,
     required this.onCheckedChange,
     required this.isChecked,
   });
@@ -53,8 +47,6 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
-                  const SizedBox(height: 4),
                   PageTitle(data: 'Finalisasi'),
                   const SizedBox(height: 6.0),
                   Text(

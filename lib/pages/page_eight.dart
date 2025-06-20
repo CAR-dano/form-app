@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/heading_one.dart';
@@ -8,13 +7,8 @@ import 'package:form_app/widgets/paint_thickness_input_field.dart';
 import 'package:form_app/providers/form_provider.dart';
 
 class PageEight extends ConsumerStatefulWidget {
-  final int currentPage;
-  final int totalPages;
-
   const PageEight({
     super.key,
-    required this.currentPage,
-    required this.totalPages,
   });
 
   @override
@@ -64,8 +58,6 @@ class _PageEightState extends ConsumerState<PageEight>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
-              const SizedBox(height: 4),
               PageTitle(data: 'Ketebalan Cat'),
               const SizedBox(height: 6.0),
               

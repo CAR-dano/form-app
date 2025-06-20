@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/widgets/heading_one.dart';
-import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/image_input_widget.dart';
@@ -10,13 +9,8 @@ import 'package:form_app/models/image_data.dart';
 import 'package:form_app/providers/image_data_provider.dart';
 
 class PageSixGeneralWajib extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
-  final int currentPage; // New parameter
-  final int totalPages; // New parameter
-
   const PageSixGeneralWajib({
     super.key,
-    required this.currentPage, // Update constructor
-    required this.totalPages, // Update constructor
   });
 
   final List<String> imageInputLabels = const [ // This can stay here or move to state if preferred
@@ -75,8 +69,6 @@ class _PageSixGeneralWajibState extends ConsumerState<PageSixGeneralWajib> with 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-          PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
-              const SizedBox(height: 4),
               PageTitle(data: 'Foto General'),
               const SizedBox(height: 6.0),
               HeadingOne(text: 'Wajib'),
