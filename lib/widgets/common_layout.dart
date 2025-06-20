@@ -10,7 +10,7 @@ class CommonLayout extends StatelessWidget {
   });
 
   // Define standard padding
-  static const EdgeInsets pagePadding = EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0);
+  static const EdgeInsets pagePadding = EdgeInsets.symmetric(horizontal: 24.0);
 
   @override
   Widget build(BuildContext context) {

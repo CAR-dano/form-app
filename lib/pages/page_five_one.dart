@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/widgets/heading_one.dart';
-import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/providers/form_provider.dart';
@@ -10,13 +9,8 @@ import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
 import 'package:form_app/widgets/expandable_text_field.dart';
 
 class PageFiveOne extends ConsumerStatefulWidget {
-  final int currentPage;
-  final int totalPages;
-
   const PageFiveOne({
     super.key,
-    required this.currentPage,
-    required this.totalPages,
   });
 
   @override
@@ -68,8 +62,6 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAli
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
-                const SizedBox(height: 4),
                 PageTitle(data: 'Penilaian (1)'),
                 const SizedBox(height: 6.0),
                 HeadingOne(text: 'Fitur'),

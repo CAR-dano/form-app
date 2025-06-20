@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/numbered_button_list.dart';
@@ -15,12 +14,7 @@ import 'package:form_app/widgets/labeled_text_field.dart';
 class PageFour extends ConsumerStatefulWidget { // Change to ConsumerStatefulWidget
   const PageFour({
     super.key,
-    required this.currentPage,
-    required this.totalPages,
   });
-  final int currentPage;
-  final int totalPages;
-
 
   @override
   ConsumerState<PageFour> createState() => _PageFourState(); // Change to ConsumerState
@@ -72,8 +66,6 @@ class _PageFourState extends ConsumerState<PageFour> with AutomaticKeepAliveClie
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
-                const SizedBox(height: 4),
                 PageTitle(data: 'Hasil Inspeksi'), // Placeholder Title
                 const SizedBox(height: 6.0),
                 NumberedButtonList(

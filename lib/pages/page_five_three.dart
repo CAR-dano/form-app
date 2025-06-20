@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/widgets/heading_one.dart';
-import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/providers/form_provider.dart';
@@ -11,13 +10,8 @@ import 'package:form_app/widgets/expandable_text_field.dart';
 
 
 class PageFiveThree extends ConsumerStatefulWidget {
-  final int currentPage;
-  final int totalPages;
-
   const PageFiveThree({
     super.key,
-    required this.currentPage,
-    required this.totalPages,
   });
 
   @override
@@ -66,8 +60,6 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
-                const SizedBox(height: 4),
                 PageTitle(data: 'Penilaian (3)'),
                 const SizedBox(height: 6.0),
                 const HeadingOne(text: 'Hasil Inspeksi Interior'),

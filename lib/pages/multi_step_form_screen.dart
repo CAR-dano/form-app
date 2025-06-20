@@ -35,6 +35,8 @@ import 'package:form_app/providers/submission_status_provider.dart';
 import 'package:form_app/providers/submission_data_cache_provider.dart';
 import 'package:form_app/widgets/custom_message_overlay.dart';
 import 'package:form_app/models/uploadable_image.dart';
+import 'package:form_app/widgets/multi_step_form_appbar.dart';
+import 'package:form_app/widgets/delete_all_tambahan_photos_button.dart';
 
 class MultiStepFormScreen extends ConsumerStatefulWidget {
   const MultiStepFormScreen({super.key});
@@ -84,13 +86,12 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   };
 
   final Map<int, String> _tambahanImagePageIdentifiers = {
-    7: 'General Tambahan',
-    8: 'Eksterior Tambahan',
-    9: 'Interior Tambahan',
-    10: 'Mesin Tambahan',
-    11: 'Kaki-kaki Tambahan',
-    12: 'Alat-alat Tambahan',
-    13: 'Foto Dokumen',
+    2: 'Eksterior Tambahan',
+    4: 'Interior Tambahan',
+    5: 'Mesin Tambahan',
+    6: 'Kaki-kaki Tambahan',
+    7: 'Alat-alat Tambahan',
+    8: 'Foto Dokumen',
   };
 
   @override
@@ -106,25 +107,25 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     });
 
     _formPages = [
-      PageOne(key: const ValueKey('PageOne'), formKey: _formKeys[0], formSubmitted: _formSubmittedPageOne, currentPage: 1, totalPages: 20),
-      const PageSixGeneralWajib(key: ValueKey('PageSixGeneralWajib'), currentPage: 2, totalPages: 20),
-      PageSixEksteriorTambahan(key: const ValueKey('PageSixEksteriorTambahan'), formSubmitted: _formSubmittedTambahanImages, currentPage: 3, totalPages: 20),
-      const PageEight(key: ValueKey('PageEight'), currentPage: 4, totalPages: 20),
-      PageSixInteriorTambahan(key: const ValueKey('PageSixInteriorTambahan'), formSubmitted: _formSubmittedTambahanImages, currentPage: 5, totalPages: 20),
-      PageSixMesinTambahan(key: const ValueKey('PageSixMesinTambahan'), formSubmitted: _formSubmittedTambahanImages, currentPage: 6, totalPages: 20),
-      PageSixKakiKakiTambahan(key: const ValueKey('PageSixKakiKakiTambahan'), formSubmitted: _formSubmittedTambahanImages, currentPage: 7, totalPages: 20),
-      PageSixAlatAlatTambahan(key: const ValueKey('PageSixAlatAlatTambahan'), formSubmitted: _formSubmittedTambahanImages, currentPage: 8, totalPages: 20),
-      PageSeven(key: const ValueKey('PageSeven'), formSubmitted: _formSubmittedTambahanImages, defaultLabel: _defaultTambahanLabel, currentPage: 9, totalPages: 20),
-      PageTwo(key: const ValueKey('PageTwo'), formKey: _formKeys[14], formSubmitted: _formSubmittedPageTwo, currentPage: 10, totalPages: 20),
-      const PageThree(key: ValueKey('PageThree'), currentPage: 11, totalPages: 20),
-      const PageFour(key: ValueKey('PageFour'), currentPage: 12, totalPages: 20),
-      const PageFiveOne(key: ValueKey('PageFiveOne'), currentPage: 13, totalPages: 20),
-      const PageFiveTwo(key: ValueKey('PageFiveTwo'), currentPage: 14, totalPages: 20),
-      const PageFiveThree(key: ValueKey('PageFiveThree'), currentPage: 15, totalPages: 20),
-      const PageFiveFour(key: ValueKey('PageFiveFour'), currentPage: 16, totalPages: 20),
-      const PageFiveFive(key: ValueKey('PageFiveFive'), currentPage: 17, totalPages: 20),
-      const PageFiveSix(key: ValueKey('PageFiveSix'), currentPage: 18, totalPages: 20),
-      const PageFiveSeven(key: ValueKey('PageFiveSeven'), currentPage: 19, totalPages: 20),
+      PageOne(key: const ValueKey('PageOne'), formKey: _formKeys[0], formSubmitted: _formSubmittedPageOne),
+      const PageSixGeneralWajib(key: ValueKey('PageSixGeneralWajib')),
+      PageSixEksteriorTambahan(key: const ValueKey('PageSixEksteriorTambahan'), formSubmitted: _formSubmittedTambahanImages),
+      const PageEight(key: ValueKey('PageEight')),
+      PageSixInteriorTambahan(key: const ValueKey('PageSixInteriorTambahan'), formSubmitted: _formSubmittedTambahanImages),
+      PageSixMesinTambahan(key: const ValueKey('PageSixMesinTambahan'), formSubmitted: _formSubmittedTambahanImages),
+      PageSixKakiKakiTambahan(key: const ValueKey('PageSixKakiKakiTambahan'), formSubmitted: _formSubmittedTambahanImages),
+      PageSixAlatAlatTambahan(key: const ValueKey('PageSixAlatAlatTambahan'), formSubmitted: _formSubmittedTambahanImages),
+      PageSeven(key: const ValueKey('PageSeven'), formSubmitted: _formSubmittedTambahanImages, defaultLabel: _defaultTambahanLabel),
+      PageTwo(key: const ValueKey('PageTwo'), formKey: _formKeys[14], formSubmitted: _formSubmittedPageTwo),
+      const PageThree(key: ValueKey('PageThree')),
+      const PageFour(key: ValueKey('PageFour')),
+      const PageFiveOne(key: ValueKey('PageFiveOne')),
+      const PageFiveTwo(key: ValueKey('PageFiveTwo')),
+      const PageFiveThree(key: ValueKey('PageFiveThree')),
+      const PageFiveFour(key: ValueKey('PageFiveFour')),
+      const PageFiveFive(key: ValueKey('PageFiveFive')),
+      const PageFiveSix(key: ValueKey('PageFiveSix')),
+      const PageFiveSeven(key: ValueKey('PageFiveSeven')),
       PageNine(
         key: const ValueKey('PageNine'),
         onCheckedChange: (newValue) {
@@ -134,8 +135,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           }
         },
         isChecked: _isChecked,
-        currentPage: 20,
-        totalPages: 20,
       ),
       const FinishedPage(key: ValueKey('FinishedPage')),
     ];
@@ -156,6 +155,13 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       extendBody: true,
+      appBar: currentPageIndex < _formPages.length - 1
+          ? MultiStepFormAppBar(
+              currentPage: currentPageIndex + 1,
+              totalPages: _formPages.length - 1, // Exclude FinishedPage from total
+              trailingWidget: _buildTrailingWidget(currentPageIndex),
+            )
+          : null,
       body: PageView(
         controller: pageController,
         physics: pageViewPhysics,
@@ -194,6 +200,21 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
             )
           : null,
     );
+  }
+
+  Widget? _buildTrailingWidget(int currentPageIndex) {
+    final String? pageIdentifier = _tambahanImagePageIdentifiers[currentPageIndex];
+    if (pageIdentifier != null) {
+      final images = ref.watch(tambahanImageDataProvider(pageIdentifier));
+      final bool hasImages = images.length > 1; // Show button if there is at least one image
+      if (hasImages) {
+        return DeleteAllTambahanPhotosButton(
+          tambahanImageIdentifier: pageIdentifier,
+          dialogMessage: 'Yakin ingin menghapus semua foto ${pageIdentifier.toLowerCase()}?',
+        );
+      }
+    }
+    return null;
   }
 
   @override
@@ -243,7 +264,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     if (isImageProcessing) {
       _customMessageOverlay.show(
         message: 'Pemrosesan gambar masih berjalan. Harap tunggu hingga selesai.',
-        backgroundColor: Colors.orange,
+        color: Colors.orange,
         icon: Icons.hourglass_empty,
       );
       return;
@@ -252,7 +273,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     if (!_isChecked) {
       _customMessageOverlay.show(
         message: 'Harap setujui pernyataan di atas sebelum melanjutkan.',
-        backgroundColor: Colors.red,
+        color: Colors.red,
         icon: Icons.error_outline,
       );
       return;
@@ -285,7 +306,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       if (!mounted) return;
       _customMessageOverlay.show(
         message: validationErrors.join('\n'),
-        backgroundColor: Colors.red,
+        color: Colors.red,
         icon: Icons.error_outline,
         duration: const Duration(seconds: 5),
       );
@@ -336,7 +357,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         if (!mounted) return;
         _customMessageOverlay.show(
           message: 'Terjadi kesalahan saat mengirim data formulir: $e',
-          backgroundColor: Colors.red,
+          color: Colors.red,
           icon: Icons.error_outline,
           duration: const Duration(seconds: 5),
         );
@@ -427,7 +448,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       if (!mounted) return;
       _customMessageOverlay.show(
         message: 'Terjadi kesalahan saat mengunggah gambar: $e',
-        backgroundColor: Colors.red,
+        color: Colors.red,
         icon: Icons.error_outline,
         duration: const Duration(seconds: 5),
       );

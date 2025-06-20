@@ -244,7 +244,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         if (mounted) {
           CustomMessageOverlay(context).show(
             message: 'No cameras available.',
-            backgroundColor: Colors.orange,
+            color: Colors.orange,
             icon: Icons.warning,
           );
         }
@@ -269,7 +269,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       if (mounted) {
         CustomMessageOverlay(context).show(
           message: 'Error discovering cameras: ${e.description}',
-          backgroundColor: Colors.red,
+          color: Colors.red,
           icon: Icons.error,
         );
       }
@@ -334,7 +334,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       if (mounted) {
         CustomMessageOverlay(context).show(
           message: 'Error initializing camera: ${e.description}',
-          backgroundColor: Colors.red,
+          color: Colors.red,
           icon: Icons.error,
         );
       }
@@ -359,18 +359,15 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     final tambahanImageNotifier = ref.read(tambahanImageDataProvider(widget.imageIdentifier).notifier);
 
     try {
-      // Trigger the flash animation
+      final XFile capturedImageFile = await controller.takePicture();
+
+      // Trigger the flash animation and increment counter after picture is taken
       if (mounted) {
         _captureAnimationController.forward(from: 0.0).then((_) {
           if (mounted) {
             _captureAnimationController.reverse();
           }
         });
-      }
-
-      final XFile capturedImageFile = await controller.takePicture();
-
-      if (mounted) {
         setState(() => _picturesTaken++);
       }
 
@@ -402,7 +399,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       if (mounted) {
         CustomMessageOverlay(context).show(
           message: 'Error taking picture: ${e.description}',
-          backgroundColor: Colors.red,
+          color: Colors.red,
           icon: Icons.error,
         );
       }
@@ -549,6 +546,8 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         _currentFlashMode = FlashMode.auto;
       } else if (_currentFlashMode == FlashMode.auto) {
         _currentFlashMode = FlashMode.always;
+      } else if (_currentFlashMode == FlashMode.always) {
+        _currentFlashMode = FlashMode.torch; // New mode: flash always on (torch)
       } else {
         _currentFlashMode = FlashMode.off;
       }
@@ -562,9 +561,10 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         return Icons.flash_auto;
       case FlashMode.always:
         return Icons.flash_on;
+      case FlashMode.torch: // Icon for the new torch mode
+        return Icons.highlight; // Or Icons.flashlight_on
       case FlashMode.off:
-      default:
-        return Icons.flash_off;
+      return Icons.flash_off;
     }
   }
 
