@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_step_provider.dart';
@@ -49,12 +50,20 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   final List<GlobalKey<FormState>> _formKeys = List.generate(27, (_) => GlobalKey<FormState>());
 
   late CustomMessageOverlay _customMessageOverlay;
+  dio.CancelToken? _cancelToken;
 
   final ValueNotifier<bool> _formSubmittedPageOne = ValueNotifier<bool>(false);
 
   void _cancelSubmission() {
+    debugPrint('_cancelSubmission function called');
+    if (_cancelToken != null && !(_cancelToken?.isCancelled ?? false)) {
+      debugPrint('_cancelToken is not cancelled, cancelling...');
+      _cancelToken?.cancel();
+    } else {
+      debugPrint('_cancelToken is cancelled or null, not cancelling.');
+    }
     ref.read(submissionStatusProvider.notifier).reset();
-    // ref.read(pageNavigationProvider.notifier).jumpToPage(0); // Or any other appropriate page
+    debugPrint('_cancelSubmission function finished');
   }
 
   static const String _defaultTambahanLabel = 'Foto Tambahan';
@@ -261,6 +270,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   }
 
   Future<void> _submitForm() async {
+    _cancelToken = dio.CancelToken();
     final submissionStatus = ref.read(submissionStatusProvider);
     final submissionStatusNotifier = ref.read(submissionStatusProvider.notifier);
     final submissionDataCache = ref.read(submissionDataCacheProvider);
@@ -354,14 +364,19 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           progress: 0.1,
         );
 
-        final Map<String, dynamic> formDataResponse = await apiService.submitFormData(formDataToSubmit);
+        final Map<String, dynamic> formDataResponse = await apiService.submitFormData(formDataToSubmit, cancelToken: _cancelToken);
         inspectionId = formDataResponse['id'] as String?;
 
         submissionDataCacheNotifier.setCache(
           inspectionId: inspectionId,
           formData: formDataToSubmit,
         );
-      } catch (e) {
+      } on dio.DioException catch (e) {
+        if (dio.CancelToken.isCancel(e)) {
+          debugPrint('Form submission cancelled');
+          submissionStatusNotifier.setLoading(isLoading: false);
+          return;
+        }
         if (!mounted) return;
         _customMessageOverlay.show(
           message: 'Terjadi kesalahan saat mengirim data formulir: $e',
@@ -433,7 +448,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
               progress: 1.0,
             );
           }
-        });
+        }, cancelToken: _cancelToken);
       } else {
         debugPrint('No images to upload.');
         submissionStatusNotifier.setLoading(
@@ -453,6 +468,18 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       if (!mounted) return;
       ref.read(formStepProvider.notifier).state++;
     } catch (e) {
+      if (e is dio.DioException && dio.CancelToken.isCancel(e)) {
+        debugPrint('Image upload cancelled');
+        submissionStatusNotifier.setLoading(isLoading: false);
+        if (!mounted) return;
+        _customMessageOverlay.show(
+          message: 'Pengiriman data dibatalkan.',
+          color: Colors.orange,
+          icon: Icons.info_outline,
+          duration: const Duration(seconds: 5),
+        );
+        return;
+      }
       if (!mounted) return;
       _customMessageOverlay.show(
         message: 'Terjadi kesalahan saat mengunggah gambar: $e',

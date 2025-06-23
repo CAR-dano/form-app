@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart' as dio show Dio, FormData, MultipartFile, LogInterceptor, DioException; // Consolidated dio imports
+import 'package:dio/dio.dart' as dio show Dio, FormData, MultipartFile, LogInterceptor, DioException, CancelToken; // Consolidated dio imports
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:form_app/models/form_data.dart';
@@ -11,7 +11,6 @@ import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:mime/mime.dart';
 import 'package:form_app/utils/calculation_utils.dart'; // Import the new utility
 import 'package:form_app/models/uploadable_image.dart'; // Import the UploadableImage model
-import 'package:cancellation_token/cancellation_token.dart';
 
 // Typedef for the progress callback
 typedef ImageUploadProgressCallback = void Function(int currentBatch, int totalBatches);
@@ -20,9 +19,9 @@ class ApiService {
   final dio.Dio _dioInst;
 
   String get _baseApiUrl {
-    if (kDebugMode) {
-      return dotenv.env['API_BASE_URL_DEBUG']!;
-    }
+    // if (kDebugMode) {
+    //   return dotenv.env['API_BASE_URL_DEBUG']!;
+    // }
     return dotenv.env['API_BASE_URL']!;
   }
 
@@ -77,12 +76,12 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> submitFormData(FormData formData) async {
+  Future<Map<String, dynamic>> submitFormData(FormData formData, {dio.CancelToken? cancelToken}) async {
     // ... (your existing implementation, ensure it returns Map<String, dynamic>)
     try {
       final response = await _dioInst.post(
         _inspectionsUrl,
-        data: { 
+        data: {
           "vehiclePlateNumber": formData.platNomor,
           "inspectionDate": formData.tanggalInspeksi?.toIso8601String() ?? '-',
           "overallRating": calculateOverallRating(formData),
@@ -306,6 +305,7 @@ class ApiService {
             },
           },
         },
+        cancelToken: cancelToken,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -332,6 +332,7 @@ class ApiService {
     String inspectionId, 
     List<UploadableImage> allImages,
     ImageUploadProgressCallback onProgress, // Add this
+    {dio.CancelToken? cancelToken}
   ) async {
     const int batchSize = 10;
     // Calculate total batches, ensure it's at least 1 if there are images, or 0 if not
@@ -395,7 +396,11 @@ class ApiService {
       }
 
       try {
-        final response = await _dioInst.post(photosUploadUrl, data: formData);
+        final response = await _dioInst.post(
+          photosUploadUrl, 
+          data: formData,
+          cancelToken: cancelToken,
+        );
         if (response.statusCode == 200 || response.statusCode == 201) {
           if (kDebugMode) print('Batch $currentBatchNum/$totalBatchesCalc uploaded successfully.');
         } else {
