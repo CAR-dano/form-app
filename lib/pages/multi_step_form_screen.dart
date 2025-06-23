@@ -197,7 +197,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
                   ref.read(pageNavigationProvider.notifier).goToNextPage();
                 }
               },
-              onBackPressed: currentPageIndex == _formPages.length - 2
+              onBackPressed: currentPageIndex == _formPages.length - 2 && submissionStatus.isLoading
                   ? _cancelSubmission
                   : () {
                       FocusScope.of(context).unfocus();
