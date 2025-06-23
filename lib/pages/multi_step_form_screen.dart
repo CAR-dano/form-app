@@ -372,18 +372,23 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           formData: formDataToSubmit,
         );
       } on dio.DioException catch (e) {
-        if (dio.CancelToken.isCancel(e)) {
-          debugPrint('Form submission cancelled');
-          submissionStatusNotifier.setLoading(isLoading: false);
-          return;
-        }
         if (!mounted) return;
-        _customMessageOverlay.show(
-          message: 'Terjadi kesalahan saat mengirim data formulir: $e',
-          color: Colors.red,
-          icon: Icons.error_outline,
-          duration: const Duration(seconds: 5),
-        );
+        if (e.toString().contains('cancelled')) {
+          debugPrint('Form submission cancelled');
+          _customMessageOverlay.show(
+            message: 'Pengiriman data dibatalkan.',
+            color: Colors.orange,
+            icon: Icons.info_outline,
+            duration: const Duration(seconds: 5),
+          );
+        } else {
+          _customMessageOverlay.show(
+            message: 'Terjadi kesalahan saat mengirim data formulir: $e',
+            color: Colors.red,
+            icon: Icons.error_outline,
+            duration: const Duration(seconds: 5),
+          );
+        }
         submissionStatusNotifier.setLoading(isLoading: false);
         return;
       }
@@ -468,25 +473,23 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       if (!mounted) return;
       ref.read(formStepProvider.notifier).state++;
     } catch (e) {
-      if (e is dio.DioException && dio.CancelToken.isCancel(e)) {
+      if (!mounted) return;
+      if (e.toString().contains('cancelled')) {
         debugPrint('Image upload cancelled');
-        submissionStatusNotifier.setLoading(isLoading: false);
-        if (!mounted) return;
         _customMessageOverlay.show(
           message: 'Pengiriman data dibatalkan.',
           color: Colors.orange,
           icon: Icons.info_outline,
           duration: const Duration(seconds: 5),
         );
-        return;
+      } else {
+        _customMessageOverlay.show(
+          message: 'Terjadi kesalahan saat mengunggah gambar: $e',
+          color: Colors.red,
+          icon: Icons.error_outline,
+          duration: const Duration(seconds: 5),
+        );
       }
-      if (!mounted) return;
-      _customMessageOverlay.show(
-        message: 'Terjadi kesalahan saat mengunggah gambar: $e',
-        color: Colors.red,
-        icon: Icons.error_outline,
-        duration: const Duration(seconds: 5),
-      );
       submissionStatusNotifier.setLoading(isLoading: false);
     } finally {
       submissionStatusNotifier.reset();
