@@ -51,6 +51,12 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   late CustomMessageOverlay _customMessageOverlay;
 
   final ValueNotifier<bool> _formSubmittedPageOne = ValueNotifier<bool>(false);
+
+  void _cancelSubmission() {
+    ref.read(submissionStatusProvider.notifier).reset();
+    // ref.read(pageNavigationProvider.notifier).jumpToPage(0); // Or any other appropriate page
+  }
+
   static const String _defaultTambahanLabel = 'Foto Tambahan';
   final ValueNotifier<bool> _formSubmittedPageTwo = ValueNotifier<bool>(false);
   final ValueNotifier<bool> _formSubmittedTambahanImages = ValueNotifier<bool>(false);
@@ -191,10 +197,12 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
                   ref.read(pageNavigationProvider.notifier).goToNextPage();
                 }
               },
-              onBackPressed: () {
-                FocusScope.of(context).unfocus();
-                ref.read(pageNavigationProvider.notifier).goToPreviousPage();
-              },
+              onBackPressed: currentPageIndex == _formPages.length - 2
+                  ? _cancelSubmission
+                  : () {
+                      FocusScope.of(context).unfocus();
+                      ref.read(pageNavigationProvider.notifier).goToPreviousPage();
+                    },
               isLoading: submissionStatus.isLoading,
               isChecked: _isChecked,
             )

@@ -11,6 +11,7 @@ import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:mime/mime.dart';
 import 'package:form_app/utils/calculation_utils.dart'; // Import the new utility
 import 'package:form_app/models/uploadable_image.dart'; // Import the UploadableImage model
+import 'package:cancellation_token/cancellation_token.dart';
 
 // Typedef for the progress callback
 typedef ImageUploadProgressCallback = void Function(int currentBatch, int totalBatches);

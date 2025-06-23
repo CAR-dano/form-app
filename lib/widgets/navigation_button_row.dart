@@ -35,35 +35,38 @@ class NavigationButtonRow extends StatelessWidget {
           Expanded(
             child: ElevatedButton(
               // Use the provided callback
-              onPressed: onBackPressed, // No need for ternary here as it won't render if disabled
+              onPressed: onBackPressed, // Use cancel callback when loading and on last page, otherwise use back callback
               style: baseButtonStyle.copyWith(
                 // Override specific properties for enabled/disabled state
                 backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                (Set<WidgetState> states) {
-                  if (states.contains(WidgetState.disabled)) {
-                    return disabledButtonColor; // Disabled color
-                  }
-                  return buttonColor; // Use default button color if enabled (will be overridden below)
-                },
-              ),
-              // More explicit disabled styling:
-              elevation: WidgetStateProperty.resolveWith<double>(
+                  (Set<WidgetState> states) {
+                    if (isLoading && isLastPage) {
+                      return Colors.red; // Cancel color
+                    }
+                    if (states.contains(WidgetState.disabled)) {
+                      return disabledButtonColor; // Disabled color
+                    }
+                    return buttonColor; // Use default button color if enabled (will be overridden below)
+                  },
+                ),
+                // More explicit disabled styling:
+                elevation: WidgetStateProperty.resolveWith<double>(
                    (Set<WidgetState> states) {
                       if (states.contains(WidgetState.disabled)) return 0;
                       return 5; // Use base elevation if enabled
                    }
+                ),
+                foregroundColor: WidgetStateProperty.resolveWith<Color>(
+                  (Set<WidgetState> states) {
+                    if (states.contains(WidgetState.disabled)) {
+                      return buttonTextColor.withAlpha(204); // Disabled text color
+                    }
+                    return buttonTextColor; // Enabled text color
+                  },
+                ),
+                shadowColor: WidgetStateProperty.all(buttonColor.withAlpha(102)), // Set shadow color to orange
               ),
-              foregroundColor: WidgetStateProperty.resolveWith<Color>(
-                (Set<WidgetState> states) {
-                  if (states.contains(WidgetState.disabled)) {
-                    return buttonTextColor.withAlpha(204); // Disabled text color
-                  }
-                  return buttonTextColor; // Enabled text color
-                },
-              ),
-              shadowColor: WidgetStateProperty.all(buttonColor.withAlpha(102)), // Set shadow color to orange
-            ),
-            child: Text('Back', style: buttonTextStyle),
+            child: Text(isLoading && isLastPage ? 'Batal' : 'Back', style: buttonTextStyle),
           ),
         ),
 
