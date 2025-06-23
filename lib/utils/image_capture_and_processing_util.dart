@@ -69,12 +69,22 @@ Future<String?> _processImageIsolate(_ProcessImageInput input) async {
   String finalImagePath;
   List<int> processedBytes;
   String extension = input.pickedFileName.split('.').last.toLowerCase();
+  int jpgQuality = 70; // Default quality
+  final originalFileSize = imageFile.lengthSync(); // Get original file size in bytes
+
+  if (originalFileSize > 2 * 1024 * 1024) { // If original file size > 2MB
+    jpgQuality = 50;
+  }
+  if (originalFileSize > 4 * 1024 * 1024) { // If original file size > 4MB
+    jpgQuality = 30;
+  }
+
   if (extension == 'png') {
     processedBytes = img.encodePng(processedImage);
   } else if (extension == 'gif') {
     processedBytes = img.encodeGif(processedImage);
   } else {
-    processedBytes = img.encodeJpg(processedImage, quality: 70);
+    processedBytes = img.encodeJpg(processedImage, quality: jpgQuality);
     if (extension != 'jpg' && extension != 'jpeg') extension = 'jpg';
   }
 
