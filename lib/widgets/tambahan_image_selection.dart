@@ -9,10 +9,10 @@ import 'package:form_app/widgets/form_confirmation.dart';
 import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart';
-import 'package:form_app/utils/image_capture_and_processing_util.dart'; // Import the new utility
-import 'package:form_app/providers/image_processing_provider.dart'; // Import the new provider
+import 'package:form_app/utils/image_capture_and_processing_util.dart';
+import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/pages/multi_shot_camera_screen.dart';
-import 'package:form_app/utils/image_form_handler.dart'; // Import the new helper
+import 'package:form_app/utils/image_form_handler.dart';
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -123,28 +123,104 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
 
     // --- EXISTING LOGIC FOR GALLERY ---
     if (source == ImageSource.gallery) {
-      await ImageFormHandler.processAndHandleMultiImageUpload(
-        context: context,
-        ref: ref,
-        identifier: widget.identifier,
-        pickMultiImagesFunction: () => ImageCaptureAndProcessingUtil.pickMultiImagesFromGallery(),
-        onSuccess: (processedPath) async { // Changed to single processedPath
-          final newTambahanImage = TambahanImageData(
-            imagePath: processedPath,
-            label: widget.defaultLabel,
-            needAttention: false,
-            category: widget.identifier,
-            isMandatory: widget.isMandatory,
-          );
-          ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
-          if (mounted) {
-            precacheImage(FileImage(File(processedPath)), context);
-            // No setState here to change _currentIndex, it should stay on the current image
-            // The _updateControllersForCurrentIndex() will be called by the build method if needed
+      ref.read(imageProcessingServiceProvider.notifier).taskStarted(widget.identifier);
+      try {
+        final List<XFile> pickedFiles = await ImageCaptureAndProcessingUtil.pickMultiImagesFromGallery();
+
+        if (pickedFiles.isNotEmpty) {
+          for (final XFile pickedFile in pickedFiles) {
+            final String originalPath = pickedFile.path; // This is the true original path
+
+            final String? processedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(pickedFile);
+
+            if (processedPath != null) {
+              final newTambahanImage = TambahanImageData(
+                imagePath: processedPath,
+                label: widget.defaultLabel,
+                needAttention: false,
+                category: widget.identifier,
+                isMandatory: widget.isMandatory,
+                rotationAngle: 0, // New image from gallery starts with 0 rotation
+                originalRawPath: originalPath, // Store the actual original path
+              );
+              ref.read(tambahanImageDataProvider(widget.identifier).notifier).addImage(newTambahanImage);
+              if (mounted) {
+                precacheImage(FileImage(File(processedPath)), context);
+              }
+            } else {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Gagal memproses gambar dari galeri.')),
+                );
+              }
+            }
           }
-        },
-        errorMessage: 'Terjadi kesalahan memproses gambar dari galeri',
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error memproses gambar dari galeri: $e')),
+          );
+        }
+      } finally {
+        ref.read(imageProcessingServiceProvider.notifier).taskFinished(widget.identifier);
+      }
+    }
+  }
+
+  Future<void> _rotateCurrentImage() async {
+    final images = ref.read(tambahanImageDataProvider(widget.identifier));
+    if (images.isEmpty || _currentIndex >= images.length) {
+      return; // No image to rotate
+    }
+
+    final currentImage = images[_currentIndex];
+    final originalRawPath = currentImage.originalRawPath; // Use the original raw image path
+    final currentRotation = currentImage.rotationAngle;
+
+    // Calculate new rotation angle (90 degrees clockwise, modulo 360)
+    final newRotation = (currentRotation + 90) % 360;
+
+    // Set processing state
+    ref.read(imageProcessingServiceProvider.notifier).taskStarted(widget.identifier);
+
+    try {
+      // Re-process the original raw image with the new cumulative rotation angle
+      final XFile pickedFile = XFile(originalRawPath); // Create XFile from original raw path
+      final String? newProcessedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(
+        pickedFile,
+        rotationAngle: newRotation,
       );
+
+      if (newProcessedPath != null) {
+        // Update the TambahanImageData with the new processed path and rotation angle
+        final updatedImage = currentImage.copyWith(
+          imagePath: newProcessedPath,
+          rotationAngle: newRotation,
+        );
+        ref.read(tambahanImageDataProvider(widget.identifier).notifier).updateImageAtIndex(
+              _currentIndex,
+              updatedImage,
+            );
+        if (mounted) {
+          precacheImage(FileImage(File(newProcessedPath)), context);
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Gagal memutar gambar.')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error memutar gambar: $e')),
+        );
+      }
+    } finally {
+      // Clear processing state
+      ref.read(imageProcessingServiceProvider.notifier).taskFinished(widget.identifier);
     }
   }
 
@@ -375,19 +451,45 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                             ),
                     ),
                   ),
-                  if (currentImage != null)
+                  if (currentImage != null) ...[
                     Positioned(
                       top: 8.0,
-                      right: 8.0,
-                      child: GestureDetector(
-                        onTap: _showDeleteConfirmationDialog,
-                        child: SvgPicture.asset(
-                          'assets/images/trashcan.svg',
-                          width: 40.0,
-                          height: 40.0,
+                      right: 56.0, // Adjust right to make space for rotate icon
+                      child: Material(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: InkWell(
+                          onTap: isProcessingImage ? null : _rotateCurrentImage, // Disable if processing
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: SvgPicture.asset(
+                            'assets/images/rotate.svg',
+                            width: 40.0,
+                            height: 40.0,
+                            colorFilter: isProcessingImage // Apply a color filter to indicate disabled state
+                                ? ColorFilter.mode(Colors.grey.withAlpha((0.6*255).round()), BlendMode.srcIn)
+                                : null,
+                          ),
                         ),
                       ),
                     ),
+                    Positioned(
+                      top: 8.0,
+                      right: 8.0,
+                      child: Material(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: InkWell(
+                          onTap: _showDeleteConfirmationDialog,
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: SvgPicture.asset(
+                            'assets/images/trashcan.svg',
+                            width: 40.0,
+                            height: 40.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
               if (widget.showNeedAttention) const SizedBox(height: 16.0),

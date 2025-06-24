@@ -468,6 +468,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
           needAttention: false,
           category: widget.imageIdentifier,
           isMandatory: false,
+          originalRawPath: imageFile.path, // Store the path of the captured image as original
         );
         tambahanImageNotifier.addImage(newTambahanImage);
       }
