@@ -276,7 +276,15 @@ Future<void> _submitForm() async {
   final submissionDataCache = ref.read(submissionDataCacheProvider);
   final submissionDataCacheNotifier = ref.read(submissionDataCacheProvider.notifier);
 
-  if (ref.read(submissionStatusProvider).isLoading) return;
+  if (ref.read(submissionStatusProvider).isLoading) {
+    _customMessageOverlay.show(
+      message: 'Pengiriman data sedang berlangsung. Harap tunggu.',
+      color: Colors.blue,
+      icon: Icons.info_outline,
+      duration: const Duration(seconds: 3),
+    );
+    return;
+  }
 
   final isImageProcessing = ref.read(imageProcessingServiceProvider.notifier).isAnyProcessing;
   if (isImageProcessing) {
@@ -462,6 +470,8 @@ Future<void> _submitForm() async {
       );
     }
   } catch (e) {
+    if (!mounted) return; // Add mounted check here as well
+    // Fallback for non-Dio cancellations or other general errors
     if (e.toString().contains('cancelled')) {
       debugPrint('Submission process cancelled by user.');
       _customMessageOverlay.show(
