@@ -118,6 +118,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
   double _maxZoomLevel = 1.0;
   double _rotationAngle = 0.0; // Added for rotation
   StreamSubscription<AccelerometerEvent>? _accelerometerSubscription; // Added for rotation
+  Future<void> _processingFuture = Future.value(); // Ensures sequential image processing
 
   late AnimationController _captureAnimationController;
   late Animation<double> _captureOpacityAnimation;
@@ -371,15 +372,16 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         setState(() => _picturesTaken++);
       }
 
-      // Start the loading indicator for this specific photo task.
-      imageProcessingNotifier.taskStarted(widget.imageIdentifier);
+      // Capture the rotation angle at the moment the picture is taken.
+      final double capturedRotationAngle = _rotationAngle;
 
       // Perform the heavy processing in the background.
-      Future(() async {
+      _processingFuture = _processingFuture.then((_) async {
+        // Start the loading indicator for this specific photo task.
+        imageProcessingNotifier.taskStarted(widget.imageIdentifier);
         try {
-          final XFile imageFileAfterRotation = await _rotateImageIfNecessary(capturedImageFile, _rotationAngle);
+          final XFile imageFileAfterRotation = await _rotateImageIfNecessary(capturedImageFile, capturedRotationAngle);
           
-          // Call the simplified processing function
           await _processAndAddImage(
             imageFile: imageFileAfterRotation,
             tambahanImageNotifier: tambahanImageNotifier,
@@ -389,8 +391,6 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
             print("Error in processing future: $e");
           }
         } finally {
-          // This will now ALWAYS run for each photo, stopping the "loading forever" bug
-          // and correctly handling multiple concurrent photo processing tasks.
           imageProcessingNotifier.taskFinished(widget.imageIdentifier);
         }
       });
