@@ -85,7 +85,7 @@ class NavigationButtonRow extends StatelessWidget {
                foregroundColor: WidgetStateProperty.all(buttonTextColor), // Always white when enabled
                shadowColor: WidgetStateProperty.all(isLastPage && !isFormConfirmed ? const Color(0xffcacaca).withAlpha(102) : (isLastPage ? toggleOptionSelectedLengkapColor.withAlpha(102) : buttonColor.withAlpha(102))), // Adjust shadow color
             ),
-            child: Text(isLoading ? nextButtonText : (isLastPage ? 'Kirim' : nextButtonText), style: buttonTextStyle),
+            child: Text(isLastPage ? 'Kirim' : nextButtonText, style: buttonTextStyle),
           ),
         ),
       ],
