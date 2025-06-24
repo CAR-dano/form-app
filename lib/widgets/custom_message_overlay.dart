@@ -5,7 +5,6 @@ import 'package:form_app/statics/app_styles.dart';
 
 class CustomMessageOverlay {
   OverlayEntry? _overlayEntry;
-  final BuildContext context;
   AnimationController? _animationController;
   AnimationController? _snapAnimationController;
   Animation<double>? _snapAnimation;
@@ -13,9 +12,10 @@ class CustomMessageOverlay {
   Timer? _timer;
   double _draggedY = 0.0;
 
-  CustomMessageOverlay(this.context);
+  CustomMessageOverlay();
 
   void show({
+    required BuildContext context, // Add BuildContext as a parameter
     required String message,
     required Color color,
     IconData? icon,
@@ -143,7 +143,7 @@ class CustomMessageOverlay {
 
   void hide() {
     _timer?.cancel();
-    _snapAnimationController?.stop(); 
+    _snapAnimationController?.stop();
     _snapAnimationController?.dispose();
     _snapAnimationController = null;
 

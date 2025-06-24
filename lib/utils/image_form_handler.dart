@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:form_app/utils/image_capture_and_processing_util.dart';
 import 'package:form_app/providers/image_processing_provider.dart';
-import 'package:form_app/widgets/custom_message_overlay.dart';
+import 'package:form_app/providers/message_overlay_provider.dart'; // Import the new provider
 import 'package:form_app/statics/app_styles.dart';
 import 'package:flutter/foundation.dart'; // For kDebugMode
 
@@ -32,7 +32,8 @@ class ImageFormHandler {
           await onSuccess(processedPath);
         } else if (context.mounted && processedPath == null) {
           if (kDebugMode) print("Image processing failed for $identifier.");
-          CustomMessageOverlay(context).show(
+          ref.read(customMessageOverlayProvider).show(
+              context: context, // Pass context here
               message: 'Gagal memproses gambar untuk $identifier.',
               color: errorBorderColor,
               icon: Icons.error);
@@ -41,7 +42,8 @@ class ImageFormHandler {
     } catch (e) {
       if (context.mounted) debugPrint("Error during image processing for $identifier: $e");
       if (context.mounted) {
-        CustomMessageOverlay(context).show(
+        ref.read(customMessageOverlayProvider).show(
+            context: context, // Pass context here
             message: '$errorMessage: $e',
             color: errorBorderColor,
             icon: Icons.error);
@@ -76,7 +78,8 @@ class ImageFormHandler {
             await onSuccess(processedPath); // Call onSuccess for each image
           } else if (context.mounted && processedPath == null) {
             if (kDebugMode) print("Image processing failed for ${imageFileXFile.name} in $identifier.");
-            CustomMessageOverlay(context).show(
+            ref.read(customMessageOverlayProvider).show(
+                context: context, // Pass context here
                 message: 'Gagal memproses gambar: ${imageFileXFile.name}',
                 color: errorBorderColor,
                 icon: Icons.photo_library);
@@ -86,7 +89,8 @@ class ImageFormHandler {
     } catch (e) {
       if (context.mounted) debugPrint("Error during multi-image processing for $identifier: $e");
       if (context.mounted) {
-        CustomMessageOverlay(context).show(
+        ref.read(customMessageOverlayProvider).show(
+            context: context, // Pass context here
             message: '$errorMessage: $e',
             color: errorBorderColor,
             icon: Icons.error);

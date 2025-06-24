@@ -12,7 +12,7 @@ import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/utils/image_capture_and_processing_util.dart';
 import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/pages/multi_shot_camera_screen.dart';
-import 'package:form_app/widgets/custom_message_overlay.dart';
+import 'package:form_app/providers/message_overlay_provider.dart'; // Import the new provider
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -39,14 +39,12 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   final TextEditingController _labelController = TextEditingController();
   final GlobalKey<FormFieldState<String>> _labelFieldKey = GlobalKey<FormFieldState<String>>();
   bool _isNeedAttentionChecked = false; // New state variable
-  late CustomMessageOverlay _messageOverlay; // Declare CustomMessageOverlay instance
 
   VoidCallback? _formSubmittedListener;
 
   @override
   void initState() {
     super.initState();
-    _messageOverlay = CustomMessageOverlay(context); // Initialize CustomMessageOverlay
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateControllersForCurrentIndex();
       // Initialize _isNeedAttentionChecked based on current image data
@@ -151,7 +149,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
               }
             } else {
               if (mounted) {
-                _messageOverlay.show(
+                ref.read(customMessageOverlayProvider).show(
+                  context: context, // Pass context here
                   message: 'Gagal memproses gambar dari galeri.',
                   color: Colors.red,
                   icon: Icons.error,
@@ -162,7 +161,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         }
       } catch (e) {
         if (mounted) {
-          _messageOverlay.show(
+          ref.read(customMessageOverlayProvider).show(
+            context: context, // Pass context here
             message: 'Error memproses gambar dari galeri: $e',
             color: Colors.red,
             icon: Icons.error,
@@ -213,7 +213,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         }
       } else {
         if (mounted) {
-          _messageOverlay.show(
+          ref.read(customMessageOverlayProvider).show(
+            context: context, // Pass context here
             message: 'Gagal memutar gambar.',
             color: Colors.red,
             icon: Icons.error,
@@ -222,7 +223,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       }
     } catch (e) {
       if (mounted) {
-        _messageOverlay.show(
+        ref.read(customMessageOverlayProvider).show(
+          context: context, // Pass context here
           message: 'Error memutar gambar: $e',
           color: Colors.red,
           icon: Icons.error,

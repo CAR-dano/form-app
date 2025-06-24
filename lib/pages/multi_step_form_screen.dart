@@ -34,7 +34,7 @@ import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/page_navigation_provider.dart';
 import 'package:form_app/providers/submission_status_provider.dart';
 import 'package:form_app/providers/submission_data_cache_provider.dart';
-import 'package:form_app/widgets/custom_message_overlay.dart';
+import 'package:form_app/providers/message_overlay_provider.dart'; // Import the new provider
 import 'package:form_app/models/uploadable_image.dart';
 import 'package:form_app/widgets/multi_step_form_appbar.dart';
 import 'package:form_app/widgets/delete_all_tambahan_photos_button.dart';
@@ -49,7 +49,6 @@ class MultiStepFormScreen extends ConsumerStatefulWidget {
 class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   final List<GlobalKey<FormState>> _formKeys = List.generate(27, (_) => GlobalKey<FormState>());
 
-  late CustomMessageOverlay _customMessageOverlay;
   dio.CancelToken? _cancelToken;
 
   final ValueNotifier<bool> _formSubmittedPageOne = ValueNotifier<bool>(false);
@@ -112,7 +111,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   @override
   void initState() {
     super.initState();
-    _customMessageOverlay = CustomMessageOverlay(context);
 
     // Pre-cache checker.png
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -270,14 +268,16 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   }
 
   // Paste this entire method into your _MultiStepFormScreenState class
-Future<void> _submitForm() async {
+  Future<void> _submitForm() async {
   _cancelToken = dio.CancelToken();
   final submissionStatusNotifier = ref.read(submissionStatusProvider.notifier);
   final submissionDataCache = ref.read(submissionDataCacheProvider);
   final submissionDataCacheNotifier = ref.read(submissionDataCacheProvider.notifier);
+  final customMessageOverlay = ref.read(customMessageOverlayProvider); // Get the singleton instance
 
   if (ref.read(submissionStatusProvider).isLoading) {
-    _customMessageOverlay.show(
+    customMessageOverlay.show(
+      context: context, // Pass context here
       message: 'Pengiriman data sedang berlangsung. Harap tunggu.',
       color: Colors.blue,
       icon: Icons.info_outline,
@@ -288,7 +288,8 @@ Future<void> _submitForm() async {
 
   final isImageProcessing = ref.read(imageProcessingServiceProvider.notifier).isAnyProcessing;
   if (isImageProcessing) {
-    _customMessageOverlay.show(
+    customMessageOverlay.show(
+      context: context, // Pass context here
       message: 'Pemrosesan gambar masih berjalan. Harap tunggu hingga selesai.',
       color: Colors.orange,
       icon: Icons.hourglass_empty,
@@ -297,7 +298,8 @@ Future<void> _submitForm() async {
   }
 
   if (!_isChecked) {
-    _customMessageOverlay.show(
+    customMessageOverlay.show(
+      context: context, // Pass context here
       message: 'Harap setujui pernyataan di atas sebelum melanjutkan.',
       color: Colors.red,
       icon: Icons.error_outline,
@@ -330,7 +332,8 @@ Future<void> _submitForm() async {
 
   if (validationErrors.isNotEmpty) {
     if (!mounted) return;
-    _customMessageOverlay.show(
+    customMessageOverlay.show(
+      context: context, // Pass context here
       message: validationErrors.join('\n'),
       color: Colors.red,
       icon: Icons.error_outline,
@@ -455,14 +458,16 @@ Future<void> _submitForm() async {
     // This now catches cancellation from BOTH form submission and image upload
     if (e.toString().contains('cancelled')) {
       debugPrint('Submission process cancelled by user.');
-      _customMessageOverlay.show(
+      customMessageOverlay.show(
+        context: context, // Pass context here
         message: 'Pengiriman data dibatalkan.',
         color: Colors.orange,
         icon: Icons.info_outline,
         duration: const Duration(seconds: 4),
       );
     } else {
-      _customMessageOverlay.show(
+      customMessageOverlay.show(
+        context: context, // Pass context here
         message: 'Terjadi kesalahan saat mengirim data: $e',
         color: Colors.red,
         icon: Icons.error_outline,
@@ -474,14 +479,16 @@ Future<void> _submitForm() async {
     // Fallback for non-Dio cancellations or other general errors
     if (e.toString().contains('cancelled')) {
       debugPrint('Submission process cancelled by user.');
-      _customMessageOverlay.show(
+      customMessageOverlay.show(
+        context: context, // Pass context here
         message: 'Pengiriman data dibatalkan.',
         color: Colors.orange,
         icon: Icons.info_outline,
         duration: const Duration(seconds: 4),
       );
     } else {
-      _customMessageOverlay.show(
+      customMessageOverlay.show(
+        context: context, // Pass context here
         message: 'Terjadi kesalahan saat mengirim data: $e',
         color: Colors.red,
         icon: Icons.error_outline,
