@@ -12,7 +12,7 @@ import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/utils/image_capture_and_processing_util.dart';
 import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/pages/multi_shot_camera_screen.dart';
-import 'package:form_app/utils/image_form_handler.dart';
+import 'package:form_app/widgets/custom_message_overlay.dart';
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -39,12 +39,14 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   final TextEditingController _labelController = TextEditingController();
   final GlobalKey<FormFieldState<String>> _labelFieldKey = GlobalKey<FormFieldState<String>>();
   bool _isNeedAttentionChecked = false; // New state variable
+  late CustomMessageOverlay _messageOverlay; // Declare CustomMessageOverlay instance
 
   VoidCallback? _formSubmittedListener;
 
   @override
   void initState() {
     super.initState();
+    _messageOverlay = CustomMessageOverlay(context); // Initialize CustomMessageOverlay
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateControllersForCurrentIndex();
       // Initialize _isNeedAttentionChecked based on current image data
@@ -149,8 +151,10 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
               }
             } else {
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Gagal memproses gambar dari galeri.')),
+                _messageOverlay.show(
+                  message: 'Gagal memproses gambar dari galeri.',
+                  color: Colors.red,
+                  icon: Icons.error,
                 );
               }
             }
@@ -158,8 +162,10 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error memproses gambar dari galeri: $e')),
+          _messageOverlay.show(
+            message: 'Error memproses gambar dari galeri: $e',
+            color: Colors.red,
+            icon: Icons.error,
           );
         }
       } finally {
@@ -207,15 +213,19 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Gagal memutar gambar.')),
+          _messageOverlay.show(
+            message: 'Gagal memutar gambar.',
+            color: Colors.red,
+            icon: Icons.error,
           );
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error memutar gambar: $e')),
+        _messageOverlay.show(
+          message: 'Error memutar gambar: $e',
+          color: Colors.red,
+          icon: Icons.error,
         );
       }
     } finally {
