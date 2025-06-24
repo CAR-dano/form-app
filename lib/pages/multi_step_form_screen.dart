@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_step_provider.dart';
@@ -49,8 +50,22 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   final List<GlobalKey<FormState>> _formKeys = List.generate(27, (_) => GlobalKey<FormState>());
 
   late CustomMessageOverlay _customMessageOverlay;
+  dio.CancelToken? _cancelToken;
 
   final ValueNotifier<bool> _formSubmittedPageOne = ValueNotifier<bool>(false);
+
+  void _cancelSubmission() {
+    debugPrint('_cancelSubmission function called');
+    if (_cancelToken != null && !(_cancelToken?.isCancelled ?? false)) {
+      debugPrint('_cancelToken is not cancelled, cancelling...');
+      _cancelToken?.cancel();
+    } else {
+      debugPrint('_cancelToken is cancelled or null, not cancelling.');
+    }
+    ref.read(submissionStatusProvider.notifier).reset();
+    debugPrint('_cancelSubmission function finished');
+  }
+
   static const String _defaultTambahanLabel = 'Foto Tambahan';
   final ValueNotifier<bool> _formSubmittedPageTwo = ValueNotifier<bool>(false);
   final ValueNotifier<bool> _formSubmittedTambahanImages = ValueNotifier<bool>(false);
@@ -191,10 +206,12 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
                   ref.read(pageNavigationProvider.notifier).goToNextPage();
                 }
               },
-              onBackPressed: () {
-                FocusScope.of(context).unfocus();
-                ref.read(pageNavigationProvider.notifier).goToPreviousPage();
-              },
+              onBackPressed: currentPageIndex == _formPages.length - 2 && submissionStatus.isLoading
+                  ? _cancelSubmission
+                  : () {
+                      FocusScope.of(context).unfocus();
+                      ref.read(pageNavigationProvider.notifier).goToPreviousPage();
+                    },
               isLoading: submissionStatus.isLoading,
               isChecked: _isChecked,
             )
@@ -252,77 +269,88 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     return null;
   }
 
-  Future<void> _submitForm() async {
-    final submissionStatus = ref.read(submissionStatusProvider);
-    final submissionStatusNotifier = ref.read(submissionStatusProvider.notifier);
-    final submissionDataCache = ref.read(submissionDataCacheProvider);
-    final submissionDataCacheNotifier = ref.read(submissionDataCacheProvider.notifier);
+  // Paste this entire method into your _MultiStepFormScreenState class
+Future<void> _submitForm() async {
+  _cancelToken = dio.CancelToken();
+  final submissionStatusNotifier = ref.read(submissionStatusProvider.notifier);
+  final submissionDataCache = ref.read(submissionDataCacheProvider);
+  final submissionDataCacheNotifier = ref.read(submissionDataCacheProvider.notifier);
 
-    if (submissionStatus.isLoading) return;
-
-    final isImageProcessing = ref.read(imageProcessingServiceProvider.notifier).isAnyProcessing;
-    if (isImageProcessing) {
-      _customMessageOverlay.show(
-        message: 'Pemrosesan gambar masih berjalan. Harap tunggu hingga selesai.',
-        color: Colors.orange,
-        icon: Icons.hourglass_empty,
-      );
-      return;
-    }
-
-    if (!_isChecked) {
-      _customMessageOverlay.show(
-        message: 'Harap setujui pernyataan di atas sebelum melanjutkan.',
-        color: Colors.red,
-        icon: Icons.error_outline,
-      );
-      return;
-    }
-
-    submissionStatusNotifier.setLoading(
-      isLoading: true,
-      message: 'Memvalidasi data...',
-      progress: 0.0,
+  if (ref.read(submissionStatusProvider).isLoading) {
+    _customMessageOverlay.show(
+      message: 'Pengiriman data sedang berlangsung. Harap tunggu.',
+      color: Colors.blue,
+      icon: Icons.info_outline,
+      duration: const Duration(seconds: 3),
     );
+    return;
+  }
 
-    _formSubmittedPageOne.value = true;
-    _formSubmittedPageTwo.value = true;
-    _formSubmittedTambahanImages.value = true;
+  final isImageProcessing = ref.read(imageProcessingServiceProvider.notifier).isAnyProcessing;
+  if (isImageProcessing) {
+    _customMessageOverlay.show(
+      message: 'Pemrosesan gambar masih berjalan. Harap tunggu hingga selesai.',
+      color: Colors.orange,
+      icon: Icons.hourglass_empty,
+    );
+    return;
+  }
 
-    await Future.microtask(() {});
+  if (!_isChecked) {
+    _customMessageOverlay.show(
+      message: 'Harap setujui pernyataan di atas sebelum melanjutkan.',
+      color: Colors.red,
+      icon: Icons.error_outline,
+    );
+    return;
+  }
 
-    List<String> validationErrors = [];
-    int? firstErrorPageIndex;
+  submissionStatusNotifier.setLoading(
+    isLoading: true,
+    message: 'Memvalidasi data...',
+    progress: 0.0,
+  );
 
-    for (int pageIndex in _pagesToValidate) {
-      final error = _validatePage(pageIndex);
-      if (error != null) {
-        validationErrors.add(error);
-        firstErrorPageIndex ??= pageIndex;
+  _formSubmittedPageOne.value = true;
+  _formSubmittedPageTwo.value = true;
+  _formSubmittedTambahanImages.value = true;
+
+  await Future.microtask(() {});
+
+  List<String> validationErrors = [];
+  int? firstErrorPageIndex;
+
+  for (int pageIndex in _pagesToValidate) {
+    final error = _validatePage(pageIndex);
+    if (error != null) {
+      validationErrors.add(error);
+      firstErrorPageIndex ??= pageIndex;
+    }
+  }
+
+  if (validationErrors.isNotEmpty) {
+    if (!mounted) return;
+    _customMessageOverlay.show(
+      message: validationErrors.join('\n'),
+      color: Colors.red,
+      icon: Icons.error_outline,
+      duration: const Duration(seconds: 5),
+    );
+    if (firstErrorPageIndex != null) {
+      final int? pageViewIndex = _formKeyIndexToPageIndex[firstErrorPageIndex];
+      if (pageViewIndex != null) {
+        ref.read(pageNavigationProvider.notifier).jumpToPage(pageViewIndex);
+      } else {
+        debugPrint('Error: No PageView index found for form key index $firstErrorPageIndex');
+        ref.read(pageNavigationProvider.notifier).jumpToPage(0);
       }
     }
+    submissionStatusNotifier.setLoading(isLoading: false);
+    return;
+  }
 
-    if (validationErrors.isNotEmpty) {
-      if (!mounted) return;
-      _customMessageOverlay.show(
-        message: validationErrors.join('\n'),
-        color: Colors.red,
-        icon: Icons.error_outline,
-        duration: const Duration(seconds: 5),
-      );
-      if (firstErrorPageIndex != null) {
-        final int? pageViewIndex = _formKeyIndexToPageIndex[firstErrorPageIndex];
-        if (pageViewIndex != null) {
-          ref.read(pageNavigationProvider.notifier).jumpToPage(pageViewIndex);
-        } else {
-          debugPrint('Error: No PageView index found for form key index $firstErrorPageIndex');
-          ref.read(pageNavigationProvider.notifier).jumpToPage(0);
-        }
-      }
-      submissionStatusNotifier.setLoading(isLoading: false);
-      return;
-    }
-
+  // --- Start of The Refactored Logic ---
+  try {
     String? inspectionId;
     final formDataToSubmit = ref.read(formProvider);
     final apiService = ApiService();
@@ -339,122 +367,133 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         progress: 0.1,
       );
     } else {
-      try {
-        submissionStatusNotifier.setLoading(
-          isLoading: true,
-          message: 'Mengirim data formulir...',
-          progress: 0.1,
-        );
+      submissionStatusNotifier.setLoading(
+        isLoading: true,
+        message: 'Mengirim data formulir...',
+        progress: 0.1,
+      );
 
-        final Map<String, dynamic> formDataResponse = await apiService.submitFormData(formDataToSubmit);
-        inspectionId = formDataResponse['id'] as String?;
+      final Map<String, dynamic> formDataResponse = await apiService.submitFormData(formDataToSubmit, cancelToken: _cancelToken);
+      inspectionId = formDataResponse['id'] as String?;
 
-        submissionDataCacheNotifier.setCache(
-          inspectionId: inspectionId,
-          formData: formDataToSubmit,
-        );
-      } catch (e) {
-        if (!mounted) return;
-        _customMessageOverlay.show(
-          message: 'Terjadi kesalahan saat mengirim data formulir: $e',
-          color: Colors.red,
-          icon: Icons.error_outline,
-          duration: const Duration(seconds: 5),
-        );
-        submissionStatusNotifier.setLoading(isLoading: false);
-        return;
+      submissionDataCacheNotifier.setCache(
+        inspectionId: inspectionId,
+        formData: formDataToSubmit,
+      );
+    }
+
+    if (inspectionId == null || inspectionId.isEmpty) {
+      throw Exception('Inspection ID not received or is empty after form submission.');
+    }
+
+    if (!mounted) return;
+
+    List<UploadableImage> allImagesToUpload = [];
+    final wajibImages = ref.read(imageDataListProvider);
+    for (var imgData in wajibImages) {
+      if (imgData.imagePath.isNotEmpty) {
+        allImagesToUpload.add(UploadableImage(
+          imagePath: imgData.imagePath, label: imgData.label, needAttention: imgData.needAttention,
+          category: imgData.category, isMandatory: imgData.isMandatory,
+        ));
       }
     }
 
-    try {
-      if (inspectionId == null || inspectionId.isEmpty) {
-        throw Exception('Inspection ID not received or is empty after form submission.');
-      }
-
-      if (!mounted) return;
-
-      List<UploadableImage> allImagesToUpload = [];
-      final wajibImages = ref.read(imageDataListProvider);
-      for (var imgData in wajibImages) {
+    for (final identifier in _tambahanImagePageIdentifiers.values) {
+      final tambahanImagesList = ref.read(tambahanImageDataProvider(identifier));
+      for (var imgData in tambahanImagesList) {
         if (imgData.imagePath.isNotEmpty) {
+          final String labelToUse = imgData.label.isEmpty ? _defaultTambahanLabel : imgData.label;
           allImagesToUpload.add(UploadableImage(
-            imagePath: imgData.imagePath, label: imgData.label, needAttention: imgData.needAttention,
+            imagePath: imgData.imagePath, label: labelToUse, needAttention: imgData.needAttention,
             category: imgData.category, isMandatory: imgData.isMandatory,
           ));
         }
       }
+    }
 
-      for (final identifier in _tambahanImagePageIdentifiers.values) {
-        final tambahanImagesList = ref.read(tambahanImageDataProvider(identifier));
-        for (var imgData in tambahanImagesList) {
-          if (imgData.imagePath.isNotEmpty) {
-            final String labelToUse = imgData.label.isEmpty ? _defaultTambahanLabel : imgData.label;
-            allImagesToUpload.add(UploadableImage(
-              imagePath: imgData.imagePath, label: labelToUse, needAttention: imgData.needAttention,
-              category: imgData.category, isMandatory: imgData.isMandatory,
-            ));
-          }
-        }
-      }
+    debugPrint('Total images to upload: ${allImagesToUpload.length}');
+    if (allImagesToUpload.isNotEmpty) {
+      final double formDataWeight = 0.2;
+      final double imagesWeight = 0.8;
 
-      debugPrint('Total images to upload: ${allImagesToUpload.length}');
-      for (var img in allImagesToUpload) {
-        debugPrint('Image: ${img.label}, Path: ${img.imagePath}, Category: ${img.category}, Mandatory: ${img.isMandatory}');
-      }
-
-      if (allImagesToUpload.isNotEmpty) {
-        final double formDataWeight = 0.2;
-        final double imagesWeight = 0.8;
-
-        await apiService.uploadImagesInBatches(inspectionId, allImagesToUpload,
-          (int currentBatch, int totalBatchesFromCallback) {
-          if (!mounted) return;
-          submissionStatusNotifier.setLoading(
-            isLoading: true,
-            message: totalBatchesFromCallback > 0
-                ? 'Mengunggah gambar batch $currentBatch dari $totalBatchesFromCallback...'
-                : 'Tidak ada batch gambar untuk diunggah.',
-            progress: totalBatchesFromCallback > 0
-                ? formDataWeight + ((currentBatch / totalBatchesFromCallback.toDouble()) * imagesWeight)
-                : 1.0,
-          );
-          if (currentBatch >= totalBatchesFromCallback && totalBatchesFromCallback > 0) {
-            submissionStatusNotifier.setLoading(
-              isLoading: true,
-              message: 'Unggahan gambar selesai.',
-              progress: 1.0,
-            );
-          }
-        });
-      } else {
-        debugPrint('No images to upload.');
+      await apiService.uploadImagesInBatches(inspectionId, allImagesToUpload,
+        (int currentBatch, int totalBatchesFromCallback) {
+        if (!mounted) return;
         submissionStatusNotifier.setLoading(
           isLoading: true,
-          message: 'Tidak ada gambar untuk diunggah. Proses Selesai.',
-          progress: 1.0,
+          message: totalBatchesFromCallback > 0
+              ? 'Mengunggah gambar batch $currentBatch dari $totalBatchesFromCallback...'
+              : 'Tidak ada batch gambar untuk diunggah.',
+          progress: totalBatchesFromCallback > 0
+              ? formDataWeight + ((currentBatch / totalBatchesFromCallback.toDouble()) * imagesWeight)
+              : 1.0,
         );
-      }
+      }, cancelToken: _cancelToken);
+    } else {
+      debugPrint('No images to upload.');
+      submissionStatusNotifier.setLoading(
+        isLoading: true,
+        message: 'Tidak ada gambar untuk diunggah. Proses Selesai.',
+        progress: 1.0,
+      );
+    }
 
-      submissionStatusNotifier.setLoading(isLoading: true, message: 'Menyelesaikan...', progress: 1.0);
-      ref.read(formProvider.notifier).resetFormData();
-      ref.read(imageDataListProvider.notifier).clearImageData();
-      for (final identifier in _tambahanImagePageIdentifiers.values) {
-        ref.read(tambahanImageDataProvider(identifier).notifier).clearAll();
-      }
+    // Success and final cleanup
+    submissionStatusNotifier.setLoading(isLoading: true, message: 'Menyelesaikan...', progress: 1.0);
+    ref.read(formProvider.notifier).resetFormData();
+    ref.read(imageDataListProvider.notifier).clearImageData();
+    for (final identifier in _tambahanImagePageIdentifiers.values) {
+      ref.read(tambahanImageDataProvider(identifier).notifier).clearAll();
+    }
 
-      if (!mounted) return;
-      ref.read(formStepProvider.notifier).state++;
-    } catch (e) {
-      if (!mounted) return;
+    if (!mounted) return;
+    ref.read(pageNavigationProvider.notifier).goToNextPage(); // Go to finished page
+
+  } on dio.DioException catch (e) {
+    if (!mounted) return;
+    // This now catches cancellation from BOTH form submission and image upload
+    if (e.toString().contains('cancelled')) {
+      debugPrint('Submission process cancelled by user.');
       _customMessageOverlay.show(
-        message: 'Terjadi kesalahan saat mengunggah gambar: $e',
+        message: 'Pengiriman data dibatalkan.',
+        color: Colors.orange,
+        icon: Icons.info_outline,
+        duration: const Duration(seconds: 4),
+      );
+    } else {
+      _customMessageOverlay.show(
+        message: 'Terjadi kesalahan saat mengirim data: $e',
         color: Colors.red,
         icon: Icons.error_outline,
         duration: const Duration(seconds: 5),
       );
-      submissionStatusNotifier.setLoading(isLoading: false);
-    } finally {
+    }
+  } catch (e) {
+    if (!mounted) return; // Add mounted check here as well
+    // Fallback for non-Dio cancellations or other general errors
+    if (e.toString().contains('cancelled')) {
+      debugPrint('Submission process cancelled by user.');
+      _customMessageOverlay.show(
+        message: 'Pengiriman data dibatalkan.',
+        color: Colors.orange,
+        icon: Icons.info_outline,
+        duration: const Duration(seconds: 4),
+      );
+    } else {
+      _customMessageOverlay.show(
+        message: 'Terjadi kesalahan saat mengirim data: $e',
+        color: Colors.red,
+        icon: Icons.error_outline,
+        duration: const Duration(seconds: 5),
+      );
+    }
+  } finally {
+    // This will now ALWAYS run after the try or catch block is complete,
+    // ensuring the state is reset correctly after the message is shown.
+    if (mounted) {
       submissionStatusNotifier.reset();
     }
   }
+}
 }

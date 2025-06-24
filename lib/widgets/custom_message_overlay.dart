@@ -87,45 +87,42 @@ class CustomMessageOverlay {
             },
             child: Material(
               color: Colors.transparent,
-              child: FadeTransition(
-                opacity: _animationController!,
-                child: SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, -1),
-                    end: Offset.zero,
-                  ).animate(CurvedAnimation(
-                    parent: _animationController!,
-                    curve: Curves.easeOutCubic,
-                  )),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                    decoration: BoxDecoration(
-                      color: HSLColor.fromColor(color).withLightness(0.95).toColor(), // Even softer background color using HSL
-                      borderRadius: BorderRadius.circular(16.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: color.withAlpha((0.2*255).round()), // Shadow color derived from the main color
-                          blurRadius: 6,
-                          offset: const Offset(0, 3),
-                        ),
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, -1),
+                  end: Offset.zero,
+                ).animate(CurvedAnimation(
+                  parent: _animationController!,
+                  curve: Curves.easeOutCubic,
+                )),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                  decoration: BoxDecoration(
+                    color: HSLColor.fromColor(color).withLightness(0.95).toColor(), // Even softer background color using HSL
+                    borderRadius: BorderRadius.circular(16.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withAlpha((0.2*255).round()), // Shadow color derived from the main color
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      if (icon != null) ...[
+                        Icon(icon, color: color), // Icon color matches the main color
+                        const SizedBox(width: 12.0),
                       ],
-                    ),
-                    child: Row(
-                      children: [
-                        if (icon != null) ...[
-                          Icon(icon, color: color), // Icon color matches the main color
-                          const SizedBox(width: 12.0),
-                        ],
-                        Expanded(
-                          child: Text(
-                            message,
-                            style: subTitleTextStyle.copyWith(color: color), // Text color matches the main color
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                      Expanded(
+                        child: Text(
+                          message,
+                          style: subTitleTextStyle.copyWith(color: color), // Text color matches the main color
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
