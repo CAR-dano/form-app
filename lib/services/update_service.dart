@@ -16,8 +16,110 @@ final updateServiceProvider = StateNotifierProvider<UpdateNotifier, UpdateState>
   return UpdateNotifier();
 });
 
+class UpdateState {
+  final bool isLoading;
+  final bool isDownloading;
+  final bool newVersionAvailable;
+  final double downloadProgress;
+  final String latestVersion;
+  final String releaseNotes;
+  final String apkDownloadUrl;
+  final String downloadedApkPath;
+  final String apkFileName; // New field for the exact APK filename from GitHub
+  final String errorMessage;
+
+  UpdateState({
+    this.isLoading = false,
+    this.isDownloading = false,
+    this.newVersionAvailable = false,
+    this.downloadProgress = 0.0,
+    this.latestVersion = '',
+    this.releaseNotes = '',
+    this.apkDownloadUrl = '',
+    this.downloadedApkPath = '',
+    this.apkFileName = '', // Initialize new field
+    this.errorMessage = '',
+  });
+
+  UpdateState copyWith({
+    bool? isLoading,
+    bool? isDownloading,
+    bool? newVersionAvailable,
+    double? downloadProgress,
+    String? latestVersion,
+    String? releaseNotes,
+    String? apkDownloadUrl,
+    String? downloadedApkPath,
+    String? apkFileName, // New field for copyWith
+    String? errorMessage,
+  }) {
+    return UpdateState(
+      isLoading: isLoading ?? this.isLoading,
+      isDownloading: isDownloading ?? this.isDownloading,
+      newVersionAvailable: newVersionAvailable ?? this.newVersionAvailable,
+      downloadProgress: downloadProgress ?? this.downloadProgress,
+      latestVersion: latestVersion ?? this.latestVersion,
+      releaseNotes: releaseNotes ?? this.releaseNotes,
+      apkDownloadUrl: apkDownloadUrl ?? this.apkDownloadUrl,
+      downloadedApkPath: downloadedApkPath ?? this.downloadedApkPath,
+      apkFileName: apkFileName ?? this.apkFileName, // Copy new field
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
+  }
+}
+
 class UpdateNotifier extends StateNotifier<UpdateState> {
-  UpdateNotifier() : super(UpdateState());
+  UpdateNotifier() : super(UpdateState()) {
+    _loadDownloadedApkPath();
+  }
+
+  static const String _apkPathFileName = 'downloaded_apk_path.txt';
+
+  Future<void> _loadDownloadedApkPath() async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/$_apkPathFileName');
+      if (await file.exists()) {
+        final path = await file.readAsString();
+        if (await File(path).exists()) {
+          state = state.copyWith(downloadedApkPath: path);
+          debugPrint('UpdateService: Loaded downloaded APK path: $path');
+        } else {
+          // If the file doesn't exist at the recorded path, clear the record
+          await file.delete();
+          state = state.copyWith(downloadedApkPath: '');
+          debugPrint('UpdateService: Recorded APK file not found, cleared path.');
+        }
+      }
+    } catch (e) {
+      debugPrint('UpdateService: Error loading downloaded APK path: $e');
+      state = state.copyWith(downloadedApkPath: '');
+    }
+  }
+
+  Future<void> _saveDownloadedApkPath(String path) async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/$_apkPathFileName');
+      await file.writeAsString(path);
+      debugPrint('UpdateService: Saved downloaded APK path: $path');
+    } catch (e) {
+      debugPrint('UpdateService: Error saving downloaded APK path: $e');
+    }
+  }
+
+  Future<void> _clearDownloadedApkPath() async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/$_apkPathFileName');
+      if (await file.exists()) {
+        await file.delete();
+        debugPrint('UpdateService: Cleared downloaded APK path record.');
+      }
+    } catch (e) {
+      debugPrint('UpdateService: Error clearing downloaded APK path: $e');
+    }
+  }
 
   Future<void> checkForUpdate() async {
     debugPrint('UpdateService: Checking for updates...');
@@ -26,6 +128,15 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       return;
     }
     state = state.copyWith(isLoading: true, errorMessage: '');
+
+    // Re-check if the downloaded APK still exists on app start
+    if (state.downloadedApkPath.isNotEmpty) {
+      if (!await File(state.downloadedApkPath).exists()) {
+        state = state.copyWith(downloadedApkPath: '');
+        await _clearDownloadedApkPath();
+        debugPrint('UpdateService: Previously downloaded APK not found, cleared state.');
+      }
+    }
 
     try {
       // 1. Get current app version
@@ -90,6 +201,7 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
           latestVersion: latestVersion,
           releaseNotes: releaseNotes,
           apkDownloadUrl: apkDownloadUrl,
+          apkFileName: Uri.decodeComponent(apkAsset['name'] as String), // Store the decoded filename
         );
       } else {
         debugPrint('UpdateService: No newer version available.');
@@ -108,7 +220,8 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
 
     try {
       final dir = await getApplicationDocumentsDirectory();
-      final filePath = '${dir.path}/app-release.apk';
+      final filePath = '${dir.path}/${state.apkFileName}'; // Use the stored decoded filename
+      debugPrint('UpdateService: Downloading APK to: $filePath with name: ${state.apkFileName}');
       
       await dio.Dio().download(
         state.apkDownloadUrl,
@@ -122,6 +235,8 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       );
 
       state = state.copyWith(isDownloading: false, downloadedApkPath: filePath);
+      await _saveDownloadedApkPath(filePath);
+      debugPrint('UpdateService: APK downloaded successfully to: $filePath');
     } catch (e) {
       state = state.copyWith(isDownloading: false, errorMessage: e.toString());
     }
@@ -131,13 +246,14 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
     if (state.downloadedApkPath.isEmpty) return;
     final result = await OpenFile.open(state.downloadedApkPath);
     if (result.type == ResultType.done) {
-      // Optionally delete the APK file after successful installation
+      // Delete the APK file after successful installation
       try {
         final file = File(state.downloadedApkPath);
         if (await file.exists()) {
           await file.delete();
           debugPrint('UpdateService: Downloaded APK deleted successfully.');
           state = state.copyWith(downloadedApkPath: ''); // Clear the path after deletion
+          await _clearDownloadedApkPath(); // Clear the saved path
         }
       } catch (e) {
         debugPrint('UpdateService: Error deleting downloaded APK: $e');
@@ -172,53 +288,5 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
     }
 
     return false; // Versions are the same or current is newer
-  }
-}
-
-class UpdateState {
-  final bool isLoading;
-  final bool isDownloading;
-  final bool newVersionAvailable;
-  final double downloadProgress;
-  final String latestVersion;
-  final String releaseNotes;
-  final String apkDownloadUrl;
-  final String downloadedApkPath;
-  final String errorMessage;
-
-  UpdateState({
-    this.isLoading = false,
-    this.isDownloading = false,
-    this.newVersionAvailable = false,
-    this.downloadProgress = 0.0,
-    this.latestVersion = '',
-    this.releaseNotes = '',
-    this.apkDownloadUrl = '',
-    this.downloadedApkPath = '',
-    this.errorMessage = '',
-  });
-
-  UpdateState copyWith({
-    bool? isLoading,
-    bool? isDownloading,
-    bool? newVersionAvailable,
-    double? downloadProgress,
-    String? latestVersion,
-    String? releaseNotes,
-    String? apkDownloadUrl,
-    String? downloadedApkPath,
-    String? errorMessage,
-  }) {
-    return UpdateState(
-      isLoading: isLoading ?? this.isLoading,
-      isDownloading: isDownloading ?? this.isDownloading,
-      newVersionAvailable: newVersionAvailable ?? this.newVersionAvailable,
-      downloadProgress: downloadProgress ?? this.downloadProgress,
-      latestVersion: latestVersion ?? this.latestVersion,
-      releaseNotes: releaseNotes ?? this.releaseNotes,
-      apkDownloadUrl: apkDownloadUrl ?? this.apkDownloadUrl,
-      downloadedApkPath: downloadedApkPath ?? this.downloadedApkPath,
-      errorMessage: errorMessage ?? this.errorMessage,
-    );
   }
 }
