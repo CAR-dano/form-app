@@ -32,7 +32,7 @@ class UpdateDialog extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Update Available! (v${updateState.latestVersion})',
+              'Pembaruan Tersedia! (v${updateState.latestVersion})',
               textAlign: TextAlign.center,
               style: labelStyle.copyWith(
                 fontSize: 24,
@@ -42,7 +42,7 @@ class UpdateDialog extends ConsumerWidget {
             ),
             const SizedBox(height: 24.0),
             Text(
-              'A new version of the app is available. Here are the changes:',
+              'Versi baru aplikasi tersedia. Berikut adalah perubahannya:',
               textAlign: TextAlign.center,
               style: labelStyle.copyWith(
                 fontSize: 16,
@@ -62,7 +62,7 @@ class UpdateDialog extends ConsumerWidget {
                 child: MarkdownBody(
                   data: updateState.releaseNotes.isNotEmpty
                       ? updateState.releaseNotes.split('\n\n---\n\n')[0] // Extract only the PR description
-                      : 'No release notes provided.',
+                      : 'Catatan rilis tidak tersedia.',
                   styleSheet: MarkdownStyleSheet(
                     p: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
                     listBullet: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
@@ -80,7 +80,7 @@ class UpdateDialog extends ConsumerWidget {
               const SizedBox(height: 8),
               Center(
                 child: Text(
-                  'Downloading: ${(updateState.downloadProgress * 100).toStringAsFixed(0)}%',
+                  'Mengunduh: ${(updateState.downloadProgress * 100).toStringAsFixed(0)}%',
                   style: labelStyle.copyWith(color: darkTextColor),
                 ),
               )
@@ -88,7 +88,7 @@ class UpdateDialog extends ConsumerWidget {
             if (updateState.errorMessage.isNotEmpty) ...[
               const SizedBox(height: 16),
               Text(
-                'Error: ${updateState.errorMessage}',
+                'Kesalahan: ${updateState.errorMessage}',
                 style: labelStyle.copyWith(color: Colors.red, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
@@ -117,7 +117,7 @@ class UpdateDialog extends ConsumerWidget {
                         child: Transform.translate(
                           offset: const Offset(0.0, -2.0),
                           child: Text(
-                            'Later',
+                            'Nanti',
                             textAlign: TextAlign.center,
                             style: labelStyle.copyWith(
                               color: darkTextColor,
@@ -158,7 +158,7 @@ class UpdateDialog extends ConsumerWidget {
                       child: Transform.translate(
                         offset: const Offset(0.0, -2.0),
                         child: Text(
-                          updateState.downloadedApkPath.isNotEmpty ? 'Install' : 'Download',
+                          updateState.downloadedApkPath.isNotEmpty ? 'Instal' : 'Unduh',
                           textAlign: TextAlign.center,
                           style: labelStyle.copyWith(
                             color: buttonTextColor,
