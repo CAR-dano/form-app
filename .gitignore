@@ -18,6 +18,7 @@ migrate_working_dir/
 .LSOverride
 Icon?
 Thumbs.db
+android/key.properties
 
 # IntelliJ related
 *.iml
