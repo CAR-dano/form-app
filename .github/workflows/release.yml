@@ -52,6 +52,15 @@ jobs:
         env:
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
 
+      # Decode Keystore and Create Properties
+      - name: Decode Keystore and Create Properties
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/key.jks
+          echo "storePassword=${{ secrets.STORE_PASSWORD }}" > android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          echo "storeFile=key.jks" >> android/key.properties
+
       # Accepts Android SDK licenses.
       - name: Accept Android SDK licenses
 
