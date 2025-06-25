@@ -58,6 +58,7 @@ dependencies:
     git:
       url: https://github.com/postflow/open_file_plus.git
   package_info_plus: ^8.3.0
+  flutter_markdown_plus: ^1.0.3
 
 
 dev_dependencies:
