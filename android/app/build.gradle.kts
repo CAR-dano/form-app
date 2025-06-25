@@ -12,7 +12,6 @@ val keyPropertiesFile = rootProject.file("android/key.properties")
 val keyProperties = Properties()
 if (keyPropertiesFile.exists()) {
     keyProperties.load(FileInputStream(keyPropertiesFile))
-
 }
 
 android {
