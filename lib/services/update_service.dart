@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -105,7 +107,7 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
     state = state.copyWith(isDownloading: true, downloadProgress: 0.0);
 
     try {
-      final dir = await getTemporaryDirectory();
+      final dir = await getApplicationDocumentsDirectory();
       final filePath = '${dir.path}/app-release.apk';
       
       await dio.Dio().download(
@@ -128,7 +130,19 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
   Future<void> installUpdate() async {
     if (state.downloadedApkPath.isEmpty) return;
     final result = await OpenFile.open(state.downloadedApkPath);
-    if (result.type != ResultType.done) {
+    if (result.type == ResultType.done) {
+      // Optionally delete the APK file after successful installation
+      try {
+        final file = File(state.downloadedApkPath);
+        if (await file.exists()) {
+          await file.delete();
+          debugPrint('UpdateService: Downloaded APK deleted successfully.');
+          state = state.copyWith(downloadedApkPath: ''); // Clear the path after deletion
+        }
+      } catch (e) {
+        debugPrint('UpdateService: Error deleting downloaded APK: $e');
+      }
+    } else {
       state = state.copyWith(errorMessage: 'Could not open installer: ${result.message}');
     }
   }
