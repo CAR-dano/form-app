@@ -1,21 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:io';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/statics/app_styles.dart';
 import 'package:form_app/widgets/delete_confirmation_dialog.dart';
+import 'package:form_app/providers/image_processing_provider.dart';
+import 'package:form_app/providers/image_data_provider.dart';
+import 'package:form_app/models/image_data.dart'; // Import ImageData
 
-class ImagePreviewDialog extends StatelessWidget {
-  final File imageFile;
-  final VoidCallback onDeleteConfirmed;
+class ImagePreviewDialog extends ConsumerWidget {
+  final String imageIdentifier;
+  final VoidCallback onRotate;
 
   const ImagePreviewDialog({
     super.key,
-    required this.imageFile,
-    required this.onDeleteConfirmed,
+    required this.imageIdentifier,
+    required this.onRotate,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final imageData = ref.watch(imageDataListProvider).firstWhere(
+          (img) => img.label == imageIdentifier,
+          orElse: () => ImageData(
+              label: imageIdentifier, imagePath: '', category: '', isMandatory: false, needAttention: false),
+        );
+    
+    final imageFile = imageData.imagePath.isNotEmpty ? File(imageData.imagePath) : null;
+    final isProcessingImage = ref.watch(imageProcessingServiceProvider.select((s) => (s[imageIdentifier] ?? 0) > 0));
+
     return SafeArea(
       child: Center(
         child: SizedBox(
@@ -26,8 +39,8 @@ class ImagePreviewDialog extends StatelessWidget {
             contentPadding: EdgeInsets.zero,
             content: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column( // Wrap content in a Column
-                mainAxisSize: MainAxisSize.min, // Ensure column takes minimum space
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Stack(
                     children: [
@@ -35,9 +48,29 @@ class ImagePreviewDialog extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16.0),
                         child: AspectRatio(
                           aspectRatio: 4 / 3,
-                          child: Image.file(
-                            imageFile,
-                            fit: BoxFit.cover,
+                          child: imageFile != null && imageFile.existsSync()
+                              ? Image.file(
+                                  imageFile,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.asset(
+                                  'assets/images/checker.png',
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 8.0,
+                        right: 56.0,
+                        child: GestureDetector(
+                          onTap: isProcessingImage ? null : onRotate,
+                          child: SvgPicture.asset(
+                            'assets/images/rotate.svg',
+                            width: 40.0,
+                            height: 40.0,
+                            colorFilter: isProcessingImage
+                                ? ColorFilter.mode(Colors.grey.withAlpha((0.6 * 255).round()), BlendMode.srcIn)
+                                : null,
                           ),
                         ),
                       ),
@@ -52,9 +85,8 @@ class ImagePreviewDialog extends StatelessWidget {
                                 return DeleteConfirmationDialog(
                                   message: 'Apakah anda yakin ingin menghapus gambar tersebut?',
                                   onConfirm: () {
-                                    Navigator.of(dialogContext).pop();
-                                    onDeleteConfirmed();
-                                    Navigator.of(context).pop();
+                                    Navigator.of(dialogContext).pop(); 
+                                    Navigator.of(context).pop(true);
                                   },
                                   onCancel: () {
                                     Navigator.of(dialogContext).pop();
@@ -72,22 +104,32 @@ class ImagePreviewDialog extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16.0), // Add spacing between image and button
+                  if (isProcessingImage)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: LinearProgressIndicator(
+                        borderRadius: BorderRadius.circular(8.0),
+                        backgroundColor: Colors.grey[300],
+                        valueColor: AlwaysStoppedAnimation<Color>(toggleOptionSelectedLengkapColor),
+                        minHeight: 5.0,
+                      ),
+                    ),
+                  const SizedBox(height: 16.0),
                   SizedBox(
-                    width: double.infinity, // Take full width
+                    width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pop(); // Close the image preview popup
+                        Navigator.of(context).pop(false);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: toggleOptionSelectedLengkapColor, // Change to light blue
+                        backgroundColor: toggleOptionSelectedLengkapColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
-                        minimumSize: const Size.fromHeight(44), // Set height to 44
+                        minimumSize: const Size.fromHeight(44),
                         padding: const EdgeInsets.symmetric(vertical: 12.0),
                         elevation: 5,
-                        shadowColor: toggleOptionSelectedLengkapColor.withAlpha(102), // Update shadow color
+                        shadowColor: toggleOptionSelectedLengkapColor.withAlpha(102),
                       ),
                       child: Text(
                         'Simpan',

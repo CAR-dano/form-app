@@ -76,38 +76,35 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
     state = [...state, imageData];
   }
 
-  void updateImageDataByLabel(String label, {String? imagePath}) {
+  void updateImageDataByLabel(String label, {String? imagePath, int? rotationAngle, String? originalRawPath}) {
     state = [
       for (final img in state)
         if (img.label == label)
-          ImageData(
-            label: img.label,
-            imagePath: imagePath ?? img.imagePath,
-            needAttention: img.needAttention,
-            category: img.category, // Add existing category
-            isMandatory: img.isMandatory, // Add existing isMandatory
+          img.copyWith(
+            imagePath: imagePath,
+            rotationAngle: rotationAngle,
+            originalRawPath: originalRawPath,
           )
         else
           img,
     ];
-    // The 'state' setter handles saving
   }
 
-  void updateImageDataByPath(String imagePath, {String? label, bool? needAttention, String? category, bool? isMandatory}) {
+  void updateImageDataByPath(String imagePath, {String? label, bool? needAttention, String? category, bool? isMandatory, int? rotationAngle, String? originalRawPath}) {
     state = [
       for (final img in state)
         if (img.imagePath == imagePath)
-          ImageData(
-            label: label ?? img.label,
-            imagePath: img.imagePath,
-            needAttention: needAttention ?? img.needAttention,
-            category: category ?? img.category, // Add existing category
-            isMandatory: isMandatory ?? img.isMandatory, // Add existing isMandatory
+          img.copyWith(
+            label: label,
+            needAttention: needAttention,
+            category: category,
+            isMandatory: isMandatory,
+            rotationAngle: rotationAngle,
+            originalRawPath: originalRawPath,
           )
         else
           img,
     ];
-    // The 'state' setter handles saving
   }
 
   void removeImageDataByLabel(String label) {
