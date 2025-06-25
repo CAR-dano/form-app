@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/services/update_service.dart';
 import 'package:form_app/statics/app_styles.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 void showUpdateDialog(BuildContext context) {
   showDialog(
@@ -50,19 +51,22 @@ class UpdateDialog extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
               decoration: BoxDecoration(
                 color: Colors.grey[100],
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.grey[300]!),
               ),
-              constraints: const BoxConstraints(maxHeight: 150), // Limit height for release notes
+              constraints: const BoxConstraints(maxHeight: 250), // Limit height for release notes
               child: SingleChildScrollView(
-                child: Text(
-                  updateState.releaseNotes.isNotEmpty
+                child: MarkdownBody(
+                  data: updateState.releaseNotes.isNotEmpty
                       ? updateState.releaseNotes.split('\n\n---\n\n')[0] // Extract only the PR description
                       : 'No release notes provided.',
-                  style: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
+                  styleSheet: MarkdownStyleSheet(
+                    p: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
+                    listBullet: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
+                  ),
                 ),
               ),
             ),
