@@ -32,7 +32,7 @@ class UpdateDialog extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Pembaruan Tersedia! (v${updateState.latestVersion})',
+              'Update Tersedia! (v${updateState.latestVersion})',
               textAlign: TextAlign.center,
               style: labelStyle.copyWith(
                 fontSize: 24,
