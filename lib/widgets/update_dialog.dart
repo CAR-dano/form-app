@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/services/update_service.dart';
 import 'package:form_app/statics/app_styles.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 void showUpdateDialog(BuildContext context) {
   showDialog(
     context: context,
-    barrierDismissible: false,
+    barrierDismissible: true,
     builder: (context) => const UpdateDialog(),
   );
 }
@@ -31,7 +32,7 @@ class UpdateDialog extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Update Available! (v${updateState.latestVersion})',
+              'Update Tersedia! (v${updateState.latestVersion})',
               textAlign: TextAlign.center,
               style: labelStyle.copyWith(
                 fontSize: 24,
@@ -41,7 +42,7 @@ class UpdateDialog extends ConsumerWidget {
             ),
             const SizedBox(height: 24.0),
             Text(
-              'A new version of the app is available. Here are the changes:',
+              'Versi baru aplikasi tersedia.\nBerikut adalah perubahannya:',
               textAlign: TextAlign.center,
               style: labelStyle.copyWith(
                 fontSize: 16,
@@ -50,33 +51,43 @@ class UpdateDialog extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
               decoration: BoxDecoration(
                 color: Colors.grey[100],
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.grey[300]!),
               ),
-              constraints: const BoxConstraints(maxHeight: 150), // Limit height for release notes
+              constraints: const BoxConstraints(maxHeight: 250), // Limit height for release notes
               child: SingleChildScrollView(
-                child: Text(
-                  updateState.releaseNotes.isNotEmpty
-                      ? updateState.releaseNotes
-                      : 'No release notes provided.',
-                  style: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 4, bottom: 4),
+                  child: MarkdownBody(
+                    data: updateState.releaseNotes.isNotEmpty
+                        ? updateState.releaseNotes.split('\n\n---\n\n')[0] // Extract only the PR description
+                        : 'Catatan rilis tidak tersedia.',
+                    styleSheet: MarkdownStyleSheet(
+                      p: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
+                      listBullet: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
+                    ),
+                  ),
                 ),
               ),
             ),
             if (updateState.isDownloading) ...[
               const SizedBox(height: 20),
-              LinearProgressIndicator(
-                value: updateState.downloadProgress,
-                backgroundColor: Colors.grey[300],
-                valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10), // Adjust the radius as needed
+                child: LinearProgressIndicator(
+                  value: updateState.downloadProgress,
+                  backgroundColor: Colors.grey[300],
+                  valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                  minHeight: 10, // Adjust height to make it visible with border
+                ),
               ),
               const SizedBox(height: 8),
               Center(
                 child: Text(
-                  'Downloading: ${(updateState.downloadProgress * 100).toStringAsFixed(0)}%',
+                  'Mengunduh: ${(updateState.downloadProgress * 100).toStringAsFixed(0)}%',
                   style: labelStyle.copyWith(color: darkTextColor),
                 ),
               )
@@ -84,7 +95,7 @@ class UpdateDialog extends ConsumerWidget {
             if (updateState.errorMessage.isNotEmpty) ...[
               const SizedBox(height: 16),
               Text(
-                'Error: ${updateState.errorMessage}',
+                'Kesalahan: ${updateState.errorMessage}',
                 style: labelStyle.copyWith(color: Colors.red, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
@@ -113,7 +124,7 @@ class UpdateDialog extends ConsumerWidget {
                         child: Transform.translate(
                           offset: const Offset(0.0, -2.0),
                           child: Text(
-                            'Later',
+                            'Nanti',
                             textAlign: TextAlign.center,
                             style: labelStyle.copyWith(
                               color: darkTextColor,
@@ -154,7 +165,7 @@ class UpdateDialog extends ConsumerWidget {
                       child: Transform.translate(
                         offset: const Offset(0.0, -2.0),
                         child: Text(
-                          updateState.downloadedApkPath.isNotEmpty ? 'Install' : 'Download',
+                          updateState.downloadedApkPath.isNotEmpty ? 'Instal' : 'Unduh',
                           textAlign: TextAlign.center,
                           style: labelStyle.copyWith(
                             color: buttonTextColor,

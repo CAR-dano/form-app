@@ -11,6 +11,7 @@ class CustomMessageOverlay {
 
   Timer? _timer;
   double _draggedY = 0.0;
+  double _draggedX = 0.0; // New variable for horizontal drag
 
   CustomMessageOverlay();
 
@@ -33,6 +34,7 @@ class CustomMessageOverlay {
       _overlayEntry = null;
     }
     _draggedY = 0.0;
+    _draggedX = 0.0; // Reset horizontal drag
 
     final tickerProvider = Navigator.of(context);
 
@@ -46,8 +48,8 @@ class CustomMessageOverlay {
         final baseTop = MediaQuery.of(context).padding.top + 10;
         return Positioned(
           top: baseTop + _draggedY,
-          left: 10,
-          right: 10,
+          left: 10 + _draggedX, // Apply horizontal drag
+          right: 10 - _draggedX, // Apply horizontal drag
           child: GestureDetector(
             onVerticalDragUpdate: (details) {
               _snapAnimationController?.stop();
@@ -59,8 +61,29 @@ class CustomMessageOverlay {
               final double dragThreshold = -75.0;
               final double velocityThreshold = -300.0;
 
+              final double screenHeight = MediaQuery.of(context).size.height;
               if (_draggedY < dragThreshold || (details.primaryVelocity ?? 0) < velocityThreshold) {
-                hide();
+                _snapAnimationController?.dispose();
+                _snapAnimationController = AnimationController(
+                    vsync: tickerProvider,
+                    duration: const Duration(milliseconds: 1600)); // Increased duration for smoother vertical dismissal
+                _snapAnimation = Tween<double>(
+                  begin: _draggedY,
+                  end: -screenHeight, // Animate upwards off-screen
+                ).animate(
+                    CurvedAnimation(parent: _snapAnimationController!, curve: Curves.easeOut));
+                
+                _snapAnimationController!.addListener(() {
+                  _draggedY = _snapAnimation!.value;
+                  _overlayEntry?.markNeedsBuild();
+                });
+
+                _snapAnimationController!.addStatusListener((status) {
+                  if (status == AnimationStatus.completed) {
+                    hide();
+                  }
+                });
+                _snapAnimationController!.forward();
               } else {
                 _snapAnimationController?.dispose();
                 _snapAnimationController = AnimationController(
@@ -77,6 +100,62 @@ class CustomMessageOverlay {
                 _snapAnimationController!.addStatusListener((status) {
                   if (status == AnimationStatus.completed) {
                     _draggedY = 0.0;
+                    _snapAnimationController?.dispose();
+                    _snapAnimationController = null;
+                    _overlayEntry?.markNeedsBuild();
+                  }
+                });
+                _snapAnimationController!.forward();
+              }
+            },
+            onHorizontalDragUpdate: (details) { // New horizontal drag update
+              _snapAnimationController?.stop();
+              _draggedX += details.delta.dx;
+              _overlayEntry?.markNeedsBuild();
+            },
+            onHorizontalDragEnd: (details) { // New horizontal drag end
+              final double dragThreshold = 75.0;
+              final double velocityThreshold = 300.0;
+              final double screenWidth = MediaQuery.of(context).size.width;
+
+              if (_draggedX.abs() > dragThreshold || (details.primaryVelocity ?? 0).abs() > velocityThreshold) {
+                _snapAnimationController?.dispose();
+                _snapAnimationController = AnimationController(
+                    vsync: tickerProvider,
+                    duration: const Duration(milliseconds: 300));
+                _snapAnimation = Tween<double>(
+                  begin: _draggedX,
+                  end: _draggedX > 0 ? screenWidth : -screenWidth,
+                ).animate(
+                    CurvedAnimation(parent: _snapAnimationController!, curve: Curves.easeOut));
+                
+                _snapAnimationController!.addListener(() {
+                  _draggedX = _snapAnimation!.value;
+                  _overlayEntry?.markNeedsBuild();
+                });
+
+                _snapAnimationController!.addStatusListener((status) {
+                  if (status == AnimationStatus.completed) {
+                    hide();
+                  }
+                });
+                _snapAnimationController!.forward();
+              } else {
+                _snapAnimationController?.dispose();
+                _snapAnimationController = AnimationController(
+                    vsync: tickerProvider,
+                    duration: const Duration(milliseconds: 200));
+                _snapAnimation = Tween<double>(begin: _draggedX, end: 0.0).animate(
+                    CurvedAnimation(parent: _snapAnimationController!, curve: Curves.easeOut));
+                
+                _snapAnimationController!.addListener(() {
+                  _draggedX = _snapAnimation!.value;
+                  _overlayEntry?.markNeedsBuild();
+                });
+
+                _snapAnimationController!.addStatusListener((status) {
+                  if (status == AnimationStatus.completed) {
+                    _draggedX = 0.0;
                     _snapAnimationController?.dispose();
                     _snapAnimationController = null;
                     _overlayEntry?.markNeedsBuild();
@@ -155,12 +234,14 @@ class CustomMessageOverlay {
           _animationController?.dispose();
           _animationController = null;
           _draggedY = 0.0;
+          _draggedX = 0.0; // Reset horizontal drag
         }).catchError((e) {
           _overlayEntry?.remove();
           _overlayEntry = null;
           _animationController?.dispose();
           _animationController = null;
           _draggedY = 0.0;
+          _draggedX = 0.0; // Reset horizontal drag
         });
       } else {
         _overlayEntry?.remove();
@@ -168,6 +249,7 @@ class CustomMessageOverlay {
         _animationController?.dispose();
         _animationController = null;
         _draggedY = 0.0;
+        _draggedX = 0.0; // Reset horizontal drag
       }
     }
   }
