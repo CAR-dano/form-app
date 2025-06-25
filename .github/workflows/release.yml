@@ -59,7 +59,7 @@ jobs:
           echo "storePassword=${{ secrets.STORE_PASSWORD }}" > android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "storeFile=key.jks" >> android/key.properties
+          echo "storeFile=app/key.jks" >> android/key.properties
 
       # Accepts Android SDK licenses.
       - name: Accept Android SDK licenses
