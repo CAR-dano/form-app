@@ -175,12 +175,17 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   }
 
   Future<void> _rotateCurrentImage() async {
+    // 1. Capture the index in a local variable BEFORE the async gap.
+    final int indexToRotate = _currentIndex;
+
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
-    if (images.isEmpty || _currentIndex >= images.length) {
+    
+    // Use the captured index for the guard clause
+    if (images.isEmpty || indexToRotate >= images.length) {
       return; // No image to rotate
     }
 
-    final currentImage = images[_currentIndex];
+    final currentImage = images[indexToRotate];
     final originalRawPath = currentImage.originalRawPath; // Use the original raw image path
     final currentRotation = currentImage.rotationAngle;
 
@@ -204,8 +209,9 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
           imagePath: newProcessedPath,
           rotationAngle: newRotation,
         );
+        // 2. Use the captured, unchanging index to update the provider.
         ref.read(tambahanImageDataProvider(widget.identifier).notifier).updateImageAtIndex(
-              _currentIndex,
+              indexToRotate,
               updatedImage,
             );
         if (mounted) {
