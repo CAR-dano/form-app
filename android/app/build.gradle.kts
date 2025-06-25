@@ -8,11 +8,22 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-val keyPropertiesFile = rootProject.file("android/key.properties")
+val keyPropertiesFile = rootProject.file("key.properties")
 val keyProperties = Properties()
+println("--- Keystore Debug ---")
+println("Looking for properties file at: ${keyPropertiesFile.absolutePath}")
 if (keyPropertiesFile.exists()) {
-    keyProperties.load(FileInputStream(keyPropertiesFile))
+    println("SUCCESS: key.properties file found.")
+    try {
+        keyProperties.load(FileInputStream(keyPropertiesFile))
+        println("Properties loaded: $keyProperties")
+    } catch (e: Exception) {
+        println("ERROR: Failed to load key.properties file: $e")
+    }
+} else {
+    println("ERROR: key.properties file does NOT exist at the specified path.")
 }
+println("----------------------")
 
 android {
     namespace = "com.cardano.palapainspeksi"
@@ -30,10 +41,23 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = keyProperties["keyAlias"] as String?
-            keyPassword = keyProperties["keyPassword"] as String?
-            storeFile = rootProject.file(keyProperties["storeFile"] as String?)
-            storePassword = keyProperties["storePassword"] as String?
+            keyAlias = keyProperties.getProperty("keyAlias")
+            keyPassword = keyProperties.getProperty("keyPassword")
+            storePassword = keyProperties.getProperty("storePassword")
+            
+            val storeFilePath = keyProperties.getProperty("storeFile")
+            if (storeFilePath != null) {
+                // ---- START OF NEW DEBUG CODE ----
+                val resolvedStoreFile = rootProject.file(storeFilePath)
+                println("--- Keystore File Path Debug ---")
+                println("Path from properties: '$storeFilePath'")
+                println("Resolved absolute path: '${resolvedStoreFile.absolutePath}'")
+                println("Does the resolved file exist? ${resolvedStoreFile.exists()}")
+                println("------------------------------")
+                // ---- END OF NEW DEBUG CODE ----
+
+                storeFile = resolvedStoreFile // Use the resolved file
+            }
         }
     }
 
