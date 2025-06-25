@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart' as dio;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:open_file_plus/open_file_plus.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -17,15 +18,21 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
   UpdateNotifier() : super(UpdateState());
 
   Future<void> checkForUpdate() async {
-    if (state.isLoading) return;
+    debugPrint('UpdateService: Checking for updates...');
+    if (state.isLoading) {
+      debugPrint('UpdateService: Already checking for updates. Aborting.');
+      return;
+    }
     state = state.copyWith(isLoading: true, errorMessage: '');
 
     try {
       // 1. Get current app version
       final packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = packageInfo.version;
+      debugPrint('UpdateService: Current app version: $currentVersion');
 
       // 2. Fetch latest release from GitHub
+      debugPrint('UpdateService: Fetching latest release from GitHub: https://api.github.com/repos/$githubOwner/$githubRepo/releases/latest');
       final response = await dio.Dio().get(
         'https://api.github.com/repos/$githubOwner/$githubRepo/releases/latest',
       );
@@ -33,23 +40,27 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       final latestVersion = (response.data['tag_name'] as String).replaceAll('v', '');
       final releaseNotes = response.data['body'] as String;
       final assets = response.data['assets'] as List;
+      debugPrint('UpdateService: Latest release version on GitHub: $latestVersion');
+
       final apkAsset = assets.firstWhere(
         (asset) => (asset['name'] as String).contains('arm64-v8a-release.apk'),
         orElse: () => null,
       );
 
       if (apkAsset == null) {
-        // It's good practice to add a fallback in case the specific APK isn't found
+        debugPrint('UpdateService: arm64-v8a-release.apk not found. Checking for universal-release.apk...');
         final universalApkAsset = assets.firstWhere(
           (asset) => (asset['name'] as String).contains('universal-release.apk'),
           orElse: () => null
         );
         if (universalApkAsset == null) {
+          debugPrint('UpdateService: No arm64-v8a or universal .apk file found in the latest release.');
           throw Exception('No arm64-v8a or universal .apk file found in the latest release.');
         }
         final apkDownloadUrl = universalApkAsset['browser_download_url'] as String;
-        // ... continue with comparison logic using universalApkAsset ...
+        debugPrint('UpdateService: Found universal-release.apk. Download URL: $apkDownloadUrl');
          if (_isNewerVersion(latestVersion, currentVersion)) {
+          debugPrint('UpdateService: New universal version available: $latestVersion');
           state = state.copyWith(
             isLoading: false,
             newVersionAvailable: true,
@@ -58,6 +69,7 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
             apkDownloadUrl: apkDownloadUrl,
           );
         } else {
+          debugPrint('UpdateService: No newer universal version available.');
           state = state.copyWith(isLoading: false, newVersionAvailable: false);
         }
 
@@ -65,9 +77,11 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       }
 
       final apkDownloadUrl = apkAsset['browser_download_url'] as String;
+      debugPrint('UpdateService: Found arm64-v8a-release.apk. Download URL: $apkDownloadUrl');
 
       // 3. Compare versions (no changes here)
       if (_isNewerVersion(latestVersion, currentVersion)) {
+        debugPrint('UpdateService: New version available: $latestVersion');
         state = state.copyWith(
           isLoading: false,
           newVersionAvailable: true,
@@ -76,9 +90,11 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
           apkDownloadUrl: apkDownloadUrl,
         );
       } else {
+        debugPrint('UpdateService: No newer version available.');
         state = state.copyWith(isLoading: false, newVersionAvailable: false);
       }
     } catch (e) {
+      debugPrint('UpdateService: Error checking for updates: $e');
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
   }

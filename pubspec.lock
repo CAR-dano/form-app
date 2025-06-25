@@ -523,10 +523,11 @@ packages:
   open_file_plus:
     dependency: "direct main"
     description:
-      name: open_file_plus
-      sha256: "01ad7011d46d253aa22e5f0bc7345ca49cfe652c50ae9b0af945491c1728a8c3"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: b29351d11174869ebe0d7a5401ecad0a2300a63b
+      url: "https://github.com/postflow/open_file_plus.git"
+    source: git
     version: "3.4.1+1"
   package_info_plus:
     dependency: "direct main"

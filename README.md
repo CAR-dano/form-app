@@ -42,6 +42,23 @@ The application is structured as an intuitive, step-by-step form that covers all
 -**Real-time Feedback:** Visual feedback for loading states, image processing, and data submission progress ensures the user is always informed.
 - **Expandable Note Fields:** Smart text fields that support bulleted lists for clear and detailed note-taking.
 
+#### 🔄 In-App Update Feature
+The application includes an in-app update mechanism to ensure users always have the latest version.
+- **Automatic Update Check:** The app automatically checks for new releases from the configured GitHub repository upon startup.
+- **Targeted APK Download:** It prioritizes downloading the `arm64-v8a` APK for optimal performance, with a fallback to a universal APK if the specific one is not available.
+- **Seamless Installation:** Once downloaded, the app prompts the user to install the update directly, leveraging Android's `FileProvider` and `REQUEST_INSTALL_PACKAGES` permission for a smooth experience.
+
+**Configuration:**
+To enable and customize the update feature, ensure the following in `lib/services/update_service.dart`:
+- `githubOwner`: Set to your GitHub username or organization (e.g., `CAR-dano`).
+- `githubRepo`: Set to your repository name (e.g., `form-app`).
+
+**Android Permissions:**
+For the in-app update to function correctly on Android, the following additions are required in `android/app/src/main/AndroidManifest.xml`:
+- A `<provider>` entry for `androidx.core.content.FileProvider` within the `<application>` tag, pointing to `@xml/provider_paths`.
+- The `<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />` outside the `<application>` tag.
+- A `provider_paths.xml` file in `android/app/src/main/res/xml/` defining the shared paths.
+
 ## 🛠️ Tech Stack & Architecture
 
 The application leverages a modern, scalable tech stack to ensure performance and maintainability.
