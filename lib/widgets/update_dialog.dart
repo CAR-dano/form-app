@@ -42,7 +42,7 @@ class UpdateDialog extends ConsumerWidget {
             ),
             const SizedBox(height: 24.0),
             Text(
-              'Versi baru aplikasi tersedia. Berikut adalah perubahannya:',
+              'Versi baru aplikasi tersedia.\nBerikut adalah perubahannya:',
               textAlign: TextAlign.center,
               style: labelStyle.copyWith(
                 fontSize: 16,
