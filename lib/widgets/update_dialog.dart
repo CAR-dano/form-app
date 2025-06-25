@@ -7,7 +7,7 @@ import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 void showUpdateDialog(BuildContext context) {
   showDialog(
     context: context,
-    barrierDismissible: false,
+    barrierDismissible: true,
     builder: (context) => const UpdateDialog(),
   );
 }
@@ -59,13 +59,16 @@ class UpdateDialog extends ConsumerWidget {
               ),
               constraints: const BoxConstraints(maxHeight: 250), // Limit height for release notes
               child: SingleChildScrollView(
-                child: MarkdownBody(
-                  data: updateState.releaseNotes.isNotEmpty
-                      ? updateState.releaseNotes.split('\n\n---\n\n')[0] // Extract only the PR description
-                      : 'Catatan rilis tidak tersedia.',
-                  styleSheet: MarkdownStyleSheet(
-                    p: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
-                    listBullet: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 4, bottom: 4),
+                  child: MarkdownBody(
+                    data: updateState.releaseNotes.isNotEmpty
+                        ? updateState.releaseNotes.split('\n\n---\n\n')[0] // Extract only the PR description
+                        : 'Catatan rilis tidak tersedia.',
+                    styleSheet: MarkdownStyleSheet(
+                      p: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
+                      listBullet: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
+                    ),
                   ),
                 ),
               ),
