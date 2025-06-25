@@ -60,7 +60,7 @@ class UpdateDialog extends ConsumerWidget {
               child: SingleChildScrollView(
                 child: Text(
                   updateState.releaseNotes.isNotEmpty
-                      ? updateState.releaseNotes
+                      ? updateState.releaseNotes.split('\n\n---\n\n')[0] // Extract only the PR description
                       : 'No release notes provided.',
                   style: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
                 ),
