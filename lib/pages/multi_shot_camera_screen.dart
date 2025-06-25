@@ -9,7 +9,7 @@ import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/utils/image_capture_and_processing_util.dart';
-import 'package:form_app/widgets/custom_message_overlay.dart';
+import 'package:form_app/providers/message_overlay_provider.dart'; // Import the new provider
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:math' show pi;
 import 'package:image/image.dart' as img; // Added for image manipulation
@@ -243,7 +243,8 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
 
       if (cameras.isEmpty) {
         if (mounted) {
-          CustomMessageOverlay(context).show(
+          ref.read(customMessageOverlayProvider).show(
+            context: context, // Pass context here
             message: 'No cameras available.',
             color: Colors.orange,
             icon: Icons.warning,
@@ -268,7 +269,8 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
 
     } on CameraException catch (e) {
       if (mounted) {
-        CustomMessageOverlay(context).show(
+        ref.read(customMessageOverlayProvider).show(
+          context: context, // Pass context here
           message: 'Error discovering cameras: ${e.description}',
           color: Colors.red,
           icon: Icons.error,
@@ -333,7 +335,8 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       }
     } on CameraException catch (e) {
       if (mounted) {
-        CustomMessageOverlay(context).show(
+        ref.read(customMessageOverlayProvider).show(
+          context: context, // Pass context here
           message: 'Error initializing camera: ${e.description}',
           color: Colors.red,
           icon: Icons.error,
@@ -397,7 +400,8 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
 
     } on CameraException catch (e) {
       if (mounted) {
-        CustomMessageOverlay(context).show(
+        ref.read(customMessageOverlayProvider).show(
+          context: context, // Pass context here
           message: 'Error taking picture: ${e.description}',
           color: Colors.red,
           icon: Icons.error,
@@ -468,6 +472,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
           needAttention: false,
           category: widget.imageIdentifier,
           isMandatory: false,
+          originalRawPath: imageFile.path, // Store the path of the captured image as original
         );
         tambahanImageNotifier.addImage(newTambahanImage);
       }

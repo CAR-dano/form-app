@@ -82,7 +82,7 @@ jobs:
         id: universal_release_apk_details
         run: |
           original_path="build/app/outputs/flutter-apk/app-release.apk"
-          new_name="app-universal-release-v${{ steps.pubspec.outputs.full_version }}.apk"
+          new_name="palapa_inspeksi-v${{ steps.pubspec.outputs.full_version }}-universal-release.apk"
           new_path="build/app/outputs/flutter-apk/$new_name"
           mv "$original_path" "$new_path"
           echo "path=$new_path" >> $GITHUB_OUTPUT
@@ -93,7 +93,7 @@ jobs:
         id: arm64_v8a_release_apk_details
         run: |
           original_path="build/app/outputs/flutter-apk/app-arm64-v8a-release.apk"
-          new_name="app-arm64-v8a-release-v${{ steps.pubspec.outputs.full_version }}.apk"
+          new_name="palapa_inspeksi-v${{ steps.pubspec.outputs.full_version }}-arm64-v8a-release.apk"
           new_path="build/app/outputs/flutter-apk/$new_name"
           mv "$original_path" "$new_path"
           echo "path=$new_path" >> $GITHUB_OUTPUT
@@ -104,7 +104,7 @@ jobs:
         id: armeabi_v7a_release_apk_details
         run: |
           original_path="build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk"
-          new_name="app-armeabi-v7a-release-v${{ steps.pubspec.outputs.full_version }}.apk"
+          new_name="palapa_inspeksi-v${{ steps.pubspec.outputs.full_version }}-armeabi-v7a-release.apk"
           new_path="build/app/outputs/flutter-apk/$new_name"
           mv "$original_path" "$new_path"
           echo "path=$new_path" >> $GITHUB_OUTPUT
@@ -115,7 +115,7 @@ jobs:
         id: debug_apk_details
         run: |
           original_path="build/app/outputs/flutter-apk/app-debug.apk"
-          new_name="app-debug-v${{ steps.pubspec.outputs.full_version }}.apk"
+          new_name="palapa_inspeksi-v${{ steps.pubspec.outputs.full_version }}-debug.apk"
           new_path="build/app/outputs/flutter-apk/$new_name"
           mv "$original_path" "$new_path"
           echo "path=$new_path" >> $GITHUB_OUTPUT

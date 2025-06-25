@@ -7,16 +7,20 @@ class TambahanImageData {
   final String label;
   final bool needAttention;
   final String id;
-  final String category; // New field
-  final bool isMandatory; // New field
+  final String category;
+  final bool isMandatory;
+  final int rotationAngle;
+  final String originalRawPath; // Renamed from originalImagePath
 
   TambahanImageData({
     required this.imagePath,
     required this.label,
     required this.needAttention,
     String? id,
-    required this.category, // Add to constructor
-    required this.isMandatory, // Add to constructor
+    required this.category,
+    required this.isMandatory,
+    this.rotationAngle = 0,
+    required this.originalRawPath, // Renamed in constructor
   }) : id = id ?? uuid.v4();
 
   TambahanImageData copyWith({
@@ -24,16 +28,20 @@ class TambahanImageData {
     String? label,
     bool? needAttention,
     String? id,
-    String? category, // Add to copyWith
-    bool? isMandatory, // Add to copyWith
+    String? category,
+    bool? isMandatory,
+    int? rotationAngle,
+    String? originalRawPath, // Renamed in copyWith
   }) {
     return TambahanImageData(
       imagePath: imagePath ?? this.imagePath,
       label: label ?? this.label,
       needAttention: needAttention ?? this.needAttention,
       id: id ?? this.id, 
-      category: category ?? this.category, // Add to copyWith
-      isMandatory: isMandatory ?? this.isMandatory, // Add to copyWith
+      category: category ?? this.category,
+      isMandatory: isMandatory ?? this.isMandatory,
+      rotationAngle: rotationAngle ?? this.rotationAngle,
+      originalRawPath: originalRawPath ?? this.originalRawPath, // Renamed in copyWith
     );
   }
 
@@ -43,8 +51,10 @@ class TambahanImageData {
       'label': label,
       'needAttention': needAttention,
       'id': id,
-      'category': category, // Add to toJson
-      'isMandatory': isMandatory, // Add to toJson
+      'category': category,
+      'isMandatory': isMandatory,
+      'rotationAngle': rotationAngle,
+      'originalRawPath': originalRawPath, // Renamed in toJson
     };
   }
 
@@ -54,8 +64,10 @@ class TambahanImageData {
       label: json['label'] as String,
       needAttention: json['needAttention'] as bool,
       id: json['id'] as String? ?? uuid.v4(),
-      category: json['category'] as String, // Add to fromJson
-      isMandatory: json['isMandatory'] as bool, // Add to fromJson
+      category: json['category'] as String,
+      isMandatory: json['isMandatory'] as bool,
+      rotationAngle: json['rotationAngle'] as int? ?? 0,
+      originalRawPath: json['originalRawPath'] as String, // Renamed in fromJson
     );
   }
 

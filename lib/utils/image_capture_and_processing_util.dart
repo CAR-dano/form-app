@@ -9,20 +9,22 @@ import 'package:gal/gal.dart';
 class _ProcessImageInput {
   final String pickedFilePath;
   final String pickedFileName;
-  final String tempPath; // Add tempPath here
+  final String tempPath;
+  final int rotationAngle; // New parameter for rotation
 
   _ProcessImageInput({
     required this.pickedFilePath,
     required this.pickedFileName,
-    required this.tempPath, // Initialize in constructor
+    required this.tempPath,
+    this.rotationAngle = 0, // Default to no rotation
   });
 }
 
 // This function will run in a separate isolate
 Future<String?> _processImageIsolate(_ProcessImageInput input) async {
   final File imageFile = File(input.pickedFilePath);
-  List<int> imageBytes = await imageFile.readAsBytes(); // File I/O is fine in isolates
-  img.Image? originalImage = img.decodeImage(Uint8List.fromList(imageBytes)); // Pure Dart, fine
+  List<int> imageBytes = await imageFile.readAsBytes();
+  img.Image? originalImage = img.decodeImage(Uint8List.fromList(imageBytes));
 
   if (originalImage == null) {
     if (kDebugMode) {
@@ -34,31 +36,37 @@ Future<String?> _processImageIsolate(_ProcessImageInput input) async {
     return null;
   }
 
+  // Apply rotation first
+  img.Image? rotatedImage = originalImage;
+  if (input.rotationAngle != 0) {
+    rotatedImage = img.copyRotate(originalImage, angle: input.rotationAngle);
+  }
+
   // All image processing logic (cropping, resizing, encoding) is Pure Dart and fine here.
-  double currentAspectRatio = originalImage.width / originalImage.height;
+  double currentAspectRatio = rotatedImage.width / rotatedImage.height;
   double targetAspectRatio = 4.0 / 3.0;
   const double tolerance = 0.01;
   bool needsCrop = false;
 
   int cropX = 0;
   int cropY = 0;
-  int cropWidth = originalImage.width;
-  int cropHeight = originalImage.height;
+  int cropWidth = rotatedImage.width;
+  int cropHeight = rotatedImage.height;
 
   if ((currentAspectRatio - targetAspectRatio).abs() > tolerance) {
     needsCrop = true;
     if (currentAspectRatio > targetAspectRatio) {
-      cropWidth = (originalImage.height * targetAspectRatio).round();
-      cropX = ((originalImage.width - cropWidth) / 2).round();
+      cropWidth = (rotatedImage.height * targetAspectRatio).round();
+      cropX = ((rotatedImage.width - cropWidth) / 2).round();
     } else {
-      cropHeight = (originalImage.width / targetAspectRatio).round();
-      cropY = ((originalImage.height - cropHeight) / 2).round();
+      cropHeight = (rotatedImage.width / targetAspectRatio).round();
+      cropY = ((rotatedImage.height - cropHeight) / 2).round();
     }
   }
 
-  img.Image? processedImage = originalImage;
+  img.Image? processedImage = rotatedImage;
   if (needsCrop) {
-    processedImage = img.copyCrop(originalImage, x: cropX, y: cropY, width: cropWidth, height: cropHeight);
+    processedImage = img.copyCrop(rotatedImage, x: cropX, y: cropY, width: cropWidth, height: cropHeight);
   }
 
   const int maxWidth = 1200;
@@ -89,7 +97,6 @@ Future<String?> _processImageIsolate(_ProcessImageInput input) async {
   }
 
   try {
-    // Use the passed tempPath instead of calling getTemporaryDirectory()
     final String directoryPath = input.tempPath;
     final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
     
@@ -103,12 +110,9 @@ Future<String?> _processImageIsolate(_ProcessImageInput input) async {
     }
 
     final String newFileName = '${timestamp}_compressed.$finalExtension';
-    // Ensure the path separator is correct. Dart's Platform.pathSeparator can be used,
-    // or simply ensure `directoryPath` already ends with one if needed,
-    // or construct carefully. Here, assuming input.tempPath is the directory.
     finalImagePath = '$directoryPath${Platform.pathSeparator}$newFileName';
     final File newProcessedFile = File(finalImagePath);
-    await newProcessedFile.writeAsBytes(processedBytes); // File I/O fine
+    await newProcessedFile.writeAsBytes(processedBytes);
     if (kDebugMode) {
       print('Processed image saved to: $finalImagePath');
       final int fileSize = await newProcessedFile.length();
@@ -126,24 +130,22 @@ Future<String?> _processImageIsolate(_ProcessImageInput input) async {
 class ImageCaptureAndProcessingUtil {
   static final ImagePicker _picker = ImagePicker();
 
-  static Future<String?> processAndSaveImage(XFile pickedFile) async {
-    // Get the temporary directory path in the main isolate
+  static Future<String?> processAndSaveImage(XFile pickedFile, {int rotationAngle = 0}) async {
     final directory = await getTemporaryDirectory();
     final String tempPath = directory.path;
 
-    // Pass the tempPath to the isolate function
     return await compute(
       _processImageIsolate,
       _ProcessImageInput(
         pickedFilePath: pickedFile.path,
         pickedFileName: pickedFile.name,
-        tempPath: tempPath, // Pass the obtained path
+        tempPath: tempPath,
+        rotationAngle: rotationAngle,
       ),
     );
   }
 
   static Future<void> saveImageToGallery(XFile imageXFile) async {
-    // This function is called from the main isolate, so getTemporaryDirectory and Gal calls are fine here.
     try {
       bool hasAccess = await Gal.hasAccess();
       if (!hasAccess) {
@@ -155,11 +157,6 @@ class ImageCaptureAndProcessingUtil {
           return;
         }
       }
-
-      // It's good practice to ensure Flutter framework bindings are initialized
-      // if you're calling this from somewhere very early or in a complex async flow,
-      // though typically for direct UI event handlers it's already done.
-      // WidgetsFlutterBinding.ensureInitialized(); // Usually not needed here if called from widget event handlers.
 
       final directory = await getTemporaryDirectory();
       final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();

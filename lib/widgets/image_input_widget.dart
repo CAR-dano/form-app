@@ -11,6 +11,8 @@ import 'package:form_app/widgets/delete_confirmation_dialog.dart';
 import 'package:form_app/widgets/image_preview_dialog.dart';
 import 'package:form_app/utils/image_capture_and_processing_util.dart';
 import 'package:form_app/utils/image_form_handler.dart'; // Import the new helper
+import 'package:form_app/providers/image_processing_provider.dart'; // Import for processing state
+import 'package:form_app/providers/message_overlay_provider.dart'; // Import for messages
 
 class ImageInputWidget extends ConsumerStatefulWidget {
   final String label;
@@ -47,7 +49,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
         widget.onImagePicked?.call(File(processedPath));
         ref
             .read(imageDataListProvider.notifier)
-            .updateImageDataByLabel(widget.label, imagePath: processedPath);
+            .updateImageDataByLabel(widget.label, imagePath: processedPath, rotationAngle: 0); // Initialize rotation to 0
       },
       setLoadingState: (isLoading) {
         setState(() {
@@ -68,7 +70,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
         widget.onImagePicked?.call(File(processedPath));
         ref
             .read(imageDataListProvider.notifier)
-            .updateImageDataByLabel(widget.label, imagePath: processedPath);
+            .updateImageDataByLabel(widget.label, imagePath: processedPath, rotationAngle: 0); // Initialize rotation to 0
       },
       setLoadingState: (isLoading) {
         setState(() {
@@ -79,13 +81,79 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
     );
   }
 
-  void _viewImage(File imageFile) {
+  Future<void> _viewImage(File imageFile) async {
     FocusScope.of(context).unfocus();
-    _showImagePreview(context, imageFile);
+    final bool? wasDeleted = await _showImagePreview(context);
+
+    if (wasDeleted == true) {
+      _deleteImageConfirmed();
+    }
   }
 
-  void _showImagePreview(BuildContext context, File imageFile) {
-    showGeneralDialog(
+  Future<void> _rotateImage() async {
+    final imageData = ref.read(imageDataListProvider).firstWhere(
+      (img) => img.label == widget.label,
+      orElse: () => ImageData(
+        label: widget.label,
+        imagePath: '',
+        needAttention: false,
+        category: '',
+        isMandatory: true,
+      ),
+    );
+
+    if (imageData.imagePath.isEmpty) {
+      return; // No image to rotate
+    }
+
+    final originalRawPath = imageData.originalRawPath;
+    final currentRotation = imageData.rotationAngle;
+    final newRotation = (currentRotation + 90) % 360;
+
+    // Use widget.label as the identifier for image processing state
+    ref.read(imageProcessingServiceProvider.notifier).taskStarted(widget.label);
+
+    try {
+      final XFile pickedFile = XFile(originalRawPath);
+      final String? newProcessedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(
+        pickedFile,
+        rotationAngle: newRotation,
+      );
+
+      if (newProcessedPath != null) {
+        ref.read(imageDataListProvider.notifier).updateImageDataByLabel(
+              widget.label,
+              imagePath: newProcessedPath,
+              rotationAngle: newRotation,
+              originalRawPath: originalRawPath, // Ensure originalRawPath is preserved
+            );
+      } else {
+        if (mounted) {
+          ref.read(customMessageOverlayProvider).show(
+            context: context,
+            message: 'Gagal memutar gambar.',
+            color: Colors.red,
+            icon: Icons.error,
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ref.read(customMessageOverlayProvider).show(
+          context: context,
+          message: 'Error memutar gambar: $e',
+          color: Colors.red,
+          icon: Icons.error,
+        );
+      }
+    } finally {
+      // Use widget.label as the identifier for image processing state
+      ref.read(imageProcessingServiceProvider.notifier).taskFinished(widget.label);
+    }
+  }
+
+  Future<bool?> _showImagePreview(BuildContext context) {
+    return showGeneralDialog<bool>( // Specify the return type here
       context: context,
       barrierDismissible: true,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
@@ -93,8 +161,8 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
       pageBuilder: (BuildContext buildContext, Animation animation,
           Animation secondaryAnimation) {
         return ImagePreviewDialog(
-          imageFile: imageFile,
-          onDeleteConfirmed: _deleteImageConfirmed,
+          onRotate: _rotateImage, // Keep this if you need it
+          imageIdentifier: widget.label,
         );
       },
     );
@@ -105,7 +173,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
     widget.onImagePicked?.call(null);
     ref
         .read(imageDataListProvider.notifier)
-        .updateImageDataByLabel(widget.label, imagePath: '');
+        .updateImageDataByLabel(widget.label, imagePath: '', rotationAngle: 0); // Reset rotation on delete
   }
 
   @override
