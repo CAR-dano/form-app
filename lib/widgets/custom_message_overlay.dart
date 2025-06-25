@@ -61,8 +61,29 @@ class CustomMessageOverlay {
               final double dragThreshold = -75.0;
               final double velocityThreshold = -300.0;
 
+              final double screenHeight = MediaQuery.of(context).size.height;
               if (_draggedY < dragThreshold || (details.primaryVelocity ?? 0) < velocityThreshold) {
-                hide();
+                _snapAnimationController?.dispose();
+                _snapAnimationController = AnimationController(
+                    vsync: tickerProvider,
+                    duration: const Duration(milliseconds: 1600)); // Increased duration for smoother vertical dismissal
+                _snapAnimation = Tween<double>(
+                  begin: _draggedY,
+                  end: -screenHeight, // Animate upwards off-screen
+                ).animate(
+                    CurvedAnimation(parent: _snapAnimationController!, curve: Curves.easeOut));
+                
+                _snapAnimationController!.addListener(() {
+                  _draggedY = _snapAnimation!.value;
+                  _overlayEntry?.markNeedsBuild();
+                });
+
+                _snapAnimationController!.addStatusListener((status) {
+                  if (status == AnimationStatus.completed) {
+                    hide();
+                  }
+                });
+                _snapAnimationController!.forward();
               } else {
                 _snapAnimationController?.dispose();
                 _snapAnimationController = AnimationController(
