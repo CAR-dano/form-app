@@ -72,10 +72,14 @@ class UpdateDialog extends ConsumerWidget {
             ),
             if (updateState.isDownloading) ...[
               const SizedBox(height: 20),
-              LinearProgressIndicator(
-                value: updateState.downloadProgress,
-                backgroundColor: Colors.grey[300],
-                valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10), // Adjust the radius as needed
+                child: LinearProgressIndicator(
+                  value: updateState.downloadProgress,
+                  backgroundColor: Colors.grey[300],
+                  valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                  minHeight: 10, // Adjust height to make it visible with border
+                ),
               ),
               const SizedBox(height: 8),
               Center(
