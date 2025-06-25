@@ -29,7 +29,9 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       // 1. Get current app version
       final packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = packageInfo.version;
-      debugPrint('UpdateService: Current app version: $currentVersion');
+      final currentBuildNumber = packageInfo.buildNumber;
+      final fullCurrentVersion = '$currentVersion+$currentBuildNumber';
+      debugPrint('UpdateService: Current app version: $fullCurrentVersion');
 
       // 2. Fetch latest release from GitHub
       debugPrint('UpdateService: Fetching latest release from GitHub: https://api.github.com/repos/$githubOwner/$githubRepo/releases/latest');
@@ -42,45 +44,43 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       final assets = response.data['assets'] as List;
       debugPrint('UpdateService: Latest release version on GitHub: $latestVersion');
 
-      final apkAsset = assets.firstWhere(
+      // Filter for all .apk assets
+      final apkAssets = assets.where((asset) {
+        final name = asset['name'] as String;
+        return name.endsWith('.apk');
+      }).toList();
+
+      if (apkAssets.isEmpty) {
+        debugPrint('UpdateService: No .apk files found in the latest release.');
+        throw Exception('No .apk files found in the latest release.');
+      }
+
+      // Prioritize arm64-v8a-release.apk
+      dynamic apkAsset = apkAssets.firstWhere(
         (asset) => (asset['name'] as String).contains('arm64-v8a-release.apk'),
         orElse: () => null,
       );
 
+      // If arm64-v8a-release.apk not found, try universal-release.apk
       if (apkAsset == null) {
         debugPrint('UpdateService: arm64-v8a-release.apk not found. Checking for universal-release.apk...');
-        final universalApkAsset = assets.firstWhere(
+        apkAsset = apkAssets.firstWhere(
           (asset) => (asset['name'] as String).contains('universal-release.apk'),
-          orElse: () => null
+          orElse: () => null,
         );
-        if (universalApkAsset == null) {
-          debugPrint('UpdateService: No arm64-v8a or universal .apk file found in the latest release.');
-          throw Exception('No arm64-v8a or universal .apk file found in the latest release.');
-        }
-        final apkDownloadUrl = universalApkAsset['browser_download_url'] as String;
-        debugPrint('UpdateService: Found universal-release.apk. Download URL: $apkDownloadUrl');
-         if (_isNewerVersion(latestVersion, currentVersion)) {
-          debugPrint('UpdateService: New universal version available: $latestVersion');
-          state = state.copyWith(
-            isLoading: false,
-            newVersionAvailable: true,
-            latestVersion: latestVersion,
-            releaseNotes: releaseNotes,
-            apkDownloadUrl: apkDownloadUrl,
-          );
-        } else {
-          debugPrint('UpdateService: No newer universal version available.');
-          state = state.copyWith(isLoading: false, newVersionAvailable: false);
-        }
+      }
 
-        return; // Exit after handling the fallback
+      // If neither specific APK is found, just take the first available APK
+      if (apkAsset == null) {
+        debugPrint('UpdateService: Neither arm64-v8a nor universal .apk found. Taking the first available .apk.');
+        apkAsset = apkAssets.first; // This assumes apkAssets is not empty, which is checked above
       }
 
       final apkDownloadUrl = apkAsset['browser_download_url'] as String;
-      debugPrint('UpdateService: Found arm64-v8a-release.apk. Download URL: $apkDownloadUrl');
+      debugPrint('UpdateService: Found APK: ${apkAsset['name']}. Download URL: $apkDownloadUrl');
 
-      // 3. Compare versions (no changes here)
-      if (_isNewerVersion(latestVersion, currentVersion)) {
+      // 3. Compare versions
+      if (_isNewerVersion(latestVersion, fullCurrentVersion)) {
         debugPrint('UpdateService: New version available: $latestVersion');
         state = state.copyWith(
           isLoading: false,
@@ -135,15 +135,29 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
 
   // Simple version comparison logic
   bool _isNewerVersion(String newVersion, String currentVersion) {
-    final newParts = newVersion.split('.').map(int.parse).toList();
-    final currentParts = currentVersion.split('.').map(int.parse).toList();
+    final newVersionParts = newVersion.split('+');
+    final currentVersionParts = currentVersion.split('+');
 
-    for (int i = 0; i < newParts.length; i++) {
-      if (i >= currentParts.length) return true;
-      if (newParts[i] > currentParts[i]) return true;
-      if (newParts[i] < currentParts[i]) return false;
+    final newSemanticParts = newVersionParts[0].split('.').map(int.parse).toList();
+    final currentSemanticParts = currentVersionParts[0].split('.').map(int.parse).toList();
+
+    // Compare semantic versions (e.g., 2.0.4)
+    for (int i = 0; i < newSemanticParts.length; i++) {
+      if (i >= currentSemanticParts.length) return true; // New version has more parts, assume newer
+      if (newSemanticParts[i] > currentSemanticParts[i]) return true;
+      if (newSemanticParts[i] < currentSemanticParts[i]) return false;
     }
-    return false;
+
+    // If semantic versions are equal, compare build numbers
+    if (newVersionParts.length > 1 && currentVersionParts.length > 1) {
+      final newBuild = int.tryParse(newVersionParts[1]) ?? 0;
+      final currentBuild = int.tryParse(currentVersionParts[1]) ?? 0;
+      return newBuild > currentBuild;
+    } else if (newVersionParts.length > 1 && currentVersionParts.length == 1) {
+      return true; // New version has a build number, current does not, assume newer
+    }
+
+    return false; // Versions are the same or current is newer
   }
 }
 
