@@ -123,11 +123,11 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
 
     // --- EXISTING LOGIC FOR GALLERY ---
     if (source == ImageSource.gallery) {
-      ref.read(imageProcessingServiceProvider.notifier).taskStarted(widget.identifier);
       try {
         final List<XFile> pickedFiles = await ImageCaptureAndProcessingUtil.pickMultiImagesFromGallery();
 
         if (pickedFiles.isNotEmpty) {
+          ref.read(imageProcessingServiceProvider.notifier).taskStarted(widget.identifier); // Move taskStarted here
           for (final XFile pickedFile in pickedFiles) {
             final String originalPath = pickedFile.path; // This is the true original path
 

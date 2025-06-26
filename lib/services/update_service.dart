@@ -27,6 +27,8 @@ class UpdateState {
   final String downloadedApkPath;
   final String apkFileName; // New field for the exact APK filename from GitHub
   final String errorMessage;
+  final String? fileSize; // New field for formatted file size
+  final int? rawFileSize; // New field for raw file size in bytes
 
   UpdateState({
     this.isLoading = false,
@@ -39,6 +41,8 @@ class UpdateState {
     this.downloadedApkPath = '',
     this.apkFileName = '', // Initialize new field
     this.errorMessage = '',
+    this.fileSize, // Initialize new field
+    this.rawFileSize, // Initialize new field
   });
 
   UpdateState copyWith({
@@ -52,6 +56,8 @@ class UpdateState {
     String? downloadedApkPath,
     String? apkFileName, // New field for copyWith
     String? errorMessage,
+    String? fileSize, // New field for copyWith
+    int? rawFileSize, // New field for copyWith
   }) {
     return UpdateState(
       isLoading: isLoading ?? this.isLoading,
@@ -64,6 +70,8 @@ class UpdateState {
       downloadedApkPath: downloadedApkPath ?? this.downloadedApkPath,
       apkFileName: apkFileName ?? this.apkFileName, // Copy new field
       errorMessage: errorMessage ?? this.errorMessage,
+      fileSize: fileSize ?? this.fileSize, // Copy new field
+      rawFileSize: rawFileSize ?? this.rawFileSize, // Copy new field
     );
   }
 }
@@ -129,9 +137,10 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
     }
     state = state.copyWith(isLoading: true, errorMessage: '');
 
-    // Re-check if the downloaded APK still exists on app start
+    // Always re-check if the downloaded APK still exists before checking for updates
     if (state.downloadedApkPath.isNotEmpty) {
-      if (!await File(state.downloadedApkPath).exists()) {
+      final fileExists = await File(state.downloadedApkPath).exists();
+      if (!fileExists) {
         state = state.copyWith(downloadedApkPath: '');
         await _clearDownloadedApkPath();
         debugPrint('UpdateService: Previously downloaded APK not found, cleared state.');
@@ -190,7 +199,9 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       }
 
       final apkDownloadUrl = apkAsset['browser_download_url'] as String;
-      debugPrint('UpdateService: Found APK: ${apkAsset['name']}. Download URL: $apkDownloadUrl');
+      final rawFileSize = apkAsset['size'] as int; // Get raw file size in bytes
+      final formattedFileSize = _formatBytes(rawFileSize); // Format for display
+      debugPrint('UpdateService: Found APK: ${apkAsset['name']}. Download URL: $apkDownloadUrl, Size: $formattedFileSize');
 
       // 3. Compare versions
       if (_isNewerVersion(latestVersion, fullCurrentVersion)) {
@@ -202,6 +213,8 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
           releaseNotes: releaseNotes,
           apkDownloadUrl: apkDownloadUrl,
           apkFileName: Uri.decodeComponent(apkAsset['name'] as String), // Store the decoded filename
+          fileSize: formattedFileSize, // Store formatted file size
+          rawFileSize: rawFileSize, // Store raw file size
         );
       } else {
         debugPrint('UpdateService: No newer version available.');
@@ -229,7 +242,7 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
         onReceiveProgress: (received, total) {
           if (total != -1) {
             final progress = received / total;
-            state = state.copyWith(downloadProgress: progress);
+            state = state.copyWith(downloadProgress: progress, rawFileSize: total); // Update rawFileSize during download
           }
         },
       );
@@ -288,5 +301,12 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
     }
 
     return false; // Versions are the same or current is newer
+  }
+
+  String _formatBytes(int bytes) {
+    if (bytes <= 0) return "0 B";
+    const suffixes = ["B", "KB", "MB", "GB", "TB"];
+    int i = (bytes > 0 ? (bytes.toString().length - 1) : 0) ~/ 3;
+    return '${(bytes / (1 << (i * 10))).toStringAsFixed(1)} ${suffixes[i]}';
   }
 }
