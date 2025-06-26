@@ -73,6 +73,17 @@ class UpdateDialog extends ConsumerWidget {
                 ),
               ),
             ),
+            if (updateState.fileSize != null) ...[
+              const SizedBox(height: 16),
+              Text(
+                'Ukuran File: ${updateState.fileSize}',
+                textAlign: TextAlign.center,
+                style: labelStyle.copyWith(
+                  fontSize: 16,
+                  color: darkTextColor,
+                ),
+              ),
+            ],
             if (updateState.isDownloading) ...[
               const SizedBox(height: 20),
               ClipRRect(
@@ -87,8 +98,11 @@ class UpdateDialog extends ConsumerWidget {
               const SizedBox(height: 8),
               Center(
                 child: Text(
-                  'Mengunduh: ${(updateState.downloadProgress * 100).toStringAsFixed(0)}%',
-                  style: labelStyle.copyWith(color: darkTextColor),
+                  'Mengunduh: ${(updateState.downloadProgress * 100).toStringAsFixed(0)}% ${updateState.fileSize != null ? '(${(updateState.downloadProgress * (updateState.rawFileSize ?? 0) / (1024 * 1024)).toStringAsFixed(1)} MB / ${updateState.fileSize})' : ''}',
+                  style: labelStyle.copyWith(
+                  fontSize: 16,
+                  color: darkTextColor,
+                ),
                 ),
               )
             ],
