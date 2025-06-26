@@ -256,9 +256,17 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
   }
 
   Future<void> installUpdate() async {
-    if (state.downloadedApkPath.isEmpty) return;
+    if (state.downloadedApkPath.isEmpty) {
+      debugPrint('UpdateService: No APK downloaded to install.');
+      return;
+    }
+
+    debugPrint('UpdateService: Attempting to install APK from: ${state.downloadedApkPath}');
     final result = await OpenFile.open(state.downloadedApkPath);
+    debugPrint('UpdateService: OpenFile result type: ${result.type}, message: ${result.message}');
+
     if (result.type == ResultType.done) {
+      debugPrint('UpdateService: Installer opened successfully.');
       // Delete the APK file after successful installation
       try {
         final file = File(state.downloadedApkPath);
@@ -273,6 +281,7 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       }
     } else {
       state = state.copyWith(errorMessage: 'Could not open installer: ${result.message}');
+      debugPrint('UpdateService: Failed to open installer: ${result.message}');
     }
   }
 
