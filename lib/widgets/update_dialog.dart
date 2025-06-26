@@ -73,7 +73,7 @@ class UpdateDialog extends ConsumerWidget {
                 ),
               ),
             ),
-            if (updateState.fileSize != null) ...[
+            if (updateState.fileSize != null && updateState.downloadedApkPath.isEmpty) ...[ // Only show if not downloaded
               const SizedBox(height: 16),
               Text(
                 'Ukuran File: ${updateState.fileSize}',

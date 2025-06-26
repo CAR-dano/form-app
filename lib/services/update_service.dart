@@ -137,9 +137,10 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
     }
     state = state.copyWith(isLoading: true, errorMessage: '');
 
-    // Re-check if the downloaded APK still exists on app start
+    // Always re-check if the downloaded APK still exists before checking for updates
     if (state.downloadedApkPath.isNotEmpty) {
-      if (!await File(state.downloadedApkPath).exists()) {
+      final fileExists = await File(state.downloadedApkPath).exists();
+      if (!fileExists) {
         state = state.copyWith(downloadedApkPath: '');
         await _clearDownloadedApkPath();
         debugPrint('UpdateService: Previously downloaded APK not found, cleared state.');
