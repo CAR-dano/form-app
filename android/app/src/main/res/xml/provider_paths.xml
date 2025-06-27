@@ -2,8 +2,5 @@
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
     <files-path name="internal_files" path="."/>
     <files-path name="downloads" path="downloads/"/>
-    <external-files-path name="external_files" path="."/>
-    <!-- Path for app-specific external storage downloads directory -->
-    <external-files-path name="app_external_downloads" path="downloads/"/>
     <external-path name="external_downloads" path="Download/"/>
 </paths>
