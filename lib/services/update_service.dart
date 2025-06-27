@@ -233,6 +233,24 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       } else {
         debugPrint('UpdateService: No newer version available.');
         state = state.copyWith(isLoading: false, newVersionAvailable: false);
+
+        if (state.downloadedApkPath.isNotEmpty) {
+          debugPrint('UpdateService: Cleaning up obsolete APK: ${state.downloadedApkPath}');
+          try {
+            final oldApkFile = File(state.downloadedApkPath);
+            if (await oldApkFile.exists()) {
+              await oldApkFile.delete();
+              debugPrint('UpdateService: Obsolete APK deleted successfully.');
+            }
+          } catch (e) {
+            debugPrint('UpdateService: Error deleting obsolete APK: $e');
+          } finally {
+            // Always clear the path from state and storage after attempting deletion
+            state = state.copyWith(downloadedApkPath: '');
+            await _clearDownloadedApkPath();
+          }
+        }
+        // --- END OF NEW LOGIC ---
       }
     } catch (e) {
       debugPrint('UpdateService: Error checking for updates: $e');
