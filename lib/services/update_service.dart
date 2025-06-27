@@ -86,9 +86,15 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
 
   Future<void> _loadDownloadedApkPath() async {
     try {
-      final dir = await getDownloadsDirectory(); // Use external Downloads directory
+      Directory? dir;
+      if (Platform.isAndroid) {
+        dir = await getApplicationDocumentsDirectory();
+      } else {
+        dir = await getDownloadsDirectory();
+      }
+
       if (dir == null) {
-        debugPrint('UpdateService: Downloads directory not available.');
+        debugPrint('UpdateService: Target directory not available.');
         state = state.copyWith(downloadedApkPath: '');
         return;
       }
@@ -113,9 +119,15 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
 
   Future<void> _saveDownloadedApkPath(String path) async {
     try {
-      final dir = await getDownloadsDirectory(); // Use external Downloads directory
+      Directory? dir;
+      if (Platform.isAndroid) {
+        dir = await getApplicationDocumentsDirectory();
+      } else {
+        dir = await getDownloadsDirectory();
+      }
+
       if (dir == null) {
-        debugPrint('UpdateService: Downloads directory not available for saving.');
+        debugPrint('UpdateService: Target directory not available for saving.');
         return;
       }
       final file = File('${dir.path}/$_apkPathFileName');
@@ -128,9 +140,15 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
 
   Future<void> _clearDownloadedApkPath() async {
     try {
-      final dir = await getDownloadsDirectory(); // Use external Downloads directory
+      Directory? dir;
+      if (Platform.isAndroid) {
+        dir = await getApplicationDocumentsDirectory();
+      } else {
+        dir = await getDownloadsDirectory();
+      }
+
       if (dir == null) {
-        debugPrint('UpdateService: Downloads directory not available for clearing.');
+        debugPrint('UpdateService: Target directory not available for clearing.');
         return;
       }
       final file = File('${dir.path}/$_apkPathFileName');
@@ -268,30 +286,12 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       
       if (Platform.isAndroid) {
         debugPrint('UpdateService: Attempting download on Android platform');
-        
-        // First, try to use app-specific external files directory (doesn't require permissions)
-        try {
-          final externalDir = await getExternalStorageDirectory();
-          if (externalDir != null) {
-            dir = Directory('${externalDir.path}/downloads');
-            if (!await dir.exists()) {
-              await dir.create(recursive: true);
-            }
-            debugPrint('UpdateService: Using external storage directory: ${dir.path}');
-          }
-        } catch (e) {
-          debugPrint('UpdateService: Failed to access external storage directory: $e');
+        final appDir = await getApplicationDocumentsDirectory();
+        dir = Directory('${appDir.path}/downloads');
+        if (!await dir.exists()) {
+          await dir.create(recursive: true);
         }
-        
-        // Fallback: Use app-specific files directory
-        if (dir == null) {
-          final appDir = await getApplicationDocumentsDirectory();
-          dir = Directory('${appDir.path}/downloads');
-          if (!await dir.exists()) {
-            await dir.create(recursive: true);
-          }
-          debugPrint('UpdateService: Using app-specific directory: ${dir.path}');
-        }
+        debugPrint('UpdateService: Using app-specific directory: ${dir.path}');
       } else {
         // For non-Android platforms, use the regular downloads directory
         dir = await getDownloadsDirectory();
