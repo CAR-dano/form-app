@@ -54,11 +54,10 @@ dependencies:
   camera: ^0.11.1
   sensors_plus: ^6.1.1
   cancellation_token: ^2.0.1
-  open_file_plus:
-    git:
-      url: https://github.com/postflow/open_file_plus.git
   package_info_plus: ^8.3.0
   flutter_markdown_plus: ^1.0.3
+  permission_handler: ^12.0.0+1
+  open_file: ^3.5.10
 
 
 dev_dependencies:

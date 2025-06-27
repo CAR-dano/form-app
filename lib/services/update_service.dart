@@ -3,9 +3,10 @@ import 'dart:io';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:open_file_plus/open_file_plus.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:open_file/open_file.dart';
 
 // --- CONFIGURATION ---
 const String githubOwner = 'CAR-dano';
@@ -85,7 +86,12 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
 
   Future<void> _loadDownloadedApkPath() async {
     try {
-      final dir = await getApplicationDocumentsDirectory();
+      final dir = await getDownloadsDirectory(); // Use external Downloads directory
+      if (dir == null) {
+        debugPrint('UpdateService: Downloads directory not available.');
+        state = state.copyWith(downloadedApkPath: '');
+        return;
+      }
       final file = File('${dir.path}/$_apkPathFileName');
       if (await file.exists()) {
         final path = await file.readAsString();
@@ -107,7 +113,11 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
 
   Future<void> _saveDownloadedApkPath(String path) async {
     try {
-      final dir = await getApplicationDocumentsDirectory();
+      final dir = await getDownloadsDirectory(); // Use external Downloads directory
+      if (dir == null) {
+        debugPrint('UpdateService: Downloads directory not available for saving.');
+        return;
+      }
       final file = File('${dir.path}/$_apkPathFileName');
       await file.writeAsString(path);
       debugPrint('UpdateService: Saved downloaded APK path: $path');
@@ -118,7 +128,11 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
 
   Future<void> _clearDownloadedApkPath() async {
     try {
-      final dir = await getApplicationDocumentsDirectory();
+      final dir = await getDownloadsDirectory(); // Use external Downloads directory
+      if (dir == null) {
+        debugPrint('UpdateService: Downloads directory not available for clearing.');
+        return;
+      }
       final file = File('${dir.path}/$_apkPathFileName');
       if (await file.exists()) {
         await file.delete();
@@ -232,7 +246,43 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
     state = state.copyWith(isDownloading: true, downloadProgress: 0.0);
 
     try {
-      final dir = await getApplicationDocumentsDirectory();
+      Directory? dir;
+      
+      if (Platform.isAndroid) {
+        debugPrint('UpdateService: Attempting download on Android platform');
+        
+        // First, try to use app-specific external files directory (doesn't require permissions)
+        try {
+          final externalDir = await getExternalStorageDirectory();
+          if (externalDir != null) {
+            dir = Directory('${externalDir.path}/downloads');
+            if (!await dir.exists()) {
+              await dir.create(recursive: true);
+            }
+            debugPrint('UpdateService: Using external storage directory: ${dir.path}');
+          }
+        } catch (e) {
+          debugPrint('UpdateService: Failed to access external storage directory: $e');
+        }
+        
+        // Fallback: Use app-specific files directory
+        if (dir == null) {
+          final appDir = await getApplicationDocumentsDirectory();
+          dir = Directory('${appDir.path}/downloads');
+          if (!await dir.exists()) {
+            await dir.create(recursive: true);
+          }
+          debugPrint('UpdateService: Using app-specific directory: ${dir.path}');
+        }
+      } else {
+        // For non-Android platforms, use the regular downloads directory
+        dir = await getDownloadsDirectory();
+      }
+
+      if (dir == null) {
+        throw Exception('Downloads directory not available.');
+      }
+      
       final filePath = '${dir.path}/${state.apkFileName}'; // Use the stored decoded filename
       debugPrint('UpdateService: Downloading APK to: $filePath with name: ${state.apkFileName}');
       
@@ -242,10 +292,22 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
         onReceiveProgress: (received, total) {
           if (total != -1) {
             final progress = received / total;
-            state = state.copyWith(downloadProgress: progress, rawFileSize: total); // Update rawFileSize during download
+            state = state.copyWith(downloadProgress: progress, rawFileSize: total);
           }
         },
       );
+
+      // Verify file size after download
+      final downloadedFile = File(filePath);
+      if (!await downloadedFile.exists()) {
+        throw Exception('Downloaded APK file not found at $filePath');
+      }
+      final actualFileSize = await downloadedFile.length();
+      if (state.rawFileSize != null && actualFileSize != state.rawFileSize) {
+        // Delete incomplete file
+        await downloadedFile.delete();
+        throw Exception('Downloaded APK size mismatch. Expected ${state.rawFileSize} bytes, got $actualFileSize bytes.');
+      }
 
       state = state.copyWith(isDownloading: false, downloadedApkPath: filePath);
       await _saveDownloadedApkPath(filePath);
@@ -262,26 +324,48 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
     }
 
     debugPrint('UpdateService: Attempting to install APK from: ${state.downloadedApkPath}');
-    final result = await OpenFile.open(state.downloadedApkPath);
-    debugPrint('UpdateService: OpenFile result type: ${result.type}, message: ${result.message}');
+    
+    try {
+      await _requestInstallApkPermission(state.downloadedApkPath);
+      debugPrint('UpdateService: Install permission requested and APK opened.');
+      // // Delete the APK file after successful installation
+      // try {
+      //   final file = File(state.downloadedApkPath);
+      //   if (await file.exists()) {
+      //     await file.delete();
+      //     debugPrint('UpdateService: Downloaded APK deleted successfully.');
+      //     state = state.copyWith(downloadedApkPath: ''); // Clear the path after deletion
+      //     await _clearDownloadedApkPath(); // Clear the saved path
+      //   }
+      // } catch (e) {
+      //   debugPrint('UpdateService: Error deleting downloaded APK: $e');
+      // }
+    } catch (e) {
+      state = state.copyWith(errorMessage: 'Could not open installer: $e');
+      debugPrint('UpdateService: Failed to open installer: $e');
+    }
+  }
 
-    if (result.type == ResultType.done) {
-      debugPrint('UpdateService: Installer opened successfully.');
-      // Delete the APK file after successful installation
-      try {
-        final file = File(state.downloadedApkPath);
-        if (await file.exists()) {
-          await file.delete();
-          debugPrint('UpdateService: Downloaded APK deleted successfully.');
-          state = state.copyWith(downloadedApkPath: ''); // Clear the path after deletion
-          await _clearDownloadedApkPath(); // Clear the saved path
-        }
-      } catch (e) {
-        debugPrint('UpdateService: Error deleting downloaded APK: $e');
-      }
+  // Request permission to install unknown apps
+  static Future<void> _requestInstallApkPermission(String savePath) async {
+    final status = await Permission.requestInstallPackages.status;
+    if (status.isGranted) {
+      await _openDownloadedUpdateApk(savePath);
     } else {
-      state = state.copyWith(errorMessage: 'Could not open installer: ${result.message}');
-      debugPrint('UpdateService: Failed to open installer: ${result.message}');
+      final newStatus = await Permission.requestInstallPackages.request();
+      if (newStatus.isGranted) {
+        await _openDownloadedUpdateApk(savePath);
+      } else {
+        debugPrint('Permission to install unknown apps on Android not granted');
+      }
+    }
+  }
+
+  // Install the APK using open_file
+  static Future<void> _openDownloadedUpdateApk(String savePath) async {
+    final result = await OpenFile.open(savePath, type: 'application/vnd.android.package-archive');
+    if (result.type != ResultType.done) {
+      debugPrint('Open APK Failed: ${result.message}');
     }
   }
 

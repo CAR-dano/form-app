@@ -4,13 +4,11 @@
     <application
         android:label="Palapa Inspeksi"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon"
-        android:requestLegacyExternalStorage="true"
-        android:enableOnBackInvokedCallback="true">
+        android:icon="@mipmap/launcher_icon">
         
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -47,9 +45,10 @@
             android:value="2" />
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" tools:replace="android:maxSdkVersion" />
-    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <!-- Required for Android 13 (API 33) and above to request installation of packages -->
     <uses-permission android:name="android.permission.READ_MEDIA_INSTALL_PACKAGES" />
