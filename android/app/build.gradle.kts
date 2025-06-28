@@ -10,22 +10,30 @@ plugins {
 
 val keyPropertiesFile = rootProject.file("key.properties")
 val keyProperties = Properties()
-if (gradle.startParameter.taskNames.any { it.contains("Debug") }) {
-    println("--- Keystore Debug ---")
-    println("Looking for properties file at: ${keyPropertiesFile.absolutePath}")
-    if (keyPropertiesFile.exists()) {
-        println("SUCCESS: key.properties file found.")
-        try {
-            keyProperties.load(FileInputStream(keyPropertiesFile))
-            println("Properties loaded: $keyProperties")
-        } catch (e: Exception) {
-            println("ERROR: Failed to load key.properties file: $e")
-        }
-    } else {
-        println("ERROR: key.properties file does NOT exist at the specified path.")
+if (keyPropertiesFile.exists()) {
+    println("SUCCESS: key.properties file found.")
+    try {
+        keyProperties.load(FileInputStream(keyPropertiesFile))
+    } catch (e: Exception) {
+        println("ERROR: Failed to load key.properties file: $e")
     }
-    println("----------------------")
 }
+//if (gradle.startParameter.taskNames.any { it.contains("Debug") }) {
+//    println("--- Keystore Debug ---")
+//    println("Looking for properties file at: ${keyPropertiesFile.absolutePath}")
+//    if (keyPropertiesFile.exists()) {
+//        println("SUCCESS: key.properties file found.")
+//        try {
+//            keyProperties.load(FileInputStream(keyPropertiesFile))
+//            println("Properties loaded: $keyProperties")
+//        } catch (e: Exception) {
+//            println("ERROR: Failed to load key.properties file: $e")
+//        }
+//    } else {
+//        println("ERROR: key.properties file does NOT exist at the specified path.")
+//    }
+//    println("----------------------")
+//}
 
 android {
     namespace = "com.cardano.palapainspeksi"
