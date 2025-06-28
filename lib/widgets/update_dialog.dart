@@ -136,10 +136,12 @@ class UpdateDialog extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 // Later Button
-                if (!updateState.isDownloading && updateState.downloadedApkPath.isEmpty)
+                if (updateState.downloadedApkPath.isEmpty)
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: updateState.isDownloading
+                          ? () => updateNotifier.cancelDownload()
+                          : () => Navigator.of(context).pop(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[300],
                         shape: RoundedRectangleBorder(
@@ -155,7 +157,7 @@ class UpdateDialog extends ConsumerWidget {
                         child: Transform.translate(
                           offset: const Offset(0.0, -2.0),
                           child: Text(
-                            'Nanti',
+                            updateState.isDownloading ? 'Batal' : 'Nanti',
                             textAlign: TextAlign.center,
                             style: labelStyle.copyWith(
                               color: darkTextColor,
@@ -166,7 +168,7 @@ class UpdateDialog extends ConsumerWidget {
                       ),
                     ),
                   ),
-                if (!updateState.isDownloading && updateState.downloadedApkPath.isEmpty)
+                if (updateState.downloadedApkPath.isEmpty)
                   const SizedBox(width: 16.0),
 
                 // Download/Install Button
