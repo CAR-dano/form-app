@@ -153,4 +153,5 @@ This project is equipped with GitHub Actions for automated quality checks and re
 
 ## ⚖️ License
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
