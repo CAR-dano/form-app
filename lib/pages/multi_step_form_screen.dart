@@ -432,31 +432,47 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       }
     }
 
+    final int totalOriginalImages = allImages.length;
+    const int batchSize = 10; // Assuming batch size is 10 as per ApiService
+    final int totalOriginalBatches = (totalOriginalImages / batchSize).ceil();
+
     // Filter out already uploaded images
     final Set<String> uploadedPaths = submissionDataCache.uploadedImagePaths.toSet();
     List<UploadableImage> imagesToUpload = allImages.where((image) => !uploadedPaths.contains(image.imagePath)).toList();
 
-    debugPrint('Total images to upload (including previously sent): ${allImages.length}');
+    final int initialUploadedImagesCount = uploadedPaths.length;
+    final int initialUploadedBatchesCount = (initialUploadedImagesCount / batchSize).floor();
+
+
+    debugPrint('Total images in original set: $totalOriginalImages');
+    debugPrint('Total original batches: $totalOriginalBatches');
     debugPrint('Images already uploaded: ${uploadedPaths.length}');
+    debugPrint('Initial uploaded batches: $initialUploadedBatchesCount');
     debugPrint('Images to upload this session: ${imagesToUpload.length}');
 
-    if (imagesToUpload.isNotEmpty) {
+    if (totalOriginalImages > 0) { // Check if there are any images at all
       final double formDataWeight = 0.2;
       final double imagesWeight = 0.8;
 
       await apiService.uploadImagesInBatches(
         inspectionId,
         imagesToUpload, // Pass the filtered list
-        (int currentBatch, int totalBatchesFromCallback) {
+        (int currentBatchOfRemaining, int totalBatchesOfRemaining) {
           if (!mounted) return;
+          // Calculate overall current batch number
+          final int overallCurrentBatch = initialUploadedBatchesCount + currentBatchOfRemaining;
+          
+          // Calculate overall progress based on original total batches
+          final double overallProgress = totalOriginalBatches > 0
+              ? formDataWeight + ((overallCurrentBatch / totalOriginalBatches.toDouble()) * imagesWeight)
+              : 1.0;
+
           submissionStatusNotifier.setLoading(
             isLoading: true,
-            message: totalBatchesFromCallback > 0
-                ? 'Mengunggah gambar batch $currentBatch dari $totalBatchesFromCallback...'
-                : 'Tidak ada batch gambar untuk diunggah.',
-            progress: totalBatchesFromCallback > 0
-                ? formDataWeight + ((currentBatch / totalBatchesFromCallback.toDouble()) * imagesWeight)
-                : 1.0,
+            message: totalOriginalBatches > 0
+                ? 'Mengunggah gambar batch $overallCurrentBatch dari $totalOriginalBatches...'
+                : 'Tidak ada gambar untuk diunggah.',
+            progress: overallProgress,
           );
         },
         cancelToken: _cancelToken,
@@ -466,10 +482,10 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         },
       );
     } else {
-      debugPrint('No new images to upload.');
+      debugPrint('No images to upload.');
       submissionStatusNotifier.setLoading(
         isLoading: true,
-        message: 'Tidak ada gambar baru untuk diunggah. Proses Selesai.',
+        message: 'Tidak ada gambar untuk diunggah. Proses Selesai.',
         progress: 1.0,
       );
     }
