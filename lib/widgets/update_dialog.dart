@@ -139,13 +139,13 @@ class UpdateDialog extends ConsumerWidget {
                             }
                           : () => Navigator.of(context).pop(),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[300],
+                        backgroundColor: updateState.isDownloading ? Colors.red[600] : Colors.grey[300],
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         minimumSize: const Size.fromHeight(44),
                         elevation: 5,
-                        shadowColor: Colors.grey[300]?.withAlpha(102),
+                        shadowColor: updateState.isDownloading ? Colors.red[600]?.withAlpha(102) : Colors.grey[300]?.withAlpha(102),
                         alignment: Alignment.center,
                       ),
                       child: SizedBox(
@@ -156,7 +156,7 @@ class UpdateDialog extends ConsumerWidget {
                             updateState.isDownloading ? 'Batal' : 'Nanti',
                             textAlign: TextAlign.center,
                             style: labelStyle.copyWith(
-                              color: darkTextColor,
+                              color: updateState.isDownloading ? Colors.white : darkTextColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
