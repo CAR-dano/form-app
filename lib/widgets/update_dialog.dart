@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/services/update_service.dart';
 import 'package:form_app/statics/app_styles.dart';
-import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:form_app/providers/message_overlay_provider.dart';
+import 'package:form_app/widgets/release_notes_markdown.dart';
 
 void showUpdateDialog(BuildContext context) {
   showDialog(
@@ -80,14 +80,8 @@ class UpdateDialog extends ConsumerWidget {
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 4, bottom: 4),
-                  child: MarkdownBody(
-                    data: updateState.releaseNotes.isNotEmpty
-                        ? updateState.releaseNotes.split('\n\n---\n\n')[0] // Extract only the PR description
-                        : 'Catatan rilis tidak tersedia.',
-                    styleSheet: MarkdownStyleSheet(
-                      p: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
-                      listBullet: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
-                    ),
+                  child: ReleaseNotesMarkdown(
+                    releaseNotes: updateState.releaseNotes,
                   ),
                 ),
               ),
