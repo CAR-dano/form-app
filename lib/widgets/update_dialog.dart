@@ -4,6 +4,7 @@ import 'package:form_app/services/update_service.dart';
 import 'package:form_app/statics/app_styles.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:form_app/providers/message_overlay_provider.dart';
 
 void showUpdateDialog(BuildContext context) {
   showDialog(
@@ -20,6 +21,7 @@ class UpdateDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final updateState = ref.watch(updateServiceProvider);
     final updateNotifier = ref.read(updateServiceProvider.notifier);
+    final messageOverlayNotifier = ref.read(customMessageOverlayProvider);
 
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -123,15 +125,7 @@ class UpdateDialog extends ConsumerWidget {
                 ),
               )
             ],
-            if (updateState.errorMessage.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Text(
-                'Kesalahan: ${updateState.errorMessage}',
-                style: labelStyle.copyWith(color: Colors.red, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-            ],
-            const SizedBox(height: 24.0),
+            const SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -140,7 +134,15 @@ class UpdateDialog extends ConsumerWidget {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: updateState.isDownloading
-                          ? () => updateNotifier.cancelDownload()
+                          ? () {
+                              updateNotifier.cancelDownload();
+                              messageOverlayNotifier.show(
+                                context: context,
+                                message: 'Pengunduhan dibatalkan.',
+                                icon: Icons.cancel,
+                                color: Colors.red,
+                              );
+                            }
                           : () => Navigator.of(context).pop(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[300],
@@ -181,6 +183,12 @@ class UpdateDialog extends ConsumerWidget {
                               updateNotifier.installUpdate();
                             } else {
                               updateNotifier.downloadUpdate();
+                              messageOverlayNotifier.show(
+                                context: context,
+                                message: 'Pengunduhan dimulai...',
+                                icon: Icons.download,
+                                color: buttonColor,
+                              );
                             }
                           },
                     style: ElevatedButton.styleFrom(
