@@ -10,20 +10,22 @@ plugins {
 
 val keyPropertiesFile = rootProject.file("key.properties")
 val keyProperties = Properties()
-println("--- Keystore Debug ---")
-println("Looking for properties file at: ${keyPropertiesFile.absolutePath}")
-if (keyPropertiesFile.exists()) {
-    println("SUCCESS: key.properties file found.")
-    try {
-        keyProperties.load(FileInputStream(keyPropertiesFile))
-        println("Properties loaded: $keyProperties")
-    } catch (e: Exception) {
-        println("ERROR: Failed to load key.properties file: $e")
+if (gradle.startParameter.taskNames.any { it.contains("Debug") }) {
+    println("--- Keystore Debug ---")
+    println("Looking for properties file at: ${keyPropertiesFile.absolutePath}")
+    if (keyPropertiesFile.exists()) {
+        println("SUCCESS: key.properties file found.")
+        try {
+            keyProperties.load(FileInputStream(keyPropertiesFile))
+            println("Properties loaded: $keyProperties")
+        } catch (e: Exception) {
+            println("ERROR: Failed to load key.properties file: $e")
+        }
+    } else {
+        println("ERROR: key.properties file does NOT exist at the specified path.")
     }
-} else {
-    println("ERROR: key.properties file does NOT exist at the specified path.")
+    println("----------------------")
 }
-println("----------------------")
 
 android {
     namespace = "com.cardano.palapainspeksi"
@@ -47,15 +49,14 @@ android {
             
             val storeFilePath = keyProperties.getProperty("storeFile")
             if (storeFilePath != null) {
-                // ---- START OF NEW DEBUG CODE ----
                 val resolvedStoreFile = rootProject.file(storeFilePath)
-                println("--- Keystore File Path Debug ---")
-                println("Path from properties: '$storeFilePath'")
-                println("Resolved absolute path: '${resolvedStoreFile.absolutePath}'")
-                println("Does the resolved file exist? ${resolvedStoreFile.exists()}")
-                println("------------------------------")
-                // ---- END OF NEW DEBUG CODE ----
-
+                if (gradle.startParameter.taskNames.any { it.contains("Debug") }) {
+                    println("--- Keystore File Path Debug ---")
+                    println("Path from properties: '$storeFilePath'")
+                    println("Resolved absolute path: '${resolvedStoreFile.absolutePath}'")
+                    println("Does the resolved file exist? ${resolvedStoreFile.exists()}")
+                    println("------------------------------")
+                }
                 storeFile = resolvedStoreFile // Use the resolved file
             }
         }

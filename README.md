@@ -17,46 +17,43 @@
 The application is structured as an intuitive, step-by-step form that covers all facets of a professional vehicle inspection.
 
 #### 📝 Comprehensive Inspection Workflow
-- **Guided Data Entry:** A multi-page form that logically flows from inspector/customer details to vehicle data, checklists, and detailed assessments.
-- **Dynamic Data Fetching:** Inspector names and inspection branch locations are fetched dynamically from the backend API, ensuring data consistency.
-- **Detailed Assessments:** In-depth scoring (1-10) for dozens of sub-categories across Interior, Exterior, Engine, Undercarriage, and more.
-- **Paint Thickness Grid:** A dedicated interface for inputting paint thickness measurements across all major body panels.
-- **Test Drive & Diagnostics:** Sections to log performance during a test drive and results from diagnostic tools (OBD, AC temp, etc.).
-- **Kelengkapan Checklist:** A simple toggle-based checklist for standard items like service books, spare keys, and legal documents (BPKB).
+- **Guided Data Entry:** A multi-page form that logically flows from inspector/customer details, vehicle data, and legal documents to detailed assessments and finalization.
+- **Dynamic Data Fetching:** Inspector names and inspection branch locations are fetched dynamically from the backend API, ensuring data consistency and reducing manual entry.
+- **Detailed Assessments:** In-depth scoring (1-10) for dozens of sub-categories across Features, Engine, Interior, Exterior, Undercarriage, and more.
+- **Paint Thickness Grid:** A dedicated, visual interface for inputting paint thickness measurements across all major body panels.
+- **Test Drive & Diagnostics:** Sections to log vehicle performance during a test drive and results from diagnostic tools (OBD Scanner, AC temperature, etc.).
+- **Kelengkapan Checklist:** A simple toggle-based checklist for standard items like service books, spare keys, legal documents (BPKB), and tools.
+- **Expandable Note Fields:** Smart text fields that support automatic bulleted lists for clear and detailed note-taking in every section.
+- **Repair Cost Estimation:** A dynamic list for adding parts and estimated repair costs, with automatic thousand-separator formatting.
 
 #### 📸 Advanced Image Management
-- **Integrated Multi-Shot Camera:** A custom camera interface with zoom, flash control, and lens switching capabilities, designed for rapid photo capture.
-- **Mandatory & Additional Photos:** Clearly defined photo requirements for all major sections, with the flexibility to add unlimited additional photos.
-- **Automatic Image Processing:** All captured images are automatically cropped to a 4:3 aspect ratio and resized to optimize for storage and upload speed.
-- **In-App Photo Labeling:** Inspectors can label every photo, providing crucial context for the final report.
-- **Gallery Integration:** Original, high-resolution photos are automatically saved to the device's gallery for backup, while processed images are used in the app.
+- **Integrated Multi-Shot Camera:** A custom camera interface featuring zoom, flash control, and lens switching, designed for rapid, uninterrupted photo capture.
+- **Mandatory & Additional Photos:** Clearly defined photo requirements for all major sections (General, Exterior, Interior, etc.), with the flexibility to add unlimited additional photos for detailed documentation.
+- **Automatic Image Processing:** All captured images are automatically cropped to a 4:3 aspect ratio and resized to optimize for storage and upload speed, without sacrificing necessary detail.
+- **In-App Photo Labeling:** Inspectors can label every photo, providing crucial context for the final report. Labels are mandatory for "additional" and "document" photos.
+- **Gallery & Persistence:** Original, high-resolution photos are automatically saved to the device's gallery for backup, while processed images are persisted locally for the inspection report.
 
 #### 💾 Intelligent Data Handling
-- **Robust Local Persistence:** All form data and image references are saved locally on the device, allowing inspectors to safely pause and resume inspections at any time without data loss.
+- **Robust Local Persistence:** All form data and image references are saved locally on the device as JSON, allowing inspectors to safely pause and resume inspections at any time without data loss.
 - **Seamless API Submission:** Completed inspection data and all associated images are efficiently batched and uploaded to the backend server.
-- **Submission Caching:** Caches the last successful form submission to prevent duplicate data entries and intelligently resume image uploads if interrupted.
+- **Submission Caching:** Caches the last successful form data submission to prevent duplicate entries and intelligently resume image uploads if the network is interrupted.
 
-####  UX & UI
-- **Branded User Interface:** Custom-styled widgets, inputs, and navigation elements create a consistent and professional user experience.
-- **Intuitive Navigation:** Smooth page transitions via swipe gestures and persistent navigation buttons (Next/Back).
--**Real-time Feedback:** Visual feedback for loading states, image processing, and data submission progress ensures the user is always informed.
-- **Expandable Note Fields:** Smart text fields that support bulleted lists for clear and detailed note-taking.
-
-#### 🔄 In-App Update Feature
-The application includes an in-app update mechanism to ensure users always have the latest version.
-- **Automatic Update Check:** The app automatically checks for new releases from the configured GitHub repository upon startup.
-- **Targeted APK Download:** It prioritizes downloading the `arm64-v8a` APK for optimal performance, with a fallback to a universal APK if the specific one is not available.
+#### 🔄 In-App Updates & UI
+- **Automatic Update Check:** The app checks for new releases from the configured GitHub repository upon startup. It prioritizes downloading the `arm64-v8a` APK for optimal performance, with a fallback to a universal APK.
 - **Seamless Installation:** Once downloaded, the app prompts the user to install the update directly, leveraging Android's `FileProvider` and `REQUEST_INSTALL_PACKAGES` permission for a smooth experience.
+- **Branded User Interface:** Custom-styled widgets, inputs, and navigation elements create a consistent and professional user experience aligned with the brand.
+- **Intuitive Navigation:** Smooth page transitions via swipe gestures and persistent navigation buttons (Next/Back).
+- **Real-time Feedback:** Visual feedback for loading states, image processing, and data submission progress ensures the user is always informed.
 
-**Configuration:**
-To enable and customize the update feature, ensure the following in `lib/services/update_service.dart`:
+**Update Feature Configuration:**
+To enable and customize the update feature, ensure the following constants in `lib/services/update_service.dart` are set correctly:
 - `githubOwner`: Set to your GitHub username or organization (e.g., `CAR-dano`).
 - `githubRepo`: Set to your repository name (e.g., `form-app`).
 
-**Android Permissions:**
-For the in-app update to function correctly on Android, the following additions are required in `android/app/src/main/AndroidManifest.xml`:
+**Required Android Permissions:**
+The in-app update feature requires the following additions in `android/app/src/main/AndroidManifest.xml`:
 - A `<provider>` entry for `androidx.core.content.FileProvider` within the `<application>` tag, pointing to `@xml/provider_paths`.
-- The `<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />` outside the `<application>` tag.
+- The `<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />` permission.
 - A `provider_paths.xml` file in `android/app/src/main/res/xml/` defining the shared paths.
 
 ## 🛠️ Tech Stack & Architecture
@@ -66,11 +63,12 @@ The application leverages a modern, scalable tech stack to ensure performance an
 | Category               | Technology / Package                                                                                                                              |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Core Framework**     | `Flutter`                                                                                                                                         |
-| **State Management**   | `Riverpod`                                                                                                                                        |
+| **State Management**   | `Riverpod` for robust, scalable, and testable state management.                                                                                   |
 | **Networking**         | `Dio` for robust API communication, request cancellation, and interceptors.                                                                       |
-| **Image Handling**     | `camera`, `image_picker` (Capture), `image` (Processing), `gal` (Gallery Save)                                                                    |
+| **Image Handling**     | `camera`, `image_picker` (Capture), `image` (Processing/Manipulation), `gal` (Gallery Save)                                                       |
 | **Local Storage**      | `path_provider` for file system access to persist form data and image metadata as JSON.                                                           |
-| **UI & Styling**       | `google_fonts` (Rubik), `flutter_svg` for vector graphics.                                                                                        |
+| **App Updates**        | `package_info_plus`, `permission_handler`, `open_file` for checking and installing new versions.                                                  |
+| **UI & Styling**       | `google_fonts` (Rubik), `flutter_svg` for vector graphics, `flutter_markdown_plus` for release notes.                                             |
 | **Utilities**          | `flutter_dotenv` for environment variable management, `uuid` for unique identifiers.                                                              |
 | **Build & Deployment** | `flutter_launcher_icons`, `flutter_native_splash`, GitHub Actions for CI/CD.                                                                      |
 
@@ -78,14 +76,14 @@ The application leverages a modern, scalable tech stack to ensure performance an
 
 The codebase is organized into a clean, feature-driven structure that promotes separation of concerns.
 
--   `lib/main.dart`: Application entry point, theme configuration, and orientation lock.
+-   `lib/main.dart`: Application entry point, theme configuration, and portrait orientation lock.
 -   `lib/models/`: Defines the core data structures (`FormData`, `ImageData`, `Inspector`) that model the application's domain.
 -   `lib/pages/`: Contains the UI for each screen/page of the multi-step form.
--   `lib/providers/`: Manages all application state using Riverpod, cleanly separating UI from business logic (e.g., `form_provider`, `image_data_provider`).
--   `lib/services/`: Houses the `api_service.dart` for all communication with the backend.
--   `lib/utils/`: Contains reusable helper classes and functions for tasks like image processing and calculations.
--   `lib/widgets/`: Stores reusable, custom UI components (e.g., `LabeledTextField`, `NavigationButtonRow`).
--   `lib/formatters/`: Custom `TextInputFormatter` classes for specialized user input like dates and thousands separators.
+-   `lib/providers/`: Manages all application state using Riverpod, cleanly separating UI from business logic (e.g., `form_provider`, `image_data_provider`, `update_service_provider`).
+-   `lib/services/`: Houses business logic services like `api_service.dart` and `update_service.dart`.
+-   `lib/utils/`: Contains reusable helper classes and functions for tasks like image processing (`image_capture_and_processing_util.dart`) and calculations.
+-   `lib/widgets/`: Stores reusable, custom UI components (e.g., `LabeledTextField`, `NavigationButtonRow`, `MultiShotCameraScreen`).
+-   `lib/formatters/`: Custom `TextInputFormatter` classes for specialized user input like dates, thousands separators, and bulleted lists.
 
 ## 🚀 Getting Started
 
@@ -99,8 +97,8 @@ Follow these steps to get the project running on your local machine.
 
 1.  **Clone the repository:**
     ```bash
-    git clone <repository-url>
-    cd car-dano-form-app
+    git clone https://github.com/CAR-dano/form-app.git
+    cd form-app
     ```
 
 2.  **Create the Environment File:**
@@ -129,7 +127,7 @@ Follow these steps to get the project running on your local machine.
 
 ## 📦 Building the App
 
-To create a release build for Android, use the following command. The build name and number are derived from `pubspec.yaml`.
+To create a release build for Android, use the following command. The build name and number are derived from `pubspec.yaml` and the CI workflow.
 
 ```bash
 flutter build apk --release
@@ -154,5 +152,5 @@ This project is equipped with GitHub Actions for automated quality checks and re
     -   Uploads the generated APKs to the GitHub Release as assets.
 
 ## ⚖️ License
-
-This project is proprietary to **PT. Inspeksi Mobil Jogja**. All rights reserved.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

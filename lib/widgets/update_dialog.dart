@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/services/update_service.dart';
 import 'package:form_app/statics/app_styles.dart';
-import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:form_app/providers/message_overlay_provider.dart';
+import 'package:form_app/widgets/release_notes_markdown.dart';
 
 void showUpdateDialog(BuildContext context) {
   showDialog(
@@ -19,6 +21,7 @@ class UpdateDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final updateState = ref.watch(updateServiceProvider);
     final updateNotifier = ref.read(updateServiceProvider.notifier);
+    final messageOverlayNotifier = ref.read(customMessageOverlayProvider);
 
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -40,7 +43,23 @@ class UpdateDialog extends ConsumerWidget {
                 color: darkTextColor,
               ),
             ),
-            const SizedBox(height: 24.0),
+            FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(
+                    'Versi saat ini: v${snapshot.data!.version}+${snapshot.data!.buildNumber}',
+                    textAlign: TextAlign.center,
+                    style: labelStyle.copyWith(
+                      fontSize: 14,
+                      color: darkTextColor,
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+            const SizedBox(height: 16.0),
             Text(
               'Versi baru aplikasi tersedia.\nBerikut adalah perubahannya:',
               textAlign: TextAlign.center,
@@ -61,19 +80,13 @@ class UpdateDialog extends ConsumerWidget {
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 4, bottom: 4),
-                  child: MarkdownBody(
-                    data: updateState.releaseNotes.isNotEmpty
-                        ? updateState.releaseNotes.split('\n\n---\n\n')[0] // Extract only the PR description
-                        : 'Catatan rilis tidak tersedia.',
-                    styleSheet: MarkdownStyleSheet(
-                      p: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
-                      listBullet: labelStyle.copyWith(fontSize: 14, color: darkTextColor),
-                    ),
+                  child: ReleaseNotesMarkdown(
+                    releaseNotes: updateState.releaseNotes,
                   ),
                 ),
               ),
             ),
-            if (updateState.fileSize != null && updateState.downloadedApkPath.isEmpty) ...[ // Only show if not downloaded
+            if (updateState.fileSize != null && updateState.downloadedApkPath.isEmpty && !updateState.isDownloading) ...[ // Only show if not downloaded
               const SizedBox(height: 16),
               Text(
                 'Ukuran File: ${updateState.fileSize}',
@@ -106,31 +119,33 @@ class UpdateDialog extends ConsumerWidget {
                 ),
               )
             ],
-            if (updateState.errorMessage.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Text(
-                'Kesalahan: ${updateState.errorMessage}',
-                style: labelStyle.copyWith(color: Colors.red, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-            ],
-            const SizedBox(height: 24.0),
+            const SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 // Later Button
-                if (!updateState.isDownloading && updateState.downloadedApkPath.isEmpty)
+                if (updateState.downloadedApkPath.isEmpty)
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: updateState.isDownloading
+                          ? () {
+                              updateNotifier.cancelDownload();
+                              messageOverlayNotifier.show(
+                                context: context,
+                                message: 'Pengunduhan dibatalkan.',
+                                icon: Icons.cancel,
+                                color: Colors.red,
+                              );
+                            }
+                          : () => Navigator.of(context).pop(),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey[300],
+                        backgroundColor: updateState.isDownloading ? Colors.red[600] : Colors.grey[300],
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         minimumSize: const Size.fromHeight(44),
                         elevation: 5,
-                        shadowColor: Colors.grey[300]?.withAlpha(102),
+                        shadowColor: updateState.isDownloading ? Colors.red[600]?.withAlpha(102) : Colors.grey[300]?.withAlpha(102),
                         alignment: Alignment.center,
                       ),
                       child: SizedBox(
@@ -138,10 +153,10 @@ class UpdateDialog extends ConsumerWidget {
                         child: Transform.translate(
                           offset: const Offset(0.0, -2.0),
                           child: Text(
-                            'Nanti',
+                            updateState.isDownloading ? 'Batal' : 'Nanti',
                             textAlign: TextAlign.center,
                             style: labelStyle.copyWith(
-                              color: darkTextColor,
+                              color: updateState.isDownloading ? Colors.white : darkTextColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -149,7 +164,7 @@ class UpdateDialog extends ConsumerWidget {
                       ),
                     ),
                   ),
-                if (!updateState.isDownloading && updateState.downloadedApkPath.isEmpty)
+                if (updateState.downloadedApkPath.isEmpty)
                   const SizedBox(width: 16.0),
 
                 // Download/Install Button
@@ -162,6 +177,12 @@ class UpdateDialog extends ConsumerWidget {
                               updateNotifier.installUpdate();
                             } else {
                               updateNotifier.downloadUpdate();
+                              messageOverlayNotifier.show(
+                                context: context,
+                                message: 'Pengunduhan dimulai...',
+                                icon: Icons.download,
+                                color: buttonColor,
+                              );
                             }
                           },
                     style: ElevatedButton.styleFrom(

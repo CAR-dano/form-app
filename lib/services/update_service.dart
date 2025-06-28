@@ -78,6 +78,8 @@ class UpdateState {
 }
 
 class UpdateNotifier extends StateNotifier<UpdateState> {
+  dio.CancelToken? _cancelToken; // Declare CancelToken
+
   UpdateNotifier() : super(UpdateState()) {
     _loadDownloadedApkPath();
   }
@@ -304,6 +306,7 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       final filePath = '${dir.path}/${state.apkFileName}'; // Use the stored decoded filename
       debugPrint('UpdateService: Downloading APK to: $filePath with name: ${state.apkFileName}');
       
+      _cancelToken = dio.CancelToken(); // Initialize CancelToken
       await dio.Dio().download(
         state.apkDownloadUrl,
         filePath,
@@ -313,6 +316,7 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
             state = state.copyWith(downloadProgress: progress, rawFileSize: total);
           }
         },
+        cancelToken: _cancelToken, // Pass the CancelToken
       );
 
       // Verify file size after download
@@ -332,6 +336,18 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       debugPrint('UpdateService: APK downloaded successfully to: $filePath');
     } catch (e) {
       state = state.copyWith(isDownloading: false, errorMessage: e.toString());
+    }
+  }
+
+  void cancelDownload() {
+    if (state.isDownloading && _cancelToken != null && !_cancelToken!.isCancelled) {
+      _cancelToken!.cancel("Download dibatalkan oleh pengguna.");
+      state = state.copyWith(
+        isDownloading: false,
+        downloadProgress: 0.0,
+        errorMessage: 'Download dibatalkan.',
+      );
+      debugPrint('UpdateService: Download canceled by user.');
     }
   }
 
