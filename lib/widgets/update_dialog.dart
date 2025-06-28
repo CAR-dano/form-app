@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/services/update_service.dart';
 import 'package:form_app/statics/app_styles.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 void showUpdateDialog(BuildContext context) {
   showDialog(
@@ -40,7 +41,23 @@ class UpdateDialog extends ConsumerWidget {
                 color: darkTextColor,
               ),
             ),
-            const SizedBox(height: 24.0),
+            FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(
+                    'Versi saat ini: v${snapshot.data!.version}+${snapshot.data!.buildNumber}',
+                    textAlign: TextAlign.center,
+                    style: labelStyle.copyWith(
+                      fontSize: 14,
+                      color: darkTextColor,
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+            const SizedBox(height: 16.0),
             Text(
               'Versi baru aplikasi tersedia.\nBerikut adalah perubahannya:',
               textAlign: TextAlign.center,
@@ -73,7 +90,7 @@ class UpdateDialog extends ConsumerWidget {
                 ),
               ),
             ),
-            if (updateState.fileSize != null && updateState.downloadedApkPath.isEmpty) ...[ // Only show if not downloaded
+            if (updateState.fileSize != null && updateState.downloadedApkPath.isEmpty && !updateState.isDownloading) ...[ // Only show if not downloaded
               const SizedBox(height: 16),
               Text(
                 'Ukuran File: ${updateState.fileSize}',
