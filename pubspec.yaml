@@ -122,15 +122,4 @@ flutter_launcher_icons:
   min_sdk_android: 21
 
 flutter_native_splash:
-  android: true
-  ios: true
-  web: false
-
-  image: assets/images/palapa_logo.png
-  branding: assets/images/cardano_logo.png
-  color: "#ffffff"
-
-  # android_12:
-  #   color: "#ffffff"
-  #   image: assets/images/palapa_logo.png
-  #   branding: assets/images/cardano_logo.png
+  config: flutter_native_splash.yaml
