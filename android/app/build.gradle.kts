@@ -11,7 +11,7 @@ plugins {
 val keyPropertiesFile = rootProject.file("key.properties")
 val keyProperties = Properties()
 if (keyPropertiesFile.exists()) {
-    println("SUCCESS: key.properties file found.")
+    //println("SUCCESS: key.properties file found.")
     try {
         keyProperties.load(FileInputStream(keyPropertiesFile))
     } catch (e: Exception) {
@@ -60,8 +60,8 @@ android {
                 val resolvedStoreFile = rootProject.file(storeFilePath)
                 if (gradle.startParameter.taskNames.any { it.contains("Debug") }) {
                     println("--- Keystore File Path Debug ---")
-                    println("Path from properties: '$storeFilePath'")
-                    println("Resolved absolute path: '${resolvedStoreFile.absolutePath}'")
+                    //println("Path from properties: '$storeFilePath'")
+                    //println("Resolved absolute path: '${resolvedStoreFile.absolutePath}'")
                     println("Does the resolved file exist? ${resolvedStoreFile.exists()}")
                     println("------------------------------")
                 }
@@ -71,11 +71,11 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        // Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.cardano.palapainspeksi"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 29
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

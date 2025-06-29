@@ -14,6 +14,7 @@ import 'package:form_app/models/uploadable_image.dart'; // Import the Uploadable
 
 // Typedef for the progress callback
 typedef ImageUploadProgressCallback = void Function(int currentBatch, int totalBatches);
+typedef ImageBatchUploadedCallback = void Function(List<String> uploadedPaths); // New callback
 
 class ApiService {
   final dio.Dio _dioInst;
@@ -331,8 +332,8 @@ class ApiService {
   Future<void> uploadImagesInBatches(
     String inspectionId, 
     List<UploadableImage> allImages,
-    ImageUploadProgressCallback onProgress, // Add this
-    {dio.CancelToken? cancelToken}
+    ImageUploadProgressCallback onProgress,
+    {dio.CancelToken? cancelToken, ImageBatchUploadedCallback? onBatchUploaded} // Add new callback
   ) async {
     const int batchSize = 10;
     // Calculate total batches, ensure it's at least 1 if there are images, or 0 if not
@@ -403,6 +404,11 @@ class ApiService {
         );
         if (response.statusCode == 200 || response.statusCode == 201) {
           if (kDebugMode) print('Batch $currentBatchNum/$totalBatchesCalc uploaded successfully.');
+          // Call the new callback with paths of successfully uploaded images in this batch
+          if (onBatchUploaded != null) {
+            final List<String> uploadedPathsInBatch = batch.map((img) => img.imagePath).toList();
+            onBatchUploaded(uploadedPathsInBatch);
+          }
         } else {
           throw Exception('Failed to upload photo batch $currentBatchNum/$totalBatchesCalc: ${response.statusCode} - ${response.data}');
         }
