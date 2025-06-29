@@ -6,7 +6,8 @@
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
         android:allowBackup="false"
-        tools:replace="android:allowBackup">
+        tools:replace="android:allowBackup"
+        android:extractNativeLibs="true">
         
         <provider
             android:name="androidx.core.content.FileProvider"
