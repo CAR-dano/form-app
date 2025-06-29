@@ -4,7 +4,9 @@
     <application
         android:label="Palapa Inspeksi"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/launcher_icon"
+        android:allowBackup="false"
+        tools:replace="android:allowBackup">
         
         <provider
             android:name="androidx.core.content.FileProvider"
