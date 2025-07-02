@@ -7,15 +7,19 @@ import 'package:form_app/providers/inspector_provider.dart'; // Import inspectio
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:convert';
+import 'dart:async'; // Import for Timer
 import 'package:form_app/models/inspection_branch.dart'; // Import InspectionBranch model
 
 class FormNotifier extends StateNotifier<FormData> {
   final Ref _ref;
   static const _fileName = 'form_data.json';
+  Timer? _saveTimer; // Debounce timer
 
   FormNotifier(this._ref) : super(FormData()) {
     // Load initial data first
     _loadFormData().then((_) {
+      // Ensure the initial state is saved after loading, in case it was modified by validation
+      _saveFormData();
       // Then setup listeners and perform initial validation with loaded state
       _ref.listen<AsyncValue<List<InspectionBranch>>>(inspectionBranchesProvider, (previous, next) {
         next.whenData((availableBranches) {
@@ -958,12 +962,17 @@ class FormNotifier extends StateNotifier<FormData> {
   @override
   set state(FormData value) {
     super.state = value;
-    _saveFormData();
+    // Debounce the save operation
+    _saveTimer?.cancel();
+    _saveTimer = Timer(const Duration(milliseconds: 500), () {
+      _saveFormData();
+    });
   }
 
   void resetFormData() {
     state = FormData();
-    _saveFormData();
+    _saveTimer?.cancel(); // Cancel any pending saves
+    _saveFormData(); // Save immediately after reset
   }
 }
 
