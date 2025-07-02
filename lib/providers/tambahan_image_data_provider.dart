@@ -1,9 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/tambahan_image_data.dart';
-// Import dart:io for File operations
 import 'dart:io';
-// Import path_provider to get documents directory
 import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
 
@@ -56,7 +54,7 @@ class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData
       // Correctly await the getter '_file'
       final file = await _file;
       final List<Map<String, dynamic>> jsonList = state.map((item) => item.toJson()).toList();
-      await file.writeAsString(json.encode(jsonList));
+      await file.writeAsString(json.encode(jsonList), flush: true); // Ensure data is flushed to disk
     } catch (e) {
       if (kDebugMode) {
         print("Error saving TambahanImageData for $identifier to file: $e");

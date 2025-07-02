@@ -946,7 +946,7 @@ class FormNotifier extends StateNotifier<FormData> {
       final filePath = await _getFilePath();
       final file = File(filePath);
       final jsonString = json.encode(state.toJson());
-      await file.writeAsString(jsonString);
+      await file.writeAsString(jsonString, flush: true); // Ensure data is flushed to disk
     } catch (e) {
       // Handle errors during file saving
       if (kDebugMode) {
