@@ -5,7 +5,6 @@ import 'package:form_app/models/image_data.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
-// Removed SharedPreferences import
 
 final imageDataListProvider = StateNotifierProvider<ImageDataListNotifier, List<ImageData>>((ref) {
   return ImageDataListNotifier();
@@ -57,7 +56,7 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
       final file = await _file;
       final jsonList = state.map((image) => image.toJson()).toList();
       final jsonString = json.encode(jsonList);
-      await file.writeAsString(jsonString);
+      await file.writeAsString(jsonString, flush: true); // Ensure data is flushed to disk
     } catch (e) {
       if (kDebugMode) {
         print("Error saving ImageDataList to file: $e");
