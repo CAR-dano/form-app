@@ -73,7 +73,7 @@ class ImageProcessingQueueService extends Notifier<Queue<ImageProcessingTask>> {
         task.completer.complete(processedPath);
       } catch (e) {
         task.completer.completeError(e);
-        if (context != null) {
+        if (context != null && context.mounted) {
           ref.read(customMessageOverlayProvider).show(
             context: context,
             message: 'Error memproses gambar: $e',
