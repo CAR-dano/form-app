@@ -3,6 +3,26 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// A notifier to track the identifiers of tasks currently in the queue.
+class QueuedTaskStatusNotifier extends StateNotifier<Set<String>> {
+  QueuedTaskStatusNotifier() : super({});
+
+  void addIdentifier(String id) {
+    state = {...state, id};
+  }
+
+  void removeIdentifier(String id) {
+    state = {...state}..remove(id);
+  }
+}
+
+/// A provider that holds a set of identifiers for tasks currently in the queue.
+final queuedTaskStatusProvider =
+    StateNotifierProvider<QueuedTaskStatusNotifier, Set<String>>((ref) {
+  return QueuedTaskStatusNotifier();
+});
+
+
 /// Abstract base class for any task that can be added to the queue.
 abstract class QueueTask<T> {
   final String identifier;
@@ -27,8 +47,12 @@ class TaskQueueService extends StateNotifier<bool> {
   /// Adds a task to the queue.
   void addTask(QueueTask<dynamic> task) {
     _queue.addLast(task);
+    // --- MODIFIED ---
+    // Add the identifier to the queued status provider
+    _ref.read(queuedTaskStatusProvider.notifier).addIdentifier(task.identifier);
+    // --- END MODIFIED ---
     if (kDebugMode) {
-      print('Task added to queue. Queue size: ${_queue.length}');
+      print('Task added to queue for [${task.identifier}]. Queue size: ${_queue.length}');
     }
     _processQueue(); // Attempt to process the queue
   }
@@ -44,6 +68,8 @@ class TaskQueueService extends StateNotifier<bool> {
 
     while (_queue.isNotEmpty) {
       final task = _queue.removeFirst();
+      // The task is no longer queued, it's about to be processed. Remove it.
+      _ref.read(queuedTaskStatusProvider.notifier).removeIdentifier(task.identifier);
       if (kDebugMode) {
         print('Processing task for identifier: ${task.identifier}. Remaining tasks: ${_queue.length}');
       }

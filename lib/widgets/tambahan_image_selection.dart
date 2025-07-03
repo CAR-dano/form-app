@@ -14,6 +14,7 @@ import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/pages/multi_shot_camera_screen.dart';
 import 'package:form_app/providers/message_overlay_provider.dart'; // Import the new provider
 import 'package:form_app/services/image_processing_queue_service.dart'; // Import the new queue service
+import 'package:form_app/services/task_queue_service.dart'; // Import for the new provider
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -321,7 +322,19 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   @override
   Widget build(BuildContext context) {
     final tambahanImages = ref.watch(tambahanImageDataProvider(widget.identifier));
-    final isProcessingImage = ref.watch(imageProcessingServiceProvider.select((s) => (s[widget.identifier] ?? 0) > 0));
+
+    // 1. Watch the new queuedTaskStatusProvider
+    final isQueued = ref.watch(
+      queuedTaskStatusProvider.select((queued) => queued.contains(widget.identifier)),
+    );
+
+    // 2. Watch the existing imageProcessingServiceProvider
+    final isProcessing = ref.watch(
+      imageProcessingServiceProvider.select((processing) => (processing[widget.identifier] ?? 0) > 0),
+    );
+
+    // 3. Combine them to get the final loading state
+    final bool shouldShowLoadingIndicator = isQueued || isProcessing;
 
     final TambahanImageData? currentImage =
         tambahanImages.isNotEmpty && _currentIndex < tambahanImages.length
@@ -416,7 +429,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
             ),
           ],
         ),
-        if (isProcessingImage)
+        if (shouldShowLoadingIndicator)
           Padding(
             padding: const EdgeInsets.only(top: 16.0),
             child: LinearProgressIndicator(
