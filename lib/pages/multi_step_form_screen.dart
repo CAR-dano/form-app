@@ -39,7 +39,7 @@ import 'package:form_app/models/uploadable_image.dart';
 import 'package:form_app/widgets/multi_step_form_appbar.dart';
 import 'package:form_app/widgets/delete_all_tambahan_photos_button.dart';
 import 'package:form_app/services/update_service.dart';
-import 'package:form_app/widgets/update_dialog.dart';
+import 'package:form_app/widgets/app_version_display.dart'; // Import the new widget
 
 class MultiStepFormScreen extends ConsumerStatefulWidget {
   const MultiStepFormScreen({super.key});
@@ -223,16 +223,8 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
   Widget? _buildTrailingWidget(int currentPageIndex) {
     if (currentPageIndex == 0) {
-      // For the first page, show the update icon if a new version is available
-      final updateState = ref.watch(updateServiceProvider);
-      if (updateState.newVersionAvailable) {
-        return IconButton(
-          icon: const Icon(Icons.cloud_download, color: Colors.blue),
-          onPressed: () {
-            showUpdateDialog(context);
-          },
-        );
-      }
+      // For the first page, show the AppVersionDisplay widget
+      return const AppVersionDisplay();
     }
 
     final String? pageIdentifier = _tambahanImagePageIdentifiers[currentPageIndex];
