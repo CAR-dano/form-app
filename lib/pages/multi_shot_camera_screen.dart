@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/message_overlay_provider.dart'; // Import the new provider
 import 'package:form_app/services/image_capture_queue_service.dart'; // Import the new service
+import 'package:form_app/services/task_queue_service.dart'; // Import the generic task queue service
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:math' show pi;
 
@@ -291,12 +292,14 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       // Capture the rotation angle at the moment the picture is taken.
       final double capturedRotationAngle = _rotationAngle;
 
-      // Add the image capture task to the queue service
-      ref.read(imageCaptureQueueServiceProvider.notifier).addImageCaptureTask(
-        capturedImageFile: capturedImageFile,
-        capturedRotationAngle: capturedRotationAngle,
-        imageIdentifier: widget.imageIdentifier,
-        defaultLabel: widget.defaultLabel,
+      // Add the image capture task to the generic queue service
+      ref.read(taskQueueServiceProvider.notifier).addTask(
+        ImageCaptureTask(
+          capturedImageFile: capturedImageFile,
+          capturedRotationAngle: capturedRotationAngle,
+          identifier: widget.imageIdentifier,
+          defaultLabel: widget.defaultLabel,
+        ),
       );
 
     } on CameraException catch (e) {

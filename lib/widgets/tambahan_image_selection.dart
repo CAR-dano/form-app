@@ -131,7 +131,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
           for (final XFile pickedFile in pickedFiles) {
             final String originalPath = pickedFile.path;
 
-            ref.read(imageProcessingQueueProvider.notifier).enqueueImageProcessing(
+            ref.read(imageProcessingQueueProvider).enqueueImageProcessing(
               pickedFile: pickedFile,
               identifier: widget.identifier,
               context: mounted ? context : null,
@@ -198,7 +198,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     final currentRotation = currentImage.rotationAngle;
     final newRotation = (currentRotation + 90) % 360;
 
-    ref.read(imageProcessingQueueProvider.notifier).enqueueImageProcessing(
+    ref.read(imageProcessingQueueProvider).enqueueImageProcessing(
       pickedFile: XFile(originalRawPath),
       identifier: widget.identifier,
       rotationAngle: newRotation,
@@ -473,15 +473,12 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                         color: Colors.transparent,
                         borderRadius: BorderRadius.circular(8.0),
                         child: InkWell(
-                          onTap: /*isProcessingImage ? null : */_rotateCurrentImage, // Disable if processing
+                          onTap: _rotateCurrentImage,
                           borderRadius: BorderRadius.circular(8.0),
                           child: SvgPicture.asset(
                             'assets/images/rotate.svg',
                             width: 40.0,
                             height: 40.0,
-                            // colorFilter: isProcessingImage // Apply a color filter to indicate disabled state
-                            //     ? ColorFilter.mode(Colors.grey.withAlpha((0.6*255).round()), BlendMode.srcIn)
-                            //     : null,
                           ),
                         ),
                       ),
