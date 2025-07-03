@@ -5,19 +5,19 @@ import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/tambahan_image_selection.dart';
 
-class PageSixInteriorTambahan extends ConsumerStatefulWidget {
+class FotoInteriorTambahanPage extends ConsumerStatefulWidget {
   final ValueNotifier<bool> formSubmitted;
 
-  const PageSixInteriorTambahan({
+  const FotoInteriorTambahanPage({
     super.key,
     required this.formSubmitted,
   });
 
   @override
-  ConsumerState<PageSixInteriorTambahan> createState() => _PageSixInteriorTambahanState();
+  ConsumerState<FotoInteriorTambahanPage> createState() => _FotoInteriorTambahanPage();
 }
 
-class _PageSixInteriorTambahanState extends ConsumerState<PageSixInteriorTambahan> 
+class _FotoInteriorTambahanPage extends ConsumerState<FotoInteriorTambahanPage> 
     with AutomaticKeepAliveClientMixin {
   late FocusScopeNode _focusScopeNode;
 

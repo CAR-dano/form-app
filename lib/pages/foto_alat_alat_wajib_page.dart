@@ -9,54 +9,30 @@ import 'dart:io'; // Keep import in case needed later
 import 'package:form_app/models/image_data.dart'; // Keep import in case needed later
 import 'package:form_app/providers/image_data_provider.dart'; // Keep import in case needed later
 
-class PageSixMesinWajib extends ConsumerStatefulWidget {
-  final int currentPage;
-  final int totalPages;
-
-  const PageSixMesinWajib({
+class FotoAlatAlatWajibPage extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
+  const FotoAlatAlatWajibPage({
     super.key,
     required this.currentPage,
     required this.totalPages,
   });
+  final int currentPage;
+  final int totalPages;
+
 
   final List<String> imageInputLabels = const [
-    'Sealer Kap Mesin',
-    'Support bumper',
-    'Dashboard Mobil',
-    'Celah Kap Mesin',
-    'Baut Kap Mesin',
-    'Rangka Mesin Mobil',
-    'Las Titik',
-    'Bulatan Pada Rangka',
-    'Radiator (Penyok/Tidak)',
-    'Dip Stick Oli Mesin',
-    'Kondisi Oli dari Tutup',
-    'Cover Valve',
-    'Cover Timing Chain',
-    'Seal Crankshaft Depan',
-    'Seal Crankshaft Belakang',
-    'Carter',
-    'V Belt',
-    'Turbo (jika ada)',
-    'Selang-selang',
-    'Kipas Radiator',
-    'Motor Fan',
-    'Minyak Rem',
-    'Support Shock',
-    'Engine Mounting',
-    'Aki',
-    'Alternator',
-    'Tutup Radiator Dibuka',
-    'Sambungan Radiator (assembly)',
-    'Reservoir Radiator',
-    'Compressor AC',
+    'OBD Scanner',
+    'Sinar UV',
+    'Paint Thickness',
+    'Cek Aki',
+    'Tire Thickness',
+    'Endoscope (Jika Perlu)',
   ];
 
   @override
-  ConsumerState<PageSixMesinWajib> createState() => _PageSixMesinWajibState();
+  ConsumerState<FotoAlatAlatWajibPage> createState() => _FotoAlatAlatWajibPageState();
 }
 
-class _PageSixMesinWajibState extends ConsumerState<PageSixMesinWajib> with AutomaticKeepAliveClientMixin { // Add mixin
+class _FotoAlatAlatWajibPageState extends ConsumerState<FotoAlatAlatWajibPage> with AutomaticKeepAliveClientMixin { // Add mixin
   @override
   bool get wantKeepAlive => true; // Override wantKeepAlive
 
@@ -73,7 +49,7 @@ class _PageSixMesinWajibState extends ConsumerState<PageSixMesinWajib> with Auto
           label: label,
           imagePath: imageFile.path,
           needAttention: false,
-          category: 'Mesin Wajib', // New field
+          category: 'Alat-alat Wajib', // New field
           isMandatory: true, // New field
         ));
       }
@@ -88,15 +64,15 @@ class _PageSixMesinWajibState extends ConsumerState<PageSixMesinWajib> with Auto
     // ref is available directly in ConsumerStatefulWidget state classes
     return SingleChildScrollView(
       clipBehavior: Clip.none,
-      key: const PageStorageKey<String>('pageSixMesinWajibScrollKey'), // This key remains important
+      key: const PageStorageKey<String>('pageSixAlatAlatWajibScrollKey'), // This key remains important
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
           const SizedBox(height: 4),
-          PageTitle(data: 'Foto Mesin'),
+          const PageTitle(data: 'Foto Alat-alat'),
           const SizedBox(height: 6.0),
-          HeadingOne(text: 'Wajib'),
+          const HeadingOne(text: 'Wajib'),
           const SizedBox(height: 16.0),
       
           // Wajib image inputs will go here later
@@ -112,7 +88,7 @@ class _PageSixMesinWajibState extends ConsumerState<PageSixMesinWajib> with Auto
       
           const SizedBox(height: 32.0),
           const SizedBox(height: 24.0),
-          Footer(),
+          const Footer(),
         ],
       ),
     );

@@ -8,16 +8,16 @@ import 'package:form_app/providers/form_provider.dart';
 import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
 import 'package:form_app/widgets/expandable_text_field.dart';
 
-class PageFiveFour extends ConsumerStatefulWidget {
-  const PageFiveFour({
+class PenilaianEksteriorPage extends ConsumerStatefulWidget {
+  const PenilaianEksteriorPage({
     super.key,
   });
 
   @override
-  ConsumerState<PageFiveFour> createState() => _PageFiveFourState();
+  ConsumerState<PenilaianEksteriorPage> createState() => _PenilaianEksteriorPage();
 }
 
-class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepAliveClientMixin { // Add mixin
+class _PenilaianEksteriorPage extends ConsumerState<PenilaianEksteriorPage> with AutomaticKeepAliveClientMixin { // Add mixin
   late FocusScopeNode _focusScopeNode;
 
   @override
@@ -59,7 +59,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageTitle(data: 'Penilaian (4)'),
+                const PageTitle(data: 'Penilaian (4)'),
                 const SizedBox(height: 6.0),
                 const HeadingOne(text: 'Hasil Inspeksi Eksterior'),
                 const SizedBox(height: 16.0),
@@ -76,7 +76,7 @@ class _PageFiveFourState extends ConsumerState<PageFiveFour> with AutomaticKeepA
                 ),
                 const SizedBox(height: 32.0),
                 const SizedBox(height: 24.0),
-                Footer(),
+                const Footer(),
               ],
             ),
           ),

@@ -6,26 +6,26 @@ import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/widgets/common_layout.dart';
 import 'package:form_app/widgets/multi_step_form_navbar.dart';
 // Import all form pages
-import 'package:form_app/pages/page_one.dart';
-import 'package:form_app/pages/page_two.dart';
-import 'package:form_app/pages/page_three.dart';
-import 'package:form_app/pages/page_four.dart';
-import 'package:form_app/pages/page_five_one.dart';
-import 'package:form_app/pages/page_five_two.dart';
-import 'package:form_app/pages/page_five_three.dart';
-import 'package:form_app/pages/page_five_four.dart';
-import 'package:form_app/pages/page_five_five.dart';
-import 'package:form_app/pages/page_five_six.dart';
-import 'package:form_app/pages/page_five_seven.dart';
-import 'package:form_app/pages/page_six_general_wajib.dart';
-import 'package:form_app/pages/page_six_eksterior_tambahan.dart';
-import 'package:form_app/pages/page_six_interior_tambahan.dart';
-import 'package:form_app/pages/page_six_mesin_tambahan.dart';
-import 'package:form_app/pages/page_six_kaki_kaki_tambahan.dart';
-import 'package:form_app/pages/page_six_alat_alat_tambahan.dart';
-import 'package:form_app/pages/page_seven.dart';
-import 'package:form_app/pages/page_eight.dart';
-import 'package:form_app/pages/page_nine.dart';
+import 'package:form_app/pages/identitas_page.dart';
+import 'package:form_app/pages/data_kendaraan_page.dart';
+import 'package:form_app/pages/kelengkapan_page.dart';
+import 'package:form_app/pages/hasil_inspeksi_page.dart';
+import 'package:form_app/pages/penilaian_fitur_page.dart';
+import 'package:form_app/pages/penilaian_mesin_page.dart';
+import 'package:form_app/pages/penilaian_interior_page.dart';
+import 'package:form_app/pages/penilaian_eksterior_page.dart';
+import 'package:form_app/pages/penilaian_ban_dan_kaki_kaki_page.dart';
+import 'package:form_app/pages/penilaian_test_drive.dart';
+import 'package:form_app/pages/penilaian_tools_test_page.dart';
+import 'package:form_app/pages/foto_general_wajib_page.dart';
+import 'package:form_app/pages/foto_eksterior_tambahan_page.dart';
+import 'package:form_app/pages/foto_interior_tambahan_page.dart';
+import 'package:form_app/pages/foto_mesin_tambahan_page.dart';
+import 'package:form_app/pages/foto_kaki_kaki_tambahan_page.dart';
+import 'package:form_app/pages/foto_alat_alat_tambahan_page.dart';
+import 'package:form_app/pages/foto_dokumen_page.dart';
+import 'package:form_app/pages/ketebalan_cat_page.dart';
+import 'package:form_app/pages/finalisasi_page.dart';
 import 'package:form_app/pages/finished.dart';
 import 'package:form_app/providers/form_provider.dart';
 import 'package:form_app/services/api_service.dart';
@@ -94,7 +94,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     7: 'Foto General (Tambahan)', // PageSixGeneralTambahan
     8: 'Foto Eksterior (Tambahan)', // PageSixEksteriorTambahan
     9: 'Foto Interior (Tambahan)', // PageSixInteriorTambahan
-    10: 'Foto Mesin (Tambahan)', // PageSixMesinTambahan
+    10: 'Foto Mesin (Tambahan)', // FotoMesinTambahanPage
     11: 'Foto Kaki-kaki (Tambahan)', // PageSixKakiKakiTambahan
     12: 'Foto Alat-alat (Tambahan)', // PageSixAlatAlatTambahan
     13: 'Foto Dokumen', // PageSeven
@@ -124,26 +124,26 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     });
 
     _formPages = [
-      PageOne(key: const ValueKey('PageOne'), formKey: _formKeys[0], formSubmitted: _formSubmittedPageOne),
-      const PageSixGeneralWajib(key: ValueKey('PageSixGeneralWajib')),
-      PageSixEksteriorTambahan(key: const ValueKey('PageSixEksteriorTambahan'), formSubmitted: _formSubmittedTambahanImages),
-      const PageEight(key: ValueKey('PageEight')),
-      PageSixInteriorTambahan(key: const ValueKey('PageSixInteriorTambahan'), formSubmitted: _formSubmittedTambahanImages),
-      PageSixMesinTambahan(key: const ValueKey('PageSixMesinTambahan'), formSubmitted: _formSubmittedTambahanImages),
-      PageSixKakiKakiTambahan(key: const ValueKey('PageSixKakiKakiTambahan'), formSubmitted: _formSubmittedTambahanImages),
-      PageSixAlatAlatTambahan(key: const ValueKey('PageSixAlatAlatTambahan'), formSubmitted: _formSubmittedTambahanImages),
-      PageSeven(key: const ValueKey('PageSeven'), formSubmitted: _formSubmittedTambahanImages, defaultLabel: _defaultTambahanLabel),
-      PageTwo(key: const ValueKey('PageTwo'), formKey: _formKeys[14], formSubmitted: _formSubmittedPageTwo),
-      const PageThree(key: ValueKey('PageThree')),
-      const PageFour(key: ValueKey('PageFour')),
-      const PageFiveOne(key: ValueKey('PageFiveOne')),
-      const PageFiveTwo(key: ValueKey('PageFiveTwo')),
-      const PageFiveThree(key: ValueKey('PageFiveThree')),
-      const PageFiveFour(key: ValueKey('PageFiveFour')),
-      const PageFiveFive(key: ValueKey('PageFiveFive')),
-      const PageFiveSix(key: ValueKey('PageFiveSix')),
-      const PageFiveSeven(key: ValueKey('PageFiveSeven')),
-      PageNine(
+      IdentitasPage(key: const ValueKey('IdentitasPage'), formKey: _formKeys[0], formSubmitted: _formSubmittedPageOne),
+      const FotoGeneralWajibPage(key: ValueKey('FotoGeneralWajibPage')),
+      FotoEksteriorTambahanPage(key: const ValueKey('FotoEksteriorTambahanPage'), formSubmitted: _formSubmittedTambahanImages),
+      const KetebalanCatPage(key: ValueKey('KetebalanCatPage')),
+      FotoInteriorTambahanPage(key: const ValueKey('FotoInteriorTambahanPage'), formSubmitted: _formSubmittedTambahanImages),
+      FotoMesinTambahanPage(key: const ValueKey('FotoMesinTambahanPage'), formSubmitted: _formSubmittedTambahanImages),
+      FotoKakiKakiTambahanPage(key: const ValueKey('FotoKakiKakiTambahanPage'), formSubmitted: _formSubmittedTambahanImages),
+      FotoAlatAlatTambahanPage(key: const ValueKey('FotoAlatAlatTambahanPage'), formSubmitted: _formSubmittedTambahanImages),
+      FotoDokumenPage(key: const ValueKey('FotoDokumenPage'), formSubmitted: _formSubmittedTambahanImages, defaultLabel: _defaultTambahanLabel),
+      DataKendaraanPage(key: const ValueKey('DataKendaraanPage'), formKey: _formKeys[14], formSubmitted: _formSubmittedPageTwo),
+      const KelengkapanPage(key: ValueKey('KelengkapanPage')),
+      const HasilInspeksiPage(key: ValueKey('HasilInspeksiPage')),
+      const PenilaianFiturPage(key: ValueKey('PenilaianFiturPage')),
+      const PenilaianMesinPage(key: ValueKey('PenilaianMesinPage')),
+      const PenilaianInteriorPage(key: ValueKey('PenilaianInteriorPage')),
+      const PenilaianEksteriorPage(key: ValueKey('PenilaianEksteriorPage')),
+      const PenilaianBanDanKakiKakiPage(key: ValueKey('PenilaianBanDanKakiKakiPage')),
+      const PenilaianTestDrive(key: ValueKey('PenilaianTestDrive')),
+      const PenilaianToolsTestPage(key: ValueKey('PenilaianToolsTestPage')),
+      FinalisasiPage(
         key: const ValueKey('PageNine'),
         onCheckedChange: (newValue) {
           final submissionStatus = ref.read(submissionStatusProvider);

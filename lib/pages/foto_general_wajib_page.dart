@@ -8,8 +8,8 @@ import 'dart:io';
 import 'package:form_app/models/image_data.dart';
 import 'package:form_app/providers/image_data_provider.dart';
 
-class PageSixGeneralWajib extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
-  const PageSixGeneralWajib({
+class FotoGeneralWajibPage extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
+  const FotoGeneralWajibPage({
     super.key,
   });
 
@@ -21,10 +21,10 @@ class PageSixGeneralWajib extends ConsumerStatefulWidget { // Changed to Consume
   ];
 
   @override
-  ConsumerState<PageSixGeneralWajib> createState() => _PageSixGeneralWajibState();
+  ConsumerState<FotoGeneralWajibPage> createState() => _FotoGeneralWajibPageState();
 }
 
-class _PageSixGeneralWajibState extends ConsumerState<PageSixGeneralWajib> with AutomaticKeepAliveClientMixin { // Add mixin
+class _FotoGeneralWajibPageState extends ConsumerState<FotoGeneralWajibPage> with AutomaticKeepAliveClientMixin { // Add mixin
   @override
   bool get wantKeepAlive => true; // Override wantKeepAlive
 
@@ -69,9 +69,9 @@ class _PageSixGeneralWajibState extends ConsumerState<PageSixGeneralWajib> with 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PageTitle(data: 'Foto General'),
+              const PageTitle(data: 'Foto General'),
               const SizedBox(height: 6.0),
-              HeadingOne(text: 'Wajib'),
+              const HeadingOne(text: 'Wajib'),
               const SizedBox(height: 16.0),
 
               ...widget.imageInputLabels.map( // Access imageInputLabels via widget.
@@ -90,8 +90,8 @@ class _PageSixGeneralWajibState extends ConsumerState<PageSixGeneralWajib> with 
             ],
           ),
         ),
-        Spacer(),
-        Footer(),
+        const Spacer(),
+        const Footer(),
       ],
     );
   }

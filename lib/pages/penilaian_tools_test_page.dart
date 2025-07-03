@@ -8,16 +8,16 @@ import 'package:form_app/providers/form_provider.dart';
 import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
 import 'package:form_app/widgets/expandable_text_field.dart';
 
-class PageFiveSix extends ConsumerStatefulWidget {
-  const PageFiveSix({
+class PenilaianToolsTestPage extends ConsumerStatefulWidget {
+  const PenilaianToolsTestPage({
     super.key,
   });
 
   @override
-  ConsumerState<PageFiveSix> createState() => _PageFiveSixState();
+  ConsumerState<PenilaianToolsTestPage> createState() => _PenilaianToolsTestPage();
 }
 
-class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAliveClientMixin { // Add mixin
+class _PenilaianToolsTestPage extends ConsumerState<PenilaianToolsTestPage> with AutomaticKeepAliveClientMixin { // Add mixin
   late FocusScopeNode _focusScopeNode;
 
   @override
@@ -55,13 +55,13 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
           },
           child: SingleChildScrollView(
             clipBehavior: Clip.none,
-            key: const PageStorageKey<String>('pageFiveSixScrollKey'), // Add PageStorageKey here
+            key: const PageStorageKey<String>('pageFiveSevenScrollKey'), // Add PageStorageKey here
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageTitle(data: 'Penilaian (6)'),
+                const PageTitle(data: 'Penilaian (7)'),
                 const SizedBox(height: 6.0),
-                const HeadingOne(text: 'Test Drive'),
+                const HeadingOne(text: 'Tools Test'),
                 const SizedBox(height: 16.0),
 
                 ..._buildToggleableNumberedButtonLists(formData, formNotifier),
@@ -69,14 +69,14 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
                 ExpandableTextField(
                   label: 'Catatan',
                   hintText: 'Masukkan catatan di sini',
-                  initialLines: formData.testDriveCatatanList,
+                  initialLines: formData.toolsTestCatatanList,
                   onChangedList: (lines) {
-                    formNotifier.updateTestDriveCatatanList(lines);
+                    formNotifier.updateToolsTestCatatanList(lines);
                   },
                 ),
                 const SizedBox(height: 32.0),
                 const SizedBox(height: 24.0),
-                Footer(),
+                const Footer(),
               ],
             ),
           ),
@@ -88,39 +88,44 @@ class _PageFiveSixState extends ConsumerState<PageFiveSix> with AutomaticKeepAli
   List<Widget> _buildToggleableNumberedButtonLists(FormData formData, FormNotifier formNotifier) {
     final List<Map<String, dynamic>> toggleableNumberedButtonListData = [
       {
-        'label': 'Bunyi/Getaran',
-        'selectedValue': formData.bunyiGetaranSelectedValue,
-        'onItemSelected': (value) => formNotifier.updateBunyiGetaranSelectedValue(value),
+        'label': 'Tebal Cat Body Depan',
+        'selectedValue': formData.tebalCatBodyDepanSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTebalCatBodyDepanSelectedValue(value),
       },
       {
-        'label': 'Performa Stir',
-        'selectedValue': formData.performaStirSelectedValue,
-        'onItemSelected': (value) => formNotifier.updatePerformaStirSelectedValue(value),
+        'label': 'Tebal cat Body Kiri',
+        'selectedValue': formData.tebalCatBodyKiriSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTebalCatBodyKiriSelectedValue(value),
       },
       {
-        'label': 'Perpindahan Transmisi',
-        'selectedValue': formData.perpindahanTransmisiSelectedValue,
-        'onItemSelected': (value) => formNotifier.updatePerpindahanTransmisiSelectedValue(value),
+        'label': 'Temperature AC Mobil',
+        'selectedValue': formData.temperatureAcMobilSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTemperatureAcMobilSelectedValue(value),
       },
       {
-        'label': 'Stir Balance',
-        'selectedValue': formData.stirBalanceSelectedValue,
-        'onItemSelected': (value) => formNotifier.updateStirBalanceSelectedValue(value),
+        'label': 'Tebal Cat Body Kanan',
+        'selectedValue': formData.tebalCatBodyKananSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTebalCatBodyKananSelectedValue(value),
       },
       {
-        'label': 'Performa Suspensi',
-        'selectedValue': formData.performaSuspensiSelectedValue,
-        'onItemSelected': (value) => formNotifier.updatePerformaSuspensiSelectedValue(value),
+        'label': 'Tebal Cat Body Belakang',
+        'selectedValue': formData.tebalCatBodyBelakangSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTebalCatBodyBelakangSelectedValue(value),
       },
       {
-        'label': 'Performa Kopling',
-        'selectedValue': formData.performaKoplingSelectedValue,
-        'onItemSelected': (value) => formNotifier.updatePerformaKoplingSelectedValue(value),
+        'label': 'OBD Scanner',
+        'selectedValue': formData.obdScannerSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateObdScannerSelectedValue(value),
       },
       {
-        'label': 'RPM',
-        'selectedValue': formData.rpmSelectedValue,
-        'onItemSelected': (value) => formNotifier.updateRpmSelectedValue(value),
+        'label': 'Tebal Cat Body Atap',
+        'selectedValue': formData.tebalCatBodyAtapSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTebalCatBodyAtapSelectedValue(value),
+      },
+      {
+        'label': 'Test ACCU ( ON & OFF )',
+        'selectedValue': formData.testAccuSelectedValue,
+        'onItemSelected': (value) => formNotifier.updateTestAccuSelectedValue(value),
       },
     ];
 

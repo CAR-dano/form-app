@@ -83,7 +83,7 @@ class _PaintThicknessInputFieldState extends State<PaintThicknessInputField> {
             controller: _controller,
             focusNode: _focusNode, // Assign the FocusNode
             scrollController: _scrollController, // Assign the ScrollController
-            keyboardType: TextInputType.numberWithOptions(decimal: true), // Allow decimal input
+            keyboardType: const TextInputType.numberWithOptions(decimal: true), // Allow decimal input
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')), // Allow digits and one decimal point
             ],

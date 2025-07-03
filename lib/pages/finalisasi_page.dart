@@ -8,7 +8,7 @@ import 'package:form_app/widgets/loading_indicator_widget.dart';
 import 'package:form_app/providers/submission_status_provider.dart'; // Import the new provider
 
 // Placeholder for Page Nine
-class PageNine extends ConsumerStatefulWidget {
+class FinalisasiPage extends ConsumerStatefulWidget {
   // Removed all form-related GlobalKeys and ValueNotifiers as they are now managed by MultiStepFormScreen
   // Removed pageNames, validatePage, tambahanImagePageIdentifiers, defaultTambahanLabel
   // as they are used by the submission logic now in MultiStepFormScreen
@@ -17,17 +17,17 @@ class PageNine extends ConsumerStatefulWidget {
   final void Function(bool newValue) onCheckedChange;
   final bool isChecked;
 
-  const PageNine({
+  const FinalisasiPage({
     super.key,
     required this.onCheckedChange,
     required this.isChecked,
   });
 
   @override
-  ConsumerState<PageNine> createState() => _PageNineState();
+  ConsumerState<FinalisasiPage> createState() => _FinalisasiPageState();
 }
 
-class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClientMixin {
+class _FinalisasiPageState extends ConsumerState<FinalisasiPage> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -47,7 +47,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageTitle(data: 'Finalisasi'),
+                  const PageTitle(data: 'Finalisasi'),
                   const SizedBox(height: 6.0),
                   Text(
                     'Pastikan data yang telah diisi telah sesuai dengan yang sebenarnya dan memenuhi SOP PT Inspeksi Mobil Jogja',
@@ -67,7 +67,7 @@ class _PageNineState extends ConsumerState<PageNine> with AutomaticKeepAliveClie
             ),
           ),
         ),
-        // Loading Indicator (moved from PageNine's original NavigationButtonRow section)
+        // Loading Indicator (moved from FinalisasiPage's original NavigationButtonRow section)
         if (submissionStatus.isLoading)
           LoadingIndicatorWidget(
             message: submissionStatus.message,

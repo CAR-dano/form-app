@@ -104,7 +104,7 @@ class UpdateDialog extends ConsumerWidget {
                 child: LinearProgressIndicator(
                   value: updateState.downloadProgress,
                   backgroundColor: Colors.grey[300],
-                  valueColor: AlwaysStoppedAnimation<Color>(buttonColor),
+                  valueColor: const AlwaysStoppedAnimation<Color>(buttonColor),
                   minHeight: 10, // Adjust height to make it visible with border
                 ),
               ),

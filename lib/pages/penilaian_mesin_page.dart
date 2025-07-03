@@ -8,16 +8,16 @@ import 'package:form_app/providers/form_provider.dart';
 import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
 import 'package:form_app/widgets/expandable_text_field.dart';
 
-class PageFiveTwo extends ConsumerStatefulWidget {
-  const PageFiveTwo({
+class PenilaianMesinPage extends ConsumerStatefulWidget {
+  const PenilaianMesinPage({
     super.key,
   });
 
   @override
-  ConsumerState<PageFiveTwo> createState() => _PageFiveTwoState();
+  ConsumerState<PenilaianMesinPage> createState() => _PenilaianMesinPage();
 }
 
-class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAliveClientMixin { // Add mixin
+class _PenilaianMesinPage extends ConsumerState<PenilaianMesinPage> with AutomaticKeepAliveClientMixin { // Add mixin
   late FocusScopeNode _focusScopeNode;
 
 
@@ -63,7 +63,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageTitle(data: 'Penilaian (2)'),
+                const PageTitle(data: 'Penilaian (2)'),
                 const SizedBox(height: 6.0),
                 const HeadingOne(text: 'Hasil Inspeksi Mesin'),
                 const SizedBox(height: 16.0),
@@ -80,7 +80,7 @@ class _PageFiveTwoState extends ConsumerState<PageFiveTwo> with AutomaticKeepAli
                 ),
                 const SizedBox(height: 32.0),
                 const SizedBox(height: 24.0),
-                Footer(),
+                const Footer(),
               ],
             ),
           ),

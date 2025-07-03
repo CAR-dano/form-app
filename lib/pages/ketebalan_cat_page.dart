@@ -6,16 +6,16 @@ import 'package:form_app/widgets/heading_one.dart';
 import 'package:form_app/widgets/paint_thickness_input_field.dart';
 import 'package:form_app/providers/form_provider.dart';
 
-class PageEight extends ConsumerStatefulWidget {
-  const PageEight({
+class KetebalanCatPage extends ConsumerStatefulWidget {
+  const KetebalanCatPage({
     super.key,
   });
 
   @override
-  ConsumerState<PageEight> createState() => _PageEightState();
+  ConsumerState<KetebalanCatPage> createState() => _KetebalanCatPage();
 }
 
-class _PageEightState extends ConsumerState<PageEight>
+class _KetebalanCatPage extends ConsumerState<KetebalanCatPage>
     with AutomaticKeepAliveClientMixin {
   late FocusScopeNode _focusScopeNode;
 
@@ -58,11 +58,11 @@ class _PageEightState extends ConsumerState<PageEight>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PageTitle(data: 'Ketebalan Cat'),
+              const PageTitle(data: 'Ketebalan Cat'),
               const SizedBox(height: 6.0),
               
               // Section 1: Depan
-              HeadingOne(text: 'Depan'),
+              const HeadingOne(text: 'Depan'),
               Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -89,7 +89,7 @@ class _PageEightState extends ConsumerState<PageEight>
               const SizedBox(height: 16.0),
 
               // Section 2: Belakang
-              HeadingOne(text: 'Belakang'),
+              const HeadingOne(text: 'Belakang'),
               Center(
                 child: SizedBox(
                   width: 300,
@@ -135,7 +135,7 @@ class _PageEightState extends ConsumerState<PageEight>
               const SizedBox(height: 46.0),
 
               // Section 3: Samping Kanan
-              HeadingOne(text: 'Samping Kanan'),
+              const HeadingOne(text: 'Samping Kanan'),
               Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -185,7 +185,7 @@ class _PageEightState extends ConsumerState<PageEight>
               const SizedBox(height: 16.0),
 
               // Section 4: Samping Kiri
-              HeadingOne(text: 'Samping Kiri'),
+              const HeadingOne(text: 'Samping Kiri'),
               Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -236,7 +236,7 @@ class _PageEightState extends ConsumerState<PageEight>
               const SizedBox(
                 height: 24.0,
               ),
-              Footer(),
+              const Footer(),
             ],
           ),
         ),

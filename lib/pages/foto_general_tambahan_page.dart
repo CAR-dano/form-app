@@ -5,19 +5,19 @@ import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/tambahan_image_selection.dart';
 
-class PageSixEksteriorTambahan extends ConsumerStatefulWidget {
+class FotoGeneralTambahanPage extends ConsumerStatefulWidget {
   final ValueNotifier<bool> formSubmitted;
 
-  const PageSixEksteriorTambahan({
+  const FotoGeneralTambahanPage({
     super.key,
     required this.formSubmitted,
   });
 
   @override
-  ConsumerState<PageSixEksteriorTambahan> createState() => _PageSixEksteriorTambahanState();
+  ConsumerState<FotoGeneralTambahanPage> createState() => _FotoGeneralTambahanPageState();
 }
 
-class _PageSixEksteriorTambahanState extends ConsumerState<PageSixEksteriorTambahan> 
+class _FotoGeneralTambahanPageState extends ConsumerState<FotoGeneralTambahanPage>
     with AutomaticKeepAliveClientMixin {
   late FocusScopeNode _focusScopeNode;
 
@@ -34,12 +34,12 @@ class _PageSixEksteriorTambahanState extends ConsumerState<PageSixEksteriorTamba
   }
 
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => true; // Override wantKeepAlive
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    const String pageIdentifier = 'Eksterior Tambahan'; // Define identifier
+    const String pageIdentifier = 'General Tambahan'; // Define identifier
 
     return PopScope(
       onPopInvokedWithResult: (bool didPop, dynamic result) {
@@ -51,12 +51,12 @@ class _PageSixEksteriorTambahanState extends ConsumerState<PageSixEksteriorTamba
         node: _focusScopeNode,
         child: SingleChildScrollView(
           clipBehavior: Clip.none,
-          key: const PageStorageKey<String>('pageSixEksteriorTambahanScrollKey'),
+          key: const PageStorageKey<String>('pageSixGeneralTambahanScrollKey'),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 4),
-              const PageTitle(data: 'Foto Eksterior'),
+              const PageTitle(data: 'Foto General'),
               const SizedBox(height: 6.0),
               const HeadingOne(text: 'Tambahan'),
               const SizedBox(height: 16.0),

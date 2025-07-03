@@ -11,21 +11,21 @@ import 'package:form_app/models/inspection_branch.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/labeled_dropdown_field.dart'; // Use the refactored generic LabeledDropdownField
 
-class PageOne extends ConsumerStatefulWidget {
+class IdentitasPage extends ConsumerStatefulWidget {
   final GlobalKey<FormState> formKey;
   final ValueNotifier<bool> formSubmitted;
 
-  const PageOne({
+  const IdentitasPage({
     super.key,
     required this.formKey,
     required this.formSubmitted,
   });
 
   @override
-  ConsumerState<PageOne> createState() => _PageOneState();
+  ConsumerState<IdentitasPage> createState() => _IdentitasPageState();
 }
 
-class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClientMixin {
+class _IdentitasPageState extends ConsumerState<IdentitasPage> with AutomaticKeepAliveClientMixin {
   late FocusScopeNode _focusScopeNode;
   bool _hasValidatedOnSubmit = false; // Declare the state variable
 
@@ -91,7 +91,7 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageTitle(data: 'Identitas'),
+                  const PageTitle(data: 'Identitas'),
                   const SizedBox(height: 6.0),
                   LabeledDropdownField<Inspector>( // Change generic type to Inspector
                       label: 'Nama Inspektor',
@@ -174,7 +174,7 @@ class _PageOneState extends ConsumerState<PageOne> with AutomaticKeepAliveClient
                   ),
                   const SizedBox(height: 32.0),
                   
-                  Footer()
+                  const Footer()
                 ],
               ),
             ),

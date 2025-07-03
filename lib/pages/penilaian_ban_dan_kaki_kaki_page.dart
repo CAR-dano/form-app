@@ -8,16 +8,16 @@ import 'package:form_app/providers/form_provider.dart';
 import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
 import 'package:form_app/widgets/expandable_text_field.dart';
 
-class PageFiveFive extends ConsumerStatefulWidget {
-  const PageFiveFive({
+class PenilaianBanDanKakiKakiPage extends ConsumerStatefulWidget {
+  const PenilaianBanDanKakiKakiPage({
     super.key,
   });
 
   @override
-  ConsumerState<PageFiveFive> createState() => _PageFiveFiveState();
+  ConsumerState<PenilaianBanDanKakiKakiPage> createState() => _PenilaianBanDanKakiKakiPage();
 }
 
-class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepAliveClientMixin { // Add mixin
+class _PenilaianBanDanKakiKakiPage extends ConsumerState<PenilaianBanDanKakiKakiPage> with AutomaticKeepAliveClientMixin { // Add mixin
   late FocusScopeNode _focusScopeNode;
 
   @override
@@ -59,7 +59,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageTitle(data: 'Penilaian (5)'),
+                const PageTitle(data: 'Penilaian (5)'),
                 const SizedBox(height: 6.0),
                 const HeadingOne(text: 'Ban dan Kaki-kaki'),
                 const SizedBox(height: 16.0),
@@ -76,7 +76,7 @@ class _PageFiveFiveState extends ConsumerState<PageFiveFive> with AutomaticKeepA
                 ),
                 const SizedBox(height: 32.0),
                 const SizedBox(height: 24.0),
-                Footer(),
+                const Footer(),
               ],
             ),
           ),

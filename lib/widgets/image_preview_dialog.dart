@@ -110,7 +110,7 @@ class ImagePreviewDialog extends ConsumerWidget {
                       child: LinearProgressIndicator(
                         borderRadius: BorderRadius.circular(8.0),
                         backgroundColor: Colors.grey[300],
-                        valueColor: AlwaysStoppedAnimation<Color>(toggleOptionSelectedLengkapColor),
+                        valueColor: const AlwaysStoppedAnimation<Color>(toggleOptionSelectedLengkapColor),
                         minHeight: 5.0,
                       ),
                     ),

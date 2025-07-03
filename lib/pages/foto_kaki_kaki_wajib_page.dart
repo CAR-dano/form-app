@@ -4,48 +4,43 @@ import 'package:form_app/widgets/heading_one.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
-import 'package:form_app/widgets/image_input_widget.dart';
-import 'dart:io';
-import 'package:form_app/models/image_data.dart';
-import 'package:form_app/providers/image_data_provider.dart';
+import 'package:form_app/widgets/image_input_widget.dart'; // Keep import in case needed later
+import 'dart:io'; // Keep import in case needed later
+import 'package:form_app/models/image_data.dart'; // Keep import in case needed later
+import 'package:form_app/providers/image_data_provider.dart'; // Keep import in case needed later
 
-class PageSixEksteriorWajib extends ConsumerStatefulWidget {
+class FotoKakiKakiWajibPage extends ConsumerStatefulWidget { 
   final int currentPage;
   final int totalPages;
 
-  const PageSixEksteriorWajib({
+  const FotoKakiKakiWajibPage({
     super.key,
     required this.currentPage,
     required this.totalPages,
   });
 
   final List<String> imageInputLabels = const [
-    'Cat Samping Kanan dan Kiri (Pintu Mobil)',
-    'Pilar Pintu Depan',
-    'Pilar Pintu Tengah Depan',
-    'Pilar Pintu Tengah Belakang',
-    'Karet Pada Pilar',
-    'Celah Bagasi',
-    'Sealer Bagasi',
-    'Pilar Bagasi',
-    'Karet Bagasi',
-    'Baut Bagasi',
-    'Kolong Bagasi',
-    'Asap Kendaraan Jika Ngobos',
-    'Bumper',
-    'Fender',
-    'Handle Pintu',
-    'Quarter',
-    'Lisplang',
-    'Lampu',
-    'Foglamp',
+    'Cakram',
+    'Kampas rem',
+    'Celah Antara Roda dan Fender',
+    'Ulir Ban',
+    'Usia Ban',
+    'Tie Rod',
+    'Link Stabilizer',
+    'Balljoint',
+    'Shock Breaker',
+    'As Roda Depan',
+    'Kabel Ties',
+    'Lower Arm',
+    'Crossmember',
+    'Chassis',
   ];
 
   @override
-  ConsumerState<PageSixEksteriorWajib> createState() => _PageSixEksteriorWajibState();
+  ConsumerState<FotoKakiKakiWajibPage> createState() => _FotoKakiKakiWajibPageState();
 }
 
-class _PageSixEksteriorWajibState extends ConsumerState<PageSixEksteriorWajib> with AutomaticKeepAliveClientMixin { // Add mixin
+class _FotoKakiKakiWajibPageState extends ConsumerState<FotoKakiKakiWajibPage> with AutomaticKeepAliveClientMixin { // Add mixin
   @override
   bool get wantKeepAlive => true; // Override wantKeepAlive
 
@@ -62,7 +57,7 @@ class _PageSixEksteriorWajibState extends ConsumerState<PageSixEksteriorWajib> w
           label: label,
           imagePath: imageFile.path,
           needAttention: false,
-          category: 'Eksterior Wajib', // New field
+          category: 'Kaki-kaki Wajib', // New field
           isMandatory: true, // New field
         ));
       }
@@ -77,18 +72,19 @@ class _PageSixEksteriorWajibState extends ConsumerState<PageSixEksteriorWajib> w
     // ref is available directly in ConsumerStatefulWidget state classes
     return SingleChildScrollView(
       clipBehavior: Clip.none,
-      key: const PageStorageKey<String>('pageSixEksteriorWajibScrollKey'), // This key remains important
+      key: const PageStorageKey<String>('pageSixKakiKakiWajibScrollKey'), // This key remains important
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
           const SizedBox(height: 4),
-          PageTitle(data: 'Foto Eksterior'),
+          const PageTitle(data: 'Foto Kaki-kaki'),
           const SizedBox(height: 6.0),
-          HeadingOne(text: 'Wajib'),
+          const HeadingOne(text: 'Wajib'),
           const SizedBox(height: 16.0),
       
-          ...widget.imageInputLabels.map((label) => Padding( // Access imageInputLabels via widget.
+          // Wajib image inputs will go here later
+           ...widget.imageInputLabels.map((label) => Padding( // Access imageInputLabels via widget.
             padding: const EdgeInsets.only(bottom: 16.0),
             child: ImageInputWidget(
               label: label,
@@ -100,7 +96,7 @@ class _PageSixEksteriorWajibState extends ConsumerState<PageSixEksteriorWajib> w
       
           const SizedBox(height: 32.0),
           const SizedBox(height: 24.0),
-          Footer(),
+          const Footer(),
         ],
       ),
     );

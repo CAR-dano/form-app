@@ -5,19 +5,19 @@ import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/tambahan_image_selection.dart';
 
-class PageSixKakiKakiTambahan extends ConsumerStatefulWidget {
+class FotoEksteriorTambahanPage extends ConsumerStatefulWidget {
   final ValueNotifier<bool> formSubmitted;
 
-  const PageSixKakiKakiTambahan({
+  const FotoEksteriorTambahanPage({
     super.key,
     required this.formSubmitted,
   });
 
   @override
-  ConsumerState<PageSixKakiKakiTambahan> createState() => _PageSixKakiKakiTambahanState();
+  ConsumerState<FotoEksteriorTambahanPage> createState() => _FotoEksteriorTambahanPageState();
 }
 
-class _PageSixKakiKakiTambahanState extends ConsumerState<PageSixKakiKakiTambahan> 
+class _FotoEksteriorTambahanPageState extends ConsumerState<FotoEksteriorTambahanPage>
     with AutomaticKeepAliveClientMixin {
   late FocusScopeNode _focusScopeNode;
 
@@ -39,7 +39,7 @@ class _PageSixKakiKakiTambahanState extends ConsumerState<PageSixKakiKakiTambaha
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    const String pageIdentifier = 'Kaki-kaki Tambahan'; // Define identifier
+    const String pageIdentifier = 'Eksterior Tambahan'; // Define identifier
 
     return PopScope(
       onPopInvokedWithResult: (bool didPop, dynamic result) {
@@ -51,11 +51,12 @@ class _PageSixKakiKakiTambahanState extends ConsumerState<PageSixKakiKakiTambaha
         node: _focusScopeNode,
         child: SingleChildScrollView(
           clipBehavior: Clip.none,
-          key: const PageStorageKey<String>('pageSixKakiKakiTambahanScrollKey'),
+          key: const PageStorageKey<String>('fotoEksteriorTambahanScrollKey'),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const PageTitle(data: 'Foto Kaki-kaki'),
+              const SizedBox(height: 4),
+              const PageTitle(data: 'Foto Eksterior'),
               const SizedBox(height: 6.0),
               const HeadingOne(text: 'Tambahan'),
               const SizedBox(height: 16.0),

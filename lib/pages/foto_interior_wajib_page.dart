@@ -9,11 +9,11 @@ import 'dart:io'; // Keep import in case needed later
 import 'package:form_app/models/image_data.dart'; // Keep import in case needed later
 import 'package:form_app/providers/image_data_provider.dart'; // Keep import in case needed later
 
-class PageSixInteriorWajib extends ConsumerStatefulWidget { 
+class FotoInteriorWajibPage extends ConsumerStatefulWidget { 
   final int currentPage;
   final int totalPages;
 
-  const PageSixInteriorWajib({
+  const FotoInteriorWajibPage({
     super.key,
     required this.currentPage,
     required this.totalPages,
@@ -35,10 +35,10 @@ class PageSixInteriorWajib extends ConsumerStatefulWidget {
   ];
 
   @override
-  ConsumerState<PageSixInteriorWajib> createState() => _PageSixInteriorWajibState();
+  ConsumerState<FotoInteriorWajibPage> createState() => _FotoInteriorWajibPageState();
 }
 
-class _PageSixInteriorWajibState extends ConsumerState<PageSixInteriorWajib> with AutomaticKeepAliveClientMixin { // Add mixin
+class _FotoInteriorWajibPageState extends ConsumerState<FotoInteriorWajibPage> with AutomaticKeepAliveClientMixin { // Add mixin
   @override
   bool get wantKeepAlive => true; // Override wantKeepAlive
 
@@ -76,9 +76,9 @@ class _PageSixInteriorWajibState extends ConsumerState<PageSixInteriorWajib> wit
         children: [
           PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
           const SizedBox(height: 4),
-          PageTitle(data: 'Foto Interior'),
+          const PageTitle(data: 'Foto Interior'),
           const SizedBox(height: 6.0),
-          HeadingOne(text: 'Wajib'),
+          const HeadingOne(text: 'Wajib'),
           const SizedBox(height: 16.0),
       
           // Wajib image inputs will go here later
@@ -94,7 +94,7 @@ class _PageSixInteriorWajibState extends ConsumerState<PageSixInteriorWajib> wit
       
           const SizedBox(height: 32.0),
           const SizedBox(height: 24.0),
-          Footer(),
+          const Footer(),
         ],
       ),
     );

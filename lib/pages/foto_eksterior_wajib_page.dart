@@ -4,35 +4,48 @@ import 'package:form_app/widgets/heading_one.dart';
 import 'package:form_app/widgets/page_number.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
-import 'package:form_app/widgets/image_input_widget.dart'; // Keep import in case needed later
-import 'dart:io'; // Keep import in case needed later
-import 'package:form_app/models/image_data.dart'; // Keep import in case needed later
-import 'package:form_app/providers/image_data_provider.dart'; // Keep import in case needed later
+import 'package:form_app/widgets/image_input_widget.dart';
+import 'dart:io';
+import 'package:form_app/models/image_data.dart';
+import 'package:form_app/providers/image_data_provider.dart';
 
-class PageSixAlatAlatWajib extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
-  const PageSixAlatAlatWajib({
+class FotoEksteriorWajibPage extends ConsumerStatefulWidget {
+  final int currentPage;
+  final int totalPages;
+
+  const FotoEksteriorWajibPage({
     super.key,
     required this.currentPage,
     required this.totalPages,
   });
-  final int currentPage;
-  final int totalPages;
-
 
   final List<String> imageInputLabels = const [
-    'OBD Scanner',
-    'Sinar UV',
-    'Paint Thickness',
-    'Cek Aki',
-    'Tire Thickness',
-    'Endoscope (Jika Perlu)',
+    'Cat Samping Kanan dan Kiri (Pintu Mobil)',
+    'Pilar Pintu Depan',
+    'Pilar Pintu Tengah Depan',
+    'Pilar Pintu Tengah Belakang',
+    'Karet Pada Pilar',
+    'Celah Bagasi',
+    'Sealer Bagasi',
+    'Pilar Bagasi',
+    'Karet Bagasi',
+    'Baut Bagasi',
+    'Kolong Bagasi',
+    'Asap Kendaraan Jika Ngobos',
+    'Bumper',
+    'Fender',
+    'Handle Pintu',
+    'Quarter',
+    'Lisplang',
+    'Lampu',
+    'Foglamp',
   ];
 
   @override
-  ConsumerState<PageSixAlatAlatWajib> createState() => _PageSixAlatAlatWajibState();
+  ConsumerState<FotoEksteriorWajibPage> createState() => _FotoEksteriorWajibPageState();
 }
 
-class _PageSixAlatAlatWajibState extends ConsumerState<PageSixAlatAlatWajib> with AutomaticKeepAliveClientMixin { // Add mixin
+class _FotoEksteriorWajibPageState extends ConsumerState<FotoEksteriorWajibPage> with AutomaticKeepAliveClientMixin { // Add mixin
   @override
   bool get wantKeepAlive => true; // Override wantKeepAlive
 
@@ -49,7 +62,7 @@ class _PageSixAlatAlatWajibState extends ConsumerState<PageSixAlatAlatWajib> wit
           label: label,
           imagePath: imageFile.path,
           needAttention: false,
-          category: 'Alat-alat Wajib', // New field
+          category: 'Eksterior Wajib', // New field
           isMandatory: true, // New field
         ));
       }
@@ -64,19 +77,18 @@ class _PageSixAlatAlatWajibState extends ConsumerState<PageSixAlatAlatWajib> wit
     // ref is available directly in ConsumerStatefulWidget state classes
     return SingleChildScrollView(
       clipBehavior: Clip.none,
-      key: const PageStorageKey<String>('pageSixAlatAlatWajibScrollKey'), // This key remains important
+      key: const PageStorageKey<String>('pageSixEksteriorWajibScrollKey'), // This key remains important
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           PageNumber(currentPage: widget.currentPage, totalPages: widget.totalPages),
           const SizedBox(height: 4),
-          PageTitle(data: 'Foto Alat-alat'),
+          const PageTitle(data: 'Foto Eksterior'),
           const SizedBox(height: 6.0),
-          HeadingOne(text: 'Wajib'),
+          const HeadingOne(text: 'Wajib'),
           const SizedBox(height: 16.0),
       
-          // Wajib image inputs will go here later
-           ...widget.imageInputLabels.map((label) => Padding( // Access imageInputLabels via widget.
+          ...widget.imageInputLabels.map((label) => Padding( // Access imageInputLabels via widget.
             padding: const EdgeInsets.only(bottom: 16.0),
             child: ImageInputWidget(
               label: label,
@@ -88,7 +100,7 @@ class _PageSixAlatAlatWajibState extends ConsumerState<PageSixAlatAlatWajib> wit
       
           const SizedBox(height: 32.0),
           const SizedBox(height: 24.0),
-          Footer(),
+          const Footer(),
         ],
       ),
     );

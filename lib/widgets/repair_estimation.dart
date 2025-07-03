@@ -92,7 +92,7 @@ class _RepairEstimationState extends State<RepairEstimation> {
         const SizedBox(height: 8.0),
         ListView.builder(
           shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           itemCount: _estimations.length,
           itemBuilder: (context, index) {
             final bool repairHasText = _repairControllers[index].text.isNotEmpty;
@@ -113,7 +113,7 @@ class _RepairEstimationState extends State<RepairEstimation> {
                     Expanded(
                       flex: 1,
                       child: Container( // Wrap TextField in Container for border
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                            border: Border(
                             right: BorderSide(
                               color: borderColor, // Use borderColor for vertical separator
@@ -130,7 +130,7 @@ class _RepairEstimationState extends State<RepairEstimation> {
                             hintStyle: hintTextStyle, // Use hintTextStyle
                             filled: repairHasText, // Fill only if text is present
                             fillColor: borderColor, // Use borderColor for background when filled
-                            border: OutlineInputBorder(
+                            border: const OutlineInputBorder(
                               borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0), bottomLeft: Radius.circular(6.0)), // Apply border radius to left side
                             borderSide: BorderSide.none,
                             ),
@@ -143,7 +143,7 @@ class _RepairEstimationState extends State<RepairEstimation> {
                     Expanded(
                       flex: 1,
                       child: Container( // Wrap TextField and IconButton in Container for border
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                            border: Border(
                             // Removed left border to avoid double border
                           ),
@@ -163,7 +163,7 @@ class _RepairEstimationState extends State<RepairEstimation> {
                                   hintStyle: hintTextStyle, // Use hintTextStyle
                                   filled: false, // Do not fill based on text
                                   fillColor: Colors.transparent, // Keep background transparent
-                                  border: OutlineInputBorder(
+                                  border: const OutlineInputBorder(
                                      borderRadius: BorderRadius.only(topRight: Radius.circular(6.0), bottomRight: Radius.circular(6.0)), // Apply border radius to right side
                                     borderSide: BorderSide.none,
                                   ),

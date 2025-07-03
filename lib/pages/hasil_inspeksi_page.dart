@@ -11,16 +11,16 @@ import 'package:form_app/widgets/labeled_text_field.dart';
 // Import other necessary widgets like CommonLayout if you plan to use it here
 
 // Placeholder for Page Four
-class PageFour extends ConsumerStatefulWidget { // Change to ConsumerStatefulWidget
-  const PageFour({
+class HasilInspeksiPage extends ConsumerStatefulWidget { // Change to ConsumerStatefulWidget
+  const HasilInspeksiPage({
     super.key,
   });
 
   @override
-  ConsumerState<PageFour> createState() => _PageFourState(); // Change to ConsumerState
+  ConsumerState<HasilInspeksiPage> createState() => _HasilInspeksiPageState(); // Change to ConsumerState
 }
 
-class _PageFourState extends ConsumerState<PageFour> with AutomaticKeepAliveClientMixin { // Add mixin
+class _HasilInspeksiPageState extends ConsumerState<HasilInspeksiPage> with AutomaticKeepAliveClientMixin { // Add mixin
   late FocusScopeNode _focusScopeNode;
 
   @override
@@ -66,7 +66,7 @@ class _PageFourState extends ConsumerState<PageFour> with AutomaticKeepAliveClie
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageTitle(data: 'Hasil Inspeksi'), // Placeholder Title
+                const PageTitle(data: 'Hasil Inspeksi'), // Placeholder Title
                 const SizedBox(height: 6.0),
                 NumberedButtonList(
                   label: 'Interior',
@@ -221,11 +221,11 @@ class _PageFourState extends ConsumerState<PageFour> with AutomaticKeepAliveClie
                   onChanged: (estimations) => formNotifier.updateRepairEstimations(estimations),
                 ),
                 const SizedBox(height: 24.0), // Spacing before navigation buttons
-                SizedBox(
+                const SizedBox(
                   height: 24.0,
                 ), // Optional spacing below the content
                 // Footer
-                Footer(),
+                const Footer(),
               ],
             ),
           ),

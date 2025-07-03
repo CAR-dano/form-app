@@ -58,7 +58,7 @@ class _CustomCheckboxTileState extends State<FormConfirmation> {
                 activeColor: toggleOptionSelectedLengkapColor,
                 materialTapTargetSize: MaterialTapTargetSize.padded, // Changed to padded
                 visualDensity: VisualDensity.compact,
-                side: BorderSide(
+                side: const BorderSide(
                   color: toggleOptionSelectedLengkapColor,
                   width: 2,
                 ),

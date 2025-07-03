@@ -5,19 +5,19 @@ import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/tambahan_image_selection.dart';
 
-class PageSixGeneralTambahan extends ConsumerStatefulWidget {
+class FotoAlatAlatTambahanPage extends ConsumerStatefulWidget {
   final ValueNotifier<bool> formSubmitted;
 
-  const PageSixGeneralTambahan({
+  const FotoAlatAlatTambahanPage({
     super.key,
     required this.formSubmitted,
   });
 
   @override
-  ConsumerState<PageSixGeneralTambahan> createState() => _PageSixGeneralTambahanState();
+  ConsumerState<FotoAlatAlatTambahanPage> createState() => _FotoAlatAlatTambahanPageState();
 }
 
-class _PageSixGeneralTambahanState extends ConsumerState<PageSixGeneralTambahan>
+class _FotoAlatAlatTambahanPageState extends ConsumerState<FotoAlatAlatTambahanPage> 
     with AutomaticKeepAliveClientMixin {
   late FocusScopeNode _focusScopeNode;
 
@@ -34,12 +34,12 @@ class _PageSixGeneralTambahanState extends ConsumerState<PageSixGeneralTambahan>
   }
 
   @override
-  bool get wantKeepAlive => true; // Override wantKeepAlive
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    const String pageIdentifier = 'General Tambahan'; // Define identifier
+    const String pageIdentifier = 'Alat-alat Tambahan'; // Define identifier
 
     return PopScope(
       onPopInvokedWithResult: (bool didPop, dynamic result) {
@@ -51,12 +51,12 @@ class _PageSixGeneralTambahanState extends ConsumerState<PageSixGeneralTambahan>
         node: _focusScopeNode,
         child: SingleChildScrollView(
           clipBehavior: Clip.none,
-          key: const PageStorageKey<String>('pageSixGeneralTambahanScrollKey'),
+          key: const PageStorageKey<String>('pageSixAlatAlatTambahanScrollKey'),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 4),
-              const PageTitle(data: 'Foto General'),
+              const PageTitle(data: 'Foto Alat-alat'),
               const SizedBox(height: 6.0),
               const HeadingOne(text: 'Tambahan'),
               const SizedBox(height: 16.0),

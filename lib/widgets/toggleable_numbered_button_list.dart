@@ -103,7 +103,7 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
                           activeColor: toggleOptionSelectedLengkapColor,
                           materialTapTargetSize: MaterialTapTargetSize.padded,
                           visualDensity: VisualDensity.compact,
-                          side: BorderSide(
+                          side: const BorderSide(
                             color: toggleOptionSelectedLengkapColor,
                             width: 2,
                           ),

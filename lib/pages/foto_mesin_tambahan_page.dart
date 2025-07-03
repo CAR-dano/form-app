@@ -5,19 +5,19 @@ import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/tambahan_image_selection.dart';
 
-class PageSixAlatAlatTambahan extends ConsumerStatefulWidget {
+class FotoMesinTambahanPage extends ConsumerStatefulWidget {
   final ValueNotifier<bool> formSubmitted;
 
-  const PageSixAlatAlatTambahan({
+  const FotoMesinTambahanPage({
     super.key,
     required this.formSubmitted,
   });
 
   @override
-  ConsumerState<PageSixAlatAlatTambahan> createState() => _PageSixAlatAlatTambahanState();
+  ConsumerState<FotoMesinTambahanPage> createState() => _FotoMesinTambahanPageState();
 }
 
-class _PageSixAlatAlatTambahanState extends ConsumerState<PageSixAlatAlatTambahan> 
+class _FotoMesinTambahanPageState extends ConsumerState<FotoMesinTambahanPage> 
     with AutomaticKeepAliveClientMixin {
   late FocusScopeNode _focusScopeNode;
 
@@ -39,7 +39,7 @@ class _PageSixAlatAlatTambahanState extends ConsumerState<PageSixAlatAlatTambaha
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    const String pageIdentifier = 'Alat-alat Tambahan'; // Define identifier
+    const String pageIdentifier = 'Mesin Tambahan'; // Define identifier
 
     return PopScope(
       onPopInvokedWithResult: (bool didPop, dynamic result) {
@@ -51,12 +51,12 @@ class _PageSixAlatAlatTambahanState extends ConsumerState<PageSixAlatAlatTambaha
         node: _focusScopeNode,
         child: SingleChildScrollView(
           clipBehavior: Clip.none,
-          key: const PageStorageKey<String>('pageSixAlatAlatTambahanScrollKey'),
+          key: const PageStorageKey<String>('pageSixMesinTambahanScrollKey'),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 4),
-              const PageTitle(data: 'Foto Alat-alat'),
+              const PageTitle(data: 'Foto Mesin'),
               const SizedBox(height: 6.0),
               const HeadingOne(text: 'Tambahan'),
               const SizedBox(height: 16.0),

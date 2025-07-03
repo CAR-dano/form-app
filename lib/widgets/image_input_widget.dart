@@ -241,7 +241,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                                     'assets/images/camera.svg',
                                     width: 30.0, 
                                     height: 30.0, 
-                                    colorFilter: ColorFilter.mode(buttonTextColor, BlendMode.srcIn),
+                                    colorFilter: const ColorFilter.mode(buttonTextColor, BlendMode.srcIn),
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
@@ -335,7 +335,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () => _viewImage(storedImage),
-                      child: Text(
+                      child: const Text(
                         'Lihat Gambar',
                         style: TextStyle(
                           color: toggleOptionSelectedLengkapColor,

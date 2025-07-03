@@ -7,21 +7,21 @@ import 'package:form_app/widgets/labeled_date_input_field.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
 import 'package:form_app/widgets/page_title.dart';
 
-class PageTwo extends ConsumerStatefulWidget {
+class DataKendaraanPage extends ConsumerStatefulWidget {
   final GlobalKey<FormState> formKey;
   final ValueNotifier<bool> formSubmitted; // New parameter
 
-  const PageTwo({
+  const DataKendaraanPage({
     super.key,
     required this.formKey,
     required this.formSubmitted, // Update constructor
   });
 
   @override
-  ConsumerState<PageTwo> createState() => _PageTwoState();
+  ConsumerState<DataKendaraanPage> createState() => _DataKendaraanPageState();
 }
 
-class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClientMixin {
+class _DataKendaraanPageState extends ConsumerState<DataKendaraanPage> with AutomaticKeepAliveClientMixin {
   late FocusScopeNode _focusScopeNode;
   bool _hasValidatedOnSubmit = false; // Declare the state variable
 
@@ -85,14 +85,14 @@ class _PageTwoState extends ConsumerState<PageTwo> with AutomaticKeepAliveClient
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  PageTitle(data: 'Data Kendaraan'), // Updated Title
+                  const PageTitle(data: 'Data Kendaraan'), // Updated Title
                   const SizedBox(height: 6.0),
 
                   ..._buildInputFields(formData, formNotifier),
 
                   const SizedBox(height: 32.0), // Spacing before buttons
                   const SizedBox(height: 24.0),
-                  Footer(),
+                  const Footer(),
                 ],
               ),
             ),

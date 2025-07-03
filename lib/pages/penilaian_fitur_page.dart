@@ -8,16 +8,16 @@ import 'package:form_app/providers/form_provider.dart';
 import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
 import 'package:form_app/widgets/expandable_text_field.dart';
 
-class PageFiveOne extends ConsumerStatefulWidget {
-  const PageFiveOne({
+class PenilaianFiturPage extends ConsumerStatefulWidget {
+  const PenilaianFiturPage({
     super.key,
   });
 
   @override
-  ConsumerState<PageFiveOne> createState() => _PageFiveOneState();
+  ConsumerState<PenilaianFiturPage> createState() => _PenilaianFiturPageState();
 }
 
-class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAliveClientMixin { // Add mixin
+class _PenilaianFiturPageState extends ConsumerState<PenilaianFiturPage> with AutomaticKeepAliveClientMixin { // Add mixin
   late FocusScopeNode _focusScopeNode;
 
   @override
@@ -62,9 +62,9 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAli
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageTitle(data: 'Penilaian (1)'),
+                const PageTitle(data: 'Penilaian (1)'),
                 const SizedBox(height: 6.0),
-                HeadingOne(text: 'Fitur'),
+                const HeadingOne(text: 'Fitur'),
                 const SizedBox(height: 16.0),
 
                 ..._buildToggleableNumberedButtonLists(formData, formNotifier),
@@ -79,7 +79,7 @@ class _PageFiveOneState extends ConsumerState<PageFiveOne> with AutomaticKeepAli
                 ),
                 const SizedBox(height: 32.0),
                 const SizedBox(height: 24.0),
-                Footer(),
+                const Footer(),
               ],
             ),
           ),

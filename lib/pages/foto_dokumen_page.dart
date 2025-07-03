@@ -5,21 +5,21 @@ import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/tambahan_image_selection.dart';
 
 // Foto Dokumen Page (formerly Page Seven)
-class PageSeven extends ConsumerStatefulWidget { 
+class FotoDokumenPage extends ConsumerStatefulWidget { 
   final ValueNotifier<bool> formSubmitted;
   final String defaultLabel;
 
-  const PageSeven({
+  const FotoDokumenPage({
     super.key,
     required this.formSubmitted,
     required this.defaultLabel,
   });
 
   @override
-  ConsumerState<PageSeven> createState() => _PageSevenState();
+  ConsumerState<FotoDokumenPage> createState() => _FotoDokumenPageState();
 }
 
-class _PageSevenState extends ConsumerState<PageSeven> with AutomaticKeepAliveClientMixin {
+class _FotoDokumenPageState extends ConsumerState<FotoDokumenPage> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 

@@ -9,16 +9,16 @@ import 'package:form_app/widgets/toggleable_numbered_button_list.dart';
 import 'package:form_app/widgets/expandable_text_field.dart';
 
 
-class PageFiveThree extends ConsumerStatefulWidget {
-  const PageFiveThree({
+class PenilaianInteriorPage extends ConsumerStatefulWidget {
+  const PenilaianInteriorPage({
     super.key,
   });
 
   @override
-  ConsumerState<PageFiveThree> createState() => _PageFiveThreeState();
+  ConsumerState<PenilaianInteriorPage> createState() => _PenilaianInteriorPage();
 }
 
-class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKeepAliveClientMixin { // Add mixin
+class _PenilaianInteriorPage extends ConsumerState<PenilaianInteriorPage> with AutomaticKeepAliveClientMixin { // Add mixin
   late FocusScopeNode _focusScopeNode;
 
   @override
@@ -60,7 +60,7 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PageTitle(data: 'Penilaian (3)'),
+                const PageTitle(data: 'Penilaian (3)'),
                 const SizedBox(height: 6.0),
                 const HeadingOne(text: 'Hasil Inspeksi Interior'),
                 const SizedBox(height: 16.0),
@@ -78,7 +78,7 @@ class _PageFiveThreeState extends ConsumerState<PageFiveThree> with AutomaticKee
                 const SizedBox(height: 32.0),
                 const SizedBox(height: 24.0), // Optional spacing below the content
                 // Footer
-                Footer(),
+                const Footer(),
               ],
             ),
           ),
