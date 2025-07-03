@@ -4,10 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_app/providers/image_processing_provider.dart';
-import 'package:form_app/providers/tambahan_image_data_provider.dart';
-import 'package:form_app/utils/image_capture_and_processing_util.dart';
 import 'package:form_app/providers/message_overlay_provider.dart'; // Import the new provider
+import 'package:form_app/services/image_capture_queue_service.dart'; // Import the new service
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:math' show pi;
 
@@ -38,7 +36,6 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
   double _maxZoomLevel = 1.0;
   double _rotationAngle = 0.0; // Added for rotation
   StreamSubscription<AccelerometerEvent>? _accelerometerSubscription; // Added for rotation
-  Future<void> _processingFuture = Future.value(); // Ensures sequential image processing
 
   late AnimationController _captureAnimationController;
   late Animation<double> _captureOpacityAnimation;
@@ -278,10 +275,6 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       return;
     }
 
-    // Capture references to notifiers while the widget is still mounted.
-    final imageProcessingNotifier = ref.read(imageProcessingServiceProvider.notifier);
-    final tambahanImageNotifier = ref.read(tambahanImageDataProvider(widget.imageIdentifier).notifier);
-
     try {
       final XFile capturedImageFile = await controller.takePicture();
 
@@ -298,27 +291,13 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       // Capture the rotation angle at the moment the picture is taken.
       final double capturedRotationAngle = _rotationAngle;
 
-      // Perform the heavy processing in the background.
-      _processingFuture = _processingFuture.then((_) async {
-        // Start the loading indicator for this specific photo task.
-        imageProcessingNotifier.taskStarted(widget.imageIdentifier);
-        try {
-          final XFile imageFileAfterRotation = await ImageCaptureAndProcessingUtil.rotateImageIfNecessary(capturedImageFile, capturedRotationAngle);
-          
-          await ImageCaptureAndProcessingUtil.processAndAddImage(
-            imageFile: imageFileAfterRotation,
-            tambahanImageNotifier: tambahanImageNotifier,
-            imageIdentifier: widget.imageIdentifier,
-            defaultLabel: widget.defaultLabel,
-          );
-        } catch (e) {
-          if (kDebugMode) {
-            print("Error in processing future: $e");
-          }
-        } finally {
-          imageProcessingNotifier.taskFinished(widget.imageIdentifier);
-        }
-      });
+      // Add the image capture task to the queue service
+      ref.read(imageCaptureQueueServiceProvider.notifier).addImageCaptureTask(
+        capturedImageFile: capturedImageFile,
+        capturedRotationAngle: capturedRotationAngle,
+        imageIdentifier: widget.imageIdentifier,
+        defaultLabel: widget.defaultLabel,
+      );
 
     } on CameraException catch (e) {
       if (mounted) {
