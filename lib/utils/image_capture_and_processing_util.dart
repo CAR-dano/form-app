@@ -1,9 +1,87 @@
 import 'package:flutter/foundation.dart';
+import 'package:form_app/models/tambahan_image_data.dart';
+import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:gal/gal.dart';
+import 'dart:math' show pi; // Added for pi constant
+
+// Helper class for passing data to the rotation isolate
+class _RotateImageInput {
+  final String filePath;
+  final double rotationAngle;
+  final String tempPath; // For saving the rotated image
+
+  _RotateImageInput({
+    required this.filePath,
+    required this.rotationAngle,
+    required this.tempPath,
+  });
+}
+
+// Top-level function for image rotation in an isolate
+Future<String?> _rotateImageInIsolate(_RotateImageInput input) async {
+  if (input.rotationAngle == 0.0) {
+    // No rotation needed if angle is exactly 0.0
+    // Consider a small tolerance if needed: (input.rotationAngle.abs() < 0.01)
+    return input.filePath;
+  }
+
+  try {
+    final File imageFile = File(input.filePath);
+    // Ensure Uint8List is imported or use imageFile.readAsBytesSync() if appropriate for isolate context
+    // However, async readAsBytes should be fine.
+    final Uint8List imageBytes = await imageFile.readAsBytes();
+    final img.Image? originalImage = img.decodeImage(imageBytes);
+
+    if (originalImage == null) {
+      if (kDebugMode) {
+        print("Isolate Error: Could not decode image for rotation: ${input.filePath}");
+      }
+      return input.filePath; // Return original path if decoding fails
+    }
+
+    img.Image rotatedImage;
+    // img.copyRotate expects angle in degrees.
+    // pi/2 radians = 90 degrees. -pi/2 radians = -90 degrees.
+    if (input.rotationAngle == pi / 2) {
+      // Device top is to the LEFT (landscape). Image from camera (portrait) needs to be rotated Counter-Clockwise.
+      rotatedImage = img.copyRotate(originalImage, angle: -90);
+    } else if (input.rotationAngle == -pi / 2) {
+      // Device top is to the RIGHT (landscape). Image from camera (portrait) needs to be rotated Clockwise.
+      rotatedImage = img.copyRotate(originalImage, angle: 90);
+    } else {
+      // Not a 90-degree rotation, return original path.
+      // This case should ideally not be reached if rotationAngle is only set to 0, pi/2, or -pi/2.
+      if (kDebugMode) {
+        print("Isolate Info: Non-90 degree rotation angle (${input.rotationAngle}), not rotating.");
+      }
+      return input.filePath;
+    }
+
+    // Ensure the tempPath ends with a path separator if not already, or construct carefully.
+    // Platform.pathSeparator is the correct way to do this.
+    final String newFileName = '${DateTime.now().millisecondsSinceEpoch}_rotated.jpg';
+    final String rotatedFilePath = '${input.tempPath}${Platform.pathSeparator}$newFileName';
+    
+    final File rotatedFile = File(rotatedFilePath);
+    // encodeJpg returns List<int>, which is compatible with Uint8List
+    await rotatedFile.writeAsBytes(img.encodeJpg(rotatedImage));
+
+    if (kDebugMode) {
+      print("Isolate: Image rotated by ${input.rotationAngle} rad. New path: $rotatedFilePath");
+    }
+    return rotatedFilePath;
+  } catch (e) {
+    if (kDebugMode) {
+      print("Isolate Error rotating image: $e");
+    }
+    // Fallback to original path on error during processing
+    return input.filePath;
+  }
+}
 
 // Helper class to pass arguments to _processImageIsolate
 class _ProcessImageInput {
@@ -145,6 +223,53 @@ class ImageCaptureAndProcessingUtil {
     );
   }
 
+  static Future<XFile> rotateImageIfNecessary(XFile imageFile, double rotationAngle) async {
+    // If rotation angle is 0 (or very close to 0), no rotation is needed.
+    // Using a small tolerance might be robust if angle calculation isn't always exact.
+    if (rotationAngle.abs() < 0.01) { // Example tolerance
+      return imageFile;
+    }
+
+    try {
+      // getTemporaryDirectory must be called from the main isolate.
+      final Directory tempDir = await getTemporaryDirectory();
+      
+      final String? rotatedPath = await compute(
+        _rotateImageInIsolate,
+        _RotateImageInput(
+          filePath: imageFile.path, // Corrected: Pass imageFile.path
+          rotationAngle: rotationAngle, // Corrected: Pass rotationAngle
+          tempPath: tempDir.path,
+        ),
+      );
+
+      // Check if a new path was returned and it's different from the original
+      if (rotatedPath != null && rotatedPath != imageFile.path) {
+        if (kDebugMode) {
+          print("Image rotation successful. New path: $rotatedPath");
+        }
+        return XFile(rotatedPath);
+      } else if (rotatedPath == imageFile.path) {
+        // Isolate determined no rotation was needed or returned original path
+        if (kDebugMode) {
+          print("Image rotation determined unnecessary by isolate or returned original path.");
+        }
+        return imageFile;
+      } else {
+        // Rotation failed in isolate (returned null)
+        if (kDebugMode) {
+          print("Image rotation in isolate failed or returned null. Using original image.");
+        }
+        return imageFile; // Fallback to original image
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error setting up or during compute for image rotation: $e");
+      }
+      return imageFile; // Fallback to original image on error in this function
+    }
+  }
+
   static Future<void> saveImageToGallery(XFile imageXFile) async {
     try {
       bool hasAccess = await Gal.hasAccess();
@@ -190,5 +315,33 @@ class ImageCaptureAndProcessingUtil {
 
   static Future<List<XFile>> pickMultiImagesFromGallery() async {
     return await _picker.pickMultiImage();
+  }
+
+  static Future<void> processAndAddImage({
+    required XFile imageFile,
+    required TambahanImageDataListNotifier tambahanImageNotifier,
+    required String imageIdentifier,
+    required String defaultLabel,
+  }) async {
+    try {
+      await ImageCaptureAndProcessingUtil.saveImageToGallery(imageFile);
+      final String? processedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(imageFile);
+
+      if (processedPath != null) {
+        final newTambahanImage = TambahanImageData(
+          imagePath: processedPath,
+          label: defaultLabel,
+          needAttention: false,
+          category: imageIdentifier,
+          isMandatory: false,
+          originalRawPath: imageFile.path, // Store the path of the captured image as original
+        );
+        tambahanImageNotifier.addImage(newTambahanImage);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error processing image in background: $e");
+      }
+    }
   }
 }
