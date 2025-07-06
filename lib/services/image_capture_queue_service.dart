@@ -1,16 +1,16 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/utils/image_capture_and_processing_util.dart';
-import 'package:form_app/services/task_queue_service.dart'; // Import the generic task queue service
-import 'dart:math' show pi; 
+import 'package:form_app/services/task_queue_service.dart';
+import 'dart:math' show pi;
 
-/// A task for capturing and processing an image.
 class ImageCaptureTask extends QueueTask<void> {
   final XFile capturedImageFile;
-  final double capturedRotationAngle; // in radians (e.g., pi / 2)
+  final double capturedRotationAngle;
   final String defaultLabel;
 
   ImageCaptureTask({
@@ -27,24 +27,49 @@ class ImageCaptureTask extends QueueTask<void> {
 
     imageProcessingNotifier.taskStarted(identifier);
     try {
-      // Convert radians to degrees for the new processing function
+      // Step 1: Calculate the required rotation in degrees
       int rotationInDegrees = 0;
       if ((capturedRotationAngle - (pi / 2)).abs() < 0.1) {
         rotationInDegrees = -90;
       } else if ((capturedRotationAngle - (-pi / 2)).abs() < 0.1) {
-        rotationInDegrees = 90; // or 270 depending on library
+        rotationInDegrees = 90;
       } else if ((capturedRotationAngle - pi).abs() < 0.1) {
         rotationInDegrees = 180;
       }
 
-      // NO longer need to call rotateImageIfNecessary. The processing is done in one step.
-      await ImageCaptureAndProcessingUtil.processAndAddImage(
-        imageFile: capturedImageFile,
-        tambahanImageNotifier: tambahanImageNotifier,
-        imageIdentifier: identifier,
-        defaultLabel: defaultLabel,
-        rotationAngle: rotationInDegrees, // Pass the angle here
+      // Step 2: Perform a lossless rotation on the original image
+      final XFile? rotatedFullQualityFile = await ImageCaptureAndProcessingUtil.rotateImageOnly(
+        capturedImageFile,
+        rotationAngle: rotationInDegrees,
       );
+
+      // Abort if rotation fails
+      if (rotatedFullQualityFile == null) {
+        throw Exception('Failed to rotate the image.');
+      }
+
+      // Step 3: Save the full-quality, rotated image to the gallery
+      await ImageCaptureAndProcessingUtil.saveImageToGallery(rotatedFullQualityFile);
+
+      // Step 4: Now, compress the rotated image for use in the app
+      final String? compressedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(
+        rotatedFullQualityFile,
+        // No rotation needed here as it's already been done
+      );
+
+      // Step 5: If compression is successful, add to app state
+      if (compressedPath != null) {
+        final newTambahanImage = TambahanImageData(
+          imagePath: compressedPath,
+          label: defaultLabel,
+          needAttention: false,
+          category: identifier,
+          isMandatory: false,
+          originalRawPath: capturedImageFile.path, // Still reference the absolute original
+          rotationAngle: rotationInDegrees,
+        );
+        tambahanImageNotifier.addImage(newTambahanImage);
+      }
 
       if (kDebugMode) {
         print('Successfully processed image for identifier: $identifier');
