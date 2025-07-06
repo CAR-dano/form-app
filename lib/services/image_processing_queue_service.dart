@@ -1,95 +1,71 @@
-import 'dart:collection';
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/material.dart'; // For context and Colors
 import 'package:form_app/utils/image_capture_and_processing_util.dart';
 import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/message_overlay_provider.dart';
-import 'package:flutter/material.dart'; // For context and Colors
+import 'package:form_app/services/task_queue_service.dart'; // Import the generic task queue service
 
-class ImageProcessingTask {
+/// A task for processing an image from the gallery.
+class ImageProcessingQueueTask extends QueueTask<String?> {
   final XFile pickedFile;
-  final String identifier;
   final int rotationAngle;
-  final Completer<String?> completer;
   final BuildContext? context; // To show messages
 
-  ImageProcessingTask({
+  ImageProcessingQueueTask({
     required this.pickedFile,
-    required this.identifier,
+    required super.identifier,
     this.rotationAngle = 0,
-    required this.completer,
     this.context,
   });
-}
-
-class ImageProcessingQueueService extends Notifier<Queue<ImageProcessingTask>> {
-  bool _isProcessing = false;
 
   @override
-  Queue<ImageProcessingTask> build() {
-    return Queue<ImageProcessingTask>();
-  }
+  Future<String?> execute(Ref ref) async {
+    final imageProcessingNotifier = ref.read(imageProcessingServiceProvider.notifier);
+    final messageOverlayNotifier = ref.read(customMessageOverlayProvider);
 
-  Future<String?> enqueueImageProcessing({
-    required XFile pickedFile,
-    required String identifier,
-    int rotationAngle = 0,
-    BuildContext? context, // Pass context for message overlay
-  }) {
-    final completer = Completer<String?>();
-    final task = ImageProcessingTask(
-      pickedFile: pickedFile,
-      identifier: identifier,
-      rotationAngle: rotationAngle,
-      completer: completer,
-      context: context,
-    );
-    state.add(task);
-    _processQueue(); // Attempt to process the queue
-    return completer.future;
-  }
-
-  Future<void> _processQueue() async {
-    if (_isProcessing || state.isEmpty) {
-      return;
-    }
-
-    _isProcessing = true;
-    while (state.isNotEmpty) {
-      final task = state.removeFirst();
-      final identifier = task.identifier;
-      final context = task.context;
-
-      // Notify that a task has started for this identifier
-      ref.read(imageProcessingServiceProvider.notifier).taskStarted(identifier);
-
-      String? processedPath;
-      try {
-        processedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(
-          task.pickedFile,
-          rotationAngle: task.rotationAngle,
+    imageProcessingNotifier.taskStarted(identifier);
+    try {
+      final String? processedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(
+        pickedFile,
+        rotationAngle: rotationAngle,
+      );
+      return processedPath;
+    } catch (e) {
+      if (context != null && context!.mounted) { // Add null check for context before accessing mounted
+        messageOverlayNotifier.show(
+          context: context!, // Use null assertion operator as context is checked for null
+          message: 'Error memproses gambar: $e',
+          color: Colors.red,
+          icon: Icons.error,
         );
-        task.completer.complete(processedPath);
-      } catch (e) {
-        task.completer.completeError(e);
-        if (context != null && context.mounted) {
-          ref.read(customMessageOverlayProvider).show(
-            context: context,
-            message: 'Error memproses gambar: $e',
-            color: Colors.red,
-            icon: Icons.error,
-          );
-        }
-      } finally {
-        // Notify that a task has finished for this identifier
-        ref.read(imageProcessingServiceProvider.notifier).taskFinished(identifier);
       }
+      rethrow; // Re-throw to be caught by the generic queue service
+    } finally {
+      imageProcessingNotifier.taskFinished(identifier);
     }
-    _isProcessing = false;
   }
 }
 
-final imageProcessingQueueProvider = NotifierProvider<ImageProcessingQueueService, Queue<ImageProcessingTask>>(
-  ImageProcessingQueueService.new,
-);
+// This provider will no longer manage a queue directly, but will provide a method to enqueue tasks.
+final imageProcessingQueueProvider = Provider((ref) {
+  final taskQueue = ref.read(taskQueueServiceProvider.notifier);
+  return (
+    enqueueImageProcessing: ({
+      required XFile pickedFile,
+      required String identifier,
+      int rotationAngle = 0,
+      BuildContext? context,
+    }) {
+      final task = ImageProcessingQueueTask(
+        pickedFile: pickedFile,
+        identifier: identifier,
+        rotationAngle: rotationAngle,
+        context: context,
+      );
+      taskQueue.addTask(task);
+      return task.completer.future; // This future now correctly completes with a String?
+    },
+  );
+});

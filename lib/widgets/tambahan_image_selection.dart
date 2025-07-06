@@ -14,6 +14,7 @@ import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/pages/multi_shot_camera_screen.dart';
 import 'package:form_app/providers/message_overlay_provider.dart'; // Import the new provider
 import 'package:form_app/services/image_processing_queue_service.dart'; // Import the new queue service
+import 'package:form_app/services/task_queue_service.dart'; // Import for the new provider
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -131,7 +132,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
           for (final XFile pickedFile in pickedFiles) {
             final String originalPath = pickedFile.path;
 
-            ref.read(imageProcessingQueueProvider.notifier).enqueueImageProcessing(
+            ref.read(imageProcessingQueueProvider).enqueueImageProcessing(
               pickedFile: pickedFile,
               identifier: widget.identifier,
               context: mounted ? context : null,
@@ -195,24 +196,27 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
 
     final currentImage = images[indexToRotate];
     final originalRawPath = currentImage.originalRawPath;
-    final currentRotation = currentImage.rotationAngle;
-    final newRotation = (currentRotation + 90) % 360;
+    
+    // The new rotation will be the old one + 90 degrees
+    final newRotationInDegrees = (currentImage.rotationAngle + 90) % 360;
 
-    ref.read(imageProcessingQueueProvider.notifier).enqueueImageProcessing(
+    // We re-queue the original image for processing with the new angle.
+    // This ensures consistency with all other image processing.
+    ref.read(imageProcessingQueueProvider).enqueueImageProcessing(
       pickedFile: XFile(originalRawPath),
       identifier: widget.identifier,
-      rotationAngle: newRotation,
+      rotationAngle: newRotationInDegrees,
       context: mounted ? context : null,
     ).then((newProcessedPath) {
       if (newProcessedPath != null) {
         final updatedImage = currentImage.copyWith(
           imagePath: newProcessedPath,
-          rotationAngle: newRotation,
+          rotationAngle: newRotationInDegrees,
         );
-        ref.read(tambahanImageDataProvider(widget.identifier).notifier).updateImageAtIndex(
-              indexToRotate,
-              updatedImage,
-            );
+        ref.read(tambahanImageDataProvider(widget.identifier).notifier)
+           .updateImageAtIndex(indexToRotate, updatedImage);
+
+        // Pre-cache the new rotated image for a smoother UI transition
         if (mounted) {
           precacheImage(FileImage(File(newProcessedPath)), context);
         }
@@ -227,14 +231,14 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         }
       }
     }).catchError((e) {
-      if (mounted) {
-        ref.read(customMessageOverlayProvider).show(
-          context: context,
-          message: 'Error memutar gambar: $e',
-          color: Colors.red,
-          icon: Icons.error,
-        );
-      }
+        if (mounted) {
+          ref.read(customMessageOverlayProvider).show(
+            context: context,
+            message: 'Error memutar gambar: $e',
+            color: Colors.red,
+            icon: Icons.error,
+          );
+        }
     });
   }
 
@@ -252,6 +256,25 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     if (_currentIndex > 0) {
       setState(() {
         _currentIndex--;
+        _updateControllersForCurrentIndex();
+      });
+    }
+  }
+
+  void _goToFirstImage() {
+    if (_currentIndex != 0) {
+      setState(() {
+        _currentIndex = 0;
+        _updateControllersForCurrentIndex();
+      });
+    }
+  }
+
+  void _goToLastImage() {
+    final images = ref.read(tambahanImageDataProvider(widget.identifier));
+    if (_currentIndex != images.length - 1 && images.isNotEmpty) {
+      setState(() {
+        _currentIndex = images.length - 1;
         _updateControllersForCurrentIndex();
       });
     }
@@ -321,7 +344,19 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   @override
   Widget build(BuildContext context) {
     final tambahanImages = ref.watch(tambahanImageDataProvider(widget.identifier));
-    final isProcessingImage = ref.watch(imageProcessingServiceProvider.select((s) => (s[widget.identifier] ?? 0) > 0));
+
+    // 1. Watch the new queuedTaskStatusProvider
+    final isQueued = ref.watch(
+      queuedTaskStatusProvider.select((queued) => queued.contains(widget.identifier)),
+    );
+
+    // 2. Watch the existing imageProcessingServiceProvider
+    final isProcessing = ref.watch(
+      imageProcessingServiceProvider.select((processing) => (processing[widget.identifier] ?? 0) > 0),
+    );
+
+    // 3. Combine them to get the final loading state
+    final bool shouldShowLoadingIndicator = isQueued || isProcessing;
 
     final TambahanImageData? currentImage =
         tambahanImages.isNotEmpty && _currentIndex < tambahanImages.length
@@ -416,7 +451,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
             ),
           ],
         ),
-        if (isProcessingImage)
+        if (shouldShowLoadingIndicator)
           Padding(
             padding: const EdgeInsets.only(top: 16.0),
             child: LinearProgressIndicator(
@@ -473,15 +508,12 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                         color: Colors.transparent,
                         borderRadius: BorderRadius.circular(8.0),
                         child: InkWell(
-                          onTap: /*isProcessingImage ? null : */_rotateCurrentImage, // Disable if processing
+                          onTap: _rotateCurrentImage,
                           borderRadius: BorderRadius.circular(8.0),
                           child: SvgPicture.asset(
                             'assets/images/rotate.svg',
                             width: 40.0,
                             height: 40.0,
-                            // colorFilter: isProcessingImage // Apply a color filter to indicate disabled state
-                            //     ? ColorFilter.mode(Colors.grey.withAlpha((0.6*255).round()), BlendMode.srcIn)
-                            //     : null,
                           ),
                         ),
                       ),
@@ -544,10 +576,27 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         const SizedBox(height: 20.0),
         if (tambahanImages.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: ElevatedButton(
+                    onPressed: _currentIndex > 0 ? _goToFirstImage : null,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                      backgroundColor: buttonColor,
+                      disabledBackgroundColor: Colors.grey[300],
+                      elevation: 5,
+                      shadowColor: buttonColor.withAlpha(102),
+                    ),
+                    child: const Icon(Icons.first_page, size: 18, color: buttonTextColor),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 SizedBox(
                   width: 36,
                   height: 36,
@@ -564,14 +613,12 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                     child: const Icon(Icons.arrow_back_ios_new, size: 18, color: buttonTextColor),
                   ),
                 ),
-                Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      '${_currentIndex + 1}/${tambahanImages.length}',
-                      style: imageIndexTextStyle,
-                      textAlign: TextAlign.center,
-                    ),
+                SizedBox(
+                  width: 100, // Fixed width to prevent shifting
+                  child: Text(
+                    '${_currentIndex + 1}/${tambahanImages.length}',
+                    style: imageIndexTextStyle,
+                    textAlign: TextAlign.center,
                   ),
                 ),
                 SizedBox(
@@ -588,6 +635,23 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                       shadowColor: buttonColor.withAlpha(102),
                     ),
                     child: const Icon(Icons.arrow_forward_ios, size: 18, color: buttonTextColor),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: ElevatedButton(
+                    onPressed: _currentIndex < tambahanImages.length - 1 ? _goToLastImage : null,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                      backgroundColor: buttonColor,
+                      disabledBackgroundColor: Colors.grey[300],
+                      elevation: 5,
+                      shadowColor: buttonColor.withAlpha(102),
+                    ),
+                    child: const Icon(Icons.last_page, size: 18, color: buttonTextColor),
                   ),
                 ),
               ],

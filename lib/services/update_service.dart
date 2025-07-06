@@ -418,16 +418,7 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       if (newSemanticParts[i] < currentSemanticParts[i]) return false;
     }
 
-    // If semantic versions are equal, compare build numbers
-    if (newVersionParts.length > 1 && currentVersionParts.length > 1) {
-      final newBuild = int.tryParse(newVersionParts[1]) ?? 0;
-      final currentBuild = int.tryParse(currentVersionParts[1]) ?? 0;
-      return newBuild > currentBuild;
-    } else if (newVersionParts.length > 1 && currentVersionParts.length == 1) {
-      return true; // New version has a build number, current does not, assume newer
-    }
-
-    return false; // Versions are the same or current is newer
+    return false; // Versions are the same or current is newer (ignoring build number)
   }
 
   String _formatBytes(int bytes) {
