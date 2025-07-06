@@ -196,24 +196,27 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
 
     final currentImage = images[indexToRotate];
     final originalRawPath = currentImage.originalRawPath;
-    final currentRotation = currentImage.rotationAngle;
-    final newRotation = (currentRotation + 90) % 360;
+    
+    // The new rotation will be the old one + 90 degrees
+    final newRotationInDegrees = (currentImage.rotationAngle + 90) % 360;
 
+    // We re-queue the original image for processing with the new angle.
+    // This ensures consistency with all other image processing.
     ref.read(imageProcessingQueueProvider).enqueueImageProcessing(
       pickedFile: XFile(originalRawPath),
       identifier: widget.identifier,
-      rotationAngle: newRotation,
+      rotationAngle: newRotationInDegrees,
       context: mounted ? context : null,
     ).then((newProcessedPath) {
       if (newProcessedPath != null) {
         final updatedImage = currentImage.copyWith(
           imagePath: newProcessedPath,
-          rotationAngle: newRotation,
+          rotationAngle: newRotationInDegrees,
         );
-        ref.read(tambahanImageDataProvider(widget.identifier).notifier).updateImageAtIndex(
-              indexToRotate,
-              updatedImage,
-            );
+        ref.read(tambahanImageDataProvider(widget.identifier).notifier)
+           .updateImageAtIndex(indexToRotate, updatedImage);
+
+        // Pre-cache the new rotated image for a smoother UI transition
         if (mounted) {
           precacheImage(FileImage(File(newProcessedPath)), context);
         }
@@ -228,14 +231,14 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         }
       }
     }).catchError((e) {
-      if (mounted) {
-        ref.read(customMessageOverlayProvider).show(
-          context: context,
-          message: 'Error memutar gambar: $e',
-          color: Colors.red,
-          icon: Icons.error,
-        );
-      }
+        if (mounted) {
+          ref.read(customMessageOverlayProvider).show(
+            context: context,
+            message: 'Error memutar gambar: $e',
+            color: Colors.red,
+            icon: Icons.error,
+          );
+        }
     });
   }
 

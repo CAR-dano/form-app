@@ -83,14 +83,17 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       setState(() {
         const double threshold = 7.0;
 
-        if (event.y.abs() > threshold && event.x.abs() < threshold) {
+        // Standard Portrait
+        if (event.y.abs() > threshold && event.x.abs() < threshold && event.y > 0) {
           _rotationAngle = 0.0;
-        } else if (event.x.abs() > threshold && event.y.abs() < threshold) {
-          if (event.x < 0) {
-            _rotationAngle = -pi / 2;
-          } else {
-            _rotationAngle = pi / 2;
-          }
+        } 
+        // Landscape
+        else if (event.x.abs() > threshold && event.y.abs() < threshold) {
+          _rotationAngle = event.x > 0 ? (pi / 2) : (-pi / 2);
+        }
+        // NEW: Upside-Down Portrait
+        else if (event.y.abs() > threshold && event.x.abs() < threshold && event.y < 0) {
+          _rotationAngle = pi;
         }
         // Only print if the angle actually changed
         if (_rotationAngle != oldRotationAngle) {
