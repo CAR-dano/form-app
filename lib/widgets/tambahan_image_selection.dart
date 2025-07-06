@@ -261,6 +261,25 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     }
   }
 
+  void _goToFirstImage() {
+    if (_currentIndex != 0) {
+      setState(() {
+        _currentIndex = 0;
+        _updateControllersForCurrentIndex();
+      });
+    }
+  }
+
+  void _goToLastImage() {
+    final images = ref.read(tambahanImageDataProvider(widget.identifier));
+    if (_currentIndex != images.length - 1 && images.isNotEmpty) {
+      setState(() {
+        _currentIndex = images.length - 1;
+        _updateControllersForCurrentIndex();
+      });
+    }
+  }
+
   void _deleteCurrentImageConfirmed() {
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
@@ -557,10 +576,27 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         const SizedBox(height: 20.0),
         if (tambahanImages.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: ElevatedButton(
+                    onPressed: _currentIndex > 0 ? _goToFirstImage : null,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                      backgroundColor: buttonColor,
+                      disabledBackgroundColor: Colors.grey[300],
+                      elevation: 5,
+                      shadowColor: buttonColor.withAlpha(102),
+                    ),
+                    child: const Icon(Icons.first_page, size: 18, color: buttonTextColor),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 SizedBox(
                   width: 36,
                   height: 36,
@@ -577,14 +613,12 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                     child: const Icon(Icons.arrow_back_ios_new, size: 18, color: buttonTextColor),
                   ),
                 ),
-                Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      '${_currentIndex + 1}/${tambahanImages.length}',
-                      style: imageIndexTextStyle,
-                      textAlign: TextAlign.center,
-                    ),
+                SizedBox(
+                  width: 100, // Fixed width to prevent shifting
+                  child: Text(
+                    '${_currentIndex + 1}/${tambahanImages.length}',
+                    style: imageIndexTextStyle,
+                    textAlign: TextAlign.center,
                   ),
                 ),
                 SizedBox(
@@ -601,6 +635,23 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                       shadowColor: buttonColor.withAlpha(102),
                     ),
                     child: const Icon(Icons.arrow_forward_ios, size: 18, color: buttonTextColor),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: ElevatedButton(
+                    onPressed: _currentIndex < tambahanImages.length - 1 ? _goToLastImage : null,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                      backgroundColor: buttonColor,
+                      disabledBackgroundColor: Colors.grey[300],
+                      elevation: 5,
+                      shadowColor: buttonColor.withAlpha(102),
+                    ),
+                    child: const Icon(Icons.last_page, size: 18, color: buttonTextColor),
                   ),
                 ),
               ],
