@@ -105,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    'Enter your 6-digit PIN',
+                    'Masukkan PIN 6 digit Anda',
                     style: labelStyle, // Apply labelStyle
                   ),
                   const SizedBox(height: 40),
@@ -160,4 +160,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
