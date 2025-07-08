@@ -142,34 +142,33 @@ class ImageCaptureAndProcessingUtil {
   }
 
   static Future<XFile?> rotateImageOnly(XFile sourceFile, {int rotationAngle = 0}) async {
-  // If no rotation is needed, just return the original file.
-  if (rotationAngle == 0) {
-    return sourceFile;
-  }
-
-  try {
-    final tempDir = await getTemporaryDirectory();
-    final targetPath = '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}_rotated.jpg';
-
-    // Call compression with 100% quality to perform a lossless rotation.
-    final result = await FlutterImageCompress.compressAndGetFile(
-      sourceFile.path,
-      targetPath,
-      quality: 100, // Keep original quality
-      rotate: rotationAngle,
-    );
-    
-    if (result != null) {
-      debugPrint('Image rotated losslessly and saved to: ${result.path}');
+    // If no rotation is needed, just return the original file.
+    if (rotationAngle == 0) {
+      return sourceFile;
     }
-    
-    return result;
-  } catch (e) {
-    if (kDebugMode) {
-      print('Error during lossless rotation: $e');
-    }
-    return null; // Return null on failure
-  }
-}
 
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final targetPath = '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}_rotated.jpg';
+
+      // Call compression with 100% quality to perform a lossless rotation.
+      final result = await FlutterImageCompress.compressAndGetFile(
+        sourceFile.path,
+        targetPath,
+        quality: 100, // Keep original quality
+        rotate: rotationAngle,
+      );
+      
+      if (result != null) {
+        debugPrint('Image rotated losslessly and saved to: ${result.path}');
+      }
+      
+      return result;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error during lossless rotation: $e');
+      }
+      return null; // Return null on failure
+    }
+  }
 }
