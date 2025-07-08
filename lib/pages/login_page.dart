@@ -63,12 +63,10 @@ class _LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.all(8.0),
         child: AspectRatio(
           aspectRatio: 1, // Make buttons square
-          child: ElevatedButton(
+          child: FilledButton.tonal(
             onPressed: onPressed ?? () => _onNumpadTap(text),
-            style: ElevatedButton.styleFrom(
+            style: FilledButton.styleFrom(
               backgroundColor: Colors.transparent,
-              elevation: 0,
-
             ),
             child: icon != null
                 ? Icon(icon, color: darkTextColor, size: 16)
