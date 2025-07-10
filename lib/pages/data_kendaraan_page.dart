@@ -262,7 +262,13 @@ class _DataKendaraanPageState extends ConsumerState<DataKendaraanPage> with Auto
         'hintText': 'DD/MM/YYYY',
         'isDateField': true,
         'initialValue': formData.pajak1TahunDate,
-        'onChanged': (date) => formNotifier.updatePajak1TahunDate(date),
+        'onChanged': (date) {
+          if (date != null) {
+            formNotifier.updatePajak1TahunDate(DateTime(date.year, date.month, date.day, 12, 0, 0));
+          } else {
+            formNotifier.updatePajak1TahunDate(null);
+          }
+        },
         'validator': (value) {
           if (widget.formSubmitted.value && value == null) {
             return 'Pajak 1 Tahun s.d. belum terisi';
@@ -275,7 +281,13 @@ class _DataKendaraanPageState extends ConsumerState<DataKendaraanPage> with Auto
         'hintText': 'DD/MM/YYYY',
         'isDateField': true,
         'initialValue': formData.pajak5TahunDate,
-        'onChanged': (date) => formNotifier.updatePajak5TahunDate(date),
+        'onChanged': (date) {
+          if (date != null) {
+            formNotifier.updatePajak5TahunDate(DateTime(date.year, date.month, date.day, 12, 0, 0));
+          } else {
+            formNotifier.updatePajak5TahunDate(null);
+          }
+        },
         'validator': (value) {
           if (widget.formSubmitted.value && value == null) {
             return 'Pajak 5 Tahun s.d. belum terisi';
