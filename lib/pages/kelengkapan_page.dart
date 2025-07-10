@@ -28,27 +28,52 @@ class _KelengkapanPageState extends ConsumerState<KelengkapanPage> with Automati
     final formNotifier = ref.read(formProvider.notifier); // Read the notifier
 
     // Basic structure, replace with actual content later
-    return SingleChildScrollView(
-      clipBehavior: Clip.none,
-      key: const PageStorageKey<String>('pageThreeScrollKey'), // This key remains important
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const PageTitle(data: 'Kelengkapan'),
-          const SizedBox(height: 6.0),
-
-          ..._buildToggleOptions(formData, formNotifier),
-
-          const SizedBox(height: 32.0),
-          const SizedBox(height: 24.0), // Optional spacing below the content
-          // Footer
-          const Footer(),
-        ],
-      ),
+    return CustomScrollView(
+      key: const PageStorageKey<String>('pageThreeScrollKey'),
+      slivers: [
+        const SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              PageTitle(data: 'Kelengkapan'),
+              SizedBox(height: 6.0),
+            ],
+          ),
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              final optionData = _buildToggleOptions(formData, formNotifier)[index];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: ToggleOption(
+                  toggleValues: const ['Lengkap', 'Tidak'],
+                  label: optionData['label'],
+                  initialValue: optionData['initialValue'],
+                  onChanged: optionData['onChanged'],
+                ),
+              );
+            },
+            childCount: _buildToggleOptions(formData, formNotifier).length,
+          ),
+        ),
+        const SliverToBoxAdapter(
+          child: Column(
+            children: [
+              SizedBox(height: 32.0),
+              SizedBox(height: 24.0), 
+              Footer(),
+            ],
+          ),
+        ),
+        SliverPadding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom + 90),
+        ),
+      ],
     );
   }
 
-  List<Widget> _buildToggleOptions(FormData formData, FormNotifier formNotifier) {
+  List<Map<String, dynamic>> _buildToggleOptions(FormData formData, FormNotifier formNotifier) {
     final List<Map<String, dynamic>> toggleOptionsData = [
       {
         'label': 'Buku Service',
@@ -97,16 +122,6 @@ class _KelengkapanPageState extends ConsumerState<KelengkapanPage> with Automati
       },
     ];
 
-    return toggleOptionsData.map<Widget>((optionData) {
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: ToggleOption(
-          toggleValues: const ['Lengkap', 'Tidak'],
-          label: optionData['label'],
-          initialValue: optionData['initialValue'],
-          onChanged: optionData['onChanged'],
-        ),
-      );
-    }).toList();
+    return toggleOptionsData;
   }
 }
