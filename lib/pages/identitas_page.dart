@@ -52,8 +52,8 @@ class _IdentitasPageState extends ConsumerState<IdentitasPage> with AutomaticKee
     // No longer need to watch inspectionBranchesProvider directly here for the UI part of the dropdown.
     // LabeledBranchesDropdownField will handle it.
 
-    var hariIni = '${DateTime.now().day.toString().padLeft(2, '0')}-'
-                           '${DateTime.now().month.toString().padLeft(2, '0')}-'
+    var hariIni = '${DateTime.now().day.toString().padLeft(2, '0')}/'
+                           '${DateTime.now().month.toString().padLeft(2, '0')}/'
                            '${DateTime.now().year}';
     // The GestureDetector for unfocus is removed; can be added to CommonLayout if needed globally.
     return PopScope(
