@@ -18,16 +18,9 @@ class CommonLayout extends StatelessWidget {
       onTap: () {
         FocusScope.of(context).unfocus(); // Dismiss keyboard on tap outside
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Padding(
-            padding: pagePadding,
-            child: child,
-          ),
-        ),
-        // You can add other Scaffold elements here if needed globally,
-        // like a FloatingActionButton, BottomNavigationBar, Drawer, etc.
+      child: Padding(
+        padding: pagePadding,
+        child: child,
       ),
     );
   }
