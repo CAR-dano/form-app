@@ -49,7 +49,7 @@ class ImageCaptureTask extends QueueTask<void> {
       }
 
       // Step 3: Save the full-quality, rotated image to the gallery
-      await ImageCaptureAndProcessingUtil.saveImageToGallery(rotatedFullQualityFile);
+      await ImageCaptureAndProcessingUtil.saveImageToGallery(rotatedFullQualityFile, album: 'Palapa Inspeksi');
 
       // Step 4: Now, compress the rotated image for use in the app
       final String? compressedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(
