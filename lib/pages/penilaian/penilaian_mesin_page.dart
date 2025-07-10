@@ -17,12 +17,11 @@ class PenilaianMesinPage extends ConsumerStatefulWidget {
   ConsumerState<PenilaianMesinPage> createState() => _PenilaianMesinPage();
 }
 
-class _PenilaianMesinPage extends ConsumerState<PenilaianMesinPage> with AutomaticKeepAliveClientMixin { // Add mixin
+class _PenilaianMesinPage extends ConsumerState<PenilaianMesinPage> with AutomaticKeepAliveClientMixin {
   late FocusScopeNode _focusScopeNode;
 
-
   @override
-  bool get wantKeepAlive => true; // Override wantKeepAlive
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -38,58 +37,82 @@ class _PenilaianMesinPage extends ConsumerState<PenilaianMesinPage> with Automat
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
+    super.build(context);
     final formData = ref.watch(formProvider);
     final formNotifier = ref.read(formProvider.notifier);
+    final List<Map<String, dynamic>> listData = _buildToggleableNumberedButtonLists(formData, formNotifier);
 
     return PopScope(
-      // Wrap with PopScope
       onPopInvokedWithResult: (bool didPop, dynamic result) {
         if (didPop) {
-          _focusScopeNode.unfocus(); // Unfocus when navigating back
+          _focusScopeNode.unfocus();
         }
       },
       child: FocusScope(
-        // Wrap with FocusScope
         node: _focusScopeNode,
         child: GestureDetector(
-          // Wrap with GestureDetector
           onTap: () {
-            _focusScopeNode.unfocus(); // Unfocus on tap outside text fields
+            _focusScopeNode.unfocus();
           },
-          child: SingleChildScrollView(
-            clipBehavior: Clip.none,
-            key: const PageStorageKey<String>('pageFiveTwoScrollKey'), // Add PageStorageKey here
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const PageTitle(data: 'Penilaian (2)'),
-                const SizedBox(height: 6.0),
-                const HeadingOne(text: 'Hasil Inspeksi Mesin'),
-                const SizedBox(height: 16.0),
-
-                ..._buildToggleableNumberedButtonLists(formData, formNotifier),
-
-                ExpandableTextField(
-                  label: 'Catatan',
-                  hintText: 'Masukkan catatan di sini',
-                  initialLines: formData.mesinCatatanList,
-                  onChangedList: (lines) {
-                    formNotifier.updateMesinCatatanList(lines);
-                  },
+          child: CustomScrollView(
+            key: const PageStorageKey<String>('pageFiveTwoScrollKey'),
+            slivers: [
+              const SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    PageTitle(data: 'Penilaian (2)'),
+                    SizedBox(height: 6.0),
+                    HeadingOne(text: 'Hasil Inspeksi Mesin'),
+                    SizedBox(height: 16.0),
+                  ],
                 ),
-                const SizedBox(height: 32.0),
-                const SizedBox(height: 24.0),
-                const Footer(),
-              ],
-            ),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final itemData = listData[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: ToggleableNumberedButtonList(
+                        label: itemData['label'],
+                        count: 10,
+                        selectedValue: itemData['selectedValue'] ?? -1,
+                        onItemSelected: itemData['onItemSelected'],
+                      ),
+                    );
+                  },
+                  childCount: listData.length,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    ExpandableTextField(
+                      label: 'Catatan',
+                      hintText: 'Masukkan catatan di sini',
+                      initialLines: formData.mesinCatatanList,
+                      onChangedList: (lines) {
+                        formNotifier.updateMesinCatatanList(lines);
+                      },
+                    ),
+                    const SizedBox(height: 32.0),
+                    const SizedBox(height: 24.0),
+                    const Footer(),
+                  ],
+                ),
+              ),
+              SliverPadding(
+                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom + 90),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  List<Widget> _buildToggleableNumberedButtonLists(FormData formData, FormNotifier formNotifier) {
+  List<Map<String, dynamic>> _buildToggleableNumberedButtonLists(FormData formData, FormNotifier formNotifier) {
     final List<Map<String, dynamic>> toggleableNumberedButtonListData = [
       {
         'label': 'Getaran Mesin',
@@ -228,16 +251,6 @@ class _PenilaianMesinPage extends ConsumerState<PenilaianMesinPage> with Automat
       },
     ];
 
-    return toggleableNumberedButtonListData.map<Widget>((itemData) {
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: ToggleableNumberedButtonList(
-          label: itemData['label'],
-          count: 10,
-          selectedValue: itemData['selectedValue'] ?? -1,
-          onItemSelected: itemData['onItemSelected'],
-        ),
-      );
-    }).toList();
+    return toggleableNumberedButtonListData;
   }
 }
