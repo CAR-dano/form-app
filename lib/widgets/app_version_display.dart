@@ -24,11 +24,10 @@ class AppVersionDisplay extends ConsumerWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final version = snapshot.data!.version;
-            final buildNumber = snapshot.data!.buildNumber;
             return Padding(
               padding: const EdgeInsets.only(right: 16.0),
               child: Text(
-                'v$version+$buildNumber',
+                'v$version',
                 style: const TextStyle(
                   fontSize: 14,
                   color: Colors.black54,

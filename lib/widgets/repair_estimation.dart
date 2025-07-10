@@ -84,113 +84,106 @@ class _RepairEstimationState extends State<RepairEstimation> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min, 
       children: [
         Text(
           widget.label,
           style: labelStyle, // Use labelStyle from app_styles.dart
         ),
         const SizedBox(height: 8.0),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: _estimations.length,
-          itemBuilder: (context, index) {
-            final bool repairHasText = _repairControllers[index].text.isNotEmpty;
-            final bool priceHasText = _priceControllers[index].text.isNotEmpty;
-
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 4.0),
-              child: Container( // Wrap with Container for border
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: borderColor, // Use borderColor from app_styles.dart
-                    width: 2.0,
-                  ),
-                  borderRadius: BorderRadius.circular(8.0),
+        for (int index = 0; index < _estimations.length; index++)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4.0),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: borderColor,
+                  width: 2.0,
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Container( // Wrap TextField in Container for border
-                        decoration: const BoxDecoration(
-                           border: Border(
-                            right: BorderSide(
-                              color: borderColor, // Use borderColor for vertical separator
-                              width: 2.0,
-                            ),
-                          ),
-                        ),
-                        child: TextField(
-                          controller: _repairControllers[index],
-                          textCapitalization: TextCapitalization.sentences, // Auto capitalize the first letter of each sentence
-                          style: repairHasText ? toggleOptionTextStyle.copyWith(color: Colors.white) : hintTextStyle, // Use toggleOptionTextStyle when text is present, hintTextStyle otherwise
-                          decoration: InputDecoration(
-                            hintText: 'Barang',
-                            hintStyle: hintTextStyle, // Use hintTextStyle
-                            filled: repairHasText, // Fill only if text is present
-                            fillColor: borderColor, // Use borderColor for background when filled
-                            border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.only(topLeft: Radius.circular(6.0), bottomLeft: Radius.circular(6.0)), // Apply border radius to left side
-                            borderSide: BorderSide.none,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0), // Adjusted vertical padding
-                            isDense: true, // Make the input decorator more compact
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Container( // Wrap TextField and IconButton in Container for border
-                        decoration: const BoxDecoration(
-                           border: Border(
-                            // Removed left border to avoid double border
-                          ),
-                        ),
-                        child: Row( // Inner Row for price TextField and IconButton
-                          children: [
-                            Expanded( // Expanded for price TextField
-                              child: TextField(
-                                controller: _priceControllers[index],
-                                keyboardType: TextInputType.number, // Set keyboard type to number
-                                style: priceHasText ? priceTextStyle : hintTextStyle, // Use priceTextStyle when text is present, hintTextStyle otherwise
-                                inputFormatters: [
-                                  ThousandsSeparatorInputFormatter()
-                                ], // Apply thousands separator formatter
-                                decoration: InputDecoration(
-                                  hintText: 'Biaya',
-                                  hintStyle: hintTextStyle, // Use hintTextStyle
-                                  filled: false, // Do not fill based on text
-                                  fillColor: Colors.transparent, // Keep background transparent
-                                  border: const OutlineInputBorder(
-                                     borderRadius: BorderRadius.only(topRight: Radius.circular(6.0), bottomRight: Radius.circular(6.0)), // Apply border radius to right side
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0), // Adjusted vertical padding
-                                  isDense: true, // Make the input decorator more compact
-                                ),
-                              ),
-                            ),
-                            SizedBox( // Wrap IconButton in SizedBox for fixed width
-                              width: 48.0, // Approximate width of an IconButton
-                              child: IconButton(
-                                icon: const Icon(Icons.close_outlined, size: 14.0), // Set icon size to 14.0
-                                onPressed: () {
-                                  _removeEstimation(index);
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                borderRadius: BorderRadius.circular(8.0),
               ),
-            );
-          },
-        ),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          right: BorderSide(
+                            color: borderColor,
+                            width: 2.0,
+                          ),
+                        ),
+                      ),
+                      child: TextField(
+                        controller: _repairControllers[index],
+                        textCapitalization: TextCapitalization.sentences,
+                        style: _repairControllers[index].text.isNotEmpty
+                            ? toggleOptionTextStyle.copyWith(color: Colors.white)
+                            : hintTextStyle,
+                        decoration: InputDecoration(
+                          hintText: 'Barang',
+                          hintStyle: hintTextStyle,
+                          filled: _repairControllers[index].text.isNotEmpty,
+                          fillColor: borderColor,
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(6.0),
+                                bottomLeft: Radius.circular(6.0)),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12.0, vertical: 12.0),
+                          isDense: true,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _priceControllers[index],
+                            keyboardType: TextInputType.number,
+                            style: _priceControllers[index].text.isNotEmpty
+                                ? priceTextStyle
+                                : hintTextStyle,
+                            inputFormatters: [ThousandsSeparatorInputFormatter()],
+                            decoration: InputDecoration(
+                              hintText: 'Biaya',
+                              hintStyle: hintTextStyle,
+                              filled: false,
+                              fillColor: Colors.transparent,
+                              border: const OutlineInputBorder(
+                                borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(6.0),
+                                    bottomRight: Radius.circular(6.0)),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12.0, vertical: 12.0),
+                              isDense: true,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 48.0,
+                          child: IconButton(
+                            icon: const Icon(Icons.close_outlined, size: 14.0),
+                            onPressed: () {
+                              _removeEstimation(index);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         TextButton.icon(
           onPressed: _addEstimation,
           icon: const Icon(Icons.add_circle_outline),

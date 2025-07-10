@@ -75,6 +75,7 @@ class _FinalisasiPageState extends ConsumerState<FinalisasiPage> with AutomaticK
           ),
         const SizedBox(height: 24.0), // Add space where NavigationButtonRow used to be
         const Footer(),
+        SizedBox(height: MediaQuery.of(context).viewPadding.bottom + 90),
       ],
     );
   }

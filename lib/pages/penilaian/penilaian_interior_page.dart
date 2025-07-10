@@ -54,40 +54,66 @@ class _PenilaianInteriorPage extends ConsumerState<PenilaianInteriorPage> with A
           onTap: () {
             _focusScopeNode.unfocus();
           },
-          child: SingleChildScrollView(
-            clipBehavior: Clip.none,
-            key: const PageStorageKey<String>('pageFiveThreeScrollKey'), // Add PageStorageKey here
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const PageTitle(data: 'Penilaian (3)'),
-                const SizedBox(height: 6.0),
-                const HeadingOne(text: 'Hasil Inspeksi Interior'),
-                const SizedBox(height: 16.0),
-
-                ..._buildToggleableNumberedButtonLists(formData, formNotifier),
-
-                ExpandableTextField(
-                  label: 'Catatan',
-                  hintText: 'Masukkan catatan di sini',
-                  initialLines: formData.interiorCatatanList,
-                  onChangedList: (lines) {
-                    formNotifier.updateInteriorCatatanList(lines);
-                  },
+          child: CustomScrollView(
+            key: const PageStorageKey<String>('pageFiveThreeScrollKey'),
+            slivers: [
+              const SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    PageTitle(data: 'Penilaian (3)'),
+                    SizedBox(height: 6.0),
+                    HeadingOne(text: 'Hasil Inspeksi Interior'),
+                    SizedBox(height: 16.0),
+                  ],
                 ),
-                const SizedBox(height: 32.0),
-                const SizedBox(height: 24.0), // Optional spacing below the content
-                // Footer
-                const Footer(),
-              ],
-            ),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final itemData = _buildToggleableNumberedButtonLists(formData, formNotifier)[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: ToggleableNumberedButtonList(
+                        label: itemData['label'],
+                        count: 10,
+                        selectedValue: itemData['selectedValue'] ?? -1,
+                        onItemSelected: itemData['onItemSelected'],
+                      ),
+                    );
+                  },
+                  childCount: _buildToggleableNumberedButtonLists(formData, formNotifier).length,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    ExpandableTextField(
+                      label: 'Catatan',
+                      hintText: 'Masukkan catatan di sini',
+                      initialLines: formData.interiorCatatanList,
+                      onChangedList: (lines) {
+                        formNotifier.updateInteriorCatatanList(lines);
+                      },
+                    ),
+                    const SizedBox(height: 32.0),
+                    const SizedBox(height: 24.0), // Optional spacing below the content
+                    // Footer
+                    const Footer(),
+                  ],
+                ),
+              ),
+              SliverPadding(
+                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom + 90),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  List<Widget> _buildToggleableNumberedButtonLists(FormData formData, FormNotifier formNotifier) {
+  List<Map<String, dynamic>> _buildToggleableNumberedButtonLists(FormData formData, FormNotifier formNotifier) {
     final List<Map<String, dynamic>> toggleableNumberedButtonListData = [
       {
         'label': 'Stir',
@@ -211,16 +237,6 @@ class _PenilaianInteriorPage extends ConsumerState<PenilaianInteriorPage> with A
       },
     ];
 
-    return toggleableNumberedButtonListData.map<Widget>((itemData) {
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: ToggleableNumberedButtonList(
-          label: itemData['label'],
-          count: 10,
-          selectedValue: itemData['selectedValue'] ?? -1,
-          onItemSelected: itemData['onItemSelected'],
-        ),
-      );
-    }).toList();
+    return toggleableNumberedButtonListData;
   }
 }

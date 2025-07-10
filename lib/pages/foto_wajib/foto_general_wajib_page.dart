@@ -90,7 +90,7 @@ class _FotoGeneralWajibPageState extends ConsumerState<FotoGeneralWajibPage> wit
             ],
           ),
         ),
-        const Spacer(),
+        const SizedBox(height: 32.0),
         const Footer(),
       ],
     );

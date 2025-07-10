@@ -84,7 +84,7 @@ class ApiService {
         _inspectionsUrl,
         data: {
           "vehiclePlateNumber": formData.platNomor,
-          "inspectionDate": formData.tanggalInspeksi?.toIso8601String() ?? '-',
+          "inspectionDate": DateTime.now().toIso8601String(),
           "overallRating": calculateOverallRating(formData),
           "identityDetails": {
             "namaInspektor": formData.inspectorId ?? '-', 
