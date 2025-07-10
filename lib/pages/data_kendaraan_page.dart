@@ -79,30 +79,77 @@ class _DataKendaraanPageState extends ConsumerState<DataKendaraanPage> with Auto
             onTap: () {
               _focusScopeNode.unfocus(); // Unfocus on tap outside text fields
             },
-            child: SingleChildScrollView(
-              clipBehavior: Clip.none,
-              key: const PageStorageKey<String>('pageTwoScrollKey'), // Add PageStorageKey here
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const PageTitle(data: 'Data Kendaraan'), // Updated Title
-                  const SizedBox(height: 6.0),
-
-                  ..._buildInputFields(formData, formNotifier),
-
-                  const SizedBox(height: 32.0), // Spacing before buttons
-                  const SizedBox(height: 24.0),
-                  const Footer(),
-                ],
+          child: CustomScrollView(
+            key: const PageStorageKey<String>('pageTwoScrollKey'),
+            slivers: [
+              const SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    PageTitle(data: 'Data Kendaraan'), // Updated Title
+                    SizedBox(height: 6.0),
+                  ],
+                ),
               ),
-            ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final fieldData = _buildInputFields(formData, formNotifier)[index];
+                    if (fieldData['isDateField'] == true) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: LabeledDateInputField(
+                          label: fieldData['label'],
+                          hintText: fieldData['hintText'],
+                          onChanged: fieldData['onChanged'],
+                          validator: fieldData['validator'],
+                          initialValue: fieldData['initialValue'] != null
+                              ? '${(fieldData['initialValue'] as DateTime).day.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).month.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).year}'
+                              : null,
+                          formSubmitted: widget.formSubmitted.value, // Pass the boolean value
+                        ),
+                      );
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: LabeledTextField(
+                          label: fieldData['label'],
+                          hintText: fieldData['hintText'],
+                          keyboardType: fieldData['keyboardType'],
+                          onChanged: fieldData['onChanged'],
+                          validator: fieldData['validator'],
+                          initialValue: fieldData['initialValue'],
+                          formSubmitted: widget.formSubmitted.value,
+                          useThousandsSeparator: fieldData['useThousandsSeparator'] ?? true,
+                          suffixText: fieldData['suffixText'],
+                        ),
+                      );
+                    }
+                  },
+                  childCount: _buildInputFields(formData, formNotifier).length,
+                ),
+              ),
+              const SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    SizedBox(height: 32.0), // Spacing before buttons
+                    SizedBox(height: 24.0),
+                    Footer(),
+                  ],
+                ),
+              ),
+              SliverPadding(
+                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom + 90),
+              ),
+            ],
+          ),
           ),
         ),
       ),
     );
   }
 
-  List<Widget> _buildInputFields(FormData formData, FormNotifier formNotifier) {
+  List<Map<String, dynamic>> _buildInputFields(FormData formData, FormNotifier formNotifier) {
     final List<Map<String, dynamic>> inputFieldsData = [
       {
         'label': 'Merek Kendaraan',
@@ -252,37 +299,6 @@ class _DataKendaraanPageState extends ConsumerState<DataKendaraanPage> with Auto
       },
     ];
 
-    return inputFieldsData.map<Widget>((fieldData) {
-      if (fieldData['isDateField'] == true) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: LabeledDateInputField(
-            label: fieldData['label'],
-            hintText: fieldData['hintText'],
-            onChanged: fieldData['onChanged'],
-            validator: fieldData['validator'],
-            initialValue: fieldData['initialValue'] != null
-                ? '${(fieldData['initialValue'] as DateTime).day.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).month.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).year}'
-                : null,
-            formSubmitted: widget.formSubmitted.value, // Pass the boolean value
-          ),
-        );
-      } else {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: LabeledTextField(
-            label: fieldData['label'],
-            hintText: fieldData['hintText'],
-            keyboardType: fieldData['keyboardType'],
-            onChanged: fieldData['onChanged'],
-            validator: fieldData['validator'],
-            initialValue: fieldData['initialValue'],
-            formSubmitted: widget.formSubmitted.value,
-            useThousandsSeparator: fieldData['useThousandsSeparator'] ?? true,
-            suffixText: fieldData['suffixText'],
-          ),
-        );
-      }
-    }).toList();
+    return inputFieldsData;
   }
 }
