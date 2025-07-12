@@ -56,39 +56,65 @@ class _PenilaianFiturPageState extends ConsumerState<PenilaianFiturPage> with Au
           onTap: () {
             _focusScopeNode.unfocus(); // Unfocus on tap outside text fields
           },
-          child: SingleChildScrollView(
-            clipBehavior: Clip.none,
-            key: const PageStorageKey<String>('pageFiveOneScrollKey'), // Add PageStorageKey here
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const PageTitle(data: 'Penilaian (1)'),
-                const SizedBox(height: 6.0),
-                const HeadingOne(text: 'Fitur'),
-                const SizedBox(height: 16.0),
-
-                ..._buildToggleableNumberedButtonLists(formData, formNotifier),
-
-                ExpandableTextField(
-                  label: 'Catatan',
-                  hintText: 'Masukkan catatan di sini',
-                  initialLines: formData.fiturCatatanList,
-                  onChangedList: (lines) {
-                    formNotifier.updateFiturCatatanList(lines);
-                  },
+          child: CustomScrollView(
+            key: const PageStorageKey<String>('pageFiveOneScrollKey'),
+            slivers: [
+              const SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    PageTitle(data: 'Penilaian (1)'),
+                    SizedBox(height: 6.0),
+                    HeadingOne(text: 'Fitur'),
+                    SizedBox(height: 16.0),
+                  ],
                 ),
-                const SizedBox(height: 32.0),
-                const SizedBox(height: 24.0),
-                const Footer(),
-              ],
-            ),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final itemData = _buildToggleableNumberedButtonLists(formData, formNotifier)[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: ToggleableNumberedButtonList(
+                        label: itemData['label'],
+                        count: 10,
+                        selectedValue: itemData['selectedValue'] ?? -1,
+                        onItemSelected: itemData['onItemSelected'],
+                      ),
+                    );
+                  },
+                  childCount: _buildToggleableNumberedButtonLists(formData, formNotifier).length,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    ExpandableTextField(
+                      label: 'Catatan',
+                      hintText: 'Masukkan catatan di sini',
+                      initialLines: formData.fiturCatatanList,
+                      onChangedList: (lines) {
+                        formNotifier.updateFiturCatatanList(lines);
+                      },
+                    ),
+                    const SizedBox(height: 32.0),
+                    const SizedBox(height: 24.0),
+                    const Footer(),
+                  ],
+                ),
+              ),
+              SliverPadding(
+                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom + 90),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  List<Widget> _buildToggleableNumberedButtonLists(FormData formData, FormNotifier formNotifier) {
+  List<Map<String, dynamic>> _buildToggleableNumberedButtonLists(FormData formData, FormNotifier formNotifier) {
     final List<Map<String, dynamic>> toggleableNumberedButtonListData = [
       {
         'label': 'Airbag',
@@ -127,16 +153,6 @@ class _PenilaianFiturPageState extends ConsumerState<PenilaianFiturPage> with Au
       },
     ];
 
-    return toggleableNumberedButtonListData.map<Widget>((itemData) {
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: ToggleableNumberedButtonList(
-          label: itemData['label'],
-          count: 10,
-          selectedValue: itemData['selectedValue'] ?? -1,
-          onItemSelected: itemData['onItemSelected'],
-        ),
-      );
-    }).toList();
+    return toggleableNumberedButtonListData;
   }
 }

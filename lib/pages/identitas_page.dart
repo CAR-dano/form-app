@@ -5,7 +5,7 @@ import 'package:form_app/providers/form_provider.dart'; // Import the provider
 import 'package:form_app/providers/inspection_branches_provider.dart'; // Import the provider for branches
 import 'package:form_app/providers/inspector_provider.dart';
 import 'package:form_app/widgets/footer.dart';
-import 'package:form_app/widgets/labeled_date_field.dart';
+import 'package:form_app/widgets/labeled_text.dart';
 import 'package:form_app/widgets/page_title.dart';
 import 'package:form_app/models/inspection_branch.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
@@ -52,6 +52,9 @@ class _IdentitasPageState extends ConsumerState<IdentitasPage> with AutomaticKee
     // No longer need to watch inspectionBranchesProvider directly here for the UI part of the dropdown.
     // LabeledBranchesDropdownField will handle it.
 
+    var hariIni = '${DateTime.now().day.toString().padLeft(2, '0')}/'
+                           '${DateTime.now().month.toString().padLeft(2, '0')}/'
+                           '${DateTime.now().year}';
     // The GestureDetector for unfocus is removed; can be added to CommonLayout if needed globally.
     return PopScope(
       // Wrap with PopScope
@@ -158,19 +161,9 @@ class _IdentitasPageState extends ConsumerState<IdentitasPage> with AutomaticKee
                     formSubmitted: widget.formSubmitted.value, // Pass formSubmitted
                   ),
                   const SizedBox(height: 16.0),
-                  LabeledDateField(
+                  LabeledText(
                     label: 'Tanggal Inspeksi',
-                    initialDate: formData.tanggalInspeksi,
-                    onChanged: (date) {
-                      formNotifier.updateTanggalInspeksi(date);
-                    },
-                    validator: (date) {
-                      if (date == null) {
-                        return 'Tanggal Inspeksi belum terisi';
-                      }
-                      return null;
-                    },
-                    formSubmitted: widget.formSubmitted.value, // Pass formSubmitted
+                    value: hariIni,
                   ),
                   const SizedBox(height: 32.0),
                   

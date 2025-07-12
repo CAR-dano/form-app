@@ -29,7 +29,7 @@ The application is structured as an intuitive, step-by-step form that covers all
 #### 📸 Advanced Image Management
 - **Integrated Multi-Shot Camera:** A custom camera interface featuring zoom, flash control, and lens switching, designed for rapid, uninterrupted photo capture.
 - **Mandatory & Additional Photos:** Clearly defined photo requirements for all major sections (General, Exterior, Interior, etc.), with the flexibility to add unlimited additional photos for detailed documentation.
-- **Automatic Image Processing:** All captured images are automatically cropped to a 4:3 aspect ratio and resized to optimize for storage and upload speed, without sacrificing necessary detail.
+- **Automatic Image Processing:** All captured images are efficiently resized and compressed using `flutter_image_compress`, significantly reducing file size to optimize for storage and upload speed while maintaining necessary detail. This process also handles automatic rotation based on device orientation at the time of capture.
 - **In-App Photo Labeling:** Inspectors can label every photo, providing crucial context for the final report. Labels are mandatory for "additional" and "document" photos.
 - **Gallery & Persistence:** Original, high-resolution photos are automatically saved to the device's gallery for backup, while processed images are persisted locally for the inspection report.
 
@@ -65,7 +65,7 @@ The application leverages a modern, scalable tech stack to ensure performance an
 | **Core Framework**     | `Flutter`                                                                                                                                         |
 | **State Management**   | `Riverpod` for robust, scalable, and testable state management.                                                                                   |
 | **Networking**         | `Dio` for robust API communication, request cancellation, and interceptors.                                                                       |
-| **Image Handling**     | `camera`, `image_picker` (Capture), `image` (Processing/Manipulation), `gal` (Gallery Save)                                                       |
+| **Image Handling**     | `camera`, `image_picker` (Capture), `flutter_image_compress` (Efficient Resizing & Compression), `gal` (Gallery Save)                               |
 | **Local Storage**      | `path_provider` for file system access to persist form data and image metadata as JSON.                                                           |
 | **App Updates**        | `package_info_plus`, `permission_handler`, `open_file` for checking and installing new versions.                                                  |
 | **UI & Styling**       | `google_fonts` (Rubik), `flutter_svg` for vector graphics, `flutter_markdown_plus` for release notes.                                             |
@@ -81,7 +81,7 @@ The codebase is organized into a clean, feature-driven structure that promotes s
 -   `lib/pages/`: Contains the UI for each screen/page of the multi-step form.
 -   `lib/providers/`: Manages all application state using Riverpod, cleanly separating UI from business logic (e.g., `form_provider`, `image_data_provider`, `update_service_provider`).
 -   `lib/services/`: Houses business logic services like `api_service.dart` and `update_service.dart`.
--   `lib/utils/`: Contains reusable helper classes and functions for tasks like image processing (`image_capture_and_processing_util.dart`) and calculations.
+-   `lib/utils/`: Contains reusable helper classes and functions. `image_capture_and_processing_util.dart` leverages `flutter_image_compress` for efficient, non-UI-blocking image resizing and compression.
 -   `lib/widgets/`: Stores reusable, custom UI components (e.g., `LabeledTextField`, `NavigationButtonRow`, `MultiShotCameraScreen`).
 -   `lib/formatters/`: Custom `TextInputFormatter` classes for specialized user input like dates, thousands separators, and bulleted lists.
 

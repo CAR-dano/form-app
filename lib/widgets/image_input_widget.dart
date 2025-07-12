@@ -41,7 +41,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
         final picker = ImagePicker();
         final pickedImageXFile = await picker.pickImage(source: ImageSource.camera);
         if (pickedImageXFile != null) {
-          await ImageCaptureAndProcessingUtil.saveImageToGallery(pickedImageXFile);
+          await ImageCaptureAndProcessingUtil.saveImageToGallery(pickedImageXFile, album: 'Palapa Inspeksi');
         }
         return pickedImageXFile;
       },

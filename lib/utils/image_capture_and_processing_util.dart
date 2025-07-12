@@ -81,8 +81,7 @@ class ImageCaptureAndProcessingUtil {
 
   // No other methods in this class need to be changed.
   // The rest of the file (saveImageToGallery, pickImageFromGallery, etc.) remains the same.
-  static Future<void> saveImageToGallery(XFile imageXFile) async {
-    // ... (same as before)
+  static Future<void> saveImageToGallery(XFile imageXFile, {String? album}) async {
     try {
       bool hasAccess = await Gal.hasAccess();
       if (!hasAccess) {
@@ -92,7 +91,7 @@ class ImageCaptureAndProcessingUtil {
           return;
         }
       }
-      await Gal.putImage(imageXFile.path);
+      await Gal.putImage(imageXFile.path, album: album);
       if (kDebugMode) print('Image successfully saved to gallery via Gal package.');
     } catch (e) {
       if (kDebugMode) print('Error saving image to gallery using Gal: $e');
