@@ -68,6 +68,12 @@ jobs:
           export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
           yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
 
+      # Create google-services.json from secret
+      - name: Create google-services.json
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > android/app/google-services.json
+        env:
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+
       # Builds ABI-Specific Release APKs
       - name: Build ABI-Specific Release APKs
         run: flutter build apk --split-per-abi --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ steps.pubspec.outputs.full_build_number }}
