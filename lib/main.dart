@@ -5,6 +5,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import flutter_dotenv
 import 'package:form_app/providers/tambahan_image_data_provider.dart'; // Import the provider
 import 'dart:io'; // For FileImage
 import 'package:flutter/services.dart'; // Import for SystemChrome
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'dart:ui'; // Import for PlatformDispatcher
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter bindings are initialized
@@ -13,6 +16,16 @@ Future<void> main() async {
     DeviceOrientation.portraitDown,
   ]);
   await dotenv.load(fileName: ".env"); // Load environment variables
+
+  await Firebase.initializeApp();
+
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
+
   runApp(const ProviderScope(child: FormApp()));
 }
 
