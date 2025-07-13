@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 /// A notifier to track the identifiers of tasks currently in the queue.
 class QueuedTaskStatusNotifier extends StateNotifier<Set<String>> {
@@ -81,6 +82,7 @@ class TaskQueueService extends StateNotifier<bool> {
           print('Successfully processed task for identifier: ${task.identifier}');
         }
       } catch (e, stackTrace) {
+        FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error processing task in TaskQueueService', fatal: false);
         task.completer.completeError(e, stackTrace);
         if (kDebugMode) {
           print("Error processing task for ${task.identifier}: $e");

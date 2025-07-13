@@ -6,6 +6,7 @@ import 'package:form_app/utils/image_capture_and_processing_util.dart';
 import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/message_overlay_provider.dart';
 import 'package:form_app/services/task_queue_service.dart'; // Import the generic task queue service
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 /// A task for processing an image from the gallery.
 class ImageProcessingQueueTask extends QueueTask<String?> {
@@ -32,7 +33,7 @@ class ImageProcessingQueueTask extends QueueTask<String?> {
         rotationAngle: rotationAngle,
       );
       return processedPath;
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (context != null && context!.mounted) { // Add null check for context before accessing mounted
         messageOverlayNotifier.show(
           context: context!, // Use null assertion operator as context is checked for null
@@ -41,6 +42,7 @@ class ImageProcessingQueueTask extends QueueTask<String?> {
           icon: Icons.error,
         );
       }
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error processing image in ImageProcessingQueueTask for $identifier');
       rethrow; // Re-throw to be caught by the generic queue service
     } finally {
       imageProcessingNotifier.taskFinished(identifier);

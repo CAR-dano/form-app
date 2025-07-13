@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:form_app/statics/app_styles.dart'; // Your project's style definitions.
 import 'dart:math'; // Used for the min function.
 import 'package:form_app/formatters/bullet_list_input_formatter.dart'; // Custom formatter for bullet lists.
+import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // Import Crashlytics
 
 // A text field that expands and supports bulleted list formatting.
 class ExpandableTextField extends StatefulWidget {
@@ -85,7 +86,8 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
               baseOffset: min(currentSelection.baseOffset, _internalController.text.length),
               extentOffset: min(currentSelection.extentOffset, _internalController.text.length),
             );
-          } catch (e) {
+          } catch (e, stackTrace) {
+            FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error updating text selection in ExpandableTextField', fatal: false);
             _internalController.selection = TextSelection.collapsed(offset: _internalController.text.length);
           }
         }

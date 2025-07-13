@@ -6,6 +6,7 @@ import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:gal/gal.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 // Note: We no longer need 'package:flutter/foundation.dart' for compute, but it's good for kDebugMode.
 
 // This function is no longer an isolate entry point, just a regular helper function.
@@ -54,7 +55,8 @@ Future<String?> _performCompression({
     }
 
     return compressedFile.path;
-  } catch (e) {
+  } catch (e, stackTrace) {
+    FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error during image compression');
     if (kDebugMode) {
       print("Error during image compression: $e");
     }
@@ -93,7 +95,8 @@ class ImageCaptureAndProcessingUtil {
       }
       await Gal.putImage(imageXFile.path, album: album);
       if (kDebugMode) print('Image successfully saved to gallery via Gal package.');
-    } catch (e) {
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error saving image to gallery using Gal');
       if (kDebugMode) print('Error saving image to gallery using Gal: $e');
     }
   }
@@ -133,7 +136,8 @@ class ImageCaptureAndProcessingUtil {
         );
         tambahanImageNotifier.addImage(newTambahanImage);
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error processing and adding image');
       if (kDebugMode) {
         print("Error processing and adding image: $e");
       }
@@ -141,34 +145,34 @@ class ImageCaptureAndProcessingUtil {
   }
 
   static Future<XFile?> rotateImageOnly(XFile sourceFile, {int rotationAngle = 0}) async {
-  // If no rotation is needed, just return the original file.
-  if (rotationAngle == 0) {
-    return sourceFile;
-  }
-
-  try {
-    final tempDir = await getTemporaryDirectory();
-    final targetPath = '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}_rotated.jpg';
-
-    // Call compression with 100% quality to perform a lossless rotation.
-    final result = await FlutterImageCompress.compressAndGetFile(
-      sourceFile.path,
-      targetPath,
-      quality: 100, // Keep original quality
-      rotate: rotationAngle,
-    );
-    
-    if (result != null) {
-      debugPrint('Image rotated losslessly and saved to: ${result.path}');
+    // If no rotation is needed, just return the original file.
+    if (rotationAngle == 0) {
+      return sourceFile;
     }
-    
-    return result;
-  } catch (e) {
-    if (kDebugMode) {
-      print('Error during lossless rotation: $e');
-    }
-    return null; // Return null on failure
-  }
-}
 
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final targetPath = '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}_rotated.jpg';
+
+      // Call compression with 100% quality to perform a lossless rotation.
+      final result = await FlutterImageCompress.compressAndGetFile(
+        sourceFile.path,
+        targetPath,
+        quality: 100, // Keep original quality
+        rotate: rotationAngle,
+      );
+      
+      if (result != null) {
+        debugPrint('Image rotated losslessly and saved to: ${result.path}');
+      }
+      
+      return result;
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error during lossless rotation');
+      if (kDebugMode) {
+        print('Error during lossless rotation: $e');
+      }
+      return null; // Return null on failure
+    }
+  }
 }
