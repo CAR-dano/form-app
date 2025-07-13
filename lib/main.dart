@@ -65,7 +65,8 @@ class _FormAppState extends ConsumerState<FormApp> {
           // Use a try-catch block for robustness, as file might not exist
           try {
             await precacheImage(FileImage(File(image.imagePath)), context);
-          } catch (e) {
+          } catch (e, stackTrace) {
+            FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error pre-caching image for $identifier');
             // Log error if image cannot be pre-cached
             debugPrint('Error precaching image ${image.imagePath}: $e');
           }
