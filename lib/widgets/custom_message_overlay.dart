@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:form_app/statics/app_styles.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class CustomMessageOverlay {
   OverlayEntry? _overlayEntry;
@@ -235,7 +236,8 @@ class CustomMessageOverlay {
           _animationController = null;
           _draggedY = 0.0;
           _draggedX = 0.0; // Reset horizontal drag
-        }).catchError((e) {
+        }).catchError((e, stack) {
+          FirebaseCrashlytics.instance.recordError(e, stack, fatal: false);
           _overlayEntry?.remove();
           _overlayEntry = null;
           _animationController?.dispose();

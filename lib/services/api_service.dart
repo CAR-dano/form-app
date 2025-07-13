@@ -11,6 +11,7 @@ import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:mime/mime.dart';
 import 'package:form_app/utils/calculation_utils.dart'; // Import the new utility
 import 'package:form_app/models/uploadable_image.dart'; // Import the UploadableImage model
+import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // Import Crashlytics
 
 // Typedef for the progress callback
 typedef ImageUploadProgressCallback = void Function(int currentBatch, int totalBatches);
@@ -55,9 +56,12 @@ class ApiService {
         final List<dynamic> data = response.data;
         return data.map((json) => InspectionBranch.fromJson(json)).toList();
       } else {
-        throw Exception('Failed to load inspection branches: ${response.statusCode}');
+        final exception = Exception('Failed to load inspection branches: ${response.statusCode}');
+        FirebaseCrashlytics.instance.recordError(exception, StackTrace.current, reason: 'Failed to load inspection branches');
+        throw exception;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error fetching inspection branches');
       throw Exception('Error fetching inspection branches: $e');
     }
   }
@@ -70,9 +74,12 @@ class ApiService {
         final List<dynamic> data = response.data;
         return data.map((json) => Inspector.fromJson(json)).toList();
       } else {
-        throw Exception('Failed to load inspectors: ${response.statusCode}');
+        final exception = Exception('Failed to load inspectors: ${response.statusCode}');
+        FirebaseCrashlytics.instance.recordError(exception, StackTrace.current, reason: 'Failed to load inspectors');
+        throw exception;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error fetching inspectors');
       throw Exception('Error fetching inspectors: $e');
     }
   }
@@ -318,12 +325,15 @@ class ApiService {
         if (kDebugMode) {
           print('Failed to submit form data: ${response.statusCode} - ${response.data}');
         }
-        throw Exception('Failed to submit form data: ${response.statusCode} - ${response.data}');
+        final exception = Exception('Failed to submit form data: ${response.statusCode} - ${response.data}');
+        FirebaseCrashlytics.instance.recordError(exception, StackTrace.current, reason: 'Failed to submit form data');
+        throw exception;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (kDebugMode) {
         print('Error submitting form data: $e');
       }
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error submitting form data');
       throw Exception('Error submitting form data: $e');
     }
   }
@@ -410,11 +420,15 @@ class ApiService {
             onBatchUploaded(uploadedPathsInBatch);
           }
         } else {
-          throw Exception('Failed to upload photo batch $currentBatchNum/$totalBatchesCalc: ${response.statusCode} - ${response.data}');
+          final exception = Exception('Failed to upload photo batch $currentBatchNum/$totalBatchesCalc: ${response.statusCode} - ${response.data}');
+          FirebaseCrashlytics.instance.recordError(exception, StackTrace.current, reason: 'Failed to upload photo batch');
+          throw exception;
         }
-      } on dio.DioException catch (e) {
+      } on dio.DioException catch (e, stackTrace) {
+        FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'DioException during photo batch upload');
         throw Exception('Error uploading photo batch $currentBatchNum/$totalBatchesCalc (DioException): ${e.message}');
-      } catch (e) {
+      } catch (e, stackTrace) {
+        FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'General error during photo batch upload');
         throw Exception('Error uploading photo batch $currentBatchNum/$totalBatchesCalc: $e');
       }
     }

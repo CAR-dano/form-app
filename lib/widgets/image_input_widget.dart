@@ -13,6 +13,7 @@ import 'package:form_app/utils/image_capture_and_processing_util.dart';
 import 'package:form_app/utils/image_form_handler.dart'; // Import the new helper
 import 'package:form_app/providers/image_processing_provider.dart'; // Import for processing state
 import 'package:form_app/providers/message_overlay_provider.dart'; // Import for messages
+import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // Import Crashlytics
 
 class ImageInputWidget extends ConsumerStatefulWidget {
   final String label;
@@ -83,10 +84,22 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
 
   Future<void> _viewImage(File imageFile) async {
     FocusScope.of(context).unfocus();
-    final bool? wasDeleted = await _showImagePreview(context);
+    try {
+      final bool? wasDeleted = await _showImagePreview(context);
 
-    if (wasDeleted == true) {
-      _deleteImageConfirmed();
+      if (wasDeleted == true) {
+        _deleteImageConfirmed();
+      }
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error viewing image', fatal: false);
+      if (mounted) {
+        ref.read(customMessageOverlayProvider).show(
+          context: context,
+          message: 'Error melihat gambar: $e',
+          color: Colors.red,
+          icon: Icons.error,
+        );
+      }
     }
   }
 
@@ -137,7 +150,8 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
           );
         }
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error rotating image', fatal: false);
       if (mounted) {
         ref.read(customMessageOverlayProvider).show(
           context: context,
