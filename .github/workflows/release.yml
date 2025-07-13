@@ -76,11 +76,11 @@ jobs:
 
       # Builds ABI-Specific Release APKs
       - name: Build ABI-Specific Release APKs
-        run: flutter build apk --split-per-abi --release --build-name=${{ steps.pubspec.outputs.semantic_version }}
+        run: flutter build apk --split-per-abi --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ steps.pubspec.outputs.full_build_number }}
 
       # Builds a universal (fat) Release APK.
       - name: Build Universal (Fat) Release APK
-        run: flutter build apk --release --build-name=${{ steps.pubspec.outputs.semantic_version }}
+        run: flutter build apk --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ steps.pubspec.outputs.full_build_number }}
 
       # Creates an .env file with the API base URL for the debug build.
       - name: Create .env file for Debug Build
