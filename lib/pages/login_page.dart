@@ -23,18 +23,9 @@ class _LoginPageState extends State<LoginPage> {
     _pinFocusNodes = List.generate(_pinLength, (index) => FocusNode());
 
     for (int i = 0; i < _pinLength; i++) {
-      _pinControllers[i].addListener(() {
-        if (_pinControllers[i].text.length == 1 && i < _pinLength - 1) {
-          _pinFocusNodes[i + 1].requestFocus();
-        } else if (_pinControllers[i].text.isEmpty && i > 0) {
-          _pinFocusNodes[i - 1].requestFocus();
-        }
-        _checkPinCompletion();
-        setState(() {}); // Rebuild to update PIN field style
-      });
-      _pinFocusNodes[i].addListener(() {
-        setState(() {}); // Rebuild to update border width on focus change
-      });
+      // We only need to listen to rebuild the UI for style changes
+      _pinControllers[i].addListener(() => setState(() {}));
+      _pinFocusNodes[i].addListener(() => setState(() {}));
     }
   }
 
@@ -86,78 +77,71 @@ class _LoginPageState extends State<LoginPage> {
               style: pageTitleStyle,
             ),
             const SizedBox(height: 40),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  LabeledTextField(
-                    controller: _emailController,
-                    label: 'Email',
-                    hintText: 'Enter your email',
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Masukkan PIN 6 digit Anda',
-                    style: labelStyle,
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(_pinLength, (index) {
-                      bool isFilled = _pinControllers[index].text.isNotEmpty;
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0), // Add horizontal padding
-                        child: SizedBox(
-                          width: 48,
-                          child: TextFormField(
-                            controller: _pinControllers[index],
-                            focusNode: _pinFocusNodes[index],
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            maxLength: 1,
-                            obscureText: false, // Show the number
-                            style: inputTextStyling.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: isFilled ? Colors.white : Colors.black,
-                            ),
-                            decoration: InputDecoration(
-                              filled: isFilled,
-                              fillColor: borderColor,
-                              counterText: '',
-                              contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-                              isDense: true,
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(
-                                    color: borderColor,
-                                    width: _pinFocusNodes[index].hasFocus
-                                        ? 2.0
-                                        : 1.5),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(
-                                    color: borderColor, width: 2.0),
-                              ),
-                            ),
-                            onChanged: (value) {
-                              if (value.isNotEmpty && index < _pinLength - 1) {
-                                _pinFocusNodes[index + 1].requestFocus();
-                              } else if (value.isEmpty && index > 0) {
-                                _pinFocusNodes[index - 1].requestFocus();
-                              }
-                              _checkPinCompletion();
-                            },
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                ],
-              ),
+            LabeledTextField(
+              controller: _emailController,
+              label: 'Email',
+              hintText: 'Enter your email',
+              keyboardType: TextInputType.emailAddress,
             ),
+            const SizedBox(height: 24),
+            Text(
+              'PIN',
+              style: labelStyle,
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(_pinLength, (index) {
+                bool isFilled = _pinControllers[index].text.isNotEmpty;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0), // Add horizontal padding
+                  child: SizedBox(
+                    width: 48,
+                    child: TextFormField(
+                      controller: _pinControllers[index],
+                      focusNode: _pinFocusNodes[index],
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
+                      maxLength: 1,
+                      obscureText: false, // Show the number
+                      style: inputTextStyling.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isFilled ? Colors.white : Colors.black,
+                      ),
+                      decoration: InputDecoration(
+                        filled: isFilled,
+                        fillColor: borderColor,
+                        counterText: '',
+                        contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                        isDense: true,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                              color: borderColor,
+                              width: _pinFocusNodes[index].hasFocus
+                                  ? 2.0
+                                  : 1.5),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                              color: borderColor, width: 2.0),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        if (value.isNotEmpty && index < _pinLength - 1) {
+                          _pinFocusNodes[index + 1].requestFocus();
+                        } else if (value.isEmpty && index > 0) {
+                          _pinFocusNodes[index - 1].requestFocus();
+                        }
+                        // _checkPinCompletion();
+                      },
+                    ),
+                  ),
+                );
+              }),
+            ),
+            const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
