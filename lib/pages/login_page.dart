@@ -9,148 +9,121 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String _pin = '';
   final int _pinLength = 6;
+  late List<TextEditingController> _pinControllers;
+  late List<FocusNode> _pinFocusNodes;
 
-  void _onNumpadTap(String value) {
-    setState(() {
-      if (value == 'backspace') {
-        if (_pin.isNotEmpty) {
-          _pin = _pin.substring(0, _pin.length - 1);
+  @override
+  void initState() {
+    super.initState();
+    _pinControllers = List.generate(_pinLength, (index) => TextEditingController());
+    _pinFocusNodes = List.generate(_pinLength, (index) => FocusNode());
+
+    for (int i = 0; i < _pinLength; i++) {
+      _pinControllers[i].addListener(() {
+        if (_pinControllers[i].text.length == 1 && i < _pinLength - 1) {
+          _pinFocusNodes[i + 1].requestFocus();
+        } else if (_pinControllers[i].text.isEmpty && i > 0) {
+          _pinFocusNodes[i - 1].requestFocus();
         }
-      } else if (value == 'clear') {
-        _pin = '';
-      } else if (_pin.length < _pinLength) {
-        _pin += value;
-      }
-    });
-    if (_pin.length == _pinLength) {
-      _verifyPin();
+        _checkPinCompletion();
+      });
     }
   }
 
-  void _verifyPin() {
+  void _checkPinCompletion() {
+    String currentPin = _pinControllers.map((controller) => controller.text).join();
+    if (currentPin.length == _pinLength) {
+      _verifyPin(currentPin);
+    }
+  }
+
+  void _verifyPin(String pin) {
     // TODO: Implement PIN verification logic here
-    debugPrint('PIN entered: $_pin');
+    debugPrint('PIN entered: $pin');
     // For now, just clear the PIN after a short delay for demonstration
     Future.delayed(const Duration(milliseconds: 300), () {
-      setState(() {
-        _pin = '';
-      });
+      for (var controller in _pinControllers) {
+        controller.clear();
+      }
+      _pinFocusNodes[0].requestFocus();
     });
-  }
-
-  Widget _buildPinCircle(int index) {
-    bool isFilled = index < _pin.length;
-    return Container(
-      width: 20,
-      height: 20,
-      margin: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: isFilled ? borderColor : Colors.transparent,
-        border: Border.all(
-          color: borderColor,
-          width: 2,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNumpadButton(String text, {VoidCallback? onPressed, IconData? icon}) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: AspectRatio(
-          aspectRatio: 1, // Make buttons square
-          child: FilledButton.tonal(
-            onPressed: onPressed ?? () => _onNumpadTap(text),
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.transparent,
-            ),
-            child: icon != null
-                ? Icon(icon, color: darkTextColor, size: 16)
-                : Text(
-                    text,
-                    style: buttonTextStyle.copyWith(fontSize: 16.0, color: darkTextColor), // Use buttonTextStyle
-                  ),
-          ),
-        ),
-      ),
-    );
   }
 
   @override
   void dispose() {
+    for (var controller in _pinControllers) {
+      controller.dispose();
+    }
+    for (var focusNode in _pinFocusNodes) {
+      focusNode.dispose();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set background to white
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start, // Align title to start
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               'Login',
-              style: pageNumberStyle, // Apply titleStyle
+              style: pageNumberStyle,
             ),
             Expanded(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     'Masukkan PIN 6 digit Anda',
-                    style: labelStyle, // Apply labelStyle
+                    style: labelStyle,
                   ),
                   const SizedBox(height: 40),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(_pinLength, (index) => _buildPinCircle(index)),
+                    children: List.generate(_pinLength, (index) {
+                      return Container(
+                        width: 40,
+                        height: 40,
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: borderColor, width: 2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: TextFormField(
+                            controller: _pinControllers[index],
+                            focusNode: _pinFocusNodes[index],
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            maxLength: 1,
+                            obscureText: true,
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            decoration: const InputDecoration(
+                              counterText: '',
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            onChanged: (value) {
+                              if (value.isNotEmpty && index < _pinLength - 1) {
+                                _pinFocusNodes[index + 1].requestFocus();
+                              } else if (value.isEmpty && index > 0) {
+                                _pinFocusNodes[index - 1].requestFocus();
+                              }
+                              _checkPinCompletion();
+                            },
+                          ),
+                        ),
+                      );
+                    }),
                   ),
                   const SizedBox(height: 40),
-                  // Numpad
-                  Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildNumpadButton('1'),
-                          _buildNumpadButton('2'),
-                          _buildNumpadButton('3'),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildNumpadButton('4'),
-                          _buildNumpadButton('5'),
-                          _buildNumpadButton('6'),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildNumpadButton('7'),
-                          _buildNumpadButton('8'),
-                          _buildNumpadButton('9'),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildNumpadButton('clear', onPressed: () => _onNumpadTap('clear')),
-                          _buildNumpadButton('0'),
-                          _buildNumpadButton('backspace', icon: Icons.backspace),
-                        ],
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
