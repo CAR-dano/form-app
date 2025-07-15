@@ -104,7 +104,7 @@ class _PinInputState extends State<PinInput> {
                     contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
                     isDense: true,
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(24),
                       borderSide: BorderSide(
                           color: borderColor,
                           width: _pinFocusNodes[index].hasFocus ? 2.0 : 1.5),

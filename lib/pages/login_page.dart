@@ -11,6 +11,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   String _currentPin = ''; // To store the PIN from PinInputWidget
 
@@ -36,49 +37,61 @@ class _LoginPageState extends State<LoginPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: Padding(
+        body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'Login',
-                style: pageTitleStyle,
-              ),
-              const SizedBox(height: 40),
-              LabeledTextField(
-                controller: _emailController,
-                label: 'Email',
-                hintText: 'Enter your email',
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 24),
-              PinInput(
-                pinLength: 6,
-                onPinCompleted: (pin) {
-                  setState(() {
-                    _currentPin = pin;
-                  });
-                  _verifyPin(pin);
-                },
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_currentPin.length == 6) {
-                      _verifyPin(_currentPin);
-                    }
-                  },
-                  style: baseButtonStyle.copyWith(
-                    backgroundColor: WidgetStateProperty.all(toggleOptionSelectedLengkapColor)),           
-                  child: Text('Login', style: buttonTextStyle,),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Login',
+                  style: pageTitleStyle,
                 ),
-              ),
-              const SizedBox(height: 24),
-            ],
+                const SizedBox(height: 40),
+                LabeledTextField(
+                  controller: _emailController,
+                  label: 'Email',
+                  hintText: 'Enter your email',
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'mohon isi email';
+                    }
+                    // Add more email validation logic if needed
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 24),
+                PinInput(
+                  pinLength: 6,
+                  onPinCompleted: (pin) {
+                    setState(() {
+                      _currentPin = pin;
+                    });
+                    _verifyPin(pin);
+                  },
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        if (_currentPin.length == 6) {
+                          _verifyPin(_currentPin);
+                        }
+                      }
+                    },
+                    style: baseButtonStyle.copyWith(
+                      backgroundColor: WidgetStateProperty.all(toggleOptionSelectedLengkapColor)),           
+                    child: Text('Login', style: buttonTextStyle,),
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
           ),
         ),
       ),
