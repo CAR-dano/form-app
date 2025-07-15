@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:form_app/statics/app_styles.dart'; // Import AppStyles
 import 'package:form_app/widgets/labeled_text_field.dart'; // Import LabeledTextField
+import 'package:form_app/widgets/pin_input_widget.dart'; // Import PinInputWidget
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,57 +11,19 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final int _pinLength = 6;
-  late List<TextEditingController> _pinControllers;
-  late List<FocusNode> _pinFocusNodes;
   final TextEditingController _emailController = TextEditingController();
-
-  // Flag to prevent re-entrant calls when clearing text programmatically
-  bool _isClearingProgrammatically = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _pinControllers =
-        List.generate(_pinLength, (index) => TextEditingController());
-    _pinFocusNodes = List.generate(_pinLength, (index) => FocusNode());
-
-    for (int i = 0; i < _pinLength; i++) {
-      // We only need to listen to rebuild the UI for style changes
-      _pinControllers[i].addListener(() => setState(() {}));
-      _pinFocusNodes[i].addListener(() => setState(() {}));
-    }
-  }
-
-  void _checkPinCompletion() {
-    String currentPin =
-        _pinControllers.map((controller) => controller.text).join();
-    if (currentPin.length == _pinLength) {
-      _verifyPin(currentPin);
-    }
-  }
+  String _currentPin = ''; // To store the PIN from PinInputWidget
 
   void _verifyPin(String pin) {
-    // TODO: Implement PIN verification logic here
     debugPrint('Email entered: ${_emailController.text}');
     debugPrint('PIN entered: $pin');
+    // TODO: Implement PIN verification logic here
     // For now, just clear the PIN after a short delay for demonstration
-    Future.delayed(const Duration(milliseconds: 300), () {
-      for (var controller in _pinControllers) {
-        controller.clear();
-      }
-      _pinFocusNodes[0].requestFocus();
-    });
+    // The PinInputWidget handles its own clearing, so no need to clear here.
   }
 
   @override
   void dispose() {
-    for (var controller in _pinControllers) {
-      controller.dispose();
-    }
-    for (var focusNode in _pinFocusNodes) {
-      focusNode.dispose();
-    }
     _emailController.dispose();
     super.dispose();
   }
@@ -88,104 +50,26 @@ class _LoginPageState extends State<LoginPage> {
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 24),
-            Text(
-              'PIN',
-              style: labelStyle,
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(_pinLength, (index) {
-                bool isFilled = _pinControllers[index].text.isNotEmpty;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: SizedBox(
-                    width: 48,
-                    // height: 48,
-                    child: KeyboardListener(
-                      focusNode: FocusNode(), // Dummy focus node for the listener
-                      onKeyEvent: (event) {
-                        if (event is KeyDownEvent &&
-                            event.logicalKey ==
-                                LogicalKeyboardKey.backspace) {
-                          if (index > 0 &&
-                              _pinControllers[index].text.isEmpty) {
-                            _isClearingProgrammatically = true;
-                            _pinFocusNodes[index - 1].requestFocus();
-                            _pinControllers[index - 1].clear();
-                            // Reset the flag after the operation
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              _isClearingProgrammatically = false;
-                            });
-                          }
-                        }
-                      },
-                      child: TextFormField(
-                        controller: _pinControllers[index],
-                        focusNode: _pinFocusNodes[index],
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        maxLength: 1,
-                        obscureText: false,
-                        style: inputTextStyling.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isFilled ? Colors.white : Colors.black,
-                        ),
-                        decoration: InputDecoration(
-                          filled: isFilled,
-                          fillColor: borderColor,
-                          counterText: '',
-                          contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
-                          isDense: true,
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                                color: borderColor,
-                                width: _pinFocusNodes[index].hasFocus
-                                    ? 2.0
-                                    : 1.5),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                                color: borderColor, width: 2.0),
-                          ),
-                        ),
-                        onChanged: (value) {
-                          if (_isClearingProgrammatically) return;
-                        
-                          if (value.isNotEmpty) {
-                            if (index < _pinLength - 1) {
-                              _pinFocusNodes[index + 1].requestFocus();
-                            }
-                          } else {
-                            if (index > 0) {
-                              _pinFocusNodes[index - 1].requestFocus();
-                            }
-                          }
-                          //_checkPinCompletion();
-                        },
-                      ),
-                    ),
-                  ),
-                );
-              }),
+            PinInputWidget(
+              pinLength: 6,
+              onPinCompleted: (pin) {
+                setState(() {
+                  _currentPin = pin;
+                });
+                _verifyPin(pin);
+              },
             ),
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  String pin =
-                      _pinControllers.map((controller) => controller.text).join();
-                  if (pin.length == _pinLength) {
-                    _verifyPin(pin);
+                  if (_currentPin.length == 6) {
+                    _verifyPin(_currentPin);
                   }
                 },
                 style: baseButtonStyle.copyWith(
-                    backgroundColor: WidgetStateProperty.all(buttonColor),
-                    shadowColor: WidgetStateProperty.all(buttonColor.withAlpha(102)),
-                ),           
+                  backgroundColor: WidgetStateProperty.all(toggleOptionSelectedLengkapColor)),           
                 child: Text('Login', style: buttonTextStyle,),
               ),
             ),
