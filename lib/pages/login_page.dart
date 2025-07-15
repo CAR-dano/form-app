@@ -14,6 +14,7 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   String _currentPin = ''; // To store the PIN from PinInputWidget
+  final ValueNotifier<bool> _formSubmitted = ValueNotifier<bool>(false);
 
   void _verifyPin(String pin) {
     debugPrint('Email entered: ${_emailController.text}');
@@ -26,6 +27,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void dispose() {
     _emailController.dispose();
+    _formSubmitted.dispose();
     super.dispose();
   }
 
@@ -39,59 +41,66 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Login',
-                  style: pageTitleStyle,
-                ),
-                const SizedBox(height: 40),
-                LabeledTextField(
-                  controller: _emailController,
-                  label: 'Email',
-                  hintText: 'Enter your email',
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'mohon isi email';
-                    }
-                    // Add more email validation logic if needed
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-                PinInput(
-                  pinLength: 6,
-                  onPinCompleted: (pin) {
-                    setState(() {
-                      _currentPin = pin;
-                    });
-                    _verifyPin(pin);
-                  },
-                ),
-                const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        if (_currentPin.length == 6) {
-                          _verifyPin(_currentPin);
+          child: ValueListenableBuilder<bool>(
+            valueListenable: _formSubmitted,
+            builder: (context, isFormSubmitted, child) {
+              return Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Login',
+                      style: pageTitleStyle,
+                    ),
+                    const SizedBox(height: 40),
+                    LabeledTextField(
+                      controller: _emailController,
+                      label: 'Email',
+                      hintText: 'Enter your email',
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'mohon isi email';
                         }
-                      }
-                    },
-                    style: baseButtonStyle.copyWith(
-                      backgroundColor: WidgetStateProperty.all(toggleOptionSelectedLengkapColor)),           
-                    child: Text('Login', style: buttonTextStyle,),
-                  ),
+                        // Add more email validation logic if needed
+                        return null;
+                      },
+                      formSubmitted: isFormSubmitted,
+                    ),
+                    const SizedBox(height: 24),
+                    PinInput(
+                      pinLength: 6,
+                      onPinCompleted: (pin) {
+                        setState(() {
+                          _currentPin = pin;
+                        });
+                        _verifyPin(pin);
+                      },
+                    ),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _formSubmitted.value = true;
+                          if (_formKey.currentState!.validate()) {
+                            if (_currentPin.length == 6) {
+                              _verifyPin(_currentPin);
+                            }
+                          }
+                        },
+                        style: baseButtonStyle.copyWith(
+                          backgroundColor: WidgetStateProperty.all(toggleOptionSelectedLengkapColor)),           
+                        child: Text('Login', style: buttonTextStyle,),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
                 ),
-                const SizedBox(height: 24),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
