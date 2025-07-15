@@ -6,6 +6,7 @@ import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/utils/image_capture_and_processing_util.dart';
 import 'package:form_app/services/task_queue_service.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'dart:math' show pi;
 
 class ImageCaptureTask extends QueueTask<void> {
@@ -74,10 +75,11 @@ class ImageCaptureTask extends QueueTask<void> {
       if (kDebugMode) {
         print('Successfully processed image for identifier: $identifier');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (kDebugMode) {
         print("Error processing image for $identifier: $e");
       }
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error processing image in ImageCaptureTask for $identifier');
       rethrow;
     } finally {
       imageProcessingNotifier.taskFinished(identifier);

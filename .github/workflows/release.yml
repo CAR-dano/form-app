@@ -68,6 +68,12 @@ jobs:
           export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
           yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
 
+      # Create google-services.json from secret
+      - name: Create google-services.json
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > android/app/google-services.json
+        env:
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+
       # Builds ABI-Specific Release APKs
       - name: Build ABI-Specific Release APKs
         run: flutter build apk --split-per-abi --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ steps.pubspec.outputs.full_build_number }}
@@ -91,7 +97,7 @@ jobs:
         id: universal_release_apk_details
         run: |
           original_path="build/app/outputs/flutter-apk/app-release.apk"
-          new_name="palapa_inspeksi-v${{ steps.pubspec.outputs.full_version }}-universal-release.apk"
+          new_name="palapa_inspeksi-v${{ steps.pubspec.outputs.semantic_version }}-universal-release.apk"
           new_path="build/app/outputs/flutter-apk/$new_name"
           mv "$original_path" "$new_path"
           echo "path=$new_path" >> $GITHUB_OUTPUT
@@ -102,7 +108,7 @@ jobs:
         id: arm64_v8a_release_apk_details
         run: |
           original_path="build/app/outputs/flutter-apk/app-arm64-v8a-release.apk"
-          new_name="palapa_inspeksi-v${{ steps.pubspec.outputs.full_version }}-arm64-v8a-release.apk"
+          new_name="palapa_inspeksi-v${{ steps.pubspec.outputs.semantic_version }}-arm64-v8a-release.apk"
           new_path="build/app/outputs/flutter-apk/$new_name"
           mv "$original_path" "$new_path"
           echo "path=$new_path" >> $GITHUB_OUTPUT
@@ -113,7 +119,7 @@ jobs:
         id: armeabi_v7a_release_apk_details
         run: |
           original_path="build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk"
-          new_name="palapa_inspeksi-v${{ steps.pubspec.outputs.full_version }}-armeabi-v7a-release.apk"
+          new_name="palapa_inspeksi-v${{ steps.pubspec.outputs.semantic_version }}-armeabi-v7a-release.apk"
           new_path="build/app/outputs/flutter-apk/$new_name"
           mv "$original_path" "$new_path"
           echo "path=$new_path" >> $GITHUB_OUTPUT

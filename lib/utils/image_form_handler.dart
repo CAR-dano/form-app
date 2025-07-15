@@ -6,6 +6,7 @@ import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/message_overlay_provider.dart'; // Import the new provider
 import 'package:form_app/statics/app_styles.dart';
 import 'package:flutter/foundation.dart'; // For kDebugMode
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class ImageFormHandler {
   static Future<void> processAndHandleImageUpload({
@@ -39,7 +40,8 @@ class ImageFormHandler {
               icon: Icons.error);
         }
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error during image processing for $identifier');
       if (context.mounted) debugPrint("Error during image processing for $identifier: $e");
       if (context.mounted) {
         ref.read(customMessageOverlayProvider).show(
@@ -86,7 +88,8 @@ class ImageFormHandler {
           }
         }
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error during multi-image processing for $identifier');
       if (context.mounted) debugPrint("Error during multi-image processing for $identifier: $e");
       if (context.mounted) {
         ref.read(customMessageOverlayProvider).show(

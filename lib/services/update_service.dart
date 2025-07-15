@@ -7,6 +7,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:open_file/open_file.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 // --- CONFIGURATION ---
 const String githubOwner = 'CAR-dano';
@@ -113,7 +114,8 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
           debugPrint('UpdateService: Recorded APK file not found, cleared path.');
         }
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error loading downloaded APK path');
       debugPrint('UpdateService: Error loading downloaded APK path: $e');
       state = state.copyWith(downloadedApkPath: '');
     }
@@ -135,7 +137,8 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       final file = File('${dir.path}/$_apkPathFileName');
       await file.writeAsString(path);
       debugPrint('UpdateService: Saved downloaded APK path: $path');
-    } catch (e) {
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error saving downloaded APK path');
       debugPrint('UpdateService: Error saving downloaded APK path: $e');
     }
   }
@@ -158,7 +161,8 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
         await file.delete();
         debugPrint('UpdateService: Cleared downloaded APK path record.');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error clearing downloaded APK path');
       debugPrint('UpdateService: Error clearing downloaded APK path: $e');
     }
   }
@@ -262,7 +266,8 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
               await oldApkFile.delete();
               debugPrint('UpdateService: Obsolete APK deleted successfully.');
             }
-          } catch (e) {
+          } catch (e, stackTrace) {
+            FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error deleting obsolete APK');
             debugPrint('UpdateService: Error deleting obsolete APK: $e');
           } finally {
             // Always clear the path from state and storage after attempting deletion
@@ -272,7 +277,8 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
         }
         // --- END OF NEW LOGIC ---
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error checking for updates');
       debugPrint('UpdateService: Error checking for updates: $e');
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
@@ -334,7 +340,8 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       state = state.copyWith(isDownloading: false, downloadedApkPath: filePath);
       await _saveDownloadedApkPath(filePath);
       debugPrint('UpdateService: APK downloaded successfully to: $filePath');
-    } catch (e) {
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error downloading update');
       state = state.copyWith(isDownloading: false, errorMessage: e.toString());
     }
   }
@@ -374,7 +381,8 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       // } catch (e) {
       //   debugPrint('UpdateService: Error deleting downloaded APK: $e');
       // }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error installing update');
       state = state.copyWith(errorMessage: 'Could not open installer: $e');
       debugPrint('UpdateService: Failed to open installer: $e');
     }
@@ -382,24 +390,34 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
 
   // Request permission to install unknown apps
   static Future<void> _requestInstallApkPermission(String savePath) async {
-    final status = await Permission.requestInstallPackages.status;
-    if (status.isGranted) {
-      await _openDownloadedUpdateApk(savePath);
-    } else {
-      final newStatus = await Permission.requestInstallPackages.request();
-      if (newStatus.isGranted) {
+    try {
+      final status = await Permission.requestInstallPackages.status;
+      if (status.isGranted) {
         await _openDownloadedUpdateApk(savePath);
       } else {
-        debugPrint('Permission to install unknown apps on Android not granted');
+        final newStatus = await Permission.requestInstallPackages.request();
+        if (newStatus.isGranted) {
+          await _openDownloadedUpdateApk(savePath);
+        } else {
+          debugPrint('Permission to install unknown apps on Android not granted');
+        }
       }
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error requesting install APK permission');
+      debugPrint('UpdateService: Error requesting install APK permission: $e');
     }
   }
 
   // Install the APK using open_file
   static Future<void> _openDownloadedUpdateApk(String savePath) async {
-    final result = await OpenFile.open(savePath, type: 'application/vnd.android.package-archive');
-    if (result.type != ResultType.done) {
-      debugPrint('Open APK Failed: ${result.message}');
+    try {
+      final result = await OpenFile.open(savePath, type: 'application/vnd.android.package-archive');
+      if (result.type != ResultType.done) {
+        debugPrint('Open APK Failed: ${result.message}');
+      }
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error opening downloaded APK');
+      debugPrint('UpdateService: Error opening downloaded APK: $e');
     }
   }
 

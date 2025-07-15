@@ -40,6 +40,7 @@ import 'package:form_app/widgets/multi_step_form_appbar.dart';
 import 'package:form_app/widgets/delete_all_tambahan_photos_button.dart';
 import 'package:form_app/services/update_service.dart';
 import 'package:form_app/widgets/app_version_display.dart'; // Import the new widget
+import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // Import Crashlytics
 
 class MultiStepFormScreen extends ConsumerStatefulWidget {
   const MultiStepFormScreen({super.key});
@@ -496,7 +497,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       if (!mounted) return;
       ref.read(pageNavigationProvider.notifier).goToNextPage(); // Go to finished page
 
-    } on dio.DioException catch (e) {
+    } on dio.DioException catch (e, stackTrace) {
       if (!mounted) return;
       // This now catches cancellation from BOTH form submission and image upload
       if (e.toString().contains('cancelled')) {
@@ -509,6 +510,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           duration: const Duration(seconds: 4),
         );
       } else {
+        FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error during form submission'); // Log to Crashlytics
         customMessageOverlay.show(
           context: context, // Pass context here
           message: 'Terjadi kesalahan saat mengirim data: $e',
@@ -517,8 +519,8 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           duration: const Duration(seconds: 5),
         );
       }
-    } catch (e) {
-      if (!mounted) return; // Add mounted check here as well
+    } catch (e, stackTrace) { // Add stackTrace here
+      if (!mounted) return;
       // Fallback for non-Dio cancellations or other general errors
       if (e.toString().contains('cancelled')) {
         debugPrint('Submission process cancelled by user.');
@@ -530,6 +532,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           duration: const Duration(seconds: 4),
         );
       } else {
+        FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'General error during form submission'); // Log to Crashlytics
         customMessageOverlay.show(
           context: context, // Pass context here
           message: 'Terjadi kesalahan saat mengirim data: $e',

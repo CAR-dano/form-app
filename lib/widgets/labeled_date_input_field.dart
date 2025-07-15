@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:form_app/statics/app_styles.dart';
 import 'package:form_app/formatters/date_input_formatter.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class LabeledDateInputField extends StatefulWidget {
   final String label;
@@ -59,7 +60,8 @@ class _LabeledDateInputFieldState extends State<LabeledDateInputField> {
         final year = int.parse(parts[2]);
         return DateTime(year, month, day);
       }
-    } catch (e) {
+    } catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Error parsing date string in LabeledDateInputField');
       // Invalid date format, return null
     }
     return null;
@@ -126,7 +128,8 @@ class _LabeledDateInputFieldState extends State<LabeledDateInputField> {
       if (date.day != day || date.month != month || date.year != year) {
         return 'Tanggal tidak valid';
       }
-    } catch (e) {
+    } catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Error validating date in LabeledDateInputField');
       return 'Format tanggal tidak valid';
     }
 
