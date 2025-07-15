@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:form_app/statics/app_styles.dart'; // Import AppStyles
 
-class PinInputWidget extends StatefulWidget {
+class PinInput extends StatefulWidget {
   final int pinLength;
   final Function(String pin) onPinCompleted;
 
-  const PinInputWidget({
+  const PinInput({
     super.key,
     required this.pinLength,
     required this.onPinCompleted,
   });
 
   @override
-  State<PinInputWidget> createState() => _PinInputWidgetState();
+  State<PinInput> createState() => _PinInputState();
 }
 
-class _PinInputWidgetState extends State<PinInputWidget> {
+class _PinInputState extends State<PinInput> {
   late List<TextEditingController> _pinControllers;
   late List<FocusNode> _pinFocusNodes;
 
