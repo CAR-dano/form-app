@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:form_app/statics/app_styles.dart'; // Import AppStyles
 import 'package:form_app/widgets/labeled_text_field.dart'; // Import LabeledTextField
 
@@ -14,6 +15,9 @@ class _LoginPageState extends State<LoginPage> {
   late List<TextEditingController> _pinControllers;
   late List<FocusNode> _pinFocusNodes;
   final TextEditingController _emailController = TextEditingController();
+
+  // Flag to prevent re-entrant calls when clearing text programmatically
+  bool _isClearingProgrammatically = false;
 
   @override
   void initState() {
@@ -94,48 +98,74 @@ class _LoginPageState extends State<LoginPage> {
               children: List.generate(_pinLength, (index) {
                 bool isFilled = _pinControllers[index].text.isNotEmpty;
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0), // Add horizontal padding
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
                   child: SizedBox(
                     width: 48,
-                    child: TextFormField(
-                      controller: _pinControllers[index],
-                      focusNode: _pinFocusNodes[index],
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                      maxLength: 1,
-                      obscureText: false, // Show the number
-                      style: inputTextStyling.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: isFilled ? Colors.white : Colors.black,
-                      ),
-                      decoration: InputDecoration(
-                        filled: isFilled,
-                        fillColor: borderColor,
-                        counterText: '',
-                        contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-                        isDense: true,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                              color: borderColor,
-                              width: _pinFocusNodes[index].hasFocus
-                                  ? 2.0
-                                  : 1.5),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                              color: borderColor, width: 2.0),
-                        ),
-                      ),
-                      onChanged: (value) {
-                        if (value.isNotEmpty && index < _pinLength - 1) {
-                          _pinFocusNodes[index + 1].requestFocus();
-                        } else if (value.isEmpty && index > 0) {
-                          _pinFocusNodes[index - 1].requestFocus();
+                    // height: 48,
+                    child: KeyboardListener(
+                      focusNode: FocusNode(), // Dummy focus node for the listener
+                      onKeyEvent: (event) {
+                        if (event is KeyDownEvent &&
+                            event.logicalKey ==
+                                LogicalKeyboardKey.backspace) {
+                          if (index > 0 &&
+                              _pinControllers[index].text.isEmpty) {
+                            _isClearingProgrammatically = true;
+                            _pinFocusNodes[index - 1].requestFocus();
+                            _pinControllers[index - 1].clear();
+                            // Reset the flag after the operation
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              _isClearingProgrammatically = false;
+                            });
+                          }
                         }
-                        // _checkPinCompletion();
                       },
+                      child: TextFormField(
+                        controller: _pinControllers[index],
+                        focusNode: _pinFocusNodes[index],
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        maxLength: 1,
+                        obscureText: false,
+                        style: inputTextStyling.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: isFilled ? Colors.white : Colors.black,
+                        ),
+                        decoration: InputDecoration(
+                          filled: isFilled,
+                          fillColor: borderColor,
+                          counterText: '',
+                          contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
+                          isDense: true,
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                                color: borderColor,
+                                width: _pinFocusNodes[index].hasFocus
+                                    ? 2.0
+                                    : 1.5),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                                color: borderColor, width: 2.0),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          if (_isClearingProgrammatically) return;
+                        
+                          if (value.isNotEmpty) {
+                            if (index < _pinLength - 1) {
+                              _pinFocusNodes[index + 1].requestFocus();
+                            }
+                          } else {
+                            if (index > 0) {
+                              _pinFocusNodes[index - 1].requestFocus();
+                            }
+                          }
+                          //_checkPinCompletion();
+                        },
+                      ),
                     ),
                   ),
                 );
@@ -159,8 +189,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Text('Login', style: buttonTextStyle,),
               ),
             ),
-            const SizedBox(
-                height: 24), // Add some space at the bottom of the screen
+            const SizedBox(height: 24),
           ],
         ),
       ),
