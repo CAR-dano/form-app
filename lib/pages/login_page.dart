@@ -107,47 +107,50 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(_pinLength, (index) {
                       bool isFilled = _pinControllers[index].text.isNotEmpty;
-                      return SizedBox(
-                        width: 48,
-                        height: 48,
-                        child: TextFormField(
-                          controller: _pinControllers[index],
-                          focusNode: _pinFocusNodes[index],
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          maxLength: 1,
-                          obscureText: false, // Show the number
-                          style: TextStyle(
-                              fontSize: 24,
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0), // Add horizontal padding
+                        child: SizedBox(
+                          width: 48,
+                          child: TextFormField(
+                            controller: _pinControllers[index],
+                            focusNode: _pinFocusNodes[index],
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            maxLength: 1,
+                            obscureText: false, // Show the number
+                            style: inputTextStyling.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: isFilled ? Colors.white : Colors.black),
-                          decoration: InputDecoration(
-                            filled: isFilled,
-                            fillColor: borderColor,
-                            counterText: '',
-                            contentPadding: EdgeInsets.zero,
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                  color: borderColor,
-                                  width: _pinFocusNodes[index].hasFocus
-                                      ? 2.0
-                                      : 1.5),
+                              color: isFilled ? Colors.white : Colors.black,
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                  color: borderColor, width: 2.0),
+                            decoration: InputDecoration(
+                              filled: isFilled,
+                              fillColor: borderColor,
+                              counterText: '',
+                              contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                              isDense: true,
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                    color: borderColor,
+                                    width: _pinFocusNodes[index].hasFocus
+                                        ? 2.0
+                                        : 1.5),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                    color: borderColor, width: 2.0),
+                              ),
                             ),
+                            onChanged: (value) {
+                              if (value.isNotEmpty && index < _pinLength - 1) {
+                                _pinFocusNodes[index + 1].requestFocus();
+                              } else if (value.isEmpty && index > 0) {
+                                _pinFocusNodes[index - 1].requestFocus();
+                              }
+                              _checkPinCompletion();
+                            },
                           ),
-                          onChanged: (value) {
-                            if (value.isNotEmpty && index < _pinLength - 1) {
-                              _pinFocusNodes[index + 1].requestFocus();
-                            } else if (value.isEmpty && index > 0) {
-                              _pinFocusNodes[index - 1].requestFocus();
-                            }
-                            _checkPinCompletion();
-                          },
                         ),
                       );
                     }),
@@ -166,8 +169,10 @@ class _LoginPageState extends State<LoginPage> {
                   }
                 },
                 style: baseButtonStyle.copyWith(
-                    backgroundColor: WidgetStateProperty.all(buttonColor)),
-                child: const Text('Login'),
+                    backgroundColor: WidgetStateProperty.all(buttonColor),
+                    shadowColor: WidgetStateProperty.all(buttonColor.withAlpha(102)),
+                ),           
+                child: Text('Login', style: buttonTextStyle,),
               ),
             ),
             const SizedBox(
