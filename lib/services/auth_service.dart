@@ -16,6 +16,8 @@ class AuthService {
   }
 
   String get _loginInspectorUrl => '$_baseApiUrl/auth/login/inspector';
+  String get _checkTokenUrl => '$_baseApiUrl/auth/check-token';
+  String get _refreshTokenUrl => '$_baseApiUrl/auth/refresh';
 
   AuthService()
       : _dioInst = dio.Dio(),
@@ -41,8 +43,8 @@ class AuthService {
       final response = await _dioInst.post(
         _loginInspectorUrl,
         data: {
-          "email": email.toString(),
-          "pin": pin.toString(),
+          "email": email,
+          "pin": pin,
         },
       );
 
@@ -89,5 +91,81 @@ class AuthService {
     await _secureStorage.delete(key: 'userName');
     
     debugPrint('User logged out and tokens cleared.');
+  }
+
+  Future<bool> checkTokenValidity() async {
+    try {
+      final accessToken = await getAccessToken();
+      if (accessToken == null) {
+        debugPrint('No access token found.');
+        return false;
+      }
+
+      final response = await _dioInst.get(
+        _checkTokenUrl,
+        options: dio.Options(
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('Token is valid.');
+        return true;
+      } else {
+        debugPrint('Token check failed with status: ${response.statusCode}. Attempting to refresh token.');
+        return await _tryRefreshToken();
+      }
+    } on dio.DioException catch (e) {
+      debugPrint('Token check failed due to DioException: ${e.message}');
+      if (e.response?.statusCode == 401) {
+        debugPrint('Token is unauthorized. Attempting to refresh token.');
+        return await _tryRefreshToken();
+      }
+      return false;
+    } catch (e) {
+      debugPrint('An unexpected error occurred during token check: $e');
+      return false;
+    }
+  }
+
+  Future<bool> _tryRefreshToken() async {
+    try {
+      final refreshToken = await getRefreshToken();
+      if (refreshToken == null) {
+        debugPrint('No refresh token found. Logging out.');
+        await logout();
+        return false;
+      }
+
+      final response = await _dioInst.post(
+        _refreshTokenUrl,
+        data: {
+          'refreshToken': refreshToken,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final AuthResponse authResponse = AuthResponse.fromJson(response.data);
+        await _secureStorage.write(key: 'accessToken', value: authResponse.accessToken);
+        await _secureStorage.write(key: 'refreshToken', value: authResponse.refreshToken);
+        await _secureStorage.write(key: 'userName', value: authResponse.user.name);
+        debugPrint('Token refreshed successfully.');
+        return true;
+      } else {
+        debugPrint('Refresh token failed with status: ${response.statusCode}. Logging out.');
+        await logout();
+        return false;
+      }
+    } on dio.DioException catch (e) {
+      debugPrint('Refresh token failed due to DioException: ${e.message}');
+      await logout();
+      return false;
+    } catch (e) {
+      debugPrint('An unexpected error occurred during refresh token: $e');
+      await logout();
+      return false;
+    }
   }
 }
