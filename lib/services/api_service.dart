@@ -33,9 +33,8 @@ class ApiService {
   String get _inspectionBranchesUrl => '$_baseApiUrl/inspection-branches';
   String get _inspectorsUrl => '$_baseApiUrl/public/users/inspectors';
 
-  ApiService()
-      : _dioInst = dio.Dio(),
-        _authService = AuthService() { // Initialize AuthService
+  ApiService(this._authService)
+      : _dioInst = dio.Dio() {
     _dioInst.interceptors.add(
       dio.LogInterceptor(
         requestHeader: true,

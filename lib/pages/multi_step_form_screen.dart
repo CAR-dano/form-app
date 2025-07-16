@@ -28,7 +28,7 @@ import 'package:form_app/pages/ketebalan_cat_page.dart';
 import 'package:form_app/pages/finalisasi_page.dart';
 import 'package:form_app/pages/finished.dart';
 import 'package:form_app/providers/form_provider.dart';
-import 'package:form_app/services/api_service.dart';
+import 'package:form_app/providers/api_service_provider.dart';
 import 'package:form_app/providers/image_data_provider.dart';
 import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/page_navigation_provider.dart';
@@ -367,7 +367,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     try {
       String? inspectionId;
       final formDataToSubmit = ref.read(formProvider);
-      final apiService = ApiService();
+      final apiService = ref.read(apiServiceProvider);
 
       final bool isFormDataUnchanged = submissionDataCache.lastSubmittedFormData != null &&
           formDataToSubmit == submissionDataCache.lastSubmittedFormData;
