@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart' as dio show Dio, FormData, MultipartFile, LogInterceptor, DioException, CancelToken; // Consolidated dio imports
+import 'package:dio/dio.dart' as dio show Dio, FormData, MultipartFile, LogInterceptor, DioException, CancelToken, InterceptorsWrapper; // Consolidated dio imports
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:form_app/models/form_data.dart';
@@ -9,9 +9,10 @@ import 'package:form_app/models/inspection_branch.dart';
 import 'package:form_app/models/inspector_data.dart';
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:mime/mime.dart';
-import 'package:form_app/utils/calculation_utils.dart'; // Import the new utility
-import 'package:form_app/models/uploadable_image.dart'; // Import the UploadableImage model
-import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // Import Crashlytics
+import 'package:form_app/utils/calculation_utils.dart';
+import 'package:form_app/models/uploadable_image.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:form_app/services/auth_service.dart'; // Import AuthService
 
 // Typedef for the progress callback
 typedef ImageUploadProgressCallback = void Function(int currentBatch, int totalBatches);
@@ -19,6 +20,7 @@ typedef ImageBatchUploadedCallback = void Function(List<String> uploadedPaths); 
 
 class ApiService {
   final dio.Dio _dioInst;
+  final AuthService _authService; // Add AuthService instance
 
   String get _baseApiUrl {
     if (kDebugMode) {
@@ -31,7 +33,9 @@ class ApiService {
   String get _inspectionBranchesUrl => '$_baseApiUrl/inspection-branches';
   String get _inspectorsUrl => '$_baseApiUrl/public/users/inspectors';
 
-  ApiService() : _dioInst = dio.Dio() {
+  ApiService()
+      : _dioInst = dio.Dio(),
+        _authService = AuthService() { // Initialize AuthService
     _dioInst.interceptors.add(
       dio.LogInterceptor(
         requestHeader: true,
@@ -41,8 +45,39 @@ class ApiService {
         error: true,
         logPrint: (object) {
           if (kDebugMode) {
-            print("DIO_LOG: ${object.toString()}");
+            print("DIO_LOG (ApiService): ${object.toString()}");
           }
+        },
+      ),
+    );
+
+    _dioInst.interceptors.add(
+      dio.InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final accessToken = await _authService.getAccessToken();
+          if (accessToken != null) {
+            options.headers['Authorization'] = 'Bearer $accessToken';
+          }
+          return handler.next(options);
+        },
+        onError: (dio.DioException error, handler) async {
+          if (error.response?.statusCode == 401) {
+            // If a 401 response is received, try to refresh the token
+            final isRefreshed = await _authService.checkTokenValidity();
+            if (isRefreshed) {
+              // If token is refreshed, retry the original request
+              final newAccessToken = await _authService.getAccessToken();
+              if (newAccessToken != null) {
+                error.requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
+                // Retry the request with the new token
+                return handler.resolve(await _dioInst.fetch(error.requestOptions));
+              }
+            }
+            // If token refresh fails or no new token, logout the user
+            await _authService.logout();
+            // Optionally, navigate to login page or show error
+          }
+          return handler.next(error);
         },
       ),
     );

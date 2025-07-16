@@ -107,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                         setState(() {
                           _currentPin = pin;
                         });
-                        _verifyPin(pin);
+                        // _verifyPin(pin);
                       },
                     ),
                     const SizedBox(height: 32),
