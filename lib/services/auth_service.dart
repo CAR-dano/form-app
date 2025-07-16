@@ -87,8 +87,7 @@ class AuthService {
     await _secureStorage.delete(key: 'accessToken');
     await _secureStorage.delete(key: 'refreshToken');
     await _secureStorage.delete(key: 'userName');
-    if (kDebugMode) {
-      print('User logged out and tokens cleared.');
-    }
+    
+    debugPrint('User logged out and tokens cleared.');
   }
 }
