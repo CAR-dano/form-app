@@ -22,23 +22,10 @@ class DataKendaraanPage extends ConsumerStatefulWidget {
 }
 
 class _DataKendaraanPageState extends ConsumerState<DataKendaraanPage> with AutomaticKeepAliveClientMixin {
-  late FocusScopeNode _focusScopeNode;
   bool _hasValidatedOnSubmit = false; // Declare the state variable
 
   @override
   bool get wantKeepAlive => true;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusScopeNode = FocusScopeNode();
-  }
-
-  @override
-  void dispose() {
-    _focusScopeNode.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,104 +34,87 @@ class _DataKendaraanPageState extends ConsumerState<DataKendaraanPage> with Auto
     final formNotifier = ref.read(formProvider.notifier); // Read the notifier
 
     // Return the core content Column directly. Scaffold/SafeArea are in CommonLayout.
-    return PopScope(
-      // Wrap with PopScope
-      onPopInvokedWithResult: (bool didPop, dynamic result) {
-        if (didPop) {
-          _focusScopeNode.unfocus(); // Unfocus when navigating back
-        }
-      },
-      child: FocusScope(
-        node: _focusScopeNode,
-        child: ValueListenableBuilder<bool>( // Add ValueListenableBuilder here
-          valueListenable: widget.formSubmitted,
-          builder: (context, isFormSubmitted, child) {
-            if (isFormSubmitted && !_hasValidatedOnSubmit) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) {
-                  widget.formKey.currentState?.validate();
-                  setState(() {
-                    _hasValidatedOnSubmit = true;
-                  });
-                }
+    return ValueListenableBuilder<bool>( // Add ValueListenableBuilder here
+      valueListenable: widget.formSubmitted,
+      builder: (context, isFormSubmitted, child) {
+        if (isFormSubmitted && !_hasValidatedOnSubmit) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              widget.formKey.currentState?.validate();
+              setState(() {
+                _hasValidatedOnSubmit = true;
               });
             }
-            return Form(
-              key: widget.formKey, // Use the passed formKey
-              child: child!, // Pass the original child
-            );
-          },
-          child: GestureDetector(
-            // Wrap with GestureDetector
-            onTap: () {
-              _focusScopeNode.unfocus(); // Unfocus on tap outside text fields
-            },
-          child: CustomScrollView(
-            key: const PageStorageKey<String>('pageTwoScrollKey'),
-            slivers: [
-              const SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    PageTitle(data: 'Data Kendaraan'), // Updated Title
-                    SizedBox(height: 6.0),
-                  ],
-                ),
-              ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final fieldData = _buildInputFields(formData, formNotifier)[index];
-                    if (fieldData['isDateField'] == true) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: LabeledDateInputField(
-                          label: fieldData['label'],
-                          hintText: fieldData['hintText'],
-                          onChanged: fieldData['onChanged'],
-                          validator: fieldData['validator'],
-                          initialValue: fieldData['initialValue'] != null
-                              ? '${(fieldData['initialValue'] as DateTime).day.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).month.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).year}'
-                              : null,
-                          formSubmitted: widget.formSubmitted.value, // Pass the boolean value
-                        ),
-                      );
-                    } else {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: LabeledTextField(
-                          label: fieldData['label'],
-                          hintText: fieldData['hintText'],
-                          keyboardType: fieldData['keyboardType'],
-                          onChanged: fieldData['onChanged'],
-                          validator: fieldData['validator'],
-                          initialValue: fieldData['initialValue'],
-                          formSubmitted: widget.formSubmitted.value,
-                          useThousandsSeparator: fieldData['useThousandsSeparator'] ?? true,
-                          suffixText: fieldData['suffixText'],
-                        ),
-                      );
-                    }
-                  },
-                  childCount: _buildInputFields(formData, formNotifier).length,
-                ),
-              ),
-              const SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    SizedBox(height: 32.0), // Spacing before buttons
-                    SizedBox(height: 24.0),
-                    Footer(),
-                  ],
-                ),
-              ),
-              SliverPadding(
-                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom + 90),
-              ),
-            ],
+          });
+        }
+        return Form(
+          key: widget.formKey, // Use the passed formKey
+          child: child!, // Pass the original child
+        );
+      },
+      child: CustomScrollView(
+        key: const PageStorageKey<String>('pageTwoScrollKey'),
+        slivers: [
+          const SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                PageTitle(data: 'Data Kendaraan'), // Updated Title
+                SizedBox(height: 6.0),
+              ],
+            ),
           ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final fieldData = _buildInputFields(formData, formNotifier)[index];
+                if (fieldData['isDateField'] == true) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: LabeledDateInputField(
+                      label: fieldData['label'],
+                      hintText: fieldData['hintText'],
+                      onChanged: fieldData['onChanged'],
+                      validator: fieldData['validator'],
+                      initialValue: fieldData['initialValue'] != null
+                          ? '${(fieldData['initialValue'] as DateTime).day.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).month.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).year}'
+                          : null,
+                      formSubmitted: widget.formSubmitted.value, // Pass the boolean value
+                    ),
+                  );
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: LabeledTextField(
+                      label: fieldData['label'],
+                      hintText: fieldData['hintText'],
+                      keyboardType: fieldData['keyboardType'],
+                      onChanged: fieldData['onChanged'],
+                      validator: fieldData['validator'],
+                      initialValue: fieldData['initialValue'],
+                      formSubmitted: widget.formSubmitted.value,
+                      useThousandsSeparator: fieldData['useThousandsSeparator'] ?? true,
+                      suffixText: fieldData['suffixText'],
+                    ),
+                  );
+                }
+              },
+              childCount: _buildInputFields(formData, formNotifier).length,
+            ),
           ),
-        ),
+          const SliverToBoxAdapter(
+            child: Column(
+              children: [
+                SizedBox(height: 32.0), // Spacing before buttons
+                SizedBox(height: 24.0),
+                Footer(),
+              ],
+            ),
+          ),
+          SliverPadding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom + 90),
+          ),
+        ],
       ),
     );
   }

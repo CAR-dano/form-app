@@ -19,19 +19,6 @@ class FotoInteriorTambahanPage extends ConsumerStatefulWidget {
 
 class _FotoInteriorTambahanPage extends ConsumerState<FotoInteriorTambahanPage> 
     with AutomaticKeepAliveClientMixin {
-  late FocusScopeNode _focusScopeNode;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusScopeNode = FocusScopeNode();
-  }
-
-  @override
-  void dispose() {
-    _focusScopeNode.dispose();
-    super.dispose();
-  }
 
   @override
   bool get wantKeepAlive => true;
@@ -41,35 +28,25 @@ class _FotoInteriorTambahanPage extends ConsumerState<FotoInteriorTambahanPage>
     super.build(context);
     const String pageIdentifier = 'Interior Tambahan'; // Define identifier
 
-    return PopScope(
-      onPopInvokedWithResult: (bool didPop, dynamic result) {
-        if (didPop) {
-          _focusScopeNode.unfocus();
-        }
-      },
-      child: FocusScope(
-        node: _focusScopeNode,
-        child: SingleChildScrollView(
-          clipBehavior: Clip.none,
-          key: const PageStorageKey<String>('pageSixInteriorTambahanScrollKey'),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 4),
-              const PageTitle(data: 'Foto Interior'),
-              const SizedBox(height: 6.0),
-              const HeadingOne(text: 'Tambahan'),
-              const SizedBox(height: 16.0),
-              TambahanImageSelection(
-                identifier: pageIdentifier, // Use the defined identifier
-                formSubmitted: widget.formSubmitted,
-              ),
-              const SizedBox(height: 32.0),
-              const SizedBox(height: 24.0),
-              const Footer(),
-            ],
+    return SingleChildScrollView(
+      clipBehavior: Clip.none,
+      key: const PageStorageKey<String>('pageSixInteriorTambahanScrollKey'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 4),
+          const PageTitle(data: 'Foto Interior'),
+          const SizedBox(height: 6.0),
+          const HeadingOne(text: 'Tambahan'),
+          const SizedBox(height: 16.0),
+          TambahanImageSelection(
+            identifier: pageIdentifier, // Use the defined identifier
+            formSubmitted: widget.formSubmitted,
           ),
-        ),
+          const SizedBox(height: 32.0),
+          const SizedBox(height: 24.0),
+          const Footer(),
+        ],
       ),
     );
   }

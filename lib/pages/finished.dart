@@ -17,13 +17,10 @@ class FinishedPage extends ConsumerStatefulWidget {
   ConsumerState<FinishedPage> createState() => _FinishedPageState();
 }
 
-class _FinishedPageState extends ConsumerState<FinishedPage> with AutomaticKeepAliveClientMixin { // Add mixin
-  @override
-  bool get wantKeepAlive => true; // Override wantKeepAlive
+class _FinishedPageState extends ConsumerState<FinishedPage> { // Add mixin
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Call super.build(context) for AutomaticKeepAliveClientMixin
     return Column(
       children: [
         Expanded(
