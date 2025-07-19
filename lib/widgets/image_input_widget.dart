@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:form_app/statics/app_styles.dart';
 import 'dart:io';
-// For kDebugMode
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/image_data_provider.dart';
@@ -182,12 +181,54 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
     );
   }
 
-  void _deleteImageConfirmed() {
+  Future<void> _deleteImageConfirmed() async {
     if (!mounted) return;
+
+    final imageData = ref.read(imageDataListProvider).firstWhere(
+          (img) => img.label == widget.label,
+          orElse: () => ImageData(
+            label: widget.label,
+            imagePath: '',
+            needAttention: false,
+            category: '',
+            isMandatory: true,
+          ),
+        );
+
+    final pathToDelete = imageData.imagePath;
+
     widget.onImagePicked?.call(null);
     ref
         .read(imageDataListProvider.notifier)
-        .updateImageDataByLabel(widget.label, imagePath: '', rotationAngle: 0); // Reset rotation on delete
+        .updateImageDataByLabel(widget.label, imagePath: '', rotationAngle: 0);
+
+    // Now, delete the file
+    if (pathToDelete.isNotEmpty) {
+      try {
+        final fileToDelete = File(pathToDelete);
+        if (await fileToDelete.exists()) {
+          await fileToDelete.delete();
+        }
+        if (mounted) {
+          ref.read(customMessageOverlayProvider).show(
+                context: context,
+                message: 'Gambar berhasil dihapus',
+                color: Colors.green,
+                icon: Icons.check_circle,
+              );
+        }
+      } catch (e, stackTrace) {
+        FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error deleting image file from ImageInputWidget');
+        if (mounted) {
+          ref.read(customMessageOverlayProvider).show(
+            context: context,
+            message: 'Gagal menghapus file gambar',
+            color: Colors.red,
+            icon: Icons.error,
+          );
+        }
+      }
+    }
   }
 
   @override

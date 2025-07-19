@@ -284,19 +284,21 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     }
   }
 
-  void _deleteCurrentImageConfirmed() {
+  void _deleteCurrentImageConfirmed() async {
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
     if (images.isNotEmpty && _currentIndex < images.length) {
-      ref.read(tambahanImageDataProvider(widget.identifier).notifier).removeImageAtIndex(_currentIndex);
-      setState(() {
-        final newLength = images.length - 1;
-        if (newLength == 0) {
-          _currentIndex = 0;
-        } else if (_currentIndex >= newLength) {
-          _currentIndex = newLength -1;
-        }
-        _updateControllersForCurrentIndex();
-      });
+      await ref.read(tambahanImageDataProvider(widget.identifier).notifier).removeImageAtIndex(_currentIndex);
+      if (mounted) {
+        setState(() {
+          final newLength = ref.read(tambahanImageDataProvider(widget.identifier)).length;
+          if (newLength == 0) {
+            _currentIndex = 0;
+          } else if (_currentIndex >= newLength) {
+            _currentIndex = newLength - 1;
+          }
+          _updateControllersForCurrentIndex();
+        });
+      }
     }
   }
 

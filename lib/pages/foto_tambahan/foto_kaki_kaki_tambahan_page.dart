@@ -19,19 +19,6 @@ class FotoKakiKakiTambahanPage extends ConsumerStatefulWidget {
 
 class _FotoKakiKakiTambahanPageState extends ConsumerState<FotoKakiKakiTambahanPage> 
     with AutomaticKeepAliveClientMixin {
-  late FocusScopeNode _focusScopeNode;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusScopeNode = FocusScopeNode();
-  }
-
-  @override
-  void dispose() {
-    _focusScopeNode.dispose();
-    super.dispose();
-  }
 
   @override
   bool get wantKeepAlive => true;
@@ -41,34 +28,24 @@ class _FotoKakiKakiTambahanPageState extends ConsumerState<FotoKakiKakiTambahanP
     super.build(context);
     const String pageIdentifier = 'Kaki-kaki Tambahan'; // Define identifier
 
-    return PopScope(
-      onPopInvokedWithResult: (bool didPop, dynamic result) {
-        if (didPop) {
-          _focusScopeNode.unfocus();
-        }
-      },
-      child: FocusScope(
-        node: _focusScopeNode,
-        child: SingleChildScrollView(
-          clipBehavior: Clip.none,
-          key: const PageStorageKey<String>('pageSixKakiKakiTambahanScrollKey'),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const PageTitle(data: 'Foto Kaki-kaki'),
-              const SizedBox(height: 6.0),
-              const HeadingOne(text: 'Tambahan'),
-              const SizedBox(height: 16.0),
-              TambahanImageSelection(
-                identifier: pageIdentifier, // Use the defined identifier
-                formSubmitted: widget.formSubmitted,
-              ),
-              const SizedBox(height: 32.0),
-              const SizedBox(height: 24.0),
-              const Footer(),
-            ],
+    return SingleChildScrollView(
+      clipBehavior: Clip.none,
+      key: const PageStorageKey<String>('pageSixKakiKakiTambahanScrollKey'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const PageTitle(data: 'Foto Kaki-kaki'),
+          const SizedBox(height: 6.0),
+          const HeadingOne(text: 'Tambahan'),
+          const SizedBox(height: 16.0),
+          TambahanImageSelection(
+            identifier: pageIdentifier, // Use the defined identifier
+            formSubmitted: widget.formSubmitted,
           ),
-        ),
+          const SizedBox(height: 32.0),
+          const SizedBox(height: 24.0),
+          const Footer(),
+        ],
       ),
     );
   }

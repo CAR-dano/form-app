@@ -18,22 +18,9 @@ class PenilaianMesinPage extends ConsumerStatefulWidget {
 }
 
 class _PenilaianMesinPage extends ConsumerState<PenilaianMesinPage> with AutomaticKeepAliveClientMixin {
-  late FocusScopeNode _focusScopeNode;
 
   @override
   bool get wantKeepAlive => true;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusScopeNode = FocusScopeNode();
-  }
-
-  @override
-  void dispose() {
-    _focusScopeNode.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,73 +29,58 @@ class _PenilaianMesinPage extends ConsumerState<PenilaianMesinPage> with Automat
     final formNotifier = ref.read(formProvider.notifier);
     final List<Map<String, dynamic>> listData = _buildToggleableNumberedButtonLists(formData, formNotifier);
 
-    return PopScope(
-      onPopInvokedWithResult: (bool didPop, dynamic result) {
-        if (didPop) {
-          _focusScopeNode.unfocus();
-        }
-      },
-      child: FocusScope(
-        node: _focusScopeNode,
-        child: GestureDetector(
-          onTap: () {
-            _focusScopeNode.unfocus();
-          },
-          child: CustomScrollView(
-            key: const PageStorageKey<String>('pageFiveTwoScrollKey'),
-            slivers: [
-              const SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    PageTitle(data: 'Penilaian (2)'),
-                    SizedBox(height: 6.0),
-                    HeadingOne(text: 'Hasil Inspeksi Mesin'),
-                    SizedBox(height: 16.0),
-                  ],
-                ),
-              ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final itemData = listData[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: ToggleableNumberedButtonList(
-                        label: itemData['label'],
-                        count: 10,
-                        selectedValue: itemData['selectedValue'] ?? -1,
-                        onItemSelected: itemData['onItemSelected'],
-                      ),
-                    );
-                  },
-                  childCount: listData.length,
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    ExpandableTextField(
-                      label: 'Catatan',
-                      hintText: 'Masukkan catatan di sini',
-                      initialLines: formData.mesinCatatanList,
-                      onChangedList: (lines) {
-                        formNotifier.updateMesinCatatanList(lines);
-                      },
-                    ),
-                    const SizedBox(height: 32.0),
-                    const SizedBox(height: 24.0),
-                    const Footer(),
-                  ],
-                ),
-              ),
-              SliverPadding(
-                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom + 90),
-              ),
+    return CustomScrollView(
+      key: const PageStorageKey<String>('pageFiveTwoScrollKey'),
+      slivers: [
+        const SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              PageTitle(data: 'Penilaian (2)'),
+              SizedBox(height: 6.0),
+              HeadingOne(text: 'Hasil Inspeksi Mesin'),
+              SizedBox(height: 16.0),
             ],
           ),
         ),
-      ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              final itemData = listData[index];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: ToggleableNumberedButtonList(
+                  label: itemData['label'],
+                  count: 10,
+                  selectedValue: itemData['selectedValue'] ?? -1,
+                  onItemSelected: itemData['onItemSelected'],
+                ),
+              );
+            },
+            childCount: listData.length,
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Column(
+            children: [
+              ExpandableTextField(
+                label: 'Catatan',
+                hintText: 'Masukkan catatan di sini',
+                initialLines: formData.mesinCatatanList,
+                onChangedList: (lines) {
+                  formNotifier.updateMesinCatatanList(lines);
+                },
+              ),
+              const SizedBox(height: 32.0),
+              const SizedBox(height: 24.0),
+              const Footer(),
+            ],
+          ),
+        ),
+        SliverPadding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom + 90),
+        ),
+      ],
     );
   }
 

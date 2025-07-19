@@ -35,12 +35,22 @@ class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData
 
   Future<void> _loadData() async {
     try {
-      // Correctly await the getter '_file'
       final file = await _file;
       if (await file.exists()) {
         final jsonString = await file.readAsString();
         final List<dynamic> jsonList = json.decode(jsonString);
-        state = jsonList.map((jsonItem) => TambahanImageData.fromJson(jsonItem)).toList();
+        final loadedState = jsonList.map((jsonItem) => TambahanImageData.fromJson(jsonItem)).toList();
+
+        // Migration logic: Check for old cache paths
+        if (loadedState.any((img) => img.imagePath.contains('/cache/'))) {
+          if (kDebugMode) {
+            print("Old cache paths detected in $identifier. Clearing for a fresh start.");
+          }
+          // Clear the invalid state to prevent errors.
+          await clearAll();
+        } else {
+          state = loadedState;
+        }
       }
     } catch (e, stackTrace) {
       FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error loading TambahanImageData for $identifier from file');
@@ -79,19 +89,28 @@ class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData
     }
   }
 
-  void removeImageAtIndex(int index) {
+  Future<void> removeImageAtIndex(int index) async {
     if (index >= 0 && index < state.length) {
+      final imagePath = state[index].imagePath;
+
       final updatedList = List<TambahanImageData>.from(state);
       updatedList.removeAt(index);
       state = updatedList;
-      _saveData();
+      await _saveData();
+
+      // Delete the associated file
+      await _deleteFile(imagePath);
     }
   }
 
   Future<void> clearAll() async {
+    // Get all paths before clearing the state
+    final pathsToDelete = state.map((img) => img.imagePath).toList();
+    
     state = [];
+    
+    // Delete the JSON file
     try {
-      // Correctly await the getter '_file'
       final file = await _file;
       if (await file.exists()) {
         await file.delete();
@@ -100,6 +119,28 @@ class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData
       FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error deleting TambahanImageData file for $identifier');
       if (kDebugMode) {
         print("Error deleting TambahanImageData file for $identifier: $e");
+      }
+    }
+
+    // Delete all associated image files
+    for (final path in pathsToDelete) {
+      await _deleteFile(path);
+    }
+  }
+
+  Future<void> _deleteFile(String path) async {
+    try {
+      final file = File(path);
+      if (await file.exists()) {
+        await file.delete();
+        if (kDebugMode) {
+          print("Deleted image file: $path");
+        }
+      }
+    } catch (e, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error deleting image file');
+      if (kDebugMode) {
+        print("Error deleting file $path: $e");
       }
     }
   }

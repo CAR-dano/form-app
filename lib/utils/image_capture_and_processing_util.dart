@@ -69,14 +69,18 @@ class ImageCaptureAndProcessingUtil {
 
   // THE KEY CHANGE IS HERE: We remove the 'compute' wrapper.
   static Future<String?> processAndSaveImage(XFile pickedFile, {int rotationAngle = 0}) async {
-    final directory = await getTemporaryDirectory();
+    final directory = await getApplicationDocumentsDirectory();
+    final imageDir = Directory('${directory.path}/tambahan_images');
+    if (!await imageDir.exists()) {
+      await imageDir.create(recursive: true);
+    }
     
     // Instead of spawning an isolate with compute, we call our helper function directly.
     // The 'await' ensures it completes before moving on, but because it's in a Future,
     // it doesn't block the UI event loop.
     return await _performCompression(
       pickedFilePath: pickedFile.path,
-      tempPath: directory.path,
+      tempPath: imageDir.path,
       rotationAngle: rotationAngle,
     );
   }
@@ -151,8 +155,12 @@ class ImageCaptureAndProcessingUtil {
     }
 
     try {
-      final tempDir = await getTemporaryDirectory();
-      final targetPath = '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}_rotated.jpg';
+      final appDocDir = await getApplicationDocumentsDirectory();
+      final imageDir = Directory('${appDocDir.path}/tambahan_images');
+      if (!await imageDir.exists()) {
+        await imageDir.create(recursive: true);
+      }
+      final targetPath = '${imageDir.path}/${DateTime.now().millisecondsSinceEpoch}_rotated.jpg';
 
       // Call compression with 100% quality to perform a lossless rotation.
       final result = await FlutterImageCompress.compressAndGetFile(

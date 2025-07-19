@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_step_provider.dart';
 
@@ -7,13 +7,15 @@ class PageNavigationController extends StateNotifier<PageController> {
 
   PageNavigationController(this._ref) : super(PageController(initialPage: _ref.read(formStepProvider))) {
     _ref.listen<int>(formStepProvider, (previous, next) {
-      if (state.hasClients && state.page?.round() != next) {
-        state.animateToPage(
-          next,
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeInOut,
-        );
-      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (state.hasClients && state.page?.round() != next) {
+          state.animateToPage(
+            next,
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeInOut,
+          );
+        }
+      });
     });
   }
 
