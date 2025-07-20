@@ -1,3 +1,4 @@
+import 'package:form_app/utils/focus_navigator_observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/pages/multi_step_form_screen.dart'; // Import MultiStepFormScreen
@@ -84,6 +85,7 @@ class _FormAppState extends ConsumerState<FormApp> {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
+      navigatorObservers: [FocusNavigatorObserver()],
       home: const MultiStepFormScreen(), // Set MultiStepFormScreen as home
     );
   }
