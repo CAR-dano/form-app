@@ -292,24 +292,24 @@ class ApiService {
             },
           },
           "bodyPaintThickness": {
-            "front": formData.catDepanKap ?? '-',
+            "front": formData.catDepanKap ?? '0',
             "rear": {
-              "trunk": formData.catBelakangTrunk ?? '-',
-              "bumper": formData.catBelakangBumper ?? '-'
+              "trunk": formData.catBelakangTrunk ?? '0',
+              "bumper": formData.catBelakangBumper ?? '0'
             },
             "right": {
-              "frontFender": formData.catKananFenderDepan ?? '-',
-              "frontDoor": formData.catKananPintuDepan ?? '-',
-              "rearDoor": formData.catKananPintuBelakang ?? '-',
-              "rearFender": formData.catKananFenderBelakang ?? '-',
-              "sideSkirt": formData.catKananSideSkirt ?? '-',
+              "frontFender": formData.catKananFenderDepan ?? '0',
+              "frontDoor": formData.catKananPintuDepan ?? '0',
+              "rearDoor": formData.catKananPintuBelakang ?? '0',
+              "rearFender": formData.catKananFenderBelakang ?? '0',
+              "sideSkirt": formData.catKananSideSkirt ?? '0',
             },
             "left" : {
-              "frontFender": formData.catKiriFenderDepan ?? '-',
-              "frontDoor": formData.catKiriPintuDepan ?? '-',
-              "rearDoor": formData.catKiriPintuBelakang ?? '-',
-              "rearFender": formData.catKiriFenderBelakang ?? '-',
-              "sideSkirt": formData.catKiriSideSkirt ?? '-',
+              "frontFender": formData.catKiriFenderDepan ?? '0',
+              "frontDoor": formData.catKiriPintuDepan ?? '0',
+              "rearDoor": formData.catKiriPintuBelakang ?? '0',
+              "rearFender": formData.catKiriFenderBelakang ?? '0',
+              "sideSkirt": formData.catKiriSideSkirt ?? '0',
             },
           },
         },
