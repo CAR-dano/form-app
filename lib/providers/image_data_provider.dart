@@ -36,8 +36,19 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
         final jsonString = await file.readAsString();
         if (jsonString.isNotEmpty) {
           final List<dynamic> jsonList = json.decode(jsonString);
-          // Use super.state to avoid triggering _saveData during initial load
-          super.state = jsonList.map((json) => ImageData.fromJson(json)).toList();
+          final loadedState = jsonList.map((json) => ImageData.fromJson(json)).toList();
+
+          // Migration logic: Check for old cache paths and clear if found
+          if (loadedState.any((img) => img.imagePath.contains('/cache/'))) {
+            if (kDebugMode) {
+              print("Old cache paths detected in wajib_image_data_list. Clearing for a fresh start.");
+            }
+            // This will clear the state and delete the invalid JSON file.
+            // The old image files in cache will be cleared by the OS eventually.
+            await clearImageData();
+          } else {
+            super.state = loadedState;
+          }
         } else {
           super.state = [];
         }
@@ -114,12 +125,20 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
     // The 'state' setter handles saving
   }
 
-  Future<void> clearImageData() async { // Made async
+  Future<void> clearImageData() async {
+    // Get all paths before clearing the state
+    final pathsToDelete = state
+        .map((img) => img.imagePath)
+        .where((path) => path.isNotEmpty)
+        .toList();
+
     state = []; // Clear in-memory state
+
+    // Delete the JSON database file
     try {
       final file = await _file;
       if (await file.exists()) {
-        await file.delete(); // Delete the persisted file
+        await file.delete();
       }
     } catch (e, stackTrace) {
       FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error deleting ImageDataList file');
@@ -127,6 +146,18 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
         print("Error deleting ImageDataList file: $e");
       }
     }
-    // No need to call _saveImageDataList as we are clearing.
+
+    // Delete all associated image files
+    for (final path in pathsToDelete) {
+      try {
+        final fileToDelete = File(path);
+        if (await fileToDelete.exists()) {
+          await fileToDelete.delete();
+        }
+      } catch (e, stackTrace) {
+        FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error deleting image file during clear');
+        // Continue trying to delete other files
+      }
+    }
   }
 }

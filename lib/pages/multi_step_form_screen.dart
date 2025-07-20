@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart' as dio;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_step_provider.dart';
@@ -154,7 +155,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         },
         isChecked: _isChecked,
       ),
-      const FinishedPage(key: ValueKey('FinishedPage')),
     ];
   }
 
@@ -162,64 +162,58 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   Widget build(BuildContext context) {
     final pageController = ref.watch(pageNavigationProvider);
     final currentPageIndex = ref.watch(formStepProvider);
-    ScrollPhysics pageViewPhysics;
-    if (currentPageIndex >= _formPages.length - 2) {
-      pageViewPhysics = const NeverScrollableScrollPhysics();
-    } else {
-      pageViewPhysics = const PageScrollPhysics();
-    }
-
     final submissionStatus = ref.watch(submissionStatusProvider);
+
+    // The last page is now the finalization page, which should not be scrollable.
+    final isLastPage = currentPageIndex == _formPages.length - 1;
+    final pageViewPhysics = isLastPage
+        ? const NeverScrollableScrollPhysics()
+        : const PageScrollPhysics();
+
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
       extendBody: true,
-      appBar: currentPageIndex < _formPages.length - 1
-          ? MultiStepFormAppBar(
-              currentPage: currentPageIndex + 1,
-              totalPages: _formPages.length - 1, // Exclude FinishedPage from total
-              trailingWidget: _buildTrailingWidget(currentPageIndex),
-            )
-          : null,
+      appBar: MultiStepFormAppBar(
+        currentPage: currentPageIndex + 1,
+        totalPages: _formPages.length, // Total pages is now the exact length
+        trailingWidget: _buildTrailingWidget(currentPageIndex),
+      ),
       body: PageView(
         controller: pageController,
         physics: pageViewPhysics,
         onPageChanged: (int page) {
-          final currentActualStep = ref.read(formStepProvider);
-          if (currentActualStep == _formPages.length - 2 && page == _formPages.length - 1) {
-            pageController.jumpToPage(currentActualStep);
-          } else {
-            if (currentActualStep != page) {
-              ref.read(formStepProvider.notifier).state = page;
-            }
+          // This logic prevents swiping past the last page, but since the navbar
+          // button is what triggers submission, we can simplify.
+          // We just need to update the current step.
+          if (ref.read(formStepProvider) != page) {
+            ref.read(formStepProvider.notifier).state = page;
           }
         },
         children: _formPages.map((pageContent) {
           return CommonLayout(child: pageContent);
         }).toList(),
       ),
-      bottomNavigationBar: currentPageIndex < _formPages.length - 1
-          ? MultiStepFormNavbar(
-              currentPageIndex: currentPageIndex,
-              formPagesLength: _formPages.length,
-              onNextPressed: () {
-                if (currentPageIndex == _formPages.length - 2) {
-                  _submitForm();
-                } else {
-                  FocusScope.of(context).unfocus();
-                  ref.read(pageNavigationProvider.notifier).goToNextPage();
-                }
+      bottomNavigationBar: MultiStepFormNavbar(
+        currentPageIndex: currentPageIndex,
+        formPagesLength: _formPages.length,
+        onNextPressed: () {
+          if (isLastPage) {
+            _submitForm();
+          } else {
+            FocusScope.of(context).unfocus();
+            ref.read(pageNavigationProvider.notifier).goToNextPage();
+          }
+        },
+        onBackPressed: isLastPage && submissionStatus.isLoading
+            ? _cancelSubmission
+            : () {
+                FocusScope.of(context).unfocus();
+                ref.read(pageNavigationProvider.notifier).goToPreviousPage();
               },
-              onBackPressed: currentPageIndex == _formPages.length - 2 && submissionStatus.isLoading
-                  ? _cancelSubmission
-                  : () {
-                      FocusScope.of(context).unfocus();
-                      ref.read(pageNavigationProvider.notifier).goToPreviousPage();
-                    },
-              isLoading: submissionStatus.isLoading,
-              isChecked: _isChecked,
-            )
-          : null,
+        isLoading: submissionStatus.isLoading,
+        isChecked: _isChecked,
+      ),
     );
   }
 
@@ -495,7 +489,16 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       submissionDataCacheNotifier.clearCache(); // Clear cache on full success
 
       if (!mounted) return;
-      ref.read(pageNavigationProvider.notifier).goToNextPage(); // Go to finished page
+
+      // Add a delay before navigating to the finished page
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        CupertinoPageRoute(builder: (context) => const FinishedPage()),
+        (Route<dynamic> route) => false,
+      );
 
     } on dio.DioException catch (e, stackTrace) {
       if (!mounted) return;
