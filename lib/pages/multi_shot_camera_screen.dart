@@ -78,7 +78,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         accelerometerEventStream(samplingPeriod: SensorInterval.uiInterval)
             .listen((AccelerometerEvent event) {
       if (kDebugMode) {
-        print('Accelerometer event: x=${event.x.toStringAsFixed(2)}, y=${event.y.toStringAsFixed(2)}, z=${event.z.toStringAsFixed(2)}');
+        //print('Accelerometer event: x=${event.x.toStringAsFixed(2)}, y=${event.y.toStringAsFixed(2)}, z=${event.z.toStringAsFixed(2)}');
       }
       final double oldRotationAngle = _rotationAngle;
       setState(() {
@@ -532,8 +532,10 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
             children: [
               if (_maxZoomLevel > _minZoomLevel)
                 SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.7,
+                  width: MediaQuery.of(context).size.width * 0.8,
                   child: Slider(
+                    // ignore: deprecated_member_use
+                    year2023: false,
                     value: _currentZoomLevel,
                     min: _minZoomLevel,
                     max: _maxZoomLevel,
@@ -547,7 +549,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
                     },
                   ),
                 ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.center,

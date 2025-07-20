@@ -1,3 +1,4 @@
+import 'package:form_app/utils/focus_navigator_observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/pages/login_page.dart';
@@ -93,6 +94,7 @@ class _FormAppState extends ConsumerState<FormApp> {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
+      navigatorObservers: [FocusNavigatorObserver()],
       home: FutureBuilder<bool>(
         future: _tokenValidityFuture,
         builder: (context, snapshot) {

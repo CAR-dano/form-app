@@ -37,12 +37,12 @@ class DeleteAllTambahanPhotosButton extends ConsumerWidget {
                             .read(tambahanImageDataProvider(tambahanImageIdentifier)
                                 .notifier)
                             .clearAll();
-                        FocusScope.of(dialogContext).unfocus(); // Unfocus any active text field
                         Navigator.of(dialogContext).pop(); // Close confirmation dialog
+                        FocusScope.of(dialogContext).unfocus(); // Unfocus any active text field
                       },
                       onCancel: () {
-                        FocusScope.of(dialogContext).unfocus(); // Unfocus any active text field
                         Navigator.of(dialogContext).pop(); // Close confirmation dialog
+                        FocusScope.of(dialogContext).unfocus(); // Unfocus any active text field
                       },
                     );
                   },
