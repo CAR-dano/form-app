@@ -55,7 +55,7 @@ class MultiStepFormNavbar extends ConsumerWidget {
           padding: const EdgeInsets.only(top:6, left: 24.0, right: 24.0, bottom: 24),
           child: NavigationButtonRow(
             isBackButtonEnabled: currentPageIndex > 0,
-            isLastPage: currentPageIndex == formPagesLength - 2,
+            isLastPage: currentPageIndex == formPagesLength - 1,
             onNextPressed: onNextPressed,
             onBackPressed: onBackPressed,
             isLoading: isLoading,
