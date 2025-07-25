@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart' as dio;
@@ -27,10 +28,11 @@ class UpdateState {
   final String releaseNotes;
   final String apkDownloadUrl;
   final String downloadedApkPath;
-  final String apkFileName; // New field for the exact APK filename from GitHub
+  final String downloadedApkVersion; // New field to track the version of the downloaded APK
+  final String apkFileName;
   final String errorMessage;
-  final String? fileSize; // New field for formatted file size
-  final int? rawFileSize; // New field for raw file size in bytes
+  final String? fileSize;
+  final int? rawFileSize;
 
   UpdateState({
     this.isLoading = false,
@@ -41,10 +43,11 @@ class UpdateState {
     this.releaseNotes = '',
     this.apkDownloadUrl = '',
     this.downloadedApkPath = '',
-    this.apkFileName = '', // Initialize new field
+    this.downloadedApkVersion = '', // Initialize new field
+    this.apkFileName = '',
     this.errorMessage = '',
-    this.fileSize, // Initialize new field
-    this.rawFileSize, // Initialize new field
+    this.fileSize,
+    this.rawFileSize,
   });
 
   UpdateState copyWith({
@@ -56,10 +59,11 @@ class UpdateState {
     String? releaseNotes,
     String? apkDownloadUrl,
     String? downloadedApkPath,
-    String? apkFileName, // New field for copyWith
+    String? downloadedApkVersion, // New field for copyWith
+    String? apkFileName,
     String? errorMessage,
-    String? fileSize, // New field for copyWith
-    int? rawFileSize, // New field for copyWith
+    String? fileSize,
+    int? rawFileSize,
   }) {
     return UpdateState(
       isLoading: isLoading ?? this.isLoading,
@@ -70,24 +74,25 @@ class UpdateState {
       releaseNotes: releaseNotes ?? this.releaseNotes,
       apkDownloadUrl: apkDownloadUrl ?? this.apkDownloadUrl,
       downloadedApkPath: downloadedApkPath ?? this.downloadedApkPath,
-      apkFileName: apkFileName ?? this.apkFileName, // Copy new field
+      downloadedApkVersion: downloadedApkVersion ?? this.downloadedApkVersion, // Copy new field
+      apkFileName: apkFileName ?? this.apkFileName,
       errorMessage: errorMessage ?? this.errorMessage,
-      fileSize: fileSize ?? this.fileSize, // Copy new field
-      rawFileSize: rawFileSize ?? this.rawFileSize, // Copy new field
+      fileSize: fileSize ?? this.fileSize,
+      rawFileSize: rawFileSize ?? this.rawFileSize,
     );
   }
 }
 
 class UpdateNotifier extends StateNotifier<UpdateState> {
-  dio.CancelToken? _cancelToken; // Declare CancelToken
+  dio.CancelToken? _cancelToken;
 
   UpdateNotifier() : super(UpdateState()) {
-    _loadDownloadedApkPath();
+    _loadDownloadedApkInfo();
   }
 
-  static const String _apkPathFileName = 'downloaded_apk_path.txt';
+  static const String _apkInfoFileName = 'downloaded_apk_info.json';
 
-  Future<void> _loadDownloadedApkPath() async {
+  Future<void> _loadDownloadedApkInfo() async {
     try {
       Directory? dir;
       if (Platform.isAndroid) {
@@ -98,30 +103,34 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
 
       if (dir == null) {
         debugPrint('UpdateService: Target directory not available.');
-        state = state.copyWith(downloadedApkPath: '');
+        state = state.copyWith(downloadedApkPath: '', downloadedApkVersion: '');
         return;
       }
-      final file = File('${dir.path}/$_apkPathFileName');
+      final file = File('${dir.path}/$_apkInfoFileName');
       if (await file.exists()) {
-        final path = await file.readAsString();
+        final content = await file.readAsString();
+        final data = jsonDecode(content);
+        final path = data['path'] as String;
+        final version = data['version'] as String;
+
         if (await File(path).exists()) {
-          state = state.copyWith(downloadedApkPath: path);
-          debugPrint('UpdateService: Loaded downloaded APK path: $path');
+          state = state.copyWith(downloadedApkPath: path, downloadedApkVersion: version);
+          debugPrint('UpdateService: Loaded downloaded APK info: path=$path, version=$version');
         } else {
           // If the file doesn't exist at the recorded path, clear the record
           await file.delete();
-          state = state.copyWith(downloadedApkPath: '');
-          debugPrint('UpdateService: Recorded APK file not found, cleared path.');
+          state = state.copyWith(downloadedApkPath: '', downloadedApkVersion: '');
+          debugPrint('UpdateService: Recorded APK file not found, cleared info.');
         }
       }
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error loading downloaded APK path');
-      debugPrint('UpdateService: Error loading downloaded APK path: $e');
-      state = state.copyWith(downloadedApkPath: '');
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error loading downloaded APK info');
+      debugPrint('UpdateService: Error loading downloaded APK info: $e');
+      state = state.copyWith(downloadedApkPath: '', downloadedApkVersion: '');
     }
   }
 
-  Future<void> _saveDownloadedApkPath(String path) async {
+  Future<void> _saveDownloadedApkInfo(String path, String version) async {
     try {
       Directory? dir;
       if (Platform.isAndroid) {
@@ -134,16 +143,17 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
         debugPrint('UpdateService: Target directory not available for saving.');
         return;
       }
-      final file = File('${dir.path}/$_apkPathFileName');
-      await file.writeAsString(path);
-      debugPrint('UpdateService: Saved downloaded APK path: $path');
+      final file = File('${dir.path}/$_apkInfoFileName');
+      final data = {'path': path, 'version': version};
+      await file.writeAsString(jsonEncode(data));
+      debugPrint('UpdateService: Saved downloaded APK info: path=$path, version=$version');
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error saving downloaded APK path');
-      debugPrint('UpdateService: Error saving downloaded APK path: $e');
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error saving downloaded APK info');
+      debugPrint('UpdateService: Error saving downloaded APK info: $e');
     }
   }
 
-  Future<void> _clearDownloadedApkPath() async {
+  Future<void> _clearDownloadedApkInfo() async {
     try {
       Directory? dir;
       if (Platform.isAndroid) {
@@ -156,14 +166,14 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
         debugPrint('UpdateService: Target directory not available for clearing.');
         return;
       }
-      final file = File('${dir.path}/$_apkPathFileName');
+      final file = File('${dir.path}/$_apkInfoFileName');
       if (await file.exists()) {
         await file.delete();
-        debugPrint('UpdateService: Cleared downloaded APK path record.');
+        debugPrint('UpdateService: Cleared downloaded APK info record.');
       }
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error clearing downloaded APK path');
-      debugPrint('UpdateService: Error clearing downloaded APK path: $e');
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error clearing downloaded APK info');
+      debugPrint('UpdateService: Error clearing downloaded APK info: $e');
     }
   }
 
@@ -179,8 +189,8 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
     if (state.downloadedApkPath.isNotEmpty) {
       final fileExists = await File(state.downloadedApkPath).exists();
       if (!fileExists) {
-        state = state.copyWith(downloadedApkPath: '');
-        await _clearDownloadedApkPath();
+        state = state.copyWith(downloadedApkPath: '', downloadedApkVersion: '');
+        await _clearDownloadedApkInfo();
         debugPrint('UpdateService: Previously downloaded APK not found, cleared state.');
       }
     }
@@ -244,15 +254,35 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
       // 3. Compare versions
       if (_isNewerVersion(latestVersion, fullCurrentVersion)) {
         debugPrint('UpdateService: New version available: $latestVersion');
+
+        // If an APK is already downloaded, but it's not the latest version, delete it.
+        if (state.downloadedApkPath.isNotEmpty && latestVersion != state.downloadedApkVersion) {
+          debugPrint('UpdateService: Found obsolete downloaded APK version ${state.downloadedApkVersion}. Newest is $latestVersion. Cleaning up...');
+          try {
+            final oldApkFile = File(state.downloadedApkPath);
+            if (await oldApkFile.exists()) {
+              await oldApkFile.delete();
+              debugPrint('UpdateService: Obsolete APK deleted successfully.');
+            }
+          } catch (e, stackTrace) {
+            FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error deleting obsolete APK for new update');
+            debugPrint('UpdateService: Error deleting obsolete APK for new update: $e');
+          } finally {
+            // Clear the path and version from state and storage
+            state = state.copyWith(downloadedApkPath: '', downloadedApkVersion: '');
+            await _clearDownloadedApkInfo();
+          }
+        }
+
         state = state.copyWith(
           isLoading: false,
           newVersionAvailable: true,
           latestVersion: latestVersion,
           releaseNotes: releaseNotes,
           apkDownloadUrl: apkDownloadUrl,
-          apkFileName: Uri.decodeComponent(apkAsset['name'] as String), // Store the decoded filename
-          fileSize: formattedFileSize, // Store formatted file size
-          rawFileSize: rawFileSize, // Store raw file size
+          apkFileName: Uri.decodeComponent(apkAsset['name'] as String),
+          fileSize: formattedFileSize,
+          rawFileSize: rawFileSize,
         );
       } else {
         debugPrint('UpdateService: No newer version available.');
@@ -271,11 +301,10 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
             debugPrint('UpdateService: Error deleting obsolete APK: $e');
           } finally {
             // Always clear the path from state and storage after attempting deletion
-            state = state.copyWith(downloadedApkPath: '');
-            await _clearDownloadedApkPath();
+            state = state.copyWith(downloadedApkPath: '', downloadedApkVersion: '');
+            await _clearDownloadedApkInfo();
           }
         }
-        // --- END OF NEW LOGIC ---
       }
     } catch (e, stackTrace) {
       FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error checking for updates');
@@ -309,10 +338,10 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
         throw Exception('Downloads directory not available.');
       }
       
-      final filePath = '${dir.path}/${state.apkFileName}'; // Use the stored decoded filename
+      final filePath = '${dir.path}/${state.apkFileName}';
       debugPrint('UpdateService: Downloading APK to: $filePath with name: ${state.apkFileName}');
       
-      _cancelToken = dio.CancelToken(); // Initialize CancelToken
+      _cancelToken = dio.CancelToken();
       await dio.Dio().download(
         state.apkDownloadUrl,
         filePath,
@@ -322,7 +351,7 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
             state = state.copyWith(downloadProgress: progress, rawFileSize: total);
           }
         },
-        cancelToken: _cancelToken, // Pass the CancelToken
+        cancelToken: _cancelToken,
       );
 
       // Verify file size after download
@@ -337,8 +366,8 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
         throw Exception('Downloaded APK size mismatch. Expected ${state.rawFileSize} bytes, got $actualFileSize bytes.');
       }
 
-      state = state.copyWith(isDownloading: false, downloadedApkPath: filePath);
-      await _saveDownloadedApkPath(filePath);
+      state = state.copyWith(isDownloading: false, downloadedApkPath: filePath, downloadedApkVersion: state.latestVersion);
+      await _saveDownloadedApkInfo(filePath, state.latestVersion);
       debugPrint('UpdateService: APK downloaded successfully to: $filePath');
     } catch (e, stackTrace) {
       FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error downloading update');
@@ -369,18 +398,6 @@ class UpdateNotifier extends StateNotifier<UpdateState> {
     try {
       await _requestInstallApkPermission(state.downloadedApkPath);
       debugPrint('UpdateService: Install permission requested and APK opened.');
-      // // Delete the APK file after successful installation
-      // try {
-      //   final file = File(state.downloadedApkPath);
-      //   if (await file.exists()) {
-      //     await file.delete();
-      //     debugPrint('UpdateService: Downloaded APK deleted successfully.');
-      //     state = state.copyWith(downloadedApkPath: ''); // Clear the path after deletion
-      //     await _clearDownloadedApkPath(); // Clear the saved path
-      //   }
-      // } catch (e) {
-      //   debugPrint('UpdateService: Error deleting downloaded APK: $e');
-      // }
     } catch (e, stackTrace) {
       FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error installing update');
       state = state.copyWith(errorMessage: 'Could not open installer: $e');

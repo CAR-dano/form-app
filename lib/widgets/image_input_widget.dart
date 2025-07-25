@@ -283,6 +283,8 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                                   height: 30.0, // Match icon size
                                   width: 30.0,  // Match icon size
                                   child: CircularProgressIndicator(
+                                    // ignore: deprecated_member_use
+                                    year2023: false,
                                     color: Colors.white,
                                     strokeWidth: 3.0,
                                   ),
@@ -332,6 +334,8 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                                   height: 30.0, // Match icon size
                                   width: 30.0,  // Match icon size
                                   child: CircularProgressIndicator(
+                                    // ignore: deprecated_member_use
+                                    year2023: false,
                                     color: Colors.white,
                                     strokeWidth: 3.0,
                                   ),
