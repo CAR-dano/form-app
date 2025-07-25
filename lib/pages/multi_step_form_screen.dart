@@ -1,3 +1,4 @@
+import 'package:form_app/widgets/update_dialog.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // Import Crash
 
 class MultiStepFormScreen extends ConsumerStatefulWidget {
   const MultiStepFormScreen({super.key});
-
+  
   @override
   ConsumerState<MultiStepFormScreen> createState() => _MultiStepFormScreenState();
 }
@@ -169,6 +170,16 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     final pageViewPhysics = isLastPage
         ? const NeverScrollableScrollPhysics()
         : const PageScrollPhysics();
+
+    ref.listen<UpdateState>(updateServiceProvider, (previous, next) {
+      if (next.newVersionAvailable && (previous?.newVersionAvailable == false)) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            showUpdateDialog(context);
+          }
+        });
+      }
+    });
 
     return Scaffold(
       backgroundColor: Colors.white,
