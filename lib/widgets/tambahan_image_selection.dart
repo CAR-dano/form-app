@@ -461,6 +461,8 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
           Padding(
             padding: const EdgeInsets.only(top: 16.0),
             child: LinearProgressIndicator(
+              // ignore: deprecated_member_use
+              year2023: false,
               borderRadius: BorderRadius.circular(8.0),
               backgroundColor: Colors.grey[300],
               valueColor: const AlwaysStoppedAnimation<Color>(toggleOptionSelectedLengkapColor),

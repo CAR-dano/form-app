@@ -26,14 +26,13 @@ class LoadingIndicatorWidget extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: ClipRRect( // For rounded corners
-                  borderRadius: BorderRadius.circular(8.0), // Material 3 style rounded corners
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: numberedButtonColors[1]?.withAlpha((numberedButtonColors[1]!.a * 0.3).round()), // Lighter shade of the first color
-                    valueColor: AlwaysStoppedAnimation<Color>(numberedButtonColors[10]!), // Use the 10th color for progress
-                    minHeight: 10, // Make it a bit thicker
-                  ),
+                child: LinearProgressIndicator(
+                  // ignore: deprecated_member_use
+                  year2023: false,
+                  value: progress,
+                  backgroundColor: numberedButtonColors[1]?.withAlpha((numberedButtonColors[1]!.a * 0.3).round()), // Lighter shade of the first color
+                  valueColor: AlwaysStoppedAnimation<Color>(numberedButtonColors[10]!), // Use the 10th color for progress
+                  minHeight: 10, // Make it a bit thicker
                 ),
               ),
               if (progress > 0 && progress < 1)

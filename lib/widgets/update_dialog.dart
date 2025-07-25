@@ -102,6 +102,8 @@ class UpdateDialog extends ConsumerWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(10), // Adjust the radius as needed
                 child: LinearProgressIndicator(
+                  // ignore: deprecated_member_use
+                  year2023: false,
                   value: updateState.downloadProgress,
                   backgroundColor: Colors.grey[300],
                   valueColor: const AlwaysStoppedAnimation<Color>(buttonColor),
