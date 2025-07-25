@@ -48,7 +48,7 @@ class UpdateDialog extends ConsumerWidget {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return Text(
-                    'Versi saat ini: v${snapshot.data!.version}+${snapshot.data!.buildNumber}',
+                    'Versi saat ini: v${snapshot.data!.version}',
                     textAlign: TextAlign.center,
                     style: labelStyle.copyWith(
                       fontSize: 14,
