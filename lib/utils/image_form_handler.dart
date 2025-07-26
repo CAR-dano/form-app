@@ -6,7 +6,7 @@ import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/message_overlay_provider.dart'; // Import the new provider
 import 'package:form_app/statics/app_styles.dart';
 import 'package:flutter/foundation.dart'; // For kDebugMode
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:form_app/utils/crashlytics_util.dart';
 
 class ImageFormHandler {
   static Future<void> processAndHandleImageUpload({
@@ -27,7 +27,11 @@ class ImageFormHandler {
       if (pickedImageXFile != null) {
         setLoadingState(true);
         ref.read(imageProcessingServiceProvider.notifier).taskStarted(identifier);
-        final String? processedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(pickedImageXFile);
+        final crashlyticsUtil = ref.read(crashlyticsUtilProvider);
+        final String? processedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(
+          pickedImageXFile,
+          crashlyticsUtil: crashlyticsUtil,
+        );
 
         if (context.mounted && processedPath != null) {
           await onSuccess(processedPath);
@@ -41,7 +45,7 @@ class ImageFormHandler {
         }
       }
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error during image processing for $identifier');
+      ref.read(crashlyticsUtilProvider).recordError(e, stackTrace, reason: 'Error during image processing for $identifier');
       if (context.mounted) debugPrint("Error during image processing for $identifier: $e");
       if (context.mounted) {
         ref.read(customMessageOverlayProvider).show(
@@ -74,8 +78,12 @@ class ImageFormHandler {
 
       if (imagesXFiles.isNotEmpty) {
         ref.read(imageProcessingServiceProvider.notifier).taskStarted(identifier);
+        final crashlyticsUtil = ref.read(crashlyticsUtilProvider);
         for (var imageFileXFile in imagesXFiles) {
-          final String? processedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(imageFileXFile);
+          final String? processedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(
+            imageFileXFile,
+            crashlyticsUtil: crashlyticsUtil,
+          );
           if (context.mounted && processedPath != null) {
             await onSuccess(processedPath); // Call onSuccess for each image
           } else if (context.mounted && processedPath == null) {
@@ -89,7 +97,7 @@ class ImageFormHandler {
         }
       }
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error during multi-image processing for $identifier');
+      ref.read(crashlyticsUtilProvider).recordError(e, stackTrace, reason: 'Error during multi-image processing for $identifier');
       if (context.mounted) debugPrint("Error during multi-image processing for $identifier: $e");
       if (context.mounted) {
         ref.read(customMessageOverlayProvider).show(
