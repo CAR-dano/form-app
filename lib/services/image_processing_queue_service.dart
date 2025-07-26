@@ -6,7 +6,7 @@ import 'package:form_app/utils/image_capture_and_processing_util.dart';
 import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/message_overlay_provider.dart';
 import 'package:form_app/services/task_queue_service.dart'; // Import the generic task queue service
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:form_app/utils/crashlytics_util.dart'; // Import CrashlyticsUtil
 
 /// A task for processing an image from the gallery.
 class ImageProcessingQueueTask extends QueueTask<String?> {
@@ -25,12 +25,14 @@ class ImageProcessingQueueTask extends QueueTask<String?> {
   Future<String?> execute(Ref ref) async {
     final imageProcessingNotifier = ref.read(imageProcessingServiceProvider.notifier);
     final messageOverlayNotifier = ref.read(customMessageOverlayProvider);
+    final crashlyticsUtil = ref.read(crashlyticsUtilProvider); // Get CrashlyticsUtil instance
 
     imageProcessingNotifier.taskStarted(identifier);
     try {
       final String? processedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(
         pickedFile,
         rotationAngle: rotationAngle,
+        crashlyticsUtil: crashlyticsUtil, // Pass crashlyticsUtil
       );
       return processedPath;
     } catch (e, stackTrace) {
@@ -42,7 +44,7 @@ class ImageProcessingQueueTask extends QueueTask<String?> {
           icon: Icons.error,
         );
       }
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error processing image in ImageProcessingQueueTask for $identifier');
+      crashlyticsUtil.recordError(e, stackTrace, reason: 'Error processing image in ImageProcessingQueueTask for $identifier'); // Use CrashlyticsUtil
       rethrow; // Re-throw to be caught by the generic queue service
     } finally {
       imageProcessingNotifier.taskFinished(identifier);
