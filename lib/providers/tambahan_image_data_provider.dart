@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/tambahan_image_data.dart';
+import 'package:form_app/utils/crashlytics_util.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
@@ -9,14 +9,16 @@ import 'dart:convert';
 final tambahanImageDataProvider = StateNotifierProvider.family<
     TambahanImageDataListNotifier, List<TambahanImageData>, String>(
   (ref, identifier) {
-    return TambahanImageDataListNotifier(identifier);
+    final crashlytics = ref.watch(crashlyticsUtilProvider);
+    return TambahanImageDataListNotifier(identifier, crashlytics);
   },
 );
 
 class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData>> {
   final String identifier;
+  final CrashlyticsUtil _crashlytics;
 
-  TambahanImageDataListNotifier(this.identifier) : super([]) {
+  TambahanImageDataListNotifier(this.identifier, this._crashlytics) : super([]) {
     _loadData();
   }
 
@@ -53,10 +55,7 @@ class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData
         }
       }
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error loading TambahanImageData for $identifier from file');
-      if (kDebugMode) {
-        print("Error loading TambahanImageData for $identifier from file: $e");
-      }
+      _crashlytics.recordError(e, stackTrace, reason: 'Error loading TambahanImageData for $identifier from file');
       state = [];
     }
   }
@@ -68,10 +67,7 @@ class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData
       final List<Map<String, dynamic>> jsonList = state.map((item) => item.toJson()).toList();
       await file.writeAsString(json.encode(jsonList), flush: true); // Ensure data is flushed to disk
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error saving TambahanImageData for $identifier to file');
-      if (kDebugMode) {
-        print("Error saving TambahanImageData for $identifier to file: $e");
-      }
+      _crashlytics.recordError(e, stackTrace, reason: 'Error saving TambahanImageData for $identifier to file');
     }
   }
 
@@ -116,10 +112,7 @@ class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData
         await file.delete();
       }
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error deleting TambahanImageData file for $identifier');
-      if (kDebugMode) {
-        print("Error deleting TambahanImageData file for $identifier: $e");
-      }
+      _crashlytics.recordError(e, stackTrace, reason: 'Error deleting TambahanImageData file for $identifier');
     }
 
     // Delete all associated image files
@@ -138,10 +131,7 @@ class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData
         }
       }
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error deleting image file');
-      if (kDebugMode) {
-        print("Error deleting file $path: $e");
-      }
+      _crashlytics.recordError(e, stackTrace, reason: 'Error deleting image file');
     }
   }
 }
