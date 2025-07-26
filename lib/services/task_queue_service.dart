@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:form_app/utils/crashlytics_util.dart'; // Import CrashlyticsUtil
 
 /// A notifier to track the identifiers of tasks currently in the queue.
 class QueuedTaskStatusNotifier extends StateNotifier<Set<String>> {
@@ -66,6 +66,7 @@ class TaskQueueService extends StateNotifier<bool> {
 
     _isProcessing = true;
     state = true; // Indicate that the service is busy
+    final crashlyticsUtil = _ref.read(crashlyticsUtilProvider); // Get CrashlyticsUtil instance
 
     while (_queue.isNotEmpty) {
       final task = _queue.removeFirst();
@@ -82,7 +83,7 @@ class TaskQueueService extends StateNotifier<bool> {
           print('Successfully processed task for identifier: ${task.identifier}');
         }
       } catch (e, stackTrace) {
-        FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error processing task in TaskQueueService', fatal: false);
+        crashlyticsUtil.recordError(e, stackTrace, reason: 'Error processing task in TaskQueueService', fatal: false); // Use CrashlyticsUtil
         task.completer.completeError(e, stackTrace);
         if (kDebugMode) {
           print("Error processing task for ${task.identifier}: $e");
