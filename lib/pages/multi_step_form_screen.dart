@@ -363,7 +363,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     try {
       String? inspectionId;
       final formDataToSubmit = ref.read(formProvider);
-      final apiService = ApiService();
+      final apiService = ApiService(crashlytics);
 
       final bool isFormDataUnchanged = submissionDataCache.lastSubmittedFormData != null &&
           formDataToSubmit == submissionDataCache.lastSubmittedFormData;
