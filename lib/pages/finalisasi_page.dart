@@ -42,28 +42,25 @@ class _FinalisasiPageState extends ConsumerState<FinalisasiPage> with AutomaticK
           child: SingleChildScrollView(
             clipBehavior: Clip.none,
             key: const PageStorageKey<String>('pageNineScrollKey'),
-            child: Padding( // Add padding to the scrollable content
-              padding: const EdgeInsets.symmetric(horizontal: 0), // Match CommonLayout padding
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const PageTitle(data: 'Finalisasi'),
-                  const SizedBox(height: 6.0),
-                  Text(
-                    'Pastikan data yang telah diisi telah sesuai dengan yang sebenarnya dan memenuhi SOP PT Inspeksi Mobil Jogja',
-                    style: labelStyle.copyWith(fontWeight: FontWeight.w300),
-                  ),
-                  const SizedBox(height: 16.0),
-                  FormConfirmation(
-                    label: 'Data yang saya isi telah sesuai',
-                    initialValue: widget.isChecked, // Use passed in value
-                    onChanged: (bool newValue) {
-                      widget.onCheckedChange(newValue); // Use passed in callback
-                    },
-                  ),
-                  const SizedBox(height: 20.0),
-                ],
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const PageTitle(data: 'Finalisasi'),
+                const SizedBox(height: 6.0),
+                Text(
+                  'Pastikan data yang telah diisi telah sesuai dengan yang sebenarnya dan memenuhi SOP PT Inspeksi Mobil Jogja',
+                  style: labelStyle.copyWith(fontWeight: FontWeight.w300),
+                ),
+                const SizedBox(height: 16.0),
+                FormConfirmation(
+                  label: 'Data yang saya isi telah sesuai',
+                  initialValue: widget.isChecked, // Use passed in value
+                  onChanged: (bool newValue) {
+                    widget.onCheckedChange(newValue); // Use passed in callback
+                  },
+                ),
+                const SizedBox(height: 20.0),
+              ],
             ),
           ),
         ),
