@@ -1,20 +1,20 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:form_app/statics/app_styles.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:form_app/utils/crashlytics_util.dart';
 
 class CustomMessageOverlay {
   OverlayEntry? _overlayEntry;
   AnimationController? _animationController;
   AnimationController? _snapAnimationController;
   Animation<double>? _snapAnimation;
+  final CrashlyticsUtil _crashlytics;
 
   Timer? _timer;
   double _draggedY = 0.0;
   double _draggedX = 0.0; // New variable for horizontal drag
 
-  CustomMessageOverlay();
+  CustomMessageOverlay(this._crashlytics);
 
   void show({
     required BuildContext context, // Add BuildContext as a parameter
@@ -237,7 +237,7 @@ class CustomMessageOverlay {
           _draggedY = 0.0;
           _draggedX = 0.0; // Reset horizontal drag
         }).catchError((e, stack) {
-          FirebaseCrashlytics.instance.recordError(e, stack, fatal: false);
+          _crashlytics.recordError(e, stack, fatal: false);
           _overlayEntry?.remove();
           _overlayEntry = null;
           _animationController?.dispose();

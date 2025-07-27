@@ -9,7 +9,7 @@ import 'package:form_app/services/image_capture_queue_service.dart'; // Import t
 import 'package:form_app/services/task_queue_service.dart'; // Import the generic task queue service
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:math' show pi;
-import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // Import Crashlytics
+import 'package:form_app/utils/crashlytics_util.dart'; // Import CrashlyticsUtil
 
 class MultiShotCameraScreen extends ConsumerStatefulWidget {
   final String imageIdentifier;
@@ -190,7 +190,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       await _selectCamera(initialCameraIndex);
 
     } on CameraException catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error discovering cameras', fatal: false);
+      ref.read(crashlyticsUtilProvider).recordError(e, stackTrace, reason: 'Error discovering cameras', fatal: false);
       if (mounted) {
         ref.read(customMessageOverlayProvider).show(
           context: context, // Pass context here
@@ -257,7 +257,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         setState(() {}); // Refresh UI
       }
     } on CameraException catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error initializing camera', fatal: false);
+      ref.read(crashlyticsUtilProvider).recordError(e, stackTrace, reason: 'Error initializing camera', fatal: false);
       if (mounted) {
         ref.read(customMessageOverlayProvider).show(
           context: context, // Pass context here
@@ -309,7 +309,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       );
 
     } on CameraException catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error taking picture', fatal: false);
+      ref.read(crashlyticsUtilProvider).recordError(e, stackTrace, reason: 'Error taking picture', fatal: false);
       if (mounted) {
         ref.read(customMessageOverlayProvider).show(
           context: context, // Pass context here

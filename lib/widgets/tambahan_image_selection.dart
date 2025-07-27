@@ -1,3 +1,4 @@
+import 'package:form_app/utils/crashlytics_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,7 +16,6 @@ import 'package:form_app/pages/multi_shot_camera_screen.dart';
 import 'package:form_app/providers/message_overlay_provider.dart'; // Import the new provider
 import 'package:form_app/services/image_processing_queue_service.dart'; // Import the new queue service
 import 'package:form_app/services/task_queue_service.dart'; // Import for the new provider
-import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // Import Crashlytics
 
 class TambahanImageSelection extends ConsumerStatefulWidget {
   final String identifier;
@@ -108,6 +108,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   }
 
   Future<void> _pickImage(ImageSource source) async {
+    final crashlytics = ref.read(crashlyticsUtilProvider);
     // --- NEW LOGIC FOR CAMERA ---
     if (source == ImageSource.camera) {
       if (!mounted) return;
@@ -163,7 +164,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
                 }
               }
             }).catchError((e, stackTrace) {
-              FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error processing image from gallery (then block)', fatal: false);
+              crashlytics.recordError(e, stackTrace, reason: 'Error processing image from gallery (then block)', fatal: false);
               if (mounted) {
                 ref.read(customMessageOverlayProvider).show(
                   context: context,
@@ -176,7 +177,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
           }
         }
       } catch (e, stackTrace) {
-        FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error picking image from gallery (catch block)', fatal: false);
+        crashlytics.recordError(e, stackTrace, reason: 'Error picking image from gallery (catch block)', fatal: false);
         if (mounted) {
           ref.read(customMessageOverlayProvider).show(
             context: context,
@@ -190,6 +191,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
   }
 
   Future<void> _rotateCurrentImage() async {
+    final crashlytics = ref.read(crashlyticsUtilProvider);
     final int indexToRotate = _currentIndex;
     final images = ref.read(tambahanImageDataProvider(widget.identifier));
 
@@ -234,7 +236,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         }
       }
     }).catchError((e, stackTrace) {
-        FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error rotating image', fatal: false);
+        crashlytics.recordError(e, stackTrace, reason: 'Error rotating image', fatal: false);
         if (mounted) {
           ref.read(customMessageOverlayProvider).show(
             context: context,

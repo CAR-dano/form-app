@@ -6,7 +6,7 @@ import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:gal/gal.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:form_app/utils/crashlytics_util.dart';
 // Note: We no longer need 'package:flutter/foundation.dart' for compute, but it's good for kDebugMode.
 
 // This function is no longer an isolate entry point, just a regular helper function.
@@ -15,6 +15,7 @@ Future<String?> _performCompression({
   required String pickedFilePath,
   required String tempPath,
   int rotationAngle = 0,
+  required CrashlyticsUtil crashlyticsUtil, // Add crashlyticsUtil parameter
 }) async {
   try {
     final originalFile = File(pickedFilePath);
@@ -56,7 +57,7 @@ Future<String?> _performCompression({
 
     return compressedFile.path;
   } catch (e, stackTrace) {
-    FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error during image compression');
+    crashlyticsUtil.recordError(e, stackTrace, reason: 'Error during image compression'); // Use CrashlyticsUtil
     if (kDebugMode) {
       print("Error during image compression: $e");
     }
@@ -68,7 +69,11 @@ class ImageCaptureAndProcessingUtil {
   static final ImagePicker _picker = ImagePicker();
 
   // THE KEY CHANGE IS HERE: We remove the 'compute' wrapper.
-  static Future<String?> processAndSaveImage(XFile pickedFile, {int rotationAngle = 0}) async {
+  static Future<String?> processAndSaveImage(
+    XFile pickedFile, {
+    int rotationAngle = 0,
+    required CrashlyticsUtil crashlyticsUtil, // Add crashlyticsUtil parameter
+  }) async {
     final directory = await getApplicationDocumentsDirectory();
     final imageDir = Directory('${directory.path}/tambahan_images');
     if (!await imageDir.exists()) {
@@ -82,12 +87,17 @@ class ImageCaptureAndProcessingUtil {
       pickedFilePath: pickedFile.path,
       tempPath: imageDir.path,
       rotationAngle: rotationAngle,
+      crashlyticsUtil: crashlyticsUtil, // Pass crashlyticsUtil
     );
   }
 
   // No other methods in this class need to be changed.
   // The rest of the file (saveImageToGallery, pickImageFromGallery, etc.) remains the same.
-  static Future<void> saveImageToGallery(XFile imageXFile, {String? album}) async {
+  static Future<void> saveImageToGallery(
+    XFile imageXFile, {
+    String? album,
+    required CrashlyticsUtil crashlyticsUtil, // Add crashlyticsUtil parameter
+  }) async {
     try {
       bool hasAccess = await Gal.hasAccess();
       if (!hasAccess) {
@@ -100,7 +110,7 @@ class ImageCaptureAndProcessingUtil {
       await Gal.putImage(imageXFile.path, album: album);
       if (kDebugMode) print('Image successfully saved to gallery via Gal package.');
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error saving image to gallery using Gal');
+      crashlyticsUtil.recordError(e, stackTrace, reason: 'Error saving image to gallery using Gal'); // Use CrashlyticsUtil
       if (kDebugMode) print('Error saving image to gallery using Gal: $e');
     }
   }
@@ -119,13 +129,18 @@ class ImageCaptureAndProcessingUtil {
     required String imageIdentifier,
     required String defaultLabel,
     int rotationAngle = 0,
+    required CrashlyticsUtil crashlyticsUtil, // Add crashlyticsUtil parameter
   }) async {
     try {
-      await ImageCaptureAndProcessingUtil.saveImageToGallery(imageFile);
+      await ImageCaptureAndProcessingUtil.saveImageToGallery(
+        imageFile,
+        crashlyticsUtil: crashlyticsUtil, // Pass crashlyticsUtil
+      );
       
       final String? processedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(
         imageFile,
         rotationAngle: rotationAngle,
+        crashlyticsUtil: crashlyticsUtil, // Pass crashlyticsUtil
       );
 
       if (processedPath != null) {
@@ -141,14 +156,18 @@ class ImageCaptureAndProcessingUtil {
         tambahanImageNotifier.addImage(newTambahanImage);
       }
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error processing and adding image');
+      crashlyticsUtil.recordError(e, stackTrace, reason: 'Error processing and adding image'); // Use CrashlyticsUtil
       if (kDebugMode) {
         print("Error processing and adding image: $e");
       }
     }
   }
 
-  static Future<XFile?> rotateImageOnly(XFile sourceFile, {int rotationAngle = 0}) async {
+  static Future<XFile?> rotateImageOnly(
+    XFile sourceFile, {
+    int rotationAngle = 0,
+    required CrashlyticsUtil crashlyticsUtil, // Add crashlyticsUtil parameter
+  }) async {
     // If no rotation is needed, just return the original file.
     if (rotationAngle == 0) {
       return sourceFile;
@@ -176,7 +195,7 @@ class ImageCaptureAndProcessingUtil {
       
       return result;
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error during lossless rotation');
+      crashlyticsUtil.recordError(e, stackTrace, reason: 'Error during lossless rotation'); // Use CrashlyticsUtil
       if (kDebugMode) {
         print('Error during lossless rotation: $e');
       }

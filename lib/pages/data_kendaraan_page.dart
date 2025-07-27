@@ -95,6 +95,7 @@ class _DataKendaraanPageState extends ConsumerState<DataKendaraanPage> with Auto
                       formSubmitted: widget.formSubmitted.value,
                       useThousandsSeparator: fieldData['useThousandsSeparator'] ?? true,
                       suffixText: fieldData['suffixText'],
+                      textCapitalization: fieldData['textCapitalization'] ?? TextCapitalization.sentences,
                     ),
                   );
                 }
@@ -220,6 +221,7 @@ class _DataKendaraanPageState extends ConsumerState<DataKendaraanPage> with Auto
         'keyboardType': TextInputType.text,
         'initialValue': formData.platNomor,
         'onChanged': (value) => formNotifier.updatePlatNomor(value),
+        'textCapitalization': TextCapitalization.characters,
         'validator': (value) {
           if (widget.formSubmitted.value && (value == null || value.isEmpty)) {
             return 'Plat Nomor belum terisi';
