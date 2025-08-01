@@ -8,7 +8,7 @@ class BulletListInputFormatter extends TextInputFormatter {
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
 
-        // Block deletion of the first bullet
+    // Block deletion of the first bullet
     final oldText = oldValue.text;
     final newText = newValue.text;
 
@@ -30,8 +30,18 @@ class BulletListInputFormatter extends TextInputFormatter {
         newValue.text[oldValue.selection.start] == '\n') {
 
       final int newlinePosition = oldValue.selection.start;
-      // Find the start and end of the current line
-      final int lineStart = oldValue.text.lastIndexOf('\n', newlinePosition - 1) + 1;
+      
+      // this is a fix for issue #159
+      // --- FIX START ---
+      // The 'start' index for lastIndexOf must be non-negative.
+      // If newlinePosition is 0, the cursor is at the start of the text,
+      // so the lineStart is also 0. Otherwise, we search from the character before the newline.
+      // This prevents the RangeError when pressing Enter at the beginning of the text field.
+      final int lineStart = (newlinePosition == 0)
+          ? 0
+          : oldValue.text.lastIndexOf('\n', newlinePosition - 1) + 1;
+      // --- FIX END ---
+      
       final int lineEnd = newlinePosition;
       final String currentLine = oldValue.text.substring(lineStart, lineEnd);
 
