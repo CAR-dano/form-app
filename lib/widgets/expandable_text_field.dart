@@ -127,6 +127,8 @@ class _ExpandableTextFieldState extends ConsumerState<ExpandableTextField> {
       _internalController.selection = TextSelection.collapsed(offset: _internalController.text.length);
     } else if (!_focusNode.hasFocus && _internalController.text == '• ') {
       _internalController.clear();
+      // Also notify the parent widget that the list is now empty.
+      widget.onChangedList?.call([]);
     }
     setState(() {}); // Rebuilds for hint visibility or other focus-related UI.
   }
@@ -192,7 +194,11 @@ class _ExpandableTextFieldState extends ConsumerState<ExpandableTextField> {
                 // Called when the text changes (after formatters run).
                 onChanged: (currentValueFromFramework) {
                   // Updates internal lines list and notifies parent.
-                  _lines = _internalController.text.split('\n');
+                  if (_internalController.text.isEmpty) {
+                    _lines = [];
+                  } else {
+                    _lines = _internalController.text.split('\n');
+                  }
                   widget.onChangedList?.call(_lines);
                   // Syncs with external controller if provided.
                   if (widget.controller != null && widget.controller!.text != _internalController.text) {
