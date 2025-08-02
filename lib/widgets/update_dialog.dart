@@ -5,6 +5,7 @@ import 'package:form_app/statics/app_styles.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:form_app/providers/message_overlay_provider.dart';
 import 'package:form_app/widgets/release_notes_markdown.dart';
+import 'package:form_app/utils/animated_progress_bar.dart'; // Import the new widget
 
 void showUpdateDialog(BuildContext context) {
   showDialog(
@@ -14,47 +15,14 @@ void showUpdateDialog(BuildContext context) {
   );
 }
 
-class UpdateDialog extends ConsumerStatefulWidget {
+class UpdateDialog extends ConsumerWidget { // Revert to ConsumerWidget
   const UpdateDialog({super.key});
 
   @override
-  ConsumerState<UpdateDialog> createState() => _UpdateDialogState();
-}
-
-class _UpdateDialogState extends ConsumerState<UpdateDialog> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<Color?> _colorAnimation;
-  Color? _previousColor;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300), // Smooth transition duration
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final updateState = ref.watch(updateServiceProvider);
     final updateNotifier = ref.read(updateServiceProvider.notifier);
     final messageOverlayNotifier = ref.read(customMessageOverlayProvider);
-
-    final currentColor = numberedButtonColors[
-          (updateState.downloadProgress * 10).clamp(1, 10).toInt()] ?? numberedButtonColors[10]!;
-
-    if (_previousColor != currentColor) {
-      _colorAnimation = ColorTween(begin: _previousColor ?? currentColor, end: currentColor).animate(_controller);
-      _controller.forward(from: 0.0);
-      _previousColor = currentColor;
-    }
 
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -132,20 +100,15 @@ class _UpdateDialogState extends ConsumerState<UpdateDialog> with SingleTickerPr
             ],
             if (updateState.isDownloading) ...[
               const SizedBox(height: 20),
-              AnimatedBuilder(
-                animation: _colorAnimation,
-                builder: (context, child) {
-                  return LinearProgressIndicator(
-                    // ignore: deprecated_member_use
-                    year2023: false,
-                    stopIndicatorColor: _colorAnimation.value,
-                    borderRadius: BorderRadius.circular(8.0),
-                    value: updateState.downloadProgress,
-                    backgroundColor: Colors.grey[300],
-                    valueColor: AlwaysStoppedAnimation<Color>(_colorAnimation.value!),
-                    minHeight: 10, // Adjust height to make it visible with border
-                  );
-                },
+              AnimatedProgressBar(
+                value: updateState.downloadProgress,
+                backgroundColor: Colors.grey[300]!,
+                borderRadius: BorderRadius.circular(8.0),
+                colorMap: numberedButtonColors,
+                minHeight: 10,
+                trackColor: Colors.grey[300], // Set trackColor to the background color
+                stopIndicatorColor: numberedButtonColors[
+                      (updateState.downloadProgress * 10).clamp(1, 10).toInt()] ?? numberedButtonColors[10]!, // Keep discrete stopIndicatorColor
               ),
               const SizedBox(height: 8),
               Center(
