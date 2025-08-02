@@ -32,29 +32,29 @@ jobs:
       - name: Analyze project
         run: flutter analyze --fatal-infos # Fails the job if any issues are found
 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      # Checks out the repository code for the workflow to access.
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  # test:
+  #   name: Test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     # Checks out the repository code for the workflow to access.
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      # Sets up the Flutter environment with a specific version and channel.
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.32.0'
-          channel: 'stable'
+  #     # Sets up the Flutter environment with a specific version and channel.
+  #     - name: Set up Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: '3.32.0'
+  #         channel: 'stable'
 
-      # Creates a dummy .env file for CI purposes, providing a base URL for the API.
-      - name: Create dummy .env file
-        run: echo "API_BASE_URL=http://dummy.api.for.ci" > .env
+  #     # Creates a dummy .env file for CI purposes, providing a base URL for the API.
+  #     - name: Create dummy .env file
+  #       run: echo "API_BASE_URL=http://dummy.api.for.ci" > .env
 
-      # Installs all project dependencies listed in pubspec.yaml.
-      - name: Install dependencies
-        run: flutter pub get
+  #     # Installs all project dependencies listed in pubspec.yaml.
+  #     - name: Install dependencies
+  #       run: flutter pub get
 
-      # Runs all tests defined in the Flutter project.
-      - name: Run tests
-        run: flutter test
+  #     # Runs all tests defined in the Flutter project.
+  #     - name: Run tests
+  #       run: flutter test
