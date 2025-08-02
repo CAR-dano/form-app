@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import flutter_riverpod
 import 'package:form_app/services/auth_service.dart'; // Import AuthService
 import 'package:form_app/statics/app_styles.dart'; // Import AppStyles
-import 'package:form_app/widgets/custom_message_overlay.dart'; // Import CustomMessageOverlay
 import 'package:form_app/widgets/labeled_text_field.dart'; // Import LabeledTextField
 import 'package:form_app/widgets/pin_input.dart'; // Import PinInputWidget
 import 'package:form_app/pages/multi_step_form_screen.dart'; // Import MultiStepFormScreen
+import 'package:form_app/providers/message_overlay_provider.dart'; // Import message_overlay_provider
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget { // Change to ConsumerStatefulWidget
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState(); // Change to ConsumerState
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> { // Change to ConsumerState
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   String _currentPin = ''; // To store the PIN from PinInputWidget
@@ -39,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
       debugPrint('Login failed: $e');
       // Show error message to the user
       if (mounted) {
-        CustomMessageOverlay().show(
+        ref.read(customMessageOverlayProvider).show( // Use ref.read to access the provider
           context: context,
           message: e.toString().replaceFirst('Exception: ', ''),
           color: Colors.red,
@@ -122,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                                   if (_currentPin.length == 6) {
                                     _verifyPin(_currentPin);
                                   } else {
-                                    CustomMessageOverlay().show(
+                                    ref.read(customMessageOverlayProvider).show( // Use ref.read to access the provider
                                       context: context,
                                       message: 'Mohon masukkan PIN lengkap',
                                       color: Colors.orange,
