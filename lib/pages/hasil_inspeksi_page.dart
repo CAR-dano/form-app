@@ -194,17 +194,24 @@ class _HasilInspeksiPageState extends ConsumerState<HasilInspeksiPage> with Auto
                 },
               ),
               const SizedBox(height: 16.0), // Spacing before Estimasi Perbaikan section
-              RepairEstimation(
-                label: 'Estimasi Perbaikan', // Added the custom widget with label
-                initialEstimations: formData.repairEstimations,
-                onChanged: (estimations) => formNotifier.updateRepairEstimations(estimations),
-              ),
-              const SizedBox(height: 24.0), // Spacing before navigation buttons
-              const SizedBox(
+              
+            ],
+          ),
+        ),
+        RepairEstimation(
+          label: 'Estimasi Perbaikan',
+          initialEstimations: formData.repairEstimations,
+          onChanged: (estimations) => formNotifier.updateRepairEstimations(estimations),
+        ),
+        const SliverToBoxAdapter(
+          child: Column(
+            children: [
+              SizedBox(height: 24.0), // Spacing before navigation buttons
+              SizedBox(
                 height: 24.0,
               ), // Optional spacing below the content
               // Footer
-              const Footer(),
+              Footer(),
             ],
           ),
         ),

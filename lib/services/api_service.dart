@@ -91,7 +91,7 @@ class ApiService {
       final response = await _dioInst.post(
         _inspectionsUrl,
         data: {
-          "vehiclePlateNumber": formData.platNomor,
+          "vehiclePlateNumber": formData.platNomor.toUpperCase(),
           "inspectionDate": DateTime.now().toIso8601String(),
           "overallRating": calculateOverallRating(formData),
           "identityDetails": {

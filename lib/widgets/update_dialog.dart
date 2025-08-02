@@ -5,6 +5,7 @@ import 'package:form_app/statics/app_styles.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:form_app/providers/message_overlay_provider.dart';
 import 'package:form_app/widgets/release_notes_markdown.dart';
+import 'package:form_app/utils/animated_progress_bar.dart'; // Import the new widget
 
 void showUpdateDialog(BuildContext context) {
   showDialog(
@@ -14,7 +15,7 @@ void showUpdateDialog(BuildContext context) {
   );
 }
 
-class UpdateDialog extends ConsumerWidget {
+class UpdateDialog extends ConsumerWidget { // Revert to ConsumerWidget
   const UpdateDialog({super.key});
 
   @override
@@ -99,16 +100,15 @@ class UpdateDialog extends ConsumerWidget {
             ],
             if (updateState.isDownloading) ...[
               const SizedBox(height: 20),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10), // Adjust the radius as needed
-                child: LinearProgressIndicator(
-                  // ignore: deprecated_member_use
-                  year2023: false,
-                  value: updateState.downloadProgress,
-                  backgroundColor: Colors.grey[300],
-                  valueColor: const AlwaysStoppedAnimation<Color>(buttonColor),
-                  minHeight: 10, // Adjust height to make it visible with border
-                ),
+              AnimatedProgressBar(
+                value: updateState.downloadProgress,
+                backgroundColor: Colors.grey[300]!,
+                borderRadius: BorderRadius.circular(8.0),
+                colorMap: numberedButtonColors,
+                minHeight: 10,
+                trackColor: Colors.grey[300], // Set trackColor to the background color
+                stopIndicatorColor: numberedButtonColors[
+                      (updateState.downloadProgress * 10).clamp(1, 10).toInt()] ?? numberedButtonColors[10]!, // Keep discrete stopIndicatorColor
               ),
               const SizedBox(height: 8),
               Center(
