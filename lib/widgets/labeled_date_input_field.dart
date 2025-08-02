@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/statics/app_styles.dart';
 import 'package:form_app/formatters/date_input_formatter.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:form_app/utils/crashlytics_util.dart';
 
-class LabeledDateInputField extends StatefulWidget {
+class LabeledDateInputField extends ConsumerStatefulWidget {
   final String label;
   final String hintText;
   final TextEditingController? controller;
@@ -27,10 +28,10 @@ class LabeledDateInputField extends StatefulWidget {
   });
 
   @override
-  State<LabeledDateInputField> createState() => _LabeledDateInputFieldState();
+  ConsumerState<LabeledDateInputField> createState() => _LabeledDateInputFieldState();
 }
 
-class _LabeledDateInputFieldState extends State<LabeledDateInputField> {
+class _LabeledDateInputFieldState extends ConsumerState<LabeledDateInputField> {
   final _formFieldKey = GlobalKey<FormFieldState<String>>();
   late TextEditingController _internalController;
 
@@ -61,7 +62,7 @@ class _LabeledDateInputFieldState extends State<LabeledDateInputField> {
         return DateTime(year, month, day);
       }
     } catch (e, s) {
-      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Error parsing date string in LabeledDateInputField');
+      ref.read(crashlyticsUtilProvider).recordError(e, s, reason: 'Error parsing date string in LabeledDateInputField');
       // Invalid date format, return null
     }
     return null;
@@ -129,7 +130,7 @@ class _LabeledDateInputFieldState extends State<LabeledDateInputField> {
         return 'Tanggal tidak valid';
       }
     } catch (e, s) {
-      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Error validating date in LabeledDateInputField');
+      ref.read(crashlyticsUtilProvider).recordError(e, s, reason: 'Error validating date in LabeledDateInputField');
       return 'Format tanggal tidak valid';
     }
 

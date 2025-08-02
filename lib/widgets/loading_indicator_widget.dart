@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:form_app/statics/app_styles.dart';
+import 'package:form_app/utils/animated_progress_bar.dart'; // Import the new widget
 
 class LoadingIndicatorWidget extends StatelessWidget {
   final String message;
@@ -26,14 +27,15 @@ class LoadingIndicatorWidget extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: ClipRRect( // For rounded corners
-                  borderRadius: BorderRadius.circular(8.0), // Material 3 style rounded corners
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: numberedButtonColors[1]?.withAlpha((numberedButtonColors[1]!.a * 0.3).round()), // Lighter shade of the first color
-                    valueColor: AlwaysStoppedAnimation<Color>(numberedButtonColors[10]!), // Use the 10th color for progress
-                    minHeight: 10, // Make it a bit thicker
-                  ),
+                child: AnimatedProgressBar(
+                  value: progress,
+                  backgroundColor: Colors.grey[200]!,
+                  borderRadius: BorderRadius.circular(8.0),
+                  colorMap: numberedButtonColors,
+                  minHeight: 10,
+                  trackColor: Colors.grey[200], // Set trackColor to the background color
+                  stopIndicatorColor: numberedButtonColors[
+                        (progress * 10).clamp(1, 10).toInt()] ?? numberedButtonColors[10]!, // Keep discrete stopIndicatorColor
                 ),
               ),
               if (progress > 0 && progress < 1)

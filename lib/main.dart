@@ -1,3 +1,4 @@
+import 'package:form_app/utils/crashlytics_util.dart';
 import 'package:form_app/utils/focus_navigator_observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +10,6 @@ import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'dart:ui';
 import 'package:flutter_native_splash/flutter_native_splash.dart'; // Import flutter_native_splash
 
@@ -25,14 +25,37 @@ Future<void> main() async {
 
   await Firebase.initializeApp();
 
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  // Create a ProviderContainer to access providers before runApp
+  final container = ProviderContainer();
+  final crashlyticsUtil = container.read(crashlyticsUtilProvider);
 
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
+  // Set up global error handling using the single instance from the container
+  FlutterError.onError = (FlutterErrorDetails details) {
+    crashlyticsUtil.recordError(
+      details.exception,
+      details.stack,
+      reason: 'FlutterError',
+      fatal: true,
+    );
   };
 
-  runApp(const ProviderScope(child: FormApp()));
+  PlatformDispatcher.instance.onError = (error, stack) {
+    crashlyticsUtil.recordError(
+      error,
+      stack,
+      reason: 'PlatformDispatcher',
+      fatal: true,
+    );
+    return true; // Indicate that the error has been handled
+  };
+
+  // Use UncontrolledProviderScope to pass the existing container to the widget tree
+  runApp(
+    UncontrolledProviderScope(
+      container: container,
+      child: const FormApp(),
+    ),
+  );
 }
 
 class FormApp extends ConsumerStatefulWidget {
@@ -68,6 +91,9 @@ class _FormAppState extends ConsumerState<FormApp> {
   }
 
   Future<void> _precacheAllTambahanImages() async {
+    // Use the provider to get the CrashlyticsUtil instance
+    final crashlytics = ref.read(crashlyticsUtilProvider);
+
     for (String identifier in _tambahanImageIdentifiers) {
       final images = ref.read(tambahanImageDataProvider(identifier));
       for (var image in images) {
@@ -76,9 +102,12 @@ class _FormAppState extends ConsumerState<FormApp> {
           try {
             await precacheImage(FileImage(File(image.imagePath)), context);
           } catch (e, stackTrace) {
-            FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error pre-caching image for $identifier');
-            // Log error if image cannot be pre-cached
-            debugPrint('Error precaching image ${image.imagePath}: $e');
+            crashlytics.recordError(
+              e,
+              stackTrace,
+              reason: 'Error pre-caching image for $identifier',
+              fatal: false, // This is not a fatal error
+            );
           }
         }
       }

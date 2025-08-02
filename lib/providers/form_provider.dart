@@ -1,4 +1,3 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/form_data.dart';
@@ -10,13 +9,15 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:async'; // Import for Timer
 import 'package:form_app/models/inspection_branch.dart'; // Import InspectionBranch model
+import 'package:form_app/utils/crashlytics_util.dart'; // Import CrashlyticsUtil
 
 class FormNotifier extends StateNotifier<FormData> {
   final Ref _ref;
+  final CrashlyticsUtil _crashlytics; // Add CrashlyticsUtil dependency
   static const _fileName = 'form_data.json';
   Timer? _saveTimer; // Debounce timer
 
-  FormNotifier(this._ref) : super(FormData()) {
+  FormNotifier(this._ref, this._crashlytics) : super(FormData()) {
     // Load initial data first
     _loadFormData().then((_) {
       // Ensure the initial state is saved after loading, in case it was modified by validation
@@ -68,7 +69,7 @@ class FormNotifier extends StateNotifier<FormData> {
         resolvedNamaInspektor = resolvedInspector.name;
         resolvedInspectorId = resolvedInspector.id;
       } catch (e, stackTrace) { // Not found
-        FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error validating/updating selected inspector');
+        _crashlytics.recordError(e, stackTrace, reason: 'Error validating/updating selected inspector');
         resolvedInspector = null;
         resolvedNamaInspektor = null;
         resolvedInspectorId = null;
@@ -940,7 +941,7 @@ class FormNotifier extends StateNotifier<FormData> {
         super.state = FormData.fromJson(jsonMap);
       }
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error loading form data');
+      _crashlytics.recordError(e, stackTrace, reason: 'Error loading form data');
       // Handle errors during file loading
       if (kDebugMode) {
         print('Error loading form data: $e');
@@ -955,7 +956,7 @@ class FormNotifier extends StateNotifier<FormData> {
       final jsonString = json.encode(state.toJson());
       await file.writeAsString(jsonString, flush: true); // Ensure data is flushed to disk
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error saving form data');
+      _crashlytics.recordError(e, stackTrace, reason: 'Error saving form data');
       // Handle errors during file saving
       if (kDebugMode) {
         print('Error saving form data: $e');
@@ -981,5 +982,6 @@ class FormNotifier extends StateNotifier<FormData> {
 }
 
 final formProvider = StateNotifierProvider<FormNotifier, FormData>((ref) {
-  return FormNotifier(ref); // Pass ref to the constructor
+  final crashlytics = ref.watch(crashlyticsUtilProvider); // Get CrashlyticsUtil instance
+  return FormNotifier(ref, crashlytics); // Pass ref and crashlytics to the constructor
 });

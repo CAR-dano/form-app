@@ -6,7 +6,7 @@ import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/utils/image_capture_and_processing_util.dart';
 import 'package:form_app/services/task_queue_service.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:form_app/utils/crashlytics_util.dart'; // Import CrashlyticsUtil
 import 'dart:math' show pi;
 
 class ImageCaptureTask extends QueueTask<void> {
@@ -25,6 +25,7 @@ class ImageCaptureTask extends QueueTask<void> {
   Future<void> execute(Ref ref) async {
     final imageProcessingNotifier = ref.read(imageProcessingServiceProvider.notifier);
     final tambahanImageNotifier = ref.read(tambahanImageDataProvider(identifier).notifier);
+    final crashlyticsUtil = ref.read(crashlyticsUtilProvider); // Get CrashlyticsUtil instance
 
     imageProcessingNotifier.taskStarted(identifier);
     try {
@@ -42,6 +43,7 @@ class ImageCaptureTask extends QueueTask<void> {
       final XFile? rotatedFullQualityFile = await ImageCaptureAndProcessingUtil.rotateImageOnly(
         capturedImageFile,
         rotationAngle: rotationInDegrees,
+        crashlyticsUtil: crashlyticsUtil, // Pass crashlyticsUtil
       );
 
       // Abort if rotation fails
@@ -50,11 +52,16 @@ class ImageCaptureTask extends QueueTask<void> {
       }
 
       // Step 3: Save the full-quality, rotated image to the gallery
-      await ImageCaptureAndProcessingUtil.saveImageToGallery(rotatedFullQualityFile, album: 'Palapa Inspeksi');
+      await ImageCaptureAndProcessingUtil.saveImageToGallery(
+        rotatedFullQualityFile,
+        album: 'Palapa Inspeksi',
+        crashlyticsUtil: crashlyticsUtil, // Pass crashlyticsUtil
+      );
 
       // Step 4: Now, compress the rotated image for use in the app
       final String? compressedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(
         rotatedFullQualityFile,
+        crashlyticsUtil: crashlyticsUtil, // Pass crashlyticsUtil
         // No rotation needed here as it's already been done
       );
 
@@ -79,7 +86,7 @@ class ImageCaptureTask extends QueueTask<void> {
       if (kDebugMode) {
         print("Error processing image for $identifier: $e");
       }
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error processing image in ImageCaptureTask for $identifier');
+      crashlyticsUtil.recordError(e, stackTrace, reason: 'Error processing image in ImageCaptureTask for $identifier'); // Use CrashlyticsUtil
       rethrow;
     } finally {
       imageProcessingNotifier.taskFinished(identifier);

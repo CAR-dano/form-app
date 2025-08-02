@@ -140,7 +140,7 @@ jobs:
       - name: Create Release Tag Name
         id: create_tag
         run: |
-          TAG_NAME="v${{ steps.pubspec.outputs.full_version }}"
+          TAG_NAME="v${{ steps.pubspec.outputs.semantic_version }}"
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
 
       # Prepares the release body content, including PR details and commit information.
@@ -195,7 +195,7 @@ jobs:
             }
 
             let footer_info = "\n\n---\n\n";
-            footer_info += `**Version:** v${FULL_VERSION}\n`;
+            footer_info += `**Version:** v${SEMANTIC_VERSION}\n`;
             footer_info += `**Released by:** @${ACTOR}\n`;
             footer_info += pr_details_for_footer;
             footer_info += `**Commit:** [${COMMIT_SHA.substring(0,7)}](${REPO_URL}/commit/${COMMIT_SHA})\n`;
@@ -219,7 +219,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.create_tag.outputs.tag_name }}
-          name: "Release v${{ steps.pubspec.outputs.full_version }}"
+          name: "v${{ steps.pubspec.outputs.semantic_version }}"
           body: ${{ steps.prep_release_body.outputs.body }}
           draft: false
           prerelease: false
@@ -233,7 +233,7 @@ jobs:
       - name: Upload All Release APKs as Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-apks-v${{ steps.pubspec.outputs.full_version }}
+          name: release-apks-v${{ steps.pubspec.outputs.semantic_version }}
           path: |
             ${{ steps.universal_release_apk_details.outputs.path }}
             ${{ steps.arm64_v8a_release_apk_details.outputs.path }}
@@ -244,5 +244,5 @@ jobs:
       - name: Upload Debug Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: debug-apk-v${{ steps.pubspec.outputs.full_version }}
+          name: debug-apk-v${{ steps.pubspec.outputs.semantic_version }}
           path: ${{ steps.debug_apk_details.outputs.path }}

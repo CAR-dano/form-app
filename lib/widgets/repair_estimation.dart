@@ -54,22 +54,35 @@ class _RepairEstimationState extends State<RepairEstimation> {
   }
 
   void _removeEstimation(int index) {
-    setState(() {
-      _estimations.removeAt(index);
-      _repairControllers[index].dispose();
-      _priceControllers[index].dispose();
-      _repairControllers.removeAt(index);
-      _priceControllers.removeAt(index);
-      FocusScope.of(context).unfocus(); // Unfocus the text fields
-      _notifyParent();
-    });
+  if (index < 0 || index >= _estimations.length) {
+    return;
   }
 
+  setState(() {
+    // Dispose controllers first
+    _repairControllers[index].dispose();
+    _priceControllers[index].dispose();
+    
+    // Remove from lists
+    _estimations.removeAt(index);
+    _repairControllers.removeAt(index);
+    _priceControllers.removeAt(index);
+    
+    FocusScope.of(context).unfocus();
+    _notifyParent();
+  });
+}
+
   void _updateEstimation(int index) {
+  // Add bounds checking to prevent the error
+  if (index >= 0 && index < _estimations.length && 
+      index < _repairControllers.length && 
+      index < _priceControllers.length) {
     _estimations[index]['repair'] = _repairControllers[index].text;
     _estimations[index]['price'] = _priceControllers[index].text;
     _notifyParent();
   }
+}
 
   void _attachListeners(int index) {
     _repairControllers[index].addListener(() => _updateEstimation(index));
@@ -82,24 +95,35 @@ class _RepairEstimationState extends State<RepairEstimation> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min, 
-      children: [
-        Text(
-          widget.label,
-          style: labelStyle, // Use labelStyle from app_styles.dart
-        ),
-        const SizedBox(height: 8.0),
-        for (int index = 0; index < _estimations.length; index++)
-          Padding(
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          if (index == 0) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(widget.label, style: labelStyle),
+            );
+          }
+
+          if (index == _estimations.length + 1) {
+            return TextButton.icon(
+              onPressed: _addEstimation,
+              icon: const Icon(Icons.add_circle_outline),
+              label: const Text('Tambah List'),
+              style: ButtonStyle(
+                foregroundColor: WidgetStateProperty.all<Color>(selectedDateColor),
+                overlayColor: WidgetStateProperty.all<Color>(borderColor.withAlpha(15)),
+              ),
+            );
+          }
+
+          final itemIndex = index - 1;
+
+          return Padding(
             padding: const EdgeInsets.only(bottom: 4.0),
             child: Container(
               decoration: BoxDecoration(
-                border: Border.all(
-                  color: borderColor,
-                  width: 2.0,
-                ),
+                border: Border.all(color: borderColor, width: 2.0),
                 borderRadius: BorderRadius.circular(8.0),
               ),
               child: Row(
@@ -109,31 +133,28 @@ class _RepairEstimationState extends State<RepairEstimation> {
                     child: Container(
                       decoration: const BoxDecoration(
                         border: Border(
-                          right: BorderSide(
-                            color: borderColor,
-                            width: 2.0,
-                          ),
+                          right: BorderSide(color: borderColor, width: 2.0),
                         ),
                       ),
                       child: TextField(
-                        controller: _repairControllers[index],
+                        controller: _repairControllers[itemIndex],
                         textCapitalization: TextCapitalization.sentences,
-                        style: _repairControllers[index].text.isNotEmpty
+                        style: _repairControllers[itemIndex].text.isNotEmpty
                             ? toggleOptionTextStyle.copyWith(color: Colors.white)
                             : hintTextStyle,
                         decoration: InputDecoration(
                           hintText: 'Barang',
                           hintStyle: hintTextStyle,
-                          filled: _repairControllers[index].text.isNotEmpty,
+                          filled: _repairControllers[itemIndex].text.isNotEmpty,
                           fillColor: borderColor,
                           border: const OutlineInputBorder(
                             borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(6.0),
-                                bottomLeft: Radius.circular(6.0)),
+                              topLeft: Radius.circular(6.0),
+                              bottomLeft: Radius.circular(6.0),
+                            ),
                             borderSide: BorderSide.none,
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12.0, vertical: 12.0),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
                           isDense: true,
                         ),
                       ),
@@ -145,25 +166,23 @@ class _RepairEstimationState extends State<RepairEstimation> {
                       children: [
                         Expanded(
                           child: TextField(
-                            controller: _priceControllers[index],
+                            controller: _priceControllers[itemIndex],
                             keyboardType: TextInputType.number,
-                            style: _priceControllers[index].text.isNotEmpty
+                            style: _priceControllers[itemIndex].text.isNotEmpty
                                 ? priceTextStyle
                                 : hintTextStyle,
                             inputFormatters: [ThousandsSeparatorInputFormatter()],
                             decoration: InputDecoration(
                               hintText: 'Biaya',
                               hintStyle: hintTextStyle,
-                              filled: false,
-                              fillColor: Colors.transparent,
                               border: const OutlineInputBorder(
                                 borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(6.0),
-                                    bottomRight: Radius.circular(6.0)),
+                                  topRight: Radius.circular(6.0),
+                                  bottomRight: Radius.circular(6.0),
+                                ),
                                 borderSide: BorderSide.none,
                               ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12.0, vertical: 12.0),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
                               isDense: true,
                             ),
                           ),
@@ -172,9 +191,7 @@ class _RepairEstimationState extends State<RepairEstimation> {
                           width: 48.0,
                           child: IconButton(
                             icon: const Icon(Icons.close_outlined, size: 14.0),
-                            onPressed: () {
-                              _removeEstimation(index);
-                            },
+                            onPressed: () => _removeEstimation(itemIndex),
                           ),
                         ),
                       ],
@@ -183,17 +200,10 @@ class _RepairEstimationState extends State<RepairEstimation> {
                 ],
               ),
             ),
-          ),
-        TextButton.icon(
-          onPressed: _addEstimation,
-          icon: const Icon(Icons.add_circle_outline),
-          label: const Text('Tambah List'),
-          style: ButtonStyle(
-            foregroundColor: WidgetStateProperty.all<Color>(selectedDateColor),
-            overlayColor: WidgetStateProperty.all<Color>(borderColor.withAlpha(15)), 
-          ),
-        ),
-      ],
+          );
+        },
+        childCount: _estimations.length + 2, // +1 for label, +1 for "Tambah List"
+      ),
     );
   }
 }

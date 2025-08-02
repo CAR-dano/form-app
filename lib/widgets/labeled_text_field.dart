@@ -17,6 +17,7 @@ class LabeledTextField extends StatefulWidget {
   final bool useThousandsSeparator;
   final String? prefixText;
   final String? suffixText;
+  final TextCapitalization textCapitalization;
 
   const LabeledTextField({
     super.key,
@@ -34,6 +35,7 @@ class LabeledTextField extends StatefulWidget {
     this.useThousandsSeparator = true,
     this.prefixText,
     this.suffixText,
+    this.textCapitalization = TextCapitalization.sentences,
   });
 
   @override
@@ -120,7 +122,7 @@ class _LabeledTextFieldState extends State<LabeledTextField> {
           maxLines: widget.maxLines,
           style: inputTextStyling,
           focusNode: widget.focusNode,
-          textCapitalization: TextCapitalization.sentences,
+          textCapitalization: widget.textCapitalization,
           inputFormatters: widget.keyboardType == TextInputType.number && widget.useThousandsSeparator
               ? [ThousandsSeparatorInputFormatter()]
               : null,

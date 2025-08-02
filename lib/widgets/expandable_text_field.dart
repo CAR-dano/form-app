@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/statics/app_styles.dart'; // Your project's style definitions.
 import 'dart:math'; // Used for the min function.
 import 'package:form_app/formatters/bullet_list_input_formatter.dart'; // Custom formatter for bullet lists.
-import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // Import Crashlytics
+import 'package:form_app/utils/crashlytics_util.dart';
 
 // A text field that expands and supports bulleted list formatting.
-class ExpandableTextField extends StatefulWidget {
+class ExpandableTextField extends ConsumerStatefulWidget {
   final String label;
   final String hintText;
   final TextEditingController? controller;
@@ -31,11 +32,11 @@ class ExpandableTextField extends StatefulWidget {
 
   // Creates the mutable state for this widget.
   @override
-  State<ExpandableTextField> createState() => _ExpandableTextFieldState();
+  ConsumerState<ExpandableTextField> createState() => _ExpandableTextFieldState();
 }
 
 // Manages the state for ExpandableTextField.
-class _ExpandableTextFieldState extends State<ExpandableTextField> {
+class _ExpandableTextFieldState extends ConsumerState<ExpandableTextField> {
   // Key to manage FormField state (e.g., validation).
   final _formFieldKey = GlobalKey<FormFieldState>();
   // Internal controller if an external one isn't provided.
@@ -87,7 +88,7 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
               extentOffset: min(currentSelection.extentOffset, _internalController.text.length),
             );
           } catch (e, stackTrace) {
-            FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error updating text selection in ExpandableTextField', fatal: false);
+            ref.read(crashlyticsUtilProvider).recordError(e, stackTrace, reason: 'Error updating text selection in ExpandableTextField', fatal: false);
             _internalController.selection = TextSelection.collapsed(offset: _internalController.text.length);
           }
         }
@@ -126,6 +127,8 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
       _internalController.selection = TextSelection.collapsed(offset: _internalController.text.length);
     } else if (!_focusNode.hasFocus && _internalController.text == '• ') {
       _internalController.clear();
+      // Also notify the parent widget that the list is now empty.
+      widget.onChangedList?.call([]);
     }
     setState(() {}); // Rebuilds for hint visibility or other focus-related UI.
   }
@@ -191,7 +194,11 @@ class _ExpandableTextFieldState extends State<ExpandableTextField> {
                 // Called when the text changes (after formatters run).
                 onChanged: (currentValueFromFramework) {
                   // Updates internal lines list and notifies parent.
-                  _lines = _internalController.text.split('\n');
+                  if (_internalController.text.isEmpty) {
+                    _lines = [];
+                  } else {
+                    _lines = _internalController.text.split('\n');
+                  }
                   widget.onChangedList?.call(_lines);
                   // Syncs with external controller if provided.
                   if (widget.controller != null && widget.controller!.text != _internalController.text) {

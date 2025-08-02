@@ -1,21 +1,23 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/image_data.dart';
+import 'package:form_app/utils/crashlytics_util.dart'; // Import CrashlyticsUtil
 // Import dart:io and path_provider
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
 
 final imageDataListProvider = StateNotifierProvider<ImageDataListNotifier, List<ImageData>>((ref) {
-  return ImageDataListNotifier();
+  final crashlytics = ref.watch(crashlyticsUtilProvider); // Get CrashlyticsUtil instance
+  return ImageDataListNotifier(crashlytics);
 });
 
 class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
+  final CrashlyticsUtil _crashlytics; // Add CrashlyticsUtil dependency
   // static const _storageKey = 'image_data_list'; // Old key
   static const String _fileName = 'wajib_image_data_list.json'; // Unique filename
 
-  ImageDataListNotifier() : super([]) {
+  ImageDataListNotifier(this._crashlytics) : super([]) {
     _loadImageDataList();
   }
 
@@ -56,7 +58,7 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
         super.state = [];
       }
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error loading ImageDataList from file');
+      _crashlytics.recordError(e, stackTrace, reason: 'Error loading ImageDataList from file');
       if (kDebugMode) {
         print("Error loading ImageDataList from file: $e");
       }
@@ -71,7 +73,7 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
       final jsonString = json.encode(jsonList);
       await file.writeAsString(jsonString, flush: true); // Ensure data is flushed to disk
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error saving ImageDataList to file');
+      _crashlytics.recordError(e, stackTrace, reason: 'Error saving ImageDataList to file');
       if (kDebugMode) {
         print("Error saving ImageDataList to file: $e");
       }
@@ -141,7 +143,7 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
         await file.delete();
       }
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error deleting ImageDataList file');
+      _crashlytics.recordError(e, stackTrace, reason: 'Error deleting ImageDataList file');
       if (kDebugMode) {
         print("Error deleting ImageDataList file: $e");
       }
@@ -155,7 +157,7 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
           await fileToDelete.delete();
         }
       } catch (e, stackTrace) {
-        FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error deleting image file during clear');
+        _crashlytics.recordError(e, stackTrace, reason: 'Error deleting image file during clear');
         // Continue trying to delete other files
       }
     }

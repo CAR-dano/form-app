@@ -12,7 +12,7 @@ import 'package:form_app/utils/image_capture_and_processing_util.dart';
 import 'package:form_app/utils/image_form_handler.dart'; // Import the new helper
 import 'package:form_app/providers/image_processing_provider.dart'; // Import for processing state
 import 'package:form_app/providers/message_overlay_provider.dart'; // Import for messages
-import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // Import Crashlytics
+import 'package:form_app/utils/crashlytics_util.dart';
 
 class ImageInputWidget extends ConsumerStatefulWidget {
   final String label;
@@ -33,6 +33,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
   bool _isLoadingGallery = false;
 
   Future<void> _takePictureFromCamera() async {
+    final crashlyticsUtil = ref.read(crashlyticsUtilProvider);
     await ImageFormHandler.processAndHandleImageUpload(
       context: context,
       ref: ref,
@@ -41,7 +42,11 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
         final picker = ImagePicker();
         final pickedImageXFile = await picker.pickImage(source: ImageSource.camera);
         if (pickedImageXFile != null) {
-          await ImageCaptureAndProcessingUtil.saveImageToGallery(pickedImageXFile, album: 'Palapa Inspeksi');
+          await ImageCaptureAndProcessingUtil.saveImageToGallery(
+            pickedImageXFile,
+            album: 'Palapa Inspeksi',
+            crashlyticsUtil: crashlyticsUtil,
+          );
         }
         return pickedImageXFile;
       },
@@ -90,7 +95,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
         _deleteImageConfirmed();
       }
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error viewing image', fatal: false);
+      ref.read(crashlyticsUtilProvider).recordError(e, stackTrace, reason: 'Error viewing image', fatal: false);
       if (mounted) {
         ref.read(customMessageOverlayProvider).show(
           context: context,
@@ -126,10 +131,12 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
     ref.read(imageProcessingServiceProvider.notifier).taskStarted(widget.label);
 
     try {
+      final crashlyticsUtil = ref.read(crashlyticsUtilProvider);
       final XFile pickedFile = XFile(originalRawPath);
       final String? newProcessedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(
         pickedFile,
         rotationAngle: newRotation,
+        crashlyticsUtil: crashlyticsUtil,
       );
 
       if (newProcessedPath != null) {
@@ -150,7 +157,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
         }
       }
     } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error rotating image', fatal: false);
+      ref.read(crashlyticsUtilProvider).recordError(e, stackTrace, reason: 'Error rotating image', fatal: false);
       if (mounted) {
         ref.read(customMessageOverlayProvider).show(
           context: context,
@@ -218,7 +225,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
               );
         }
       } catch (e, stackTrace) {
-        FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error deleting image file from ImageInputWidget');
+        ref.read(crashlyticsUtilProvider).recordError(e, stackTrace, reason: 'Error deleting image file from ImageInputWidget');
         if (mounted) {
           ref.read(customMessageOverlayProvider).show(
             context: context,
@@ -283,6 +290,8 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                                   height: 30.0, // Match icon size
                                   width: 30.0,  // Match icon size
                                   child: CircularProgressIndicator(
+                                    // ignore: deprecated_member_use
+                                    year2023: false,
                                     color: Colors.white,
                                     strokeWidth: 3.0,
                                   ),
@@ -332,6 +341,8 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
                                   height: 30.0, // Match icon size
                                   width: 30.0,  // Match icon size
                                   child: CircularProgressIndicator(
+                                    // ignore: deprecated_member_use
+                                    year2023: false,
                                     color: Colors.white,
                                     strokeWidth: 3.0,
                                   ),

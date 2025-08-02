@@ -1,4 +1,6 @@
+import 'package:form_app/utils/crashlytics_util.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_step_provider.dart';
@@ -40,7 +42,6 @@ import 'package:form_app/widgets/multi_step_form_appbar.dart';
 import 'package:form_app/widgets/delete_all_tambahan_photos_button.dart';
 import 'package:form_app/services/update_service.dart';
 import 'package:form_app/widgets/app_version_display.dart'; // Import the new widget
-import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // Import Crashlytics
 
 class MultiStepFormScreen extends ConsumerStatefulWidget {
   const MultiStepFormScreen({super.key});
@@ -69,6 +70,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   }
 
   static const String _defaultTambahanLabel = 'Foto Tambahan';
+  static const String _defaultStnkLabel = 'Foto STNK';
   final ValueNotifier<bool> _formSubmittedPageTwo = ValueNotifier<bool>(false);
   final ValueNotifier<bool> _formSubmittedTambahanImages = ValueNotifier<bool>(false);
 
@@ -133,7 +135,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       FotoMesinTambahanPage(key: const ValueKey('FotoMesinTambahanPage'), formSubmitted: _formSubmittedTambahanImages),
       FotoKakiKakiTambahanPage(key: const ValueKey('FotoKakiKakiTambahanPage'), formSubmitted: _formSubmittedTambahanImages),
       FotoAlatAlatTambahanPage(key: const ValueKey('FotoAlatAlatTambahanPage'), formSubmitted: _formSubmittedTambahanImages),
-      FotoDokumenPage(key: const ValueKey('FotoDokumenPage'), formSubmitted: _formSubmittedTambahanImages, defaultLabel: _defaultTambahanLabel),
+      FotoDokumenPage(key: const ValueKey('FotoDokumenPage'), formSubmitted: _formSubmittedTambahanImages, defaultLabel: _defaultStnkLabel),
       DataKendaraanPage(key: const ValueKey('DataKendaraanPage'), formKey: _formKeys[14], formSubmitted: _formSubmittedPageTwo),
       const KelengkapanPage(key: ValueKey('KelengkapanPage')),
       const HasilInspeksiPage(key: ValueKey('HasilInspeksiPage')),
@@ -154,7 +156,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         },
         isChecked: _isChecked,
       ),
-      const FinishedPage(key: ValueKey('FinishedPage')),
     ];
   }
 
@@ -162,64 +163,58 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
   Widget build(BuildContext context) {
     final pageController = ref.watch(pageNavigationProvider);
     final currentPageIndex = ref.watch(formStepProvider);
-    ScrollPhysics pageViewPhysics;
-    if (currentPageIndex >= _formPages.length - 2) {
-      pageViewPhysics = const NeverScrollableScrollPhysics();
-    } else {
-      pageViewPhysics = const PageScrollPhysics();
-    }
-
     final submissionStatus = ref.watch(submissionStatusProvider);
+
+    // The last page is now the finalization page, which should not be scrollable.
+    final isLastPage = currentPageIndex == _formPages.length - 1;
+    final pageViewPhysics = isLastPage
+        ? const NeverScrollableScrollPhysics()
+        : const PageScrollPhysics();
+
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
       extendBody: true,
-      appBar: currentPageIndex < _formPages.length - 1
-          ? MultiStepFormAppBar(
-              currentPage: currentPageIndex + 1,
-              totalPages: _formPages.length - 1, // Exclude FinishedPage from total
-              trailingWidget: _buildTrailingWidget(currentPageIndex),
-            )
-          : null,
+      appBar: MultiStepFormAppBar(
+        currentPage: currentPageIndex + 1,
+        totalPages: _formPages.length, // Total pages is now the exact length
+        trailingWidget: _buildTrailingWidget(currentPageIndex),
+      ),
       body: PageView(
         controller: pageController,
         physics: pageViewPhysics,
         onPageChanged: (int page) {
-          final currentActualStep = ref.read(formStepProvider);
-          if (currentActualStep == _formPages.length - 2 && page == _formPages.length - 1) {
-            pageController.jumpToPage(currentActualStep);
-          } else {
-            if (currentActualStep != page) {
-              ref.read(formStepProvider.notifier).state = page;
-            }
+          // This logic prevents swiping past the last page, but since the navbar
+          // button is what triggers submission, we can simplify.
+          // We just need to update the current step.
+          if (ref.read(formStepProvider) != page) {
+            ref.read(formStepProvider.notifier).state = page;
           }
         },
         children: _formPages.map((pageContent) {
           return CommonLayout(child: pageContent);
         }).toList(),
       ),
-      bottomNavigationBar: currentPageIndex < _formPages.length - 1
-          ? MultiStepFormNavbar(
-              currentPageIndex: currentPageIndex,
-              formPagesLength: _formPages.length,
-              onNextPressed: () {
-                if (currentPageIndex == _formPages.length - 2) {
-                  _submitForm();
-                } else {
-                  FocusScope.of(context).unfocus();
-                  ref.read(pageNavigationProvider.notifier).goToNextPage();
-                }
+      bottomNavigationBar: MultiStepFormNavbar(
+        currentPageIndex: currentPageIndex,
+        formPagesLength: _formPages.length,
+        onNextPressed: () {
+          if (isLastPage) {
+            _submitForm();
+          } else {
+            FocusScope.of(context).unfocus();
+            ref.read(pageNavigationProvider.notifier).goToNextPage();
+          }
+        },
+        onBackPressed: isLastPage && submissionStatus.isLoading
+            ? _cancelSubmission
+            : () {
+                FocusScope.of(context).unfocus();
+                ref.read(pageNavigationProvider.notifier).goToPreviousPage();
               },
-              onBackPressed: currentPageIndex == _formPages.length - 2 && submissionStatus.isLoading
-                  ? _cancelSubmission
-                  : () {
-                      FocusScope.of(context).unfocus();
-                      ref.read(pageNavigationProvider.notifier).goToPreviousPage();
-                    },
-              isLoading: submissionStatus.isLoading,
-              isChecked: _isChecked,
-            )
-          : null,
+        isLoading: submissionStatus.isLoading,
+        isChecked: _isChecked,
+      ),
     );
   }
 
@@ -268,7 +263,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       final identifier = _tambahanImagePageIdentifiers[pageIndex]!;
       final images = ref.read(tambahanImageDataProvider(identifier));
       if (images.any((image) => image.label == _defaultTambahanLabel || image.label.trim().isEmpty )) {
-         if (identifier == 'Foto Dokumen' && images.any((image) => image.label == _defaultTambahanLabel && image.imagePath.isNotEmpty)) {
+         if (identifier == 'Foto Dokumen' && images.any((image) => image.label == _defaultStnkLabel && image.imagePath.isNotEmpty)) {
             return 'Label untuk "Foto Dokumen" belum diubah dari default atau kosong.';
          } else if (identifier != 'Foto Dokumen' && images.any((image) => image.label.trim().isEmpty && image.imagePath.isNotEmpty)){
             return 'Harap isi semua label gambar di Halaman ${_pageNames[pageIndex] ?? pageIndex + 1}';
@@ -285,6 +280,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     final submissionDataCache = ref.read(submissionDataCacheProvider);
     final submissionDataCacheNotifier = ref.read(submissionDataCacheProvider.notifier);
     final customMessageOverlay = ref.read(customMessageOverlayProvider); // Get the singleton instance
+    final crashlytics = ref.read(crashlyticsUtilProvider); // Get the Crashlytics util
 
     if (ref.read(submissionStatusProvider).isLoading) {
       customMessageOverlay.show(
@@ -369,6 +365,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       final formDataToSubmit = ref.read(formProvider);
       final apiService = ref.read(apiServiceProvider);
 
+
       final bool isFormDataUnchanged = submissionDataCache.lastSubmittedFormData != null &&
           formDataToSubmit == submissionDataCache.lastSubmittedFormData;
 
@@ -377,13 +374,13 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         debugPrint('Reusing existing inspection ID: $inspectionId');
         submissionStatusNotifier.setLoading(
           isLoading: true,
-          message: 'Data formulir tidak berubah. Melanjutkan unggah gambar...',
+          message: 'Data formulir tidak berubah. Melanjutkan unggah gambar...', 
           progress: 0.1,
         );
       } else {
         submissionStatusNotifier.setLoading(
           isLoading: true,
-          message: 'Mengirim data formulir...',
+          message: 'Mengirim data formulir...', 
           progress: 0.1,
         );
 
@@ -464,7 +461,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
             submissionStatusNotifier.setLoading(
               isLoading: true,
               message: totalOriginalBatches > 0
-                  ? 'Mengunggah gambar batch $overallCurrentBatch dari $totalOriginalBatches...'
+                  ? 'Mengunggah gambar batch $overallCurrentBatch dari $totalOriginalBatches...' 
                   : 'Tidak ada gambar untuk diunggah.',
               progress: overallProgress,
             );
@@ -495,7 +492,16 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       submissionDataCacheNotifier.clearCache(); // Clear cache on full success
 
       if (!mounted) return;
-      ref.read(pageNavigationProvider.notifier).goToNextPage(); // Go to finished page
+
+      // Add a delay before navigating to the finished page
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        CupertinoPageRoute(builder: (context) => const FinishedPage()),
+        (Route<dynamic> route) => false,
+      );
 
     } on dio.DioException catch (e, stackTrace) {
       if (!mounted) return;
@@ -510,7 +516,12 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           duration: const Duration(seconds: 4),
         );
       } else {
-        FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error during form submission'); // Log to Crashlytics
+        crashlytics.recordError(
+          e,
+          stackTrace,
+          reason: 'Error during form submission (DioException)',
+          fatal: true, // Network errors during submission are critical
+        );
         customMessageOverlay.show(
           context: context, // Pass context here
           message: 'Terjadi kesalahan saat mengirim data: $e',
@@ -532,7 +543,12 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           duration: const Duration(seconds: 4),
         );
       } else {
-        FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'General error during form submission'); // Log to Crashlytics
+        crashlytics.recordError(
+          e,
+          stackTrace,
+          reason: 'General error during form submission',
+          fatal: true, // This is a critical, unexpected error
+        );
         customMessageOverlay.show(
           context: context, // Pass context here
           message: 'Terjadi kesalahan saat mengirim data: $e',
