@@ -14,14 +14,47 @@ void showUpdateDialog(BuildContext context) {
   );
 }
 
-class UpdateDialog extends ConsumerWidget {
+class UpdateDialog extends ConsumerStatefulWidget {
   const UpdateDialog({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<UpdateDialog> createState() => _UpdateDialogState();
+}
+
+class _UpdateDialogState extends ConsumerState<UpdateDialog> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Color?> _colorAnimation;
+  Color? _previousColor;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300), // Smooth transition duration
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final updateState = ref.watch(updateServiceProvider);
     final updateNotifier = ref.read(updateServiceProvider.notifier);
     final messageOverlayNotifier = ref.read(customMessageOverlayProvider);
+
+    final currentColor = numberedButtonColors[
+          (updateState.downloadProgress * 10).clamp(1, 10).toInt()] ?? numberedButtonColors[10]!;
+
+    if (_previousColor != currentColor) {
+      _colorAnimation = ColorTween(begin: _previousColor ?? currentColor, end: currentColor).animate(_controller);
+      _controller.forward(from: 0.0);
+      _previousColor = currentColor;
+    }
 
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -99,16 +132,20 @@ class UpdateDialog extends ConsumerWidget {
             ],
             if (updateState.isDownloading) ...[
               const SizedBox(height: 20),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10), // Adjust the radius as needed
-                child: LinearProgressIndicator(
-                  // ignore: deprecated_member_use
-                  year2023: false,
-                  value: updateState.downloadProgress,
-                  backgroundColor: Colors.grey[300],
-                  valueColor: const AlwaysStoppedAnimation<Color>(buttonColor),
-                  minHeight: 10, // Adjust height to make it visible with border
-                ),
+              AnimatedBuilder(
+                animation: _colorAnimation,
+                builder: (context, child) {
+                  return LinearProgressIndicator(
+                    // ignore: deprecated_member_use
+                    year2023: false,
+                    stopIndicatorColor: _colorAnimation.value,
+                    borderRadius: BorderRadius.circular(8.0),
+                    value: updateState.downloadProgress,
+                    backgroundColor: Colors.grey[300],
+                    valueColor: AlwaysStoppedAnimation<Color>(_colorAnimation.value!),
+                    minHeight: 10, // Adjust height to make it visible with border
+                  );
+                },
               ),
               const SizedBox(height: 8),
               Center(
