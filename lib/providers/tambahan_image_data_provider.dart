@@ -133,27 +133,5 @@ class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData
     } catch (e, stackTrace) {
       _crashlytics.recordError(e, stackTrace, reason: 'Error deleting image file');
     }
-
-    // Delete all associated image files
-    for (final path in pathsToDelete) {
-      await _deleteFile(path);
-    }
-  }
-
-  Future<void> _deleteFile(String path) async {
-    try {
-      final file = File(path);
-      if (await file.exists()) {
-        await file.delete();
-        if (kDebugMode) {
-          print("Deleted image file: $path");
-        }
-      }
-    } catch (e, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Error deleting image file');
-      if (kDebugMode) {
-        print("Error deleting file $path: $e");
-      }
-    }
   }
 }
