@@ -54,22 +54,35 @@ class _RepairEstimationState extends State<RepairEstimation> {
   }
 
   void _removeEstimation(int index) {
-    setState(() {
-      _estimations.removeAt(index);
-      _repairControllers[index].dispose();
-      _priceControllers[index].dispose();
-      _repairControllers.removeAt(index);
-      _priceControllers.removeAt(index);
-      FocusScope.of(context).unfocus();
-      _notifyParent();
-    });
+  if (index < 0 || index >= _estimations.length) {
+    return;
   }
 
+  setState(() {
+    // Dispose controllers first
+    _repairControllers[index].dispose();
+    _priceControllers[index].dispose();
+    
+    // Remove from lists
+    _estimations.removeAt(index);
+    _repairControllers.removeAt(index);
+    _priceControllers.removeAt(index);
+    
+    FocusScope.of(context).unfocus();
+    _notifyParent();
+  });
+}
+
   void _updateEstimation(int index) {
+  // Add bounds checking to prevent the error
+  if (index >= 0 && index < _estimations.length && 
+      index < _repairControllers.length && 
+      index < _priceControllers.length) {
     _estimations[index]['repair'] = _repairControllers[index].text;
     _estimations[index]['price'] = _priceControllers[index].text;
     _notifyParent();
   }
+}
 
   void _attachListeners(int index) {
     _repairControllers[index].addListener(() => _updateEstimation(index));
