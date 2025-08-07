@@ -1,6 +1,7 @@
 // lib/widgets/toggleable_numbered_button_list.dart
 import 'package:flutter/material.dart';
 import 'package:form_app/statics/app_styles.dart';
+import 'package:form_app/statics/grade_map.dart';
 
 class ToggleableNumberedButtonList extends StatefulWidget {
   final String label;
@@ -50,13 +51,18 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
   void _handleCheckboxOrLabelClick() {
     final bool isCurrentlyEffectivelyOn = widget.selectedValue != widget.valueWhenDisabled;
 
-    if (isCurrentlyEffectivelyOn) { // Currently ON, user wants to turn OFF
+    if (isCurrentlyEffectivelyOn) {
+      // Currently ON, user wants to turn OFF
       // _persistedSelection already holds the value that was active.
       widget.onItemSelected(widget.valueWhenDisabled);
-    } else { // Currently OFF, user wants to turn ON
+    } else {
+      // Currently OFF, user wants to turn ON
       // Restore the remembered _persistedSelection.
       // If _persistedSelection somehow became valueWhenDisabled (e.g. initial state), default to 1.
-      int valueToRestore = (_persistedSelection != widget.valueWhenDisabled) ? _persistedSelection : 1;
+      int valueToRestore =
+          (_persistedSelection != widget.valueWhenDisabled)
+              ? _persistedSelection
+              : 1;
       widget.onItemSelected(valueToRestore);
     }
   }
@@ -87,60 +93,79 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
           children: [
             Expanded(
               child: Row(
-                  children: [
-                    Container(
-                      width: 24,
-                      height: 24,
-                      alignment: Alignment.center,
-                      child: SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: Checkbox(
-                          value: isEffectivelyEnabled, // Driven by selectedValue
-                          onChanged: (bool? newValue) { // newValue is the new state of the checkbox
-                            _handleCheckboxOrLabelClick();
-                          },
-                          activeColor: toggleOptionSelectedLengkapColor,
-                          materialTapTargetSize: MaterialTapTargetSize.padded,
-                          visualDensity: VisualDensity.compact,
-                          side: const BorderSide(
-                            color: toggleOptionSelectedLengkapColor,
-                            width: 2,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: Checkbox(
+                        value: isEffectivelyEnabled, // Driven by selectedValue
+                        onChanged: (bool? newValue) {
+                          // newValue is the new state of the checkbox
+                          _handleCheckboxOrLabelClick();
+                        },
+                        activeColor: toggleOptionSelectedLengkapColor,
+                        materialTapTargetSize: MaterialTapTargetSize.padded,
+                        visualDensity: VisualDensity.compact,
+                        side: const BorderSide(
+                          color: toggleOptionSelectedLengkapColor,
+                          width: 2,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: GestureDetector(
-                          onTap: _handleCheckboxOrLabelClick,
-                          child: Text(
-                            widget.label,
-                            style: labelStyle.copyWith(color: currentLabelColor),
-                          ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: GestureDetector(
+                        onTap: _handleCheckboxOrLabelClick,
+                        child: Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                widget.label,
+                                style:
+                                    labelStyle.copyWith(color: currentLabelColor),
+                              ),
+                            ),
+                            const SizedBox(width: 8.0),
+                            if (widget.selectedValue != -1 &&
+                                gradeMap.containsKey(widget.selectedValue))
+                              Text(
+                                '(${gradeMap[widget.selectedValue]})',
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12,
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
             ),
-             if (!isEffectivelyEnabled) // Show "Tidak ada" if not effectively enabled
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: toggleOptionSelectedTidakColor,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Text(
-                    'Tidak ada',
-                    style: disabledToggleTextStyle,
-                  ),
+            if (!isEffectivelyEnabled) // Show "Tidak ada" if not effectively enabled
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: toggleOptionSelectedTidakColor,
+                  borderRadius: BorderRadius.circular(16),
                 ),
+                child: Text(
+                  'Tidak ada',
+                  style: disabledToggleTextStyle,
+                ),
+              ),
           ],
         ),
         const SizedBox(height: 4.0),
