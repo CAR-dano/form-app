@@ -285,6 +285,8 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     try {
       final XFile capturedImageFile = await controller.takePicture();
 
+      if (!mounted) return; // Ensure widget is still mounted before proceeding
+
       // Trigger the flash animation and increment counter after picture is taken
       if (mounted) {
         _captureAnimationController.forward(from: 0.0).then((_) {
