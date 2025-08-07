@@ -128,10 +128,12 @@ class _ToggleableNumberedButtonListState extends State<ToggleableNumberedButtonL
                         onTap: _handleCheckboxOrLabelClick,
                         child: Row(
                           children: [
-                            Text(
-                              widget.label,
-                              style:
-                                  labelStyle.copyWith(color: currentLabelColor),
+                            Flexible(
+                              child: Text(
+                                widget.label,
+                                style:
+                                    labelStyle.copyWith(color: currentLabelColor),
+                              ),
                             ),
                             const SizedBox(width: 8.0),
                             if (widget.selectedValue != -1 &&
