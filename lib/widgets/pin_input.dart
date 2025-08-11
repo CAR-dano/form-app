@@ -85,8 +85,9 @@ class _PinInputState extends State<PinInput> {
                   controller: _pinControllers[index],
                   focusNode: _pinFocusNodes[index],
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Ensure only numbers can be entered
                   textAlign: TextAlign.center,
-                  maxLength: 1,
+                  // maxLength: 1, // Remove maxLength to handle logic in onChanged
                   obscureText: false,
                   style: inputTextStyling.copyWith(
                     fontWeight: FontWeight.bold,
@@ -111,8 +112,16 @@ class _PinInputState extends State<PinInput> {
                     ),
                   ),
                   onChanged: (value) {
-                    // This callback now only handles forward movement.
-                    if (value.isNotEmpty) {
+                    if (value.length > 1) {
+                      // If a new digit is entered in a full field,
+                      // take the new digit and move to the next field.
+                      String newDigit = value.substring(value.length - 1);
+                      _pinControllers[index].text = newDigit;
+                      if (index < widget.pinLength - 1) {
+                        _pinFocusNodes[index + 1].requestFocus();
+                      }
+                    } else if (value.isNotEmpty) {
+                      // This handles the standard case of typing into an empty field.
                       if (index < widget.pinLength - 1) {
                         _pinFocusNodes[index + 1].requestFocus();
                       }
