@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import flutter_riverpod
 import 'package:form_app/providers/auth_provider.dart';
 import 'package:form_app/statics/app_styles.dart'; // Import AppStyles
+import 'package:form_app/widgets/app_version_display.dart';
 import 'package:form_app/widgets/labeled_text_field.dart'; // Import LabeledTextField
 import 'package:form_app/widgets/pin_input.dart'; // Import PinInputWidget
 import 'package:form_app/pages/multi_step_form_screen.dart'; // Import MultiStepFormScreen
@@ -69,6 +70,12 @@ class _LoginPageState extends ConsumerState<LoginPage> { // Change to ConsumerSt
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+        appBar: AppBar(
+          shadowColor: Colors.transparent,
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          actions: [const AppVersionDisplay(), const SizedBox(width: 16,)],
+        ),
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 48.0),
