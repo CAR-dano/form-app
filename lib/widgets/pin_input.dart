@@ -20,9 +20,6 @@ class _PinInputState extends State<PinInput> {
   late List<TextEditingController> _pinControllers;
   late List<FocusNode> _pinFocusNodes;
 
-  // Flag to prevent re-entrant calls when clearing text programmatically
-  bool _isClearingProgrammatically = false;
-
   @override
   void initState() {
     super.initState();
@@ -72,17 +69,15 @@ class _PinInputState extends State<PinInput> {
             return SizedBox(
               width: 48,
               child: KeyboardListener(
-                focusNode: FocusNode(), // Dummy focus node for the listener
+                focusNode: FocusNode(), // Necessary for the listener to capture events
                 onKeyEvent: (event) {
                   if (event is KeyDownEvent &&
                       event.logicalKey == LogicalKeyboardKey.backspace) {
-                    if (index > 0 && _pinControllers[index].text.isEmpty) {
-                      _isClearingProgrammatically = true;
+                    // This event fires when backspace is pressed.
+                    // We check if the current field is empty to trigger backward movement.
+                    if (_pinControllers[index].text.isEmpty && index > 0) {
                       _pinFocusNodes[index - 1].requestFocus();
                       _pinControllers[index - 1].clear();
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        _isClearingProgrammatically = false;
-                      });
                     }
                   }
                 },
@@ -111,19 +106,15 @@ class _PinInputState extends State<PinInput> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                          color: borderColor, width: 2.0),
+                      borderSide:
+                          const BorderSide(color: borderColor, width: 2.0),
                     ),
                   ),
                   onChanged: (value) {
-                    if (_isClearingProgrammatically) return;
+                    // This callback now only handles forward movement.
                     if (value.isNotEmpty) {
                       if (index < widget.pinLength - 1) {
                         _pinFocusNodes[index + 1].requestFocus();
-                      }
-                    } else {
-                      if (index > 0) {
-                        _pinFocusNodes[index - 1].requestFocus();
                       }
                     }
                     _checkPinCompletion();
