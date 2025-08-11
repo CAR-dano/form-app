@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import flutter_riverpod
-import 'package:form_app/services/auth_service.dart'; // Import AuthService
+import 'package:form_app/providers/auth_provider.dart';
 import 'package:form_app/statics/app_styles.dart'; // Import AppStyles
 import 'package:form_app/widgets/labeled_text_field.dart'; // Import LabeledTextField
 import 'package:form_app/widgets/pin_input.dart'; // Import PinInputWidget
@@ -19,7 +19,6 @@ class _LoginPageState extends ConsumerState<LoginPage> { // Change to ConsumerSt
   final TextEditingController _emailController = TextEditingController();
   String _currentPin = ''; // To store the PIN from PinInputWidget
   final ValueNotifier<bool> _formSubmitted = ValueNotifier<bool>(false);
-  final AuthService _authService = AuthService(); // Instance of AuthService
   bool _isLoading = false; // To manage loading state
 
   Future<void> _verifyPin(String pin) async {
@@ -28,7 +27,8 @@ class _LoginPageState extends ConsumerState<LoginPage> { // Change to ConsumerSt
     });
     try {
       final email = _emailController.text;
-      final authResponse = await _authService.loginInspector(email, pin);
+      final authService = ref.read(authServiceProvider);
+      final authResponse = await authService.loginInspector(email, pin);
       debugPrint('Login successful for user: ${authResponse.user.name}');
       // Navigate to the next screen upon successful login
       if (mounted) {
@@ -135,9 +135,16 @@ class _LoginPageState extends ConsumerState<LoginPage> { // Change to ConsumerSt
                         style: baseButtonStyle.copyWith(
                             backgroundColor: WidgetStateProperty.all(toggleOptionSelectedLengkapColor)),
                         child: _isLoading
-                            ? const CircularProgressIndicator(
+                            ? const SizedBox(
+                              height: 24,
+                              width: 24,
+                              child: CircularProgressIndicator(
+                                // ignore: deprecated_member_use
+                                year2023: false,
+                                strokeWidth: 3,
                                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              )
+                              ),
+                            )
                             : Text('Login', style: buttonTextStyle),
                       ),
                     ),
