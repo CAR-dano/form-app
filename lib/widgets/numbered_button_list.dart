@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:form_app/statics/app_styles.dart';
+import 'package:form_app/statics/grade_map.dart';
 
 class NumberedButtonList extends StatefulWidget {
   final String label;
@@ -25,9 +26,23 @@ class _NumberedButtonListState extends State<NumberedButtonList> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.label,
-          style: labelStyle,
+        Row(
+          children: [
+            Text(
+              widget.label,
+              style: labelStyle,
+            ),
+            const SizedBox(width: 8.0),
+            if (widget.selectedValue != -1 &&
+                gradeMap.containsKey(widget.selectedValue))
+              Text(
+                '(${gradeMap[widget.selectedValue]})',
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
+                ),
+              )
+          ],
         ),
         const SizedBox(height: 4.0),
         LayoutBuilder(
@@ -35,9 +50,10 @@ class _NumberedButtonListState extends State<NumberedButtonList> {
             double availableWidth = constraints.maxWidth;
             double preferredButtonWidth = 35.0;
             int numberOfButtons = widget.count;
-            
+
             // Calculate width needed if all buttons are at preferred width and touch each other
-            double totalPreferredWidthWithoutSpacing = numberOfButtons * preferredButtonWidth;
+            double totalPreferredWidthWithoutSpacing =
+                numberOfButtons * preferredButtonWidth;
             double actualButtonWidth;
 
             if (availableWidth < totalPreferredWidthWithoutSpacing) {
@@ -55,18 +71,22 @@ class _NumberedButtonListState extends State<NumberedButtonList> {
               children: List.generate(numberOfButtons, (value) {
                 final itemNumber = value + 1;
                 final isSelected = itemNumber == widget.selectedValue;
-                
+
                 return GestureDetector(
                   onTap: () => widget.onItemSelected(value + 1),
                   child: Container(
                     height: 35,
                     width: actualButtonWidth, // Apply the calculated width
                     decoration: BoxDecoration(
-                      color: isSelected ? numberedButtonColors[itemNumber] : buttonTextColor,
+                      color: isSelected
+                          ? numberedButtonColors[itemNumber]
+                          : buttonTextColor,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         // Preserving original border color logic, assuming numberedButtonColors and selectedValue are handled correctly
-                        color: widget.selectedValue != -1 && widget.selectedValue <= numberedButtonColors.length 
+                        color: widget.selectedValue != -1 &&
+                                widget.selectedValue <=
+                                    numberedButtonColors.length
                             ? numberedButtonColors[widget.selectedValue]!
                             : toggleOptionSelectedLengkapColor,
                         width: 2,
