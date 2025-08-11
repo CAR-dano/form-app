@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:form_app/models/user_data.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -28,7 +29,7 @@ class UserInfoService {
       }
     } catch (e) {
       // Handle potential errors, e.g., file corruption
-      print('Error reading user data: $e');
+      debugPrint('Error reading user data: $e');
     }
     return null;
   }
@@ -40,7 +41,7 @@ class UserInfoService {
         await file.delete();
       }
     } catch (e) {
-      print('Error clearing user data: $e');
+      debugPrint('Error clearing user data: $e');
     }
   }
 }
