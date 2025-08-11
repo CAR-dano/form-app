@@ -96,7 +96,7 @@ class _LoginPageState extends ConsumerState<LoginPage> { // Change to ConsumerSt
                     LabeledTextField(
                       controller: _emailController,
                       label: 'Email',
-                      hintText: 'yourname@gmail.com',
+                      hintText: 'inspeksimobil@gmail.com',
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
