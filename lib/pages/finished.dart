@@ -81,7 +81,7 @@ class _FinishedPageState extends ConsumerState<FinishedPage> { // Add mixin
             ),
             const SizedBox(height: 16.0),
             const Footer(),
-            const SizedBox(height: 8.0),
+            const SizedBox(height: 16.0),
           ],
         ),
       ),
