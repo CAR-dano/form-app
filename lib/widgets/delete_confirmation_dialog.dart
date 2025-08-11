@@ -56,18 +56,12 @@ class DeleteConfirmationDialog extends StatelessWidget {
                       shadowColor: Colors.grey[300]?.withAlpha(102),
                       alignment: Alignment.center, // Explicitly center the content
                     ),
-                    child: SizedBox(
-                      height: 24.0, // Fixed height for the button content
-                      child: Transform.translate(
-                        offset: const Offset(0.0, -2.0), // Move text up by 1 pixel
-                        child: Text(
-                          cancelText,
-                          textAlign: TextAlign.center, // Ensure text is centered horizontally
-                          style: labelStyle.copyWith(
-                            color: darkTextColor, // Or a suitable dark color
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                    child: Text(
+                      cancelText,
+                      textAlign: TextAlign.center, // Ensure text is centered horizontally
+                      style: labelStyle.copyWith(
+                        color: darkTextColor, // Or a suitable dark color
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -86,18 +80,12 @@ class DeleteConfirmationDialog extends StatelessWidget {
                       shadowColor: buttonColor.withAlpha(102),
                       alignment: Alignment.center, // Explicitly center the content
                     ),
-                    child: SizedBox(
-                      height: 24.0, // Fixed height for the button content
-                      child: Transform.translate(
-                        offset: const Offset(0.0, -2.0), // Move text up by 1 pixel
-                        child: Text(
-                          confirmText,
-                          textAlign: TextAlign.center, // Ensure text is centered horizontally
-                          style: labelStyle.copyWith(
-                            color: buttonTextColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                    child: Text(
+                      confirmText,
+                      textAlign: TextAlign.center, // Ensure text is centered horizontally
+                      style: labelStyle.copyWith(
+                        color: buttonTextColor,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
