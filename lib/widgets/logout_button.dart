@@ -23,6 +23,8 @@ class LogoutButton extends ConsumerWidget {
       builder: (BuildContext dialogContext) {
         return DeleteConfirmationDialog(
           message: 'Apakah Anda yakin ingin keluar?',
+          confirmText: 'Logout',
+          cancelText: 'Batal',
           onConfirm: () {
             Navigator.of(dialogContext).pop(); // Dismiss the dialog
             _logout(context, ref); // Proceed with logout
