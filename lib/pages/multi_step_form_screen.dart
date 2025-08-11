@@ -1,3 +1,4 @@
+import 'package:form_app/providers/user_info_provider.dart';
 import 'package:form_app/widgets/logout_button.dart';
 import 'package:form_app/utils/crashlytics_util.dart';
 import 'package:dio/dio.dart' as dio;
@@ -280,7 +281,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     return null;
   }
 
-  // Paste this entire method into your _MultiStepFormScreenState class
   Future<void> _submitForm() async {
     _cancelToken = dio.CancelToken();
     final submissionStatusNotifier = ref.read(submissionStatusProvider.notifier);
@@ -288,6 +288,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     final submissionDataCacheNotifier = ref.read(submissionDataCacheProvider.notifier);
     final customMessageOverlay = ref.read(customMessageOverlayProvider); // Get the singleton instance
     final crashlytics = ref.read(crashlyticsUtilProvider); // Get the Crashlytics util
+    final userInfo = ref.read(userInfoProvider);
 
     if (ref.read(submissionStatusProvider).isLoading) {
       customMessageOverlay.show(
@@ -323,7 +324,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
     submissionStatusNotifier.setLoading(
       isLoading: true,
-      message: 'Memvalidasi data...',
+      message: 'Memvalidasi data...', 
       progress: 0.0,
     );
 
@@ -369,9 +370,15 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     // --- Start of The Refactored Logic ---
     try {
       String? inspectionId;
-      final formDataToSubmit = ref.read(formProvider);
+      final formData = ref.read(formProvider);
       final apiService = ref.read(apiServiceProvider);
 
+      final inspectorId = userInfo.asData?.value?.id;
+      if (inspectorId == null) {
+        throw Exception('User ID not found. Cannot submit form.');
+      }
+
+      final formDataToSubmit = formData.copyWith(inspectorId: inspectorId);
 
       final bool isFormDataUnchanged = submissionDataCache.lastSubmittedFormData != null &&
           formDataToSubmit == submissionDataCache.lastSubmittedFormData;
@@ -391,7 +398,8 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           progress: 0.1,
         );
 
-        final Map<String, dynamic> formDataResponse = await apiService.submitFormData(formDataToSubmit, cancelToken: _cancelToken);
+        final Map<String, dynamic> formDataResponse = await apiService
+            .submitFormData(formDataToSubmit, cancelToken: _cancelToken);
         inspectionId = formDataResponse['id'] as String?;
 
         submissionDataCacheNotifier.setCache(
@@ -401,7 +409,8 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       }
 
       if (inspectionId == null || inspectionId.isEmpty) {
-        throw Exception('Inspection ID not received or is empty after form submission.');
+        throw Exception(
+            'Inspection ID not received or is empty after form submission.');
       }
 
       if (!mounted) return;
@@ -411,20 +420,28 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       for (var imgData in wajibImages) {
         if (imgData.imagePath.isNotEmpty) {
           allImages.add(UploadableImage(
-            imagePath: imgData.imagePath, label: imgData.label, needAttention: imgData.needAttention,
-            category: imgData.category, isMandatory: imgData.isMandatory,
+            imagePath: imgData.imagePath,
+            label: imgData.label,
+            needAttention: imgData.needAttention,
+            category: imgData.category,
+            isMandatory: imgData.isMandatory,
           ));
         }
       }
 
       for (final identifier in _tambahanImagePageIdentifiers.values) {
-        final tambahanImagesList = ref.read(tambahanImageDataProvider(identifier));
+        final tambahanImagesList = 
+            ref.read(tambahanImageDataProvider(identifier));
         for (var imgData in tambahanImagesList) {
           if (imgData.imagePath.isNotEmpty) {
-            final String labelToUse = imgData.label.isEmpty ? _defaultTambahanLabel : imgData.label;
+            final String labelToUse = 
+                imgData.label.isEmpty ? _defaultTambahanLabel : imgData.label;
             allImages.add(UploadableImage(
-              imagePath: imgData.imagePath, label: labelToUse, needAttention: imgData.needAttention,
-              category: imgData.category, isMandatory: imgData.isMandatory,
+              imagePath: imgData.imagePath,
+              label: labelToUse,
+              needAttention: imgData.needAttention,
+              category: imgData.category,
+              isMandatory: imgData.isMandatory,
             ));
           }
         }
@@ -432,15 +449,19 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
       final int totalOriginalImages = allImages.length;
       const int batchSize = 10; // Assuming batch size is 10 as per ApiService
-      final int totalOriginalBatches = (totalOriginalImages / batchSize).ceil();
+      final int totalOriginalBatches = 
+          (totalOriginalImages / batchSize).ceil();
 
       // Filter out already uploaded images
-      final Set<String> uploadedPaths = submissionDataCache.uploadedImagePaths.toSet();
-      List<UploadableImage> imagesToUpload = allImages.where((image) => !uploadedPaths.contains(image.imagePath)).toList();
+      final Set<String> uploadedPaths = 
+          submissionDataCache.uploadedImagePaths.toSet();
+      List<UploadableImage> imagesToUpload = allImages
+          .where((image) => !uploadedPaths.contains(image.imagePath))
+          .toList();
 
       final int initialUploadedImagesCount = uploadedPaths.length;
-      final int initialUploadedBatchesCount = (initialUploadedImagesCount / batchSize).floor();
-
+      final int initialUploadedBatchesCount = 
+          (initialUploadedImagesCount / batchSize).floor();
 
       debugPrint('Total images in original set: $totalOriginalImages');
       debugPrint('Total original batches: $totalOriginalBatches');
@@ -458,11 +479,14 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           (int currentBatchOfRemaining, int totalBatchesOfRemaining) {
             if (!mounted) return;
             // Calculate overall current batch number
-            final int overallCurrentBatch = initialUploadedBatchesCount + currentBatchOfRemaining;
+            final int overallCurrentBatch = 
+                initialUploadedBatchesCount + currentBatchOfRemaining;
             
             // Calculate overall progress based on original total batches
             final double overallProgress = totalOriginalBatches > 0
-                ? formDataWeight + ((overallCurrentBatch / totalOriginalBatches.toDouble()) * imagesWeight)
+                ? formDataWeight + 
+                    ((overallCurrentBatch / totalOriginalBatches.toDouble()) * 
+                        imagesWeight)
                 : 1.0;
 
             submissionStatusNotifier.setLoading(
@@ -489,7 +513,8 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       }
 
       // Success and final cleanup
-      submissionStatusNotifier.setLoading(isLoading: true, message: 'Menyelesaikan...', progress: 1.0);
+      submissionStatusNotifier.setLoading(
+          isLoading: true, message: 'Menyelesaikan...', progress: 1.0);
       // Clear all data only upon successful completion of ALL uploads
       ref.read(formProvider.notifier).resetFormData();
       ref.read(imageDataListProvider.notifier).clearImageData();
@@ -509,7 +534,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         CupertinoPageRoute(builder: (context) => const FinishedPage()),
         (Route<dynamic> route) => false,
       );
-
     } on dio.DioException catch (e, stackTrace) {
       if (!mounted) return;
       // This now catches cancellation from BOTH form submission and image upload
@@ -531,13 +555,14 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         );
         customMessageOverlay.show(
           context: context, // Pass context here
-          message: 'Terjadi kesalahan saat mengirim data: $e',
+          message: '$e',
           color: Colors.red,
           icon: Icons.error_outline,
           duration: const Duration(seconds: 5),
         );
       }
-    } catch (e, stackTrace) { // Add stackTrace here
+    } catch (e, stackTrace) { 
+      // Add stackTrace here
       if (!mounted) return;
       // Fallback for non-Dio cancellations or other general errors
       if (e.toString().contains('cancelled')) {
@@ -558,7 +583,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         );
         customMessageOverlay.show(
           context: context, // Pass context here
-          message: 'Terjadi kesalahan saat mengirim data: $e',
+          message: '$e',
           color: Colors.red,
           icon: Icons.error_outline,
           duration: const Duration(seconds: 5),
