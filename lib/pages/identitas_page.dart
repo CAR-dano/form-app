@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/inspector_data.dart';
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
 import 'package:form_app/providers/inspection_branches_provider.dart'; // Import the provider for branches
-import 'package:form_app/providers/inspector_provider.dart';
+import 'package:form_app/providers/user_info_provider.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/labeled_text.dart';
 import 'package:form_app/widgets/page_title.dart';
@@ -25,25 +25,42 @@ class IdentitasPage extends ConsumerStatefulWidget {
   ConsumerState<IdentitasPage> createState() => _IdentitasPageState();
 }
 
-class _IdentitasPageState extends ConsumerState<IdentitasPage> with AutomaticKeepAliveClientMixin {
+class _IdentitasPageState extends ConsumerState<IdentitasPage>
+    with AutomaticKeepAliveClientMixin {
   bool _hasValidatedOnSubmit = false; // Declare the state variable
 
   @override
   bool get wantKeepAlive => true;
 
   @override
+  void initState() {
+    super.initState();
+    // It's better to trigger side-effects like this in initState or other lifecycle methods.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userInfo = ref.read(userInfoProvider);
+      userInfo.whenData((userData) {
+        if (userData != null) {
+          ref.read(formProvider.notifier).updateSelectedInspector(
+                Inspector(id: userData.id, name: userData.name),
+              );
+        }
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     super.build(context);
     final formData = ref.watch(formProvider);
     final formNotifier = ref.read(formProvider.notifier);
-    // No longer need to watch inspectionBranchesProvider directly here for the UI part of the dropdown.
-    // LabeledBranchesDropdownField will handle it.
+    final userInfo = ref.watch(userInfoProvider);
 
     var hariIni = '${DateTime.now().day.toString().padLeft(2, '0')}/'
-                           '${DateTime.now().month.toString().padLeft(2, '0')}/'
-                           '${DateTime.now().year}';
+        '${DateTime.now().month.toString().padLeft(2, '0')}/'
+        '${DateTime.now().year}';
 
-    return ValueListenableBuilder<bool>( // Add ValueListenableBuilder here
+    return ValueListenableBuilder<bool>(
+      // Add ValueListenableBuilder here
       valueListenable: widget.formSubmitted,
       builder: (context, isFormSubmitted, child) {
         if (isFormSubmitted && !_hasValidatedOnSubmit) {
@@ -63,35 +80,17 @@ class _IdentitasPageState extends ConsumerState<IdentitasPage> with AutomaticKee
       },
       child: SingleChildScrollView(
         clipBehavior: Clip.none,
-        key: const PageStorageKey<String>('pageOneScrollKey'), // Add PageStorageKey here
+        key: const PageStorageKey<String>(
+            'pageOneScrollKey'), // Add PageStorageKey here
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const PageTitle(data: 'Identitas'),
             const SizedBox(height: 6.0),
-            LabeledDropdownField<Inspector>( // Change generic type to Inspector
-                label: 'Nama Inspektor',
-                itemsProvider: inspectorProvider, // Use the new provider
-                value: formData.selectedInspector,
-                itemText: (inspector) => inspector.name,
-                onChanged: (newValue) {
-                  formNotifier.updateSelectedInspector(newValue);
-                  if (widget.formSubmitted.value) {
-                    widget.formKey.currentState?.validate();
-                  }
-                },
-                validator: (value) {
-                  if (widget.formSubmitted.value && value == null) {
-                    return 'Nama Inspektor belum terisi';
-                  }
-                  return null;
-                },
-                initialHintText: 'Pilih nama inspektor',
-                loadingHintText: 'Memuat inspektor...',
-                emptyDataHintText: 'Tidak ada inspektor tersedia',
-                errorHintText: 'Gagal memuat inspektor',
-                formSubmitted: widget.formSubmitted.value, // Pass formSubmitted
-              ),
+            LabeledText(
+              label: 'Nama Inspektor',
+              value: userInfo.asData?.value?.name ?? 'Memuat...',
+            ),
             const SizedBox(height: 16.0),
             LabeledTextField(
               label: 'Nama Customer',
@@ -139,7 +138,6 @@ class _IdentitasPageState extends ConsumerState<IdentitasPage> with AutomaticKee
               value: hariIni,
             ),
             const SizedBox(height: 32.0),
-            
             const Footer()
           ],
         ),

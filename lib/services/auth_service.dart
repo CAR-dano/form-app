@@ -2,11 +2,14 @@ import 'package:dio/dio.dart' as dio;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:form_app/models/auth_response.dart';
+import 'package:form_app/models/user_data.dart';
 import 'package:form_app/services/token_manager_service.dart';
+import 'package:form_app/services/user_info_service.dart';
 
 class AuthService {
   final dio.Dio _dioInst;
   final TokenManagerService _tokenManager;
+  final UserInfoService _userInfoService;
 
   String get _baseApiUrl {
     if (kDebugMode) {
@@ -19,7 +22,7 @@ class AuthService {
   String get _checkTokenUrl => '$_baseApiUrl/auth/check-token';
   String get _refreshTokenUrl => '$_baseApiUrl/auth/refresh';
 
-  AuthService(this._tokenManager) : _dioInst = dio.Dio() {
+  AuthService(this._tokenManager, this._userInfoService) : _dioInst = dio.Dio() {
     _dioInst.interceptors.add(
       dio.LogInterceptor(
         requestHeader: true,
@@ -48,11 +51,14 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final AuthResponse authResponse = AuthResponse.fromJson(response.data);
+        final UserData userData = UserData.fromAuthResponse(response.data);
+
         await _tokenManager.saveTokens(
           accessToken: authResponse.accessToken,
           refreshToken: authResponse.refreshToken,
-          userName: authResponse.user.name,
         );
+        await _userInfoService.saveUserData(userData);
+
         if (kDebugMode) {
           print(
               'Login successful! Access Token: ${authResponse.accessToken}, Refresh Token: ${authResponse.refreshToken}, User Name: ${authResponse.user.name}');
@@ -84,12 +90,9 @@ class AuthService {
     return await _tokenManager.getRefreshToken();
   }
 
-  Future<String?> getUserName() async {
-    return await _tokenManager.getUserName();
-  }
-
   Future<void> logout() async {
     await _tokenManager.clearTokens();
+    await _userInfoService.clearUserData();
     debugPrint('User logged out and tokens cleared.');
   }
 
@@ -149,11 +152,13 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final AuthResponse authResponse = AuthResponse.fromJson(response.data);
+        final UserData userData = UserData.fromAuthResponse(response.data);
+
         await _tokenManager.saveTokens(
           accessToken: authResponse.accessToken,
           refreshToken: authResponse.refreshToken,
-          userName: authResponse.user.name,
         );
+        await _userInfoService.saveUserData(userData);
         debugPrint('Token refreshed successfully.');
         return true;
       } else {
