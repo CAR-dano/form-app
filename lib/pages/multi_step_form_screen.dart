@@ -226,7 +226,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           AppVersionDisplay(),
-          SizedBox(width: 8),
           LogoutButton(),
         ],
       );
