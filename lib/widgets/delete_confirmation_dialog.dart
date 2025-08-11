@@ -5,12 +5,16 @@ class DeleteConfirmationDialog extends StatelessWidget {
   final String message;
   final VoidCallback onConfirm;
   final VoidCallback onCancel;
+  final String confirmText;
+  final String cancelText;
 
   const DeleteConfirmationDialog({
     super.key,
     required this.message,
     required this.onConfirm,
     required this.onCancel,
+    this.confirmText = 'Iya',
+    this.cancelText = 'Tidak',
   });
 
   @override
@@ -57,7 +61,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
                       child: Transform.translate(
                         offset: const Offset(0.0, -2.0), // Move text up by 1 pixel
                         child: Text(
-                          'Tidak',
+                          cancelText,
                           textAlign: TextAlign.center, // Ensure text is centered horizontally
                           style: labelStyle.copyWith(
                             color: darkTextColor, // Or a suitable dark color
@@ -87,7 +91,7 @@ class DeleteConfirmationDialog extends StatelessWidget {
                       child: Transform.translate(
                         offset: const Offset(0.0, -2.0), // Move text up by 1 pixel
                         child: Text(
-                          'Iya',
+                          confirmText,
                           textAlign: TextAlign.center, // Ensure text is centered horizontally
                           style: labelStyle.copyWith(
                             color: buttonTextColor,
