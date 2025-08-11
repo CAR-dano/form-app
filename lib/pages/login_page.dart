@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import flutter_riverpod
 import 'package:form_app/providers/auth_provider.dart';
@@ -33,7 +34,7 @@ class _LoginPageState extends ConsumerState<LoginPage> { // Change to ConsumerSt
       // Navigate to the next screen upon successful login
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const MultiStepFormScreen()),
+          CupertinoPageRoute(builder: (context) => const MultiStepFormScreen()),
         );
       }
     } catch (e) {
