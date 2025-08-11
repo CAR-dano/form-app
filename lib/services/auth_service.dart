@@ -1,12 +1,12 @@
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:form_app/models/auth_response.dart';
+import 'package:form_app/services/token_manager_service.dart';
 
 class AuthService {
   final dio.Dio _dioInst;
-  final FlutterSecureStorage _secureStorage;
+  final TokenManagerService _tokenManager;
 
   String get _baseApiUrl {
     if (kDebugMode) {
@@ -19,9 +19,7 @@ class AuthService {
   String get _checkTokenUrl => '$_baseApiUrl/auth/check-token';
   String get _refreshTokenUrl => '$_baseApiUrl/auth/refresh';
 
-  AuthService()
-      : _dioInst = dio.Dio(),
-        _secureStorage = const FlutterSecureStorage() {
+  AuthService(this._tokenManager) : _dioInst = dio.Dio() {
     _dioInst.interceptors.add(
       dio.LogInterceptor(
         requestHeader: true,
@@ -50,21 +48,26 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final AuthResponse authResponse = AuthResponse.fromJson(response.data);
-        await _secureStorage.write(key: 'accessToken', value: authResponse.accessToken);
-        await _secureStorage.write(key: 'refreshToken', value: authResponse.refreshToken);
-        await _secureStorage.write(key: 'userName', value: authResponse.user.name);
+        await _tokenManager.saveTokens(
+          accessToken: authResponse.accessToken,
+          refreshToken: authResponse.refreshToken,
+          userName: authResponse.user.name,
+        );
         if (kDebugMode) {
-          print('Login successful! Access Token: ${authResponse.accessToken}, Refresh Token: ${authResponse.refreshToken}, User Name: ${authResponse.user.name}');
+          print(
+              'Login successful! Access Token: ${authResponse.accessToken}, Refresh Token: ${authResponse.refreshToken}, User Name: ${authResponse.user.name}');
         }
         return authResponse;
       } else {
         final errorMessage = response.data['message'] ?? 'Unknown error';
-        throw Exception('Failed to login: ${response.statusCode} - $errorMessage');
+        throw Exception(
+            'Failed to login: ${response.statusCode} - $errorMessage');
       }
     } on dio.DioException catch (e) {
       if (e.response != null) {
         final errorMessage = e.response?.data['message'] ?? 'Server error';
-        throw Exception('Login failed: ${e.response?.statusCode} - $errorMessage');
+        throw Exception(
+            'Login failed: ${e.response?.statusCode} - $errorMessage');
       } else {
         throw Exception('Login failed: ${e.message}');
       }
@@ -74,22 +77,19 @@ class AuthService {
   }
 
   Future<String?> getAccessToken() async {
-    return await _secureStorage.read(key: 'accessToken');
+    return await _tokenManager.getAccessToken();
   }
 
   Future<String?> getRefreshToken() async {
-    return await _secureStorage.read(key: 'refreshToken');
+    return await _tokenManager.getRefreshToken();
   }
 
   Future<String?> getUserName() async {
-    return await _secureStorage.read(key: 'userName');
+    return await _tokenManager.getUserName();
   }
 
   Future<void> logout() async {
-    await _secureStorage.delete(key: 'accessToken');
-    await _secureStorage.delete(key: 'refreshToken');
-    await _secureStorage.delete(key: 'userName');
-    
+    await _tokenManager.clearTokens();
     debugPrint('User logged out and tokens cleared.');
   }
 
@@ -114,7 +114,8 @@ class AuthService {
         debugPrint('Token is valid.');
         return true;
       } else {
-        debugPrint('Token check failed with status: ${response.statusCode}. Attempting to refresh token.');
+        debugPrint(
+            'Token check failed with status: ${response.statusCode}. Attempting to refresh token.');
         return await _tryRefreshToken();
       }
     } on dio.DioException catch (e) {
@@ -148,13 +149,16 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final AuthResponse authResponse = AuthResponse.fromJson(response.data);
-        await _secureStorage.write(key: 'accessToken', value: authResponse.accessToken);
-        await _secureStorage.write(key: 'refreshToken', value: authResponse.refreshToken);
-        await _secureStorage.write(key: 'userName', value: authResponse.user.name);
+        await _tokenManager.saveTokens(
+          accessToken: authResponse.accessToken,
+          refreshToken: authResponse.refreshToken,
+          userName: authResponse.user.name,
+        );
         debugPrint('Token refreshed successfully.');
         return true;
       } else {
-        debugPrint('Refresh token failed with status: ${response.statusCode}. Logging out.');
+        debugPrint(
+            'Refresh token failed with status: ${response.statusCode}. Logging out.');
         await logout();
         return false;
       }
