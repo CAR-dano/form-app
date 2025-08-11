@@ -194,7 +194,6 @@ class _HasilInspeksiPageState extends ConsumerState<HasilInspeksiPage> with Auto
                 },
               ),
               const SizedBox(height: 16.0), // Spacing before Estimasi Perbaikan section
-              
             ],
           ),
         ),

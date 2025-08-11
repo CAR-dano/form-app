@@ -2,16 +2,21 @@ import 'package:form_app/utils/crashlytics_util.dart';
 import 'package:form_app/utils/focus_navigator_observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_app/pages/multi_step_form_screen.dart'; // Import MultiStepFormScreen
-import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import flutter_dotenv
-import 'package:form_app/providers/tambahan_image_data_provider.dart'; // Import the provider
-import 'dart:io'; // For FileImage
-import 'package:flutter/services.dart'; // Import for SystemChrome
+import 'package:form_app/pages/login_page.dart';
+import 'package:form_app/pages/multi_step_form_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:form_app/providers/auth_provider.dart';
+import 'package:form_app/providers/tambahan_image_data_provider.dart';
+import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'dart:ui'; // Import for PlatformDispatcher
+import 'dart:ui';
+import 'package:flutter_native_splash/flutter_native_splash.dart'; // Import flutter_native_splash
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter bindings are initialized
+  final WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized(); // Ensure Flutter bindings are initialized
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding); // Preserve the native splash screen
+
   await SystemChrome.setPreferredOrientations([ // Add this block
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -61,6 +66,8 @@ class FormApp extends ConsumerStatefulWidget {
 }
 
 class _FormAppState extends ConsumerState<FormApp> {
+  late Future<bool> _tokenValidityFuture;
+
   // List of all identifiers for TambahanImageSelection widgets
   final List<String> _tambahanImageIdentifiers = const [
     'General Tambahan',
@@ -75,6 +82,8 @@ class _FormAppState extends ConsumerState<FormApp> {
   @override
   void initState() {
     super.initState();
+    final authService = ref.read(authServiceProvider);
+    _tokenValidityFuture = authService.checkTokenValidity();
     // Schedule pre-caching after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _precacheAllTambahanImages();
@@ -115,7 +124,21 @@ class _FormAppState extends ConsumerState<FormApp> {
       ),
       debugShowCheckedModeBanner: false,
       navigatorObservers: [FocusNavigatorObserver()],
-      home: const MultiStepFormScreen(), // Set MultiStepFormScreen as home
+      home: FutureBuilder<bool>(
+        future: _tokenValidityFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            FlutterNativeSplash.remove(); // Remove the splash screen once the future is done
+            if (snapshot.data == true) {
+              return const MultiStepFormScreen();
+            } else {
+              return const LoginPage();
+            }
+          }
+          // Return an empty container or null to keep the splash screen visible
+          return const SizedBox.shrink(); // Use SizedBox.shrink() to prevent rendering a black screen
+        },
+      ),
     );
   }
 }

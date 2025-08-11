@@ -1,11 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_app/providers/auth_provider.dart';
 import 'package:form_app/services/api_service.dart';
 import 'package:form_app/models/inspection_branch.dart';
 import 'package:form_app/utils/crashlytics_util.dart'; // Import InspectionBranch model
 
 // Provider for the ApiService instance
 final apiServiceProvider = Provider<ApiService>((ref) {
-  return ApiService(ref.read(crashlyticsUtilProvider));
+  final authService = ref.watch(authServiceProvider);
+  final crashlyticsUtil = ref.watch(crashlyticsUtilProvider);
+  return ApiService(authService, crashlyticsUtil);
 });
 
 // FutureProvider to fetch inspection branches
