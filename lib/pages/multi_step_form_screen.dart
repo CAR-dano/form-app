@@ -1,3 +1,4 @@
+import 'package:form_app/widgets/logout_button.dart';
 import 'package:form_app/utils/crashlytics_util.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/cupertino.dart';
@@ -220,8 +221,15 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
   Widget? _buildTrailingWidget(int currentPageIndex) {
     if (currentPageIndex == 0) {
-      // For the first page, show the AppVersionDisplay widget
-      return const AppVersionDisplay();
+      // For the first page, show AppVersionDisplay and a logout button
+      return const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AppVersionDisplay(),
+          SizedBox(width: 8),
+          LogoutButton(),
+        ],
+      );
     }
 
     final String? pageIdentifier = _tambahanImagePageIdentifiers[currentPageIndex];
