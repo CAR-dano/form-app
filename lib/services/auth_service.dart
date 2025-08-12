@@ -1,15 +1,16 @@
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/auth_response.dart';
 import 'package:form_app/models/user_data.dart';
+import 'package:form_app/providers/user_info_provider.dart';
 import 'package:form_app/services/token_manager_service.dart';
-import 'package:form_app/services/user_info_service.dart';
 
 class AuthService {
   final dio.Dio _dioInst;
   final TokenManagerService _tokenManager;
-  final UserInfoService _userInfoService;
+  final Ref _ref;
 
   String get _baseApiUrl {
     if (kDebugMode) {
@@ -22,7 +23,7 @@ class AuthService {
   String get _checkTokenUrl => '$_baseApiUrl/auth/check-token';
   String get _refreshTokenUrl => '$_baseApiUrl/auth/refresh';
 
-  AuthService(this._tokenManager, this._userInfoService) : _dioInst = dio.Dio() {
+  AuthService(this._tokenManager, this._ref) : _dioInst = dio.Dio() {
     _dioInst.interceptors.add(
       dio.LogInterceptor(
         requestHeader: true,
@@ -57,7 +58,8 @@ class AuthService {
           accessToken: authResponse.accessToken,
           refreshToken: authResponse.refreshToken,
         );
-        await _userInfoService.saveUserData(userData);
+        // Update the provider state
+        await _ref.read(userInfoProvider.notifier).saveUserData(userData);
 
         if (kDebugMode) {
           print(
@@ -92,7 +94,8 @@ class AuthService {
 
   Future<void> logout() async {
     await _tokenManager.clearTokens();
-    await _userInfoService.clearUserData();
+    // Clear the provider state
+    await _ref.read(userInfoProvider.notifier).clearUserData();
     debugPrint('User logged out and tokens cleared.');
   }
 
@@ -158,7 +161,8 @@ class AuthService {
           accessToken: authResponse.accessToken,
           refreshToken: authResponse.refreshToken,
         );
-        await _userInfoService.saveUserData(userData);
+        // Update the provider state
+        await _ref.read(userInfoProvider.notifier).saveUserData(userData);
         debugPrint('Token refreshed successfully.');
         return true;
       } else {

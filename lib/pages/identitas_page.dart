@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_app/models/inspector_data.dart';
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
 import 'package:form_app/providers/inspection_branches_provider.dart'; // Import the provider for branches
 import 'package:form_app/providers/user_info_provider.dart';
@@ -31,22 +30,6 @@ class _IdentitasPageState extends ConsumerState<IdentitasPage>
 
   @override
   bool get wantKeepAlive => true;
-
-  @override
-  void initState() {
-    super.initState();
-    // It's better to trigger side-effects like this in initState or other lifecycle methods.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final userInfo = ref.read(userInfoProvider);
-      userInfo.whenData((userData) {
-        if (userData != null) {
-          ref.read(formProvider.notifier).updateSelectedInspector(
-                Inspector(id: userData.id, name: userData.name),
-              );
-        }
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
