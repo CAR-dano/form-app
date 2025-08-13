@@ -18,6 +18,8 @@ class LabeledTextField extends StatefulWidget {
   final String? prefixText;
   final String? suffixText;
   final TextCapitalization textCapitalization;
+  final ValueChanged<String>? onFieldSubmitted; // New parameter
+  final TextInputAction? textInputAction; // New parameter
 
   const LabeledTextField({
     super.key,
@@ -36,6 +38,8 @@ class LabeledTextField extends StatefulWidget {
     this.prefixText,
     this.suffixText,
     this.textCapitalization = TextCapitalization.sentences,
+    this.onFieldSubmitted, // Initialize new parameter
+    this.textInputAction, // Initialize new parameter
   });
 
   @override
@@ -126,6 +130,8 @@ class _LabeledTextFieldState extends State<LabeledTextField> {
           inputFormatters: widget.keyboardType == TextInputType.number && widget.useThousandsSeparator
               ? [ThousandsSeparatorInputFormatter()]
               : null,
+          onFieldSubmitted: widget.onFieldSubmitted, // Pass the new parameter
+          textInputAction: widget.textInputAction, // Pass the new parameter
           decoration: InputDecoration(
             hintText: widget.hintText,
             hintStyle: hintTextStyling,

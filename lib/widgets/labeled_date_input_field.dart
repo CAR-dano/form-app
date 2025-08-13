@@ -14,6 +14,8 @@ class LabeledDateInputField extends ConsumerStatefulWidget {
   final FocusNode? focusNode;
   final bool formSubmitted;
   final String? initialValue;
+  final ValueChanged<String>? onFieldSubmitted; // New parameter
+  final TextInputAction? textInputAction; // New parameter
 
   const LabeledDateInputField({
     super.key,
@@ -25,6 +27,8 @@ class LabeledDateInputField extends ConsumerStatefulWidget {
     this.focusNode,
     this.formSubmitted = false,
     this.initialValue,
+    this.onFieldSubmitted, // Initialize new parameter
+    this.textInputAction, // Initialize new parameter
   });
 
   @override
@@ -172,6 +176,8 @@ class _LabeledDateInputFieldState extends ConsumerState<LabeledDateInputField> {
           },
           style: inputTextStyling,
           focusNode: widget.focusNode,
+          onFieldSubmitted: widget.onFieldSubmitted, // Pass the new parameter
+          textInputAction: widget.textInputAction, // Pass the new parameter
           decoration: InputDecoration(
             hintText: widget.hintText,
             hintStyle: hintTextStyling,
