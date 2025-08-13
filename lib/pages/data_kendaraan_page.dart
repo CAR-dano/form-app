@@ -23,6 +23,21 @@ class DataKendaraanPage extends ConsumerStatefulWidget {
 
 class _DataKendaraanPageState extends ConsumerState<DataKendaraanPage> with AutomaticKeepAliveClientMixin {
   bool _hasValidatedOnSubmit = false; // Declare the state variable
+  late List<FocusNode> _focusNodes; // Declare a list of FocusNodes
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNodes = List.generate(_buildInputFields(ref.read(formProvider), ref.read(formProvider.notifier)).length, (index) => FocusNode());
+  }
+
+  @override
+  void dispose() {
+    for (var node in _focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   bool get wantKeepAlive => true;
@@ -68,6 +83,7 @@ class _DataKendaraanPageState extends ConsumerState<DataKendaraanPage> with Auto
             delegate: SliverChildBuilderDelegate(
               (context, index) {
                 final fieldData = _buildInputFields(formData, formNotifier)[index];
+                final isLastField = index == _buildInputFields(formData, formNotifier).length - 1;
                 if (fieldData['isDateField'] == true) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
@@ -80,6 +96,15 @@ class _DataKendaraanPageState extends ConsumerState<DataKendaraanPage> with Auto
                           ? '${(fieldData['initialValue'] as DateTime).day.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).month.toString().padLeft(2, '0')}/${(fieldData['initialValue'] as DateTime).year}'
                           : null,
                       formSubmitted: widget.formSubmitted.value, // Pass the boolean value
+                      focusNode: _focusNodes[index],
+                      textInputAction: isLastField ? TextInputAction.done : TextInputAction.next,
+                      onFieldSubmitted: (_) {
+                        if (!isLastField) {
+                          _focusNodes[index + 1].requestFocus();
+                        } else {
+                          _focusNodes[index].unfocus(); // Dismiss keyboard on last field
+                        }
+                      },
                     ),
                   );
                 } else {
@@ -96,6 +121,15 @@ class _DataKendaraanPageState extends ConsumerState<DataKendaraanPage> with Auto
                       useThousandsSeparator: fieldData['useThousandsSeparator'] ?? true,
                       suffixText: fieldData['suffixText'],
                       textCapitalization: fieldData['textCapitalization'] ?? TextCapitalization.sentences,
+                      focusNode: _focusNodes[index],
+                      textInputAction: isLastField ? TextInputAction.done : TextInputAction.next,
+                      onFieldSubmitted: (_) {
+                        if (!isLastField) {
+                          _focusNodes[index + 1].requestFocus();
+                        } else {
+                          _focusNodes[index].unfocus(); // Dismiss keyboard on last field
+                        }
+                      },
                     ),
                   );
                 }
