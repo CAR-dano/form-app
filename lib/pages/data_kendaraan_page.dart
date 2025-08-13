@@ -228,6 +228,8 @@ class _DataKendaraanPageState extends ConsumerState<DataKendaraanPage> with Auto
         'validator': (value) {
           if (widget.formSubmitted.value && (value == null || value.isEmpty)) {
             return 'Plat Nomor belum terisi';
+          } else if (value.length > 15) {
+            return 'Plat Nomor tidak boleh lebih dari 15 karakter';
           }
           return null;
         },
