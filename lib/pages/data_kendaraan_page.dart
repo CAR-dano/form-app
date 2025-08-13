@@ -159,6 +159,9 @@ class _DataKendaraanPageState extends ConsumerState<DataKendaraanPage> with Auto
           if (widget.formSubmitted.value && (value == null || value.isEmpty)) {
             return 'Tahun belum terisi';
           }
+          if (value != null && int.tryParse(value) == null) {
+            return 'Tahun harus berupa angka';
+          }
           return null;
         },
       },
