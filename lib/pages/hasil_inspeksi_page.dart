@@ -20,10 +20,26 @@ class HasilInspeksiPage extends ConsumerStatefulWidget { // Change to ConsumerSt
   ConsumerState<HasilInspeksiPage> createState() => _HasilInspeksiPageState(); // Change to ConsumerState
 }
 
-class _HasilInspeksiPageState extends ConsumerState<HasilInspeksiPage> with AutomaticKeepAliveClientMixin { // Add mixin
+class _HasilInspeksiPageState extends ConsumerState<HasilInspeksiPage> with AutomaticKeepAliveClientMixin {
+  late List<FocusNode> _focusNodes; // Declare a list of FocusNodes
 
   @override
-  bool get wantKeepAlive => true; // Override wantKeepAlive
+  void initState() {
+    super.initState();
+    // Initialize FocusNodes only for the relevant text fields (Posisi Ban, Merk, Tipe Velg, Ketebalan)
+    _focusNodes = List.generate(4, (index) => FocusNode());
+  }
+
+  @override
+  void dispose() {
+    for (var node in _focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
@@ -165,6 +181,11 @@ class _HasilInspeksiPageState extends ConsumerState<HasilInspeksiPage> with Auto
                 onChanged: (value) {
                   formNotifier.updatePosisiBan(value);
                 },
+                focusNode: _focusNodes[0],
+                textInputAction: TextInputAction.next,
+                onFieldSubmitted: (_) {
+                  _focusNodes[1].requestFocus();
+                },
               ),
               const SizedBox(height: 16.0),
               LabeledTextField(
@@ -173,6 +194,11 @@ class _HasilInspeksiPageState extends ConsumerState<HasilInspeksiPage> with Auto
                 initialValue: formData.merk,
                 onChanged: (value) {
                   formNotifier.updateMerk(value);
+                },
+                focusNode: _focusNodes[1],
+                textInputAction: TextInputAction.next,
+                onFieldSubmitted: (_) {
+                  _focusNodes[2].requestFocus();
                 },
               ),
               const SizedBox(height: 16.0),
@@ -183,6 +209,11 @@ class _HasilInspeksiPageState extends ConsumerState<HasilInspeksiPage> with Auto
                 onChanged: (value) {
                   formNotifier.updateTipeVelg(value);
                 },
+                focusNode: _focusNodes[2],
+                textInputAction: TextInputAction.next,
+                onFieldSubmitted: (_) {
+                  _focusNodes[3].requestFocus();
+                },
               ),
               const SizedBox(height: 16.0),
               LabeledTextField(
@@ -191,6 +222,11 @@ class _HasilInspeksiPageState extends ConsumerState<HasilInspeksiPage> with Auto
                 initialValue: formData.ketebalan,
                 onChanged: (value) {
                   formNotifier.updateKetebalan(value);
+                },
+                focusNode: _focusNodes[3],
+                textInputAction: TextInputAction.done,
+                onFieldSubmitted: (_) {
+                  _focusNodes[3].unfocus(); // Dismiss keyboard on last field
                 },
               ),
               const SizedBox(height: 16.0), // Spacing before Estimasi Perbaikan section
