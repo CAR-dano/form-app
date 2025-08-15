@@ -31,6 +31,33 @@ jobs:
       # Analyzes the Flutter project for any issues, failing the job if infos are found.
       - name: Analyze project
         run: flutter analyze --fatal-infos # Fails the job if any issues are found
+  
+  version-check:
+    name: Check version bump
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required to compare with main
+
+      - name: Ensure version bumped
+        run: |
+          # Extract current PR version
+          pr_version=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+
+          # Extract version from main branch
+          main_version=$(git show origin/main:pubspec.yaml | grep '^version:' | awk '{print $2}')
+
+          echo "PR version:   $pr_version"
+          echo "Main version: $main_version"
+
+          if [ "$pr_version" = "$main_version" ]; then
+            echo "❌ Version not bumped! Please update pubspec.yaml before merging."
+            exit 1
+          else
+            echo "✅ Version bumped."
+          fi
 
   # test:
   #   name: Test
