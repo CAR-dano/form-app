@@ -155,14 +155,12 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final AuthResponse authResponse = AuthResponse.fromJson(response.data);
-        final UserData userData = UserData.fromAuthResponse(response.data);
 
         await _tokenManager.saveTokens(
           accessToken: authResponse.accessToken,
           refreshToken: authResponse.refreshToken,
         );
-        // Update the provider state
-        await _ref.read(userInfoProvider.notifier).saveUserData(userData);
+
         debugPrint('Token refreshed successfully.');
         return true;
       } else {
