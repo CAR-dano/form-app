@@ -38,11 +38,9 @@ class _CustomCheckboxTileState extends State<FormConfirmation> {
         widget.onChanged(_isChecked);
       },
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 24,
-            height: 24,
             alignment: Alignment.center,
             child: SizedBox(
               width: 18,
@@ -68,7 +66,7 @@ class _CustomCheckboxTileState extends State<FormConfirmation> {
               ),
             ),
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               widget.label,

@@ -144,7 +144,7 @@ class _LabeledDropdownFieldState<T>
     return DropdownButtonFormField<T>(
       key: _formFieldKey,
       focusNode: _internalFocusNode,
-      value: widget.value,
+      initialValue: widget.value,
       hint: hint != null
           ? Text(hint,
               style: hintTextStyling.copyWith(

@@ -1,9 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/user_data.dart';
 import 'package:form_app/services/user_info_service.dart';
+import 'package:form_app/utils/crashlytics_util.dart'; // Import CrashlyticsUtil
 
 final userInfoServiceProvider = Provider<UserInfoService>((ref) {
-  return UserInfoService();
+  final crashlytics = ref.watch(crashlyticsUtilProvider); // Use the existing provider
+  return UserInfoService(crashlytics);
 });
 
 final userInfoProvider = StateNotifierProvider<UserInfoNotifier, AsyncValue<UserData?>>((ref) {
