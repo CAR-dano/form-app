@@ -10,6 +10,7 @@ import 'package:form_app/services/task_queue_service.dart'; // Import the generi
 import 'package:sensors_plus/sensors_plus.dart';
 import 'dart:math' show pi;
 import 'package:form_app/utils/crashlytics_util.dart'; // Import CrashlyticsUtil
+import 'package:form_app/widgets/camera_preview_widget.dart'; // Import the new CameraPreviewWidget
 
 class MultiShotCameraScreen extends ConsumerStatefulWidget {
   final String imageIdentifier;
@@ -29,7 +30,9 @@ class MultiShotCameraScreen extends ConsumerStatefulWidget {
 class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   late List<CameraDescription> _cameras = []; // Initialize as empty
-  CameraController? _controller;
+  final ValueNotifier<CameraController?> _controllerNotifier = ValueNotifier(null);
+  CameraController? get _controller => _controllerNotifier.value;
+  set _controller(CameraController? newController) => _controllerNotifier.value = newController;
   int _selectedCameraIndex = 0; // Default to 0
   int _picturesTaken = 0;
   FlashMode _currentFlashMode = FlashMode.off;
@@ -107,7 +110,8 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _controller?.dispose(); // Ensure controller is disposed
+    _controllerNotifier.value?.dispose(); // Dispose the controller held by the notifier
+    _controllerNotifier.dispose(); // Dispose the notifier itself
     _captureAnimationController.dispose(); // Dispose the new capture animation controller
     _buttonScaleAnimationController.dispose(); // Dispose the button scale animation controller
     _accelerometerSubscription?.cancel(); // Dispose accelerometer subscription
@@ -128,13 +132,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         }
         // Set _controller to null and call setState to update UI.
         // This ensures the build method shows the blank screen and doesn't use a disposed controller.
-        if (mounted) {
-          setState(() {
-            _controller = null;
-          });
-        } else {
-          _controller = null; // If not mounted, just nullify.
-        }
+        _controller = null; // Update notifier, which will trigger rebuild of CameraPreview
         break;
       case AppLifecycleState.resumed:
         // If _controller is null, it means it was disposed (or never initialized).
@@ -226,6 +224,12 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
     // setState is called later after successful initialization or for error display.
     _selectedCameraIndex = cameraIndex;
 
+    final CameraController? oldController = _controller;
+    _controller = null; // Set to null first to ensure old controller is released and UI shows blank
+    await oldController?.dispose(); // Dispose the old controller
+
+    // Add a small delay to allow the camera resource to be fully released
+    await Future.delayed(const Duration(milliseconds: 200)); 
 
     final newController = CameraController(
       _cameras[_selectedCameraIndex],
@@ -234,16 +238,10 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
-    final CameraController? oldController = _controller;
-    _controller = newController; // Assign new controller to be used by the UI
-
-    await oldController?.dispose(); // Dispose the old controller
-
     try {
       await newController.initialize();
       if (!mounted) { // Check mounted status after await
         await newController.dispose(); // Dispose if not mounted
-        _controller = null; // Ensure controller is null if disposed
         return;
       }
 
@@ -253,9 +251,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
       await newController.setZoomLevel(_currentZoomLevel);
       await newController.setFlashMode(_currentFlashMode); // Re-apply flash mode
 
-      if (mounted) {
-        setState(() {}); // Refresh UI
-      }
+      _controller = newController; // Assign new controller only after successful initialization
     } on CameraException catch (e, stackTrace) {
       ref.read(crashlyticsUtilProvider).recordError(e, stackTrace, reason: 'Error initializing camera', fatal: false);
       if (mounted) {
@@ -266,12 +262,7 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
           icon: Icons.error,
         );
       }
-      // If initialization fails, newController might be unusable.
-      // oldController is already disposed. Set _controller to null.
-      _controller = null;
-      if (mounted) {
-        setState(() {}); // Refresh UI to show loading/error state
-      }
+      // _controller is already null from the start of the method, so no need to set it again here.
     }
   }
 
@@ -415,14 +406,6 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
 
   @override
   Widget build(BuildContext context) {
-    if (_controller == null || !_controller!.value.isInitialized) {
-      // Show a blank screen or a simple placeholder while the camera is initializing
-      // instead of a loading indicator.
-      return Scaffold(
-        backgroundColor: Colors.black, // Or any other appropriate background color
-        body: Container(), // Empty container, effectively showing a blank screen
-      );
-    }
     return Scaffold(
       backgroundColor: Colors.black,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -430,48 +413,14 @@ class _MultiShotCameraScreenState extends ConsumerState<MultiShotCameraScreen>
         child: Stack(
           children: [
             Center(
-              child: _buildCameraPreview(),
+              child: CameraPreviewWidget(
+                controller: _controller,
+                captureOpacityAnimation: _captureOpacityAnimation,
+                rotationAngle: _rotationAngle,
+              ),
             ),
             _buildControlsOverlay(),
           ],
-        ),
-      ),
-    );
-  }  Widget _buildCameraPreview() {
-    final Size screenSize = MediaQuery.of(context).size;
-    // final double cameraAspectRatio = _controller!.value.aspectRatio; // Original line, not needed if scale is 1.0
-
-    // Calculate scale depending on screen and camera ratios
-    // This is actually screenSize.aspectRatio / (1 / cameraAspectRatio)
-    // because camera preview size is received as landscape
-    // but we're calculating for portrait orientation
-    // var scale = screenSize.aspectRatio * cameraAspectRatio; // Original line
-    
-    // To prevent scaling down, invert the value
-    // if (scale < 1) scale = 1 / scale; // Original line
-
-    // The SizedBox defines a 3:4 aspect ratio viewport.
-    // The CameraPreview, if the camera is 4:3 (which results in a 3:4 portrait preview),
-    // should fit this viewport correctly with a scale of 1.0.
-    const double scale = 1.0;
-    
-    return SizedBox(
-      width: screenSize.width,
-      height: screenSize.width / (3.0 / 4.0), // 3:4 aspect ratio using full width
-      child: ClipRect(
-        child: Transform.scale(
-          scale: scale, // Adjusted scale to prevent zoom
-          child: Center(
-            child: AnimatedBuilder(
-              animation: _captureOpacityAnimation,
-              builder: (context, child) {
-                return Opacity(
-                  opacity: _captureOpacityAnimation.value,
-                  child: CameraPreview(_controller!),
-                );
-              },
-            ),
-          ),
         ),
       ),
     );
