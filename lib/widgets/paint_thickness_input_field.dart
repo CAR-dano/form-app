@@ -90,7 +90,7 @@ class _PaintThicknessInputFieldState extends State<PaintThicknessInputField> {
             onChanged: widget.onChanged, // Use the provided onChanged callback
             style: disabledToggleTextStyle.copyWith(color: labelTextColor), // Use a text style from app_styles
             decoration: InputDecoration(
-              contentPadding: const EdgeInsets.only(top: 4.0, bottom: 4.0, left: 8.0, right: 8.0), // Adjust padding
+              contentPadding: const EdgeInsets.only(top: 4.0, bottom: 4.0, left: 4.0, right: 4.0), // Adjust padding
               isDense: true,
               hintText: '0.00',
               hintStyle: hintTextStyling.copyWith(fontSize: 14.0),
