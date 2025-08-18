@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:form_app/utils/crashlytics_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -115,7 +116,7 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       FocusScope.of(context).unfocus();
 
       Navigator.of(context).push(
-        MaterialPageRoute(
+        CupertinoPageRoute(
           builder: (context) => MultiShotCameraScreen(
             imageIdentifier: widget.identifier,
             defaultLabel: widget.defaultLabel,
