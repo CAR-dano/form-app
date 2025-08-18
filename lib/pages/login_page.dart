@@ -107,6 +107,7 @@ class _LoginPageState extends ConsumerState<LoginPage> { // Change to ConsumerSt
                         return null;
                       },
                       formSubmitted: isFormSubmitted,
+                      textCapitalization: TextCapitalization.none,
                     ),
                     const SizedBox(height: 24),
                     PinInput(
