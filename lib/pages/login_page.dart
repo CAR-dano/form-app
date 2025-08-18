@@ -71,9 +71,8 @@ class _LoginPageState extends ConsumerState<LoginPage> { // Change to ConsumerSt
       },
       child: Scaffold(
         appBar: AppBar(
-          shadowColor: Colors.transparent,
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          backgroundColor: Colors.white,
           actions: [const AppVersionDisplay(), const SizedBox(width: 16,)],
         ),
         backgroundColor: Colors.white,
