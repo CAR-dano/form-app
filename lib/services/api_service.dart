@@ -16,7 +16,7 @@ import 'package:form_app/services/auth_service.dart'; // Import AuthService
 
 
 // Typedef for the progress callback
-typedef ImageUploadProgressCallback = void Function(int currentBatch, int totalBatches);
+typedef ImageUploadProgressCallback = void Function(int currentImageCount, int totalImagesToUpload, int currentBatch, int totalBatches);
 typedef ImageBatchUploadedCallback = void Function(List<String> uploadedPaths); // New callback
 
 class ApiService {
@@ -383,19 +383,19 @@ class ApiService {
     {dio.CancelToken? cancelToken, ImageBatchUploadedCallback? onBatchUploaded} // Add new callback
   ) async {
     const int batchSize = 10;
-    // Calculate total batches, ensure it's at least 1 if there are images, or 0 if not
-    int totalBatchesCalc = allImages.isEmpty ? 0 : (allImages.length / batchSize).ceil();
+    int totalImagesToUpload = allImages.length; // Total images in this session
+    int totalBatchesCalc = totalImagesToUpload == 0 ? 0 : (totalImagesToUpload / batchSize).ceil();
 
-    if (allImages.isEmpty) {
-      onProgress(0, 0); // Signal completion or no work if no images
+    if (totalImagesToUpload == 0) {
+      onProgress(0, 0, 0, 0); // Signal completion or no work if no images
       return;
     }
 
-    for (int i = 0, currentBatchNum = 1; i < allImages.length; i += batchSize, currentBatchNum++) {
-      onProgress(currentBatchNum, totalBatchesCalc); // Report progress for the current batch about to be processed
+    int uploadedImagesInSession = 0; // Track images uploaded in the current session
 
-      final batch = allImages.sublist(i, i + batchSize > allImages.length ? allImages.length : i + batchSize);
-      
+    for (int i = 0, currentBatchNum = 1; i < totalImagesToUpload; i += batchSize, currentBatchNum++) {
+      final batch = allImages.sublist(i, i + batchSize > totalImagesToUpload ? totalImagesToUpload : i + batchSize);
+
       List<dio.MultipartFile> photoFiles = [];
       List<Map<String, dynamic>> metadataList = [];
 
@@ -410,7 +410,7 @@ class ApiService {
           continue;
         }
         String fileName = file.path.split('/').last;
-        
+
         String? mimeType = lookupMimeType(file.path);
         if (kDebugMode) {
           print('File: ${file.path}, Determined MIME type: $mimeType');
@@ -422,12 +422,14 @@ class ApiService {
           contentType: mimeType != null ? MediaType.parse(mimeType) : null,
         ));
         metadataList.add(image.toJson());
+
+        // Update progress for each individual image *before* sending the batch
+        uploadedImagesInSession++;
+        onProgress(uploadedImagesInSession, totalImagesToUpload, currentBatchNum, totalBatchesCalc);
       }
 
       if (photoFiles.isEmpty) {
         if (kDebugMode) print('Skipping empty batch for inspection $inspectionId from index $i');
-        // If this was the last potential batch and it's empty, it means all prior batches (if any) completed.
-        // The final onProgress call after the loop will handle true completion.
         continue;
       }
 
@@ -437,7 +439,7 @@ class ApiService {
         'metadata': metadataJsonString,
       });
       final photosUploadUrl = '$_inspectionsUrl/$inspectionId/photos/multiple';
-      
+
       if (kDebugMode) {
         print('Attempting to upload batch $currentBatchNum/$totalBatchesCalc of ${photoFiles.length} photos to $photosUploadUrl');
         print('Metadata for this batch: $metadataJsonString');
@@ -445,13 +447,12 @@ class ApiService {
 
       try {
         final response = await _dioInst.post(
-          photosUploadUrl, 
+          photosUploadUrl,
           data: formData,
           cancelToken: cancelToken,
         );
         if (response.statusCode == 200 || response.statusCode == 201) {
           if (kDebugMode) print('Batch $currentBatchNum/$totalBatchesCalc uploaded successfully.');
-          // Call the new callback with paths of successfully uploaded images in this batch
           if (onBatchUploaded != null) {
             final List<String> uploadedPathsInBatch = batch.map((img) => img.imagePath).toList();
             onBatchUploaded(uploadedPathsInBatch);
@@ -469,8 +470,7 @@ class ApiService {
         throw Exception('Error uploading photo batch $currentBatchNum/$totalBatchesCalc: $e');
       }
     }
-    // After the loop, signal completion by calling onProgress with currentBatch = totalBatches
-    // (or totalBatchesCalc, totalBatchesCalc)
-    onProgress(totalBatchesCalc, totalBatchesCalc);
+    // After the loop, signal final completion
+    onProgress(totalImagesToUpload, totalImagesToUpload, totalBatchesCalc, totalBatchesCalc);
   }
 }

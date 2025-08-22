@@ -67,7 +67,8 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     } else {
       debugPrint('_cancelToken is cancelled or null, not cancelling.');
     }
-    ref.read(submissionStatusProvider.notifier).reset();
+    // Instead of resetting, just set isLoading to false to retain progress
+    ref.read(submissionStatusProvider.notifier).setLoading(isLoading: false);
     debugPrint('_cancelSubmission function finished');
   }
 
@@ -369,51 +370,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
 
     // --- Start of The Refactored Logic ---
     try {
-      String? inspectionId;
-      final formData = ref.read(formProvider);
-      final apiService = ref.read(apiServiceProvider);
-
-      final inspectorId = userInfo.asData?.value?.id;
-      if (inspectorId == null) {
-        throw Exception('User ID not found. Cannot submit form.');
-      }
-
-      final formDataToSubmit = formData.copyWith(inspectorId: inspectorId);
-
-      final bool isFormDataUnchanged = submissionDataCache.lastSubmittedFormData != null &&
-          formDataToSubmit == submissionDataCache.lastSubmittedFormData;
-
-      if (isFormDataUnchanged && submissionDataCache.lastSubmittedInspectionId != null) {
-        inspectionId = submissionDataCache.lastSubmittedInspectionId;
-        debugPrint('Reusing existing inspection ID: $inspectionId');
-        submissionStatusNotifier.setLoading(
-          isLoading: true,
-          message: 'Data formulir tidak berubah. Melanjutkan unggah gambar...', 
-          progress: 0.1,
-        );
-      } else {
-        submissionStatusNotifier.setLoading(
-          isLoading: true,
-          message: 'Mengirim data formulir...', 
-          progress: 0.1,
-        );
-
-        final Map<String, dynamic> formDataResponse = await apiService
-            .submitFormData(formDataToSubmit, cancelToken: _cancelToken);
-        inspectionId = formDataResponse['id'] as String?;
-
-        submissionDataCacheNotifier.setCache(
-          inspectionId: inspectionId,
-          formData: formDataToSubmit,
-        );
-      }
-
-      if (inspectionId == null || inspectionId.isEmpty) {
-        throw Exception(
-            'Inspection ID not received or is empty after form submission.');
-      }
-
-      if (!mounted) return;
 
       List<UploadableImage> allImages = [];
       final wajibImages = ref.read(imageDataListProvider);
@@ -430,11 +386,11 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       }
 
       for (final identifier in _tambahanImagePageIdentifiers.values) {
-        final tambahanImagesList = 
+        final tambahanImagesList =
             ref.read(tambahanImageDataProvider(identifier));
         for (var imgData in tambahanImagesList) {
           if (imgData.imagePath.isNotEmpty) {
-            final String labelToUse = 
+            final String labelToUse =
                 imgData.label.isEmpty ? _defaultTambahanLabel : imgData.label;
             allImages.add(UploadableImage(
               imagePath: imgData.imagePath,
@@ -448,51 +404,103 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       }
 
       final int totalOriginalImages = allImages.length;
-      const int batchSize = 10; // Assuming batch size is 10 as per ApiService
-      final int totalOriginalBatches = 
-          (totalOriginalImages / batchSize).ceil();
+      // Total items to submit: 1 for form data + totalOriginalImages for images
+      final int totalItemsToSubmit = totalOriginalImages + 1;
 
       // Filter out already uploaded images
-      final Set<String> uploadedPaths = 
+      final Set<String> uploadedPaths =
           submissionDataCache.uploadedImagePaths.toSet();
       List<UploadableImage> imagesToUpload = allImages
           .where((image) => !uploadedPaths.contains(image.imagePath))
           .toList();
 
       final int initialUploadedImagesCount = uploadedPaths.length;
-      final int initialUploadedBatchesCount = 
-          (initialUploadedImagesCount / batchSize).floor();
 
       debugPrint('Total images in original set: $totalOriginalImages');
-      debugPrint('Total original batches: $totalOriginalBatches');
       debugPrint('Images already uploaded: ${uploadedPaths.length}');
-      debugPrint('Initial uploaded batches: $initialUploadedBatchesCount');
       debugPrint('Images to upload this session: ${imagesToUpload.length}');
+      debugPrint('Total items to submit: $totalItemsToSubmit');
+
+      String? inspectionId;
+      final formData = ref.read(formProvider);
+      final apiService = ref.read(apiServiceProvider);
+
+      final inspectorId = userInfo.asData?.value?.id;
+      if (inspectorId == null) {
+        throw Exception('User ID not found. Cannot submit form.');
+      }
+
+      final formDataToSubmit = formData.copyWith(inspectorId: inspectorId);
+
+      final bool isFormDataUnchanged = submissionDataCache.lastSubmittedFormData != null &&
+          formDataToSubmit == submissionDataCache.lastSubmittedFormData;
+
+      // Progress for form data submission
+      final double formDataProgressUnit = 1.0 / totalItemsToSubmit;
+
+      if (isFormDataUnchanged && submissionDataCache.lastSubmittedInspectionId != null) {
+        inspectionId = submissionDataCache.lastSubmittedInspectionId;
+        debugPrint('Reusing existing inspection ID: $inspectionId');
+        submissionStatusNotifier.setLoading(
+          isLoading: true,
+          message: 'Data formulir tidak berubah. Melanjutkan unggah gambar...',
+          progress: totalOriginalImages == 0
+              ? 1.0 // If no images, and form data is reused, it's 100% done.
+              : (formDataProgressUnit * 1) +
+                  ((initialUploadedImagesCount / totalOriginalImages.toDouble()) *
+                      (1.0 - formDataProgressUnit)),
+        );
+      } else {
+        submissionStatusNotifier.setLoading(
+          isLoading: true,
+          message: 'Mengirim data formulir...',
+          progress: 0.0, // Start at 0.0 for form data submission
+        );
+
+        final Map<String, dynamic> formDataResponse = await apiService
+            .submitFormData(formDataToSubmit, cancelToken: _cancelToken);
+        inspectionId = formDataResponse['id'] as String?;
+
+        submissionDataCacheNotifier.setCache(
+          inspectionId: inspectionId,
+          formData: formDataToSubmit,
+        );
+
+        // Update progress after form data is successfully submitted
+        submissionStatusNotifier.setLoading(
+          isLoading: true,
+          message: 'Data formulir berhasil dikirim. Mempersiapkan unggah gambar...',
+          progress: formDataProgressUnit, // Set to formDataProgressUnit after form data is sent
+        );
+      }
+
+      if (inspectionId == null || inspectionId.isEmpty) {
+        throw Exception(
+            'Inspection ID not received or is empty after form submission.');
+      }
+
+      if (!mounted) return;
 
       if (totalOriginalImages > 0) { // Check if there are any images at all
-        final double formDataWeight = 0.2;
-        final double imagesWeight = 0.8;
-
         await apiService.uploadImagesInBatches(
           inspectionId,
           imagesToUpload, // Pass the filtered list
-          (int currentBatchOfRemaining, int totalBatchesOfRemaining) {
+          (int currentImageCountInSession, int totalImagesInSession, int currentBatchOfRemaining, int totalBatchesOfRemaining) {
             if (!mounted) return;
-            // Calculate overall current batch number
-            final int overallCurrentBatch = 
-                initialUploadedBatchesCount + currentBatchOfRemaining;
-            
-            // Calculate overall progress based on original total batches
-            final double overallProgress = totalOriginalBatches > 0
-                ? formDataWeight + 
-                    ((overallCurrentBatch / totalOriginalBatches.toDouble()) * 
-                        imagesWeight)
+            // Calculate overall current image count including already uploaded images
+            final int overallCurrentImageCount = initialUploadedImagesCount + currentImageCountInSession;
+
+            // Calculate overall progress based on total items (form data + all images)
+            final double overallProgress = totalItemsToSubmit > 0
+                ? (formDataProgressUnit * 1) + // Progress for form data
+                    ((overallCurrentImageCount / totalOriginalImages.toDouble()) *
+                        (1.0 - formDataProgressUnit)) // Remaining progress for images
                 : 1.0;
 
             submissionStatusNotifier.setLoading(
               isLoading: true,
-              message: totalOriginalBatches > 0
-                  ? 'Mengunggah gambar batch $overallCurrentBatch dari $totalOriginalBatches...' 
+              message: totalBatchesOfRemaining > 0
+                  ? 'Mengunggah gambar batch $currentBatchOfRemaining dari $totalBatchesOfRemaining...'
                   : 'Tidak ada gambar untuk diunggah.',
               progress: overallProgress,
             );
@@ -516,11 +524,11 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       submissionStatusNotifier.setLoading(
           isLoading: true, message: 'Menyelesaikan...', progress: 1.0);
       // Clear all data only upon successful completion of ALL uploads
-      ref.read(formProvider.notifier).resetFormData();
-      ref.read(imageDataListProvider.notifier).clearImageData();
-      for (final identifier in _tambahanImagePageIdentifiers.values) {
-        ref.read(tambahanImageDataProvider(identifier).notifier).clearAll();
-      }
+      //ref.read(formProvider.notifier).resetFormData();
+      //ref.read(imageDataListProvider.notifier).clearImageData();
+      // for (final identifier in _tambahanImagePageIdentifiers.values) {
+      //   ref.read(tambahanImageDataProvider(identifier).notifier).clearAll();
+      // }
       submissionDataCacheNotifier.clearCache(); // Clear cache on full success
 
       if (!mounted) return;
