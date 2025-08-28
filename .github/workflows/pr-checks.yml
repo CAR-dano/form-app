@@ -35,6 +35,7 @@ jobs:
   version-check:
     name: Check version bump
     runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
