@@ -203,6 +203,27 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
     final currentImage = images[indexToRotate];
     final originalRawPath = currentImage.originalRawPath;
     
+    // Validate that the original file still exists
+    final originalFile = File(originalRawPath);
+    if (!await originalFile.exists()) {
+      crashlytics.recordError(
+        Exception('Original image file not found during rotation'),
+        StackTrace.current,
+        reason: 'Image rotation failed - original file missing: $originalRawPath',
+        fatal: false
+      );
+      
+      if (mounted) {
+        ref.read(customMessageOverlayProvider).show(
+          context: context,
+          message: 'File gambar asli tidak ditemukan.',
+          color: Colors.red,
+          icon: Icons.error,
+        );
+      }
+      return;
+    }
+    
     // The new rotation will be the old one + 90 degrees
     final newRotationInDegrees = (currentImage.rotationAngle + 90) % 360;
 
@@ -227,6 +248,14 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
           precacheImage(FileImage(File(newProcessedPath)), context);
         }
       } else {
+        // Log the silent failure to Crashlytics for debugging
+        crashlytics.recordError(
+          Exception('Image rotation returned null - processAndSaveImage failed'), 
+          StackTrace.current,
+          reason: 'Image rotation failed silently for ${widget.identifier} at index $indexToRotate. Original path: $originalRawPath, Rotation: $newRotationInDegrees°',
+          fatal: false
+        );
+        
         if (mounted) {
           ref.read(customMessageOverlayProvider).show(
             context: context,

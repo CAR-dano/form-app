@@ -43,7 +43,14 @@ Future<String?> _performCompression({
     );
 
     if (result == null) {
-      if (kDebugMode) print('Image compression failed.');
+      final errorMsg = 'Image compression failed - FlutterImageCompress returned null';
+      crashlyticsUtil.recordError(
+        Exception(errorMsg),
+        StackTrace.current,
+        reason: 'Image compression failure.',
+        fatal: false
+      );
+      if (kDebugMode) print(errorMsg);
       return null;
     }
 
