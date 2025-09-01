@@ -108,6 +108,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
   }
 
   Future<void> _rotateImage() async {
+    final crashlyticsUtil = ref.read(crashlyticsUtilProvider);
     final imageData = ref.read(imageDataListProvider).firstWhere(
       (img) => img.label == widget.label,
       orElse: () => ImageData(
@@ -124,6 +125,28 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
     }
 
     final originalRawPath = imageData.originalRawPath;
+    
+    // Validate that the original file still exists
+    final originalFile = File(originalRawPath);
+    if (!await originalFile.exists()) {
+      crashlyticsUtil.recordError(
+        Exception('Original image file not found during rotation'),
+        StackTrace.current,
+        reason: 'Image rotation failed - original file missing: $originalRawPath for ${widget.label}',
+        fatal: false
+      );
+      
+      if (mounted) {
+        ref.read(customMessageOverlayProvider).show(
+          context: context,
+          message: 'File gambar asli tidak ditemukan.',
+          color: Colors.red,
+          icon: Icons.error,
+        );
+      }
+      return;
+    }
+    
     final currentRotation = imageData.rotationAngle;
     final newRotation = (currentRotation + 90) % 360;
 
@@ -131,7 +154,6 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
     ref.read(imageProcessingServiceProvider.notifier).taskStarted(widget.label);
 
     try {
-      final crashlyticsUtil = ref.read(crashlyticsUtilProvider);
       final XFile pickedFile = XFile(originalRawPath);
       final String? newProcessedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(
         pickedFile,
@@ -147,6 +169,14 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
               originalRawPath: originalRawPath, // Ensure originalRawPath is preserved
             );
       } else {
+        // Log the silent failure to Crashlytics for debugging
+        crashlyticsUtil.recordError(
+          Exception('Image rotation returned null - processAndSaveImage failed'), 
+          StackTrace.current,
+          reason: 'Image rotation failed silently for ${widget.label}. Original path: $originalRawPath, Rotation: $newRotation°',
+          fatal: false
+        );
+        
         if (mounted) {
           ref.read(customMessageOverlayProvider).show(
             context: context,
@@ -157,7 +187,7 @@ class _ImageInputWidgetState extends ConsumerState<ImageInputWidget> {
         }
       }
     } catch (e, stackTrace) {
-      ref.read(crashlyticsUtilProvider).recordError(e, stackTrace, reason: 'Error rotating image', fatal: false);
+      crashlyticsUtil.recordError(e, stackTrace, reason: 'Error rotating image', fatal: false);
       if (mounted) {
         ref.read(customMessageOverlayProvider).show(
           context: context,
