@@ -25,10 +25,10 @@ class ApiService {
   final CrashlyticsUtil _crashlytics;
 
   String get _baseApiUrl {
-    // if (kDebugMode) {
+    if (kDebugMode) {
       return dotenv.env['API_BASE_URL_DEBUG']!;
-    // }
-    // return dotenv.env['API_BASE_URL']!;
+    }
+    return dotenv.env['API_BASE_URL']!;
   }
 
   String get _inspectionsUrl => '$_baseApiUrl/inspections';
