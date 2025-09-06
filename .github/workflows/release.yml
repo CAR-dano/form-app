@@ -48,9 +48,12 @@ jobs:
 
       # Creates an .env file with the API base URL for the release build.
       - name: Create .env file for Release Build
-        run: echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" > .env
+        run: |
+          echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" > .env
+          echo "API_BASE_URL_DEBUG=${{ secrets.API_BASE_URL_DEBUG }}" >> .env
         env:
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          API_BASE_URL_DEBUG: ${{ secrets.API_BASE_URL_DEBUG }}
 
       # Decode Keystore and Create Properties
       - name: Decode Keystore and Create Properties
