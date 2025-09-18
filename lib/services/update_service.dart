@@ -16,9 +16,8 @@ const String githubOwner = 'CAR-dano';
 const String githubRepo = 'form-app';
 // ---------------------
 
-final updateServiceProvider = StateNotifierProvider<UpdateNotifier, UpdateState>((ref) {
-  final crashlytics = ref.watch(crashlyticsUtilProvider);
-  return UpdateNotifier(crashlytics);
+final updateServiceProvider = NotifierProvider<UpdateNotifier, UpdateState>(() {
+  return UpdateNotifier();
 });
 
 class UpdateState {
@@ -85,12 +84,15 @@ class UpdateState {
   }
 }
 
-class UpdateNotifier extends StateNotifier<UpdateState> {
-  final CrashlyticsUtil _crashlytics;
+class UpdateNotifier extends Notifier<UpdateState> {
+  late final CrashlyticsUtil _crashlytics;
   dio.CancelToken? _cancelToken;
 
-  UpdateNotifier(this._crashlytics) : super(UpdateState()) {
+  @override
+  UpdateState build() {
+    _crashlytics = ref.watch(crashlyticsUtilProvider);
     _loadDownloadedApkInfo();
+    return UpdateState();
   }
 
   static const String _apkInfoFileName = 'downloaded_apk_info.json';

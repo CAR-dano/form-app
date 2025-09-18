@@ -84,6 +84,7 @@ class _FormAppState extends ConsumerState<FormApp> {
     super.initState();
     final authService = ref.read(authServiceProvider);
     _tokenValidityFuture = authService.checkTokenValidity();
+    
     // Schedule pre-caching after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _precacheAllTambahanImages();

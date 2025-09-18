@@ -6,20 +6,21 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
 
-final tambahanImageDataProvider = StateNotifierProvider.family<
+final tambahanImageDataProvider = NotifierProvider.family<
     TambahanImageDataListNotifier, List<TambahanImageData>, String>(
-  (ref, identifier) {
-    final crashlytics = ref.watch(crashlyticsUtilProvider);
-    return TambahanImageDataListNotifier(identifier, crashlytics);
-  },
+  TambahanImageDataListNotifier.new,
 );
 
-class TambahanImageDataListNotifier extends StateNotifier<List<TambahanImageData>> {
+class TambahanImageDataListNotifier extends Notifier<List<TambahanImageData>> {
+  TambahanImageDataListNotifier(this.identifier);
   final String identifier;
-  final CrashlyticsUtil _crashlytics;
+  late final CrashlyticsUtil _crashlytics;
 
-  TambahanImageDataListNotifier(this.identifier, this._crashlytics) : super([]) {
+  @override
+  List<TambahanImageData> build() {
+    _crashlytics = ref.watch(crashlyticsUtilProvider);
     _loadData();
+    return [];
   }
 
   Future<String> get _localPath async {

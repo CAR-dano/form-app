@@ -4,7 +4,7 @@ import 'package:form_app/statics/app_styles.dart';
 
 class LabeledDropdownField<T> extends ConsumerStatefulWidget {
   final String label;
-  final ProviderBase<AsyncValue<List<T>>> itemsProvider;
+  final FutureProvider<List<T>> itemsProvider;
   final String? initialHintText;
   final String? loadingHintText;
   final String? emptyDataHintText;
@@ -172,9 +172,6 @@ class _LabeledDropdownFieldState<T>
       ),
       isExpanded: true,
       selectedItemBuilder: (BuildContext context) {
-        if (widget.value == null && hint != null) {
-           return [ Text(hint, style: hintTextStyling.copyWith(overflow: TextOverflow.ellipsis)) ];
-        }
         return items.map<Widget>((T item) {
           return Text(
             widget.itemText(item),

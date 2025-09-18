@@ -190,7 +190,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           // button is what triggers submission, we can simplify.
           // We just need to update the current step.
           if (ref.read(formStepProvider) != page) {
-            ref.read(formStepProvider.notifier).state = page;
+            ref.read(formStepProvider.notifier).setStep(page);
           }
         },
         children: _formPages.map((pageContent) {

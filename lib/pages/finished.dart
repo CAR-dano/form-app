@@ -70,7 +70,7 @@ class _FinishedPageState extends ConsumerState<FinishedPage> { // Add mixin
                 onPressed: () {
                   ref.read(formProvider.notifier).resetFormData();
                   ref.read(imageDataListProvider.notifier).clearImageData();
-                  ref.read(formStepProvider.notifier).state = 0; // Reset form step to 0
+                  ref.read(formStepProvider.notifier).reset(); // Reset form step to 0
                   Navigator.of(context).pushAndRemoveUntil(
                     CupertinoPageRoute(builder: (context) => const MultiStepFormScreen()), // Navigate to MultiStepFormScreen
                     (Route<dynamic> route) => false, // Remove all routes until the new one

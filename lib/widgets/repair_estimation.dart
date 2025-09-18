@@ -85,8 +85,14 @@ class _RepairEstimationState extends State<RepairEstimation> {
 }
 
   void _attachListeners(int index) {
-    _repairControllers[index].addListener(() => _updateEstimation(index));
-    _priceControllers[index].addListener(() => _updateEstimation(index));
+    _repairControllers[index].addListener(() {
+      _updateEstimation(index);
+      setState(() {}); // Trigger rebuild to update text styling
+    });
+    _priceControllers[index].addListener(() {
+      _updateEstimation(index);
+      setState(() {}); // Trigger rebuild to update text styling
+    });
   }
 
   void _notifyParent() {

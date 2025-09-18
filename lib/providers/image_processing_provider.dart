@@ -3,12 +3,15 @@ import 'package:flutter/foundation.dart';
 
 // This provider now holds a Map to count active tasks for each identifier.
 final imageProcessingServiceProvider =
-    StateNotifierProvider<ImageProcessingService, Map<String, int>>((ref) {
+    NotifierProvider<ImageProcessingService, Map<String, int>>(() {
   return ImageProcessingService();
 });
 
-class ImageProcessingService extends StateNotifier<Map<String, int>> {
-  ImageProcessingService() : super({});
+class ImageProcessingService extends Notifier<Map<String, int>> {
+  @override
+  Map<String, int> build() {
+    return {};
+  }
 
   void taskStarted(String identifier) {
     final newState = {...state};
