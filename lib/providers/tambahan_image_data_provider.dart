@@ -72,9 +72,14 @@ class TambahanImageDataListNotifier extends Notifier<List<TambahanImageData>> {
     }
   }
 
+  @override
+  set state(List<TambahanImageData> value) {
+    super.state = value;
+    _saveData();
+  }
+
   void addImage(TambahanImageData image) {
     state = [...state, image];
-    _saveData();
   }
 
   void updateImageAtIndex(int index, TambahanImageData newImage) {
@@ -82,7 +87,6 @@ class TambahanImageDataListNotifier extends Notifier<List<TambahanImageData>> {
       final updatedList = List<TambahanImageData>.from(state);
       updatedList[index] = newImage;
       state = updatedList;
-      _saveData();
     }
   }
 
@@ -93,7 +97,6 @@ class TambahanImageDataListNotifier extends Notifier<List<TambahanImageData>> {
       final updatedList = List<TambahanImageData>.from(state);
       updatedList.removeAt(index);
       state = updatedList;
-      await _saveData();
 
       // Delete the associated file
       await _deleteFile(imagePath);

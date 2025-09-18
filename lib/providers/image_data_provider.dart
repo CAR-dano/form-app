@@ -51,20 +51,20 @@ class ImageDataListNotifier extends Notifier<List<ImageData>> {
             // The old image files in cache will be cleared by the OS eventually.
             await clearImageData();
           } else {
-            super.state = loadedState;
+            state = loadedState;
           }
         } else {
-          super.state = [];
+          state = [];
         }
       } else {
-        super.state = [];
+        state = [];
       }
     } catch (e, stackTrace) {
       _crashlytics.recordError(e, stackTrace, reason: 'Error loading ImageDataList from file');
       if (kDebugMode) {
         print("Error loading ImageDataList from file: $e");
       }
-      super.state = [];
+      state = [];
     }
   }
 
