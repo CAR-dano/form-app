@@ -5,8 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/utils/crashlytics_util.dart'; // Import CrashlyticsUtil
 
 /// A notifier to track the identifiers of tasks currently in the queue.
-class QueuedTaskStatusNotifier extends StateNotifier<Set<String>> {
-  QueuedTaskStatusNotifier() : super({});
+class QueuedTaskStatusNotifier extends Notifier<Set<String>> {
+  @override
+  Set<String> build() {
+    return {};
+  }
 
   void addIdentifier(String id) {
     state = {...state, id};
@@ -19,7 +22,7 @@ class QueuedTaskStatusNotifier extends StateNotifier<Set<String>> {
 
 /// A provider that holds a set of identifiers for tasks currently in the queue.
 final queuedTaskStatusProvider =
-    StateNotifierProvider<QueuedTaskStatusNotifier, Set<String>>((ref) {
+    NotifierProvider<QueuedTaskStatusNotifier, Set<String>>(() {
   return QueuedTaskStatusNotifier();
 });
 
@@ -36,14 +39,17 @@ abstract class QueueTask<T> {
 }
 
 /// A generic queue service for processing various types of tasks sequentially.
-class TaskQueueService extends StateNotifier<bool> {
-  TaskQueueService(this._ref) : super(false) {
-    _processQueue(); // Start processing when the service is created
-  }
-
-  final Ref _ref;
+class TaskQueueService extends Notifier<bool> {
+  late final Ref _ref;
   final Queue<QueueTask<dynamic>> _queue = Queue();
   bool _isProcessing = false;
+
+  @override
+  bool build() {
+    _ref = ref;
+    _processQueue(); // Start processing when the service is created
+    return false;
+  }
 
   /// Adds a task to the queue.
   void addTask(QueueTask<dynamic> task) {
@@ -100,6 +106,6 @@ class TaskQueueService extends StateNotifier<bool> {
 }
 
 // Riverpod provider for the generic TaskQueueService
-final taskQueueServiceProvider = StateNotifierProvider<TaskQueueService, bool>((ref) {
-  return TaskQueueService(ref);
+final taskQueueServiceProvider = NotifierProvider<TaskQueueService, bool>(() {
+  return TaskQueueService();
 });

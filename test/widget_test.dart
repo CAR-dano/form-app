@@ -12,11 +12,13 @@ import 'package:form_app/models/inspector_data.dart';
 import 'package:form_app/models/inspection_branch.dart';
 
 // 1. Create a "fake" notifier class for the update service.
-// By 'implements UpdateNotifier', we guarantee it has the same public
-// interface as the real notifier, satisfying the type checker.
-class FakeUpdateNotifier extends StateNotifier<UpdateState> implements UpdateNotifier {
-  // The constructor just calls super with the initial state.
-  FakeUpdateNotifier() : super(UpdateState());
+// Updated for Riverpod 3.0 - now extends Notifier instead of StateNotifier
+class FakeUpdateNotifier extends Notifier<UpdateState> implements UpdateNotifier {
+  // For Riverpod 3.0, we need to implement the build method
+  @override
+  UpdateState build() {
+    return UpdateState();
+  }
 
   // We provide empty implementations for all public methods from the real Notifier.
   // The @override annotation is good practice here and confirms we are matching the real class.
@@ -49,8 +51,8 @@ void main() {
       ProviderScope(
         overrides: [
           // 2. Override the update service provider to use our FakeUpdateNotifier.
-          // This now works because FakeUpdateNotifier IS-A UpdateNotifier via the 'implements' keyword.
-          updateServiceProvider.overrideWith((ref) => FakeUpdateNotifier()),
+          // Updated for Riverpod 3.0 - use overrideWith with a function that returns the notifier
+          updateServiceProvider.overrideWith(() => FakeUpdateNotifier()),
 
           // 3. Override network-calling providers to return dummy data instantly.
           // This makes tests faster and more reliable.

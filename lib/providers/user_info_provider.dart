@@ -8,15 +8,18 @@ final userInfoServiceProvider = Provider<UserInfoService>((ref) {
   return UserInfoService(crashlytics);
 });
 
-final userInfoProvider = StateNotifierProvider<UserInfoNotifier, AsyncValue<UserData?>>((ref) {
-  return UserInfoNotifier(ref.watch(userInfoServiceProvider));
+final userInfoProvider = NotifierProvider<UserInfoNotifier, AsyncValue<UserData?>>(() {
+  return UserInfoNotifier();
 });
 
-class UserInfoNotifier extends StateNotifier<AsyncValue<UserData?>> {
-  final UserInfoService _userInfoService;
+class UserInfoNotifier extends Notifier<AsyncValue<UserData?>> {
+  late final UserInfoService _userInfoService;
 
-  UserInfoNotifier(this._userInfoService) : super(const AsyncValue.loading()) {
+  @override
+  AsyncValue<UserData?> build() {
+    _userInfoService = ref.watch(userInfoServiceProvider);
     _loadUserData();
+    return const AsyncValue.loading();
   }
 
   Future<void> _loadUserData() async {

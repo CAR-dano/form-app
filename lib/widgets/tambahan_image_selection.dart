@@ -54,7 +54,12 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       // Initialize _isNeedAttentionChecked based on current image data
       final images = ref.read(tambahanImageDataProvider(widget.identifier));
       if (images.isNotEmpty && _currentIndex < images.length) {
-        _isNeedAttentionChecked = images[_currentIndex].needAttention;
+        final newNeedAttentionState = images[_currentIndex].needAttention;
+        if (_isNeedAttentionChecked != newNeedAttentionState) {
+          setState(() {
+            _isNeedAttentionChecked = newNeedAttentionState;
+          });
+        }
       }
     });
 
@@ -87,7 +92,12 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
         _labelController.selection = TextSelection.fromPosition(TextPosition(offset: _labelController.text.length));
       }
       // Update _isNeedAttentionChecked when current image changes
-      _isNeedAttentionChecked = currentImage.needAttention;
+      final newNeedAttentionState = currentImage.needAttention;
+      if (_isNeedAttentionChecked != newNeedAttentionState) {
+        setState(() {
+          _isNeedAttentionChecked = newNeedAttentionState;
+        });
+      }
 
       if (mounted) {
         if (_currentIndex + 1 < images.length) {
@@ -99,7 +109,11 @@ class _TambahanImageSelectionState extends ConsumerState<TambahanImageSelection>
       }
     } else {
       _labelController.clear();
-      _isNeedAttentionChecked = false; // No image, so no attention needed
+      if (_isNeedAttentionChecked != false) {
+        setState(() {
+          _isNeedAttentionChecked = false; // No image, so no attention needed
+        });
+      }
     }
     if (widget.formSubmitted?.value ?? false) {
         WidgetsBinding.instance.addPostFrameCallback((_) {

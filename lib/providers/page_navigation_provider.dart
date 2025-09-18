@@ -2,10 +2,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_step_provider.dart';
 
-class PageNavigationController extends StateNotifier<PageController> {
-  final Ref _ref;
-
-  PageNavigationController(this._ref) : super(PageController(initialPage: _ref.read(formStepProvider)));
+class PageNavigationController extends Notifier<PageController> {
+  @override
+  PageController build() {
+    return PageController(initialPage: ref.read(formStepProvider));
+  }
 
   void goToNextPage() {
     if (state.hasClients) {
@@ -32,19 +33,13 @@ class PageNavigationController extends StateNotifier<PageController> {
       state.jumpToPage(page);
       // Also update the formStepProvider state directly here to ensure consistency
       // as jumpToPage doesn't trigger onPageChanged if the page is the same.
-      if (_ref.read(formStepProvider) != page) {
-        _ref.read(formStepProvider.notifier).state = page;
+      if (ref.read(formStepProvider) != page) {
+        ref.read(formStepProvider.notifier).setStep(page);
       }
     }
   }
-
-  @override
-  void dispose() {
-    state.dispose();
-    super.dispose();
-  }
 }
 
-final pageNavigationProvider = StateNotifierProvider.autoDispose<PageNavigationController, PageController>((ref) {
-  return PageNavigationController(ref);
+final pageNavigationProvider = NotifierProvider.autoDispose<PageNavigationController, PageController>(() {
+  return PageNavigationController();
 });

@@ -11,39 +11,75 @@ import 'dart:async'; // Import for Timer
 import 'package:form_app/models/inspection_branch.dart'; // Import InspectionBranch model
 import 'package:form_app/utils/crashlytics_util.dart'; // Import CrashlyticsUtil
 
-class FormNotifier extends StateNotifier<FormData> {
-  final Ref _ref;
-  final CrashlyticsUtil _crashlytics; // Add CrashlyticsUtil dependency
+class FormNotifier extends Notifier<FormData> {
+  late final CrashlyticsUtil _crashlytics; // Add CrashlyticsUtil dependency
   static const _fileName = 'form_data.json';
   Timer? _saveTimer; // Debounce timer
 
-  FormNotifier(this._ref, this._crashlytics) : super(FormData()) {
-    // Load initial data first
-    _loadFormData().then((_) {
-      // Ensure the initial state is saved after loading, in case it was modified by validation
-      _saveFormData();
-      // Then setup listeners and perform initial validation with loaded state
-      _ref.listen<AsyncValue<List<InspectionBranch>>>(inspectionBranchesProvider, (previous, next) {
-        next.whenData((availableBranches) {
-          _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
-        });
-      });
-      final initialBranchesAsync = _ref.read(inspectionBranchesProvider);
-      initialBranchesAsync.whenData((availableBranches) {
+  @override
+  FormData build() {
+    _crashlytics = ref.watch(crashlyticsUtilProvider); // Get CrashlyticsUtil instance
+    
+    // Load data asynchronously - this will update state after build returns
+    _loadFormDataAsync();
+    
+    // Setup listeners for validation
+    _setupProviderListeners();
+    
+    // Return empty form data initially - will be updated when loading completes
+    return FormData();
+  }
+
+  void _loadFormDataAsync() async {
+    try {
+      final filePath = await _getFilePath();
+      final file = File(filePath);
+      if (await file.exists()) {
+        final jsonString = await file.readAsString();
+        final jsonMap = json.decode(jsonString);
+        final loadedData = FormData.fromJson(jsonMap);
+        
+        // Update the state with loaded data
+        state = loadedData;
+        
+        if (kDebugMode) {
+          print('Form data loaded successfully: namaCustomer=${loadedData.namaCustomer}');
+        }
+      } else {
+        if (kDebugMode) {
+          print('No saved form data file found, starting with empty form');
+        }
+      }
+    } catch (e, stackTrace) {
+      _crashlytics.recordError(e, stackTrace, reason: 'Error loading form data');
+      if (kDebugMode) {
+        print('Error loading form data: $e');
+      }
+    }
+  }
+
+  void _setupProviderListeners() {
+    // Setup listeners and perform initial validation with loaded state
+    ref.listen<AsyncValue<List<InspectionBranch>>>(inspectionBranchesProvider, (previous, next) {
+      next.whenData((availableBranches) {
         _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
       });
+    });
+    
+    final initialBranchesAsync = ref.read(inspectionBranchesProvider);
+    initialBranchesAsync.whenData((availableBranches) {
+      _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
+    });
 
-      _ref.listen<AsyncValue<List<Inspector>>>(inspectorProvider, (previous, next) {
-        next.whenData((availableInspectors) {
-          // Pass the currently loaded/set inspectorId from state
-          _validateAndUpdateSelectedInspector(state.inspectorId, availableInspectors);
-        });
-      });
-      final initialInspectorsAsync = _ref.read(inspectorProvider);
-      initialInspectorsAsync.whenData((availableInspectors) {
-        // Pass the currently loaded/set inspectorId from state
+    ref.listen<AsyncValue<List<Inspector>>>(inspectorProvider, (previous, next) {
+      next.whenData((availableInspectors) {
         _validateAndUpdateSelectedInspector(state.inspectorId, availableInspectors);
       });
+    });
+    
+    final initialInspectorsAsync = ref.read(inspectorProvider);
+    initialInspectorsAsync.whenData((availableInspectors) {
+      _validateAndUpdateSelectedInspector(state.inspectorId, availableInspectors);
     });
   }
 
@@ -52,7 +88,7 @@ class FormNotifier extends StateNotifier<FormData> {
       // Check if the current branch's ID exists in the available branches
       if (availableBranches.isNotEmpty && !availableBranches.any((branch) => branch.id == currentCabang.id)) {
         if (state.cabangInspeksi != null) { // Check if a change is actually needed
-          state = state.copyWith(cabangInspeksi: null);
+          _updateState(state.copyWith(cabangInspeksi: null));
         }
       }
     }
@@ -83,870 +119,852 @@ class FormNotifier extends StateNotifier<FormData> {
     if (state.selectedInspector != resolvedInspector ||
         state.inspectorId != resolvedInspectorId ||
         state.namaInspektor != resolvedNamaInspektor) {
-      state = state.copyWith(
+      _updateState(state.copyWith(
         selectedInspector: resolvedInspector,
         inspectorId: resolvedInspectorId,
         namaInspektor: resolvedNamaInspektor,
-      );
+      ));
     }
   }
 
 
   void updateSelectedInspector(Inspector? newSelectedInspector) {
     if (newSelectedInspector != null) {
-      state = state.copyWith(
+      _updateState(state.copyWith(
         selectedInspector: newSelectedInspector,
         inspectorId: newSelectedInspector.id,
         namaInspektor: newSelectedInspector.name,
-      );
+      ));
     } else {
-      state = state.copyWith(
+      _updateState(state.copyWith(
         selectedInspector: null,
         inspectorId: null,
         namaInspektor: null,
-      );
+      ));
     }
   }
 
 
   void updateNamaCustomer(String name) {
-    state = state.copyWith(namaCustomer: name);
+    _updateState(state.copyWith(namaCustomer: name));
   }
 
   void updateCabangInspeksi(InspectionBranch? cabang) {
-    state = state.copyWith(cabangInspeksi: cabang);
+    _updateState(state.copyWith(cabangInspeksi: cabang));
   }
 
   void updateTanggalInspeksi(DateTime? date) {
-    state = state.copyWith(tanggalInspeksi: date);
+    _updateState(state.copyWith(tanggalInspeksi: date));
   }
 
   void updateMerekKendaraan(String merek) {
-    state = state.copyWith(merekKendaraan: merek);
+    _updateState(state.copyWith(merekKendaraan: merek));
   }
 
   void updateTipeKendaraan(String tipe) {
-    state = state.copyWith(tipeKendaraan: tipe);
+    _updateState(state.copyWith(tipeKendaraan: tipe));
   }
 
   void updateTahun(String tahun) {
-    state = state.copyWith(tahun: tahun);
+    _updateState(state.copyWith(tahun: tahun));
   }
 
   void updateTransmisi(String transmisi) {
-    state = state.copyWith(transmisi: transmisi);
+    _updateState(state.copyWith(transmisi: transmisi));
   }
 
   void updateWarnaKendaraan(String warna) {
-    state = state.copyWith(warnaKendaraan: warna);
+    _updateState(state.copyWith(warnaKendaraan: warna));
   }
 
   void updateOdometer(String odometer) {
-    state = state.copyWith(odometer: odometer);
+    _updateState(state.copyWith(odometer: odometer));
   }
 
   void updateKepemilikan(String kepemilikan) {
-    state = state.copyWith(kepemilikan: kepemilikan);
+    _updateState(state.copyWith(kepemilikan: kepemilikan));
   }
 
   void updatePlatNomor(String platNomor) {
-    state = state.copyWith(platNomor: platNomor);
+    _updateState(state.copyWith(platNomor: platNomor));
   }
 
   void updatePajak1TahunDate(DateTime? date) {
-    state = state.copyWith(pajak1TahunDate: date);
+    _updateState(state.copyWith(pajak1TahunDate: date));
   }
 
   void updatePajak5TahunDate(DateTime? date) {
-    state = state.copyWith(pajak5TahunDate: date);
+    _updateState(state.copyWith(pajak5TahunDate: date));
   }
 
   void updateBiayaPajak(String biaya) {
-    state = state.copyWith(biayaPajak: biaya);
+    _updateState(state.copyWith(biayaPajak: biaya));
   }
 
   // Page Three Update Methods
   void updateBukuService(String? value) {
-    state = state.copyWith(bukuService: value);
+    _updateState(state.copyWith(bukuService: value));
   }
 
   void updateKunciSerep(String? value) {
-    state = state.copyWith(kunciSerep: value);
+    _updateState(state.copyWith(kunciSerep: value));
   }
 
   void updateBukuManual(String? value) {
-    state = state.copyWith(bukuManual: value);
+    _updateState(state.copyWith(bukuManual: value));
   }
 
   void updateBanSerep(String? value) {
-    state = state.copyWith(banSerep: value);
+    _updateState(state.copyWith(banSerep: value));
   }
 
   void updateBpkb(String? value) {
-    state = state.copyWith(bpkb: value);
+    _updateState(state.copyWith(bpkb: value));
   }
 
   void updateDongkrak(String? value) {
-    state = state.copyWith(dongkrak: value);
+    _updateState(state.copyWith(dongkrak: value));
   }
 
   void updateToolkit(String? value) {
-    state = state.copyWith(toolkit: value);
+    _updateState(state.copyWith(toolkit: value));
   }
 
   void updateNoRangka(String? value) {
-    state = state.copyWith(noRangka: value);
+    _updateState(state.copyWith(noRangka: value));
   }
 
   void updateNoMesin(String? value) {
-    state = state.copyWith(noMesin: value);
+    _updateState(state.copyWith(noMesin: value));
   }
 
   // New update methods for Page Four
   void updateIndikasiTabrakan(String? value) {
-    state = state.copyWith(indikasiTabrakan: value);
+    _updateState(state.copyWith(indikasiTabrakan: value));
   }
 
   void updateIndikasiBanjir(String? value) {
-    state = state.copyWith(indikasiBanjir: value);
+    _updateState(state.copyWith(indikasiBanjir: value));
   }
 
   void updateIndikasiOdometerReset(String? value) {
-    state = state.copyWith(indikasiOdometerReset: value);
+    _updateState(state.copyWith(indikasiOdometerReset: value));
   }
 
   void updatePosisiBan(String? value) {
-    state = state.copyWith(posisiBan: value);
+    _updateState(state.copyWith(posisiBan: value));
   }
 
   void updateMerk(String? value) {
-    state = state.copyWith(merk: value);
+    _updateState(state.copyWith(merk: value));
   }
 
   void updateTipeVelg(String? value) {
-    state = state.copyWith(tipeVelg: value);
+    _updateState(state.copyWith(tipeVelg: value));
   }
 
   void updateKetebalan(String? value) {
-    state = state.copyWith(ketebalan: value);
+    _updateState(state.copyWith(ketebalan: value));
   }
 
   // New update methods for selected indices
   void updateInteriorSelectedValue(int value) {
-    state = state.copyWith(interiorSelectedValue: value);
+    _updateState(state.copyWith(interiorSelectedValue: value));
   }
 
   void updateEksteriorSelectedValue(int value) {
-    state = state.copyWith(eksteriorSelectedValue: value);
+    _updateState(state.copyWith(eksteriorSelectedValue: value));
   }
 
   void updateKakiKakiSelectedValue(int value) {
-    state = state.copyWith(kakiKakiSelectedValue: value);
+    _updateState(state.copyWith(kakiKakiSelectedValue: value));
   }
 
   void updateMesinSelectedValue(int value) {
-    state = state.copyWith(mesinSelectedValue: value);
+    _updateState(state.copyWith(mesinSelectedValue: value));
   }
 
   // NEW: Update methods for ExpandableTextField data
   void updateKeteranganInterior(List<String> lines) {
-    state = state.copyWith(keteranganInterior: lines);
+    _updateState(state.copyWith(keteranganInterior: lines));
   }
 
   void updateKeteranganEksterior(List<String> lines) {
-    state = state.copyWith(keteranganEksterior: lines);
+    _updateState(state.copyWith(keteranganEksterior: lines));
   }
 
   void updateKeteranganKakiKaki(List<String> lines) {
-    state = state.copyWith(keteranganKakiKaki: lines);
+    _updateState(state.copyWith(keteranganKakiKaki: lines));
   }
 
   void updateKeteranganMesin(List<String> lines) {
-    state = state.copyWith(keteranganMesin: lines);
+    _updateState(state.copyWith(keteranganMesin: lines));
   }
 
   void updateDeskripsiKeseluruhan(List<String> lines) {
-    state = state.copyWith(deskripsiKeseluruhan: lines);
+    _updateState(state.copyWith(deskripsiKeseluruhan: lines));
   }
 
   // New update methods for Page Five One
   void updateAirbagSelectedValue(int? value) {
-    state = state.copyWith(airbagSelectedValue: value);
+    _updateState(state.copyWith(airbagSelectedValue: value));
   }
 
   void updateSistemAudioSelectedValue(int? value) {
-    state = state.copyWith(sistemAudioSelectedValue: value);
+    _updateState(state.copyWith(sistemAudioSelectedValue: value));
   }
 
   void updatePowerWindowSelectedValue(int? value) {
-    state = state.copyWith(powerWindowSelectedValue: value);
+    _updateState(state.copyWith(powerWindowSelectedValue: value));
   }
 
   void updateSistemAcSelectedValue(int? value) {
-    state = state.copyWith(sistemAcSelectedValue: value);
+    _updateState(state.copyWith(sistemAcSelectedValue: value));
   }
 
   void updateCentralLockSelectedValue(int? value) {
-    state = state.copyWith(centralLockSelectedValue: value);
+    _updateState(state.copyWith(centralLockSelectedValue: value));
   }
 
   void updateElectricMirrorSelectedValue(int? value) {
-    state = state.copyWith(electricMirrorSelectedValue: value);
+    _updateState(state.copyWith(electricMirrorSelectedValue: value));
   }
 
   void updateRemAbsSelectedValue(int? value) {
-    state = state.copyWith(remAbsSelectedValue: value);
+    _updateState(state.copyWith(remAbsSelectedValue: value));
   }
 
   void updateFiturCatatanList(List<String> lines) {
-    state = state.copyWith(fiturCatatanList: lines);
+    _updateState(state.copyWith(fiturCatatanList: lines));
   }
 
   // New update methods for Page Five Two
   void updateGetaranMesinSelectedValue(int? value) {
-    state = state.copyWith(getaranMesinSelectedValue: value);
+    _updateState(state.copyWith(getaranMesinSelectedValue: value));
   }
 
   void updateSuaraMesinSelectedValue(int? value) {
-    state = state.copyWith(suaraMesinSelectedValue: value);
+    _updateState(state.copyWith(suaraMesinSelectedValue: value));
   }
 
   void updateTransmisiSelectedValue(int? value) {
-    state = state.copyWith(transmisiSelectedValue: value);
+    _updateState(state.copyWith(transmisiSelectedValue: value));
   }
 
   void updatePompaPowerSteeringSelectedValue(int? value) {
-    state = state.copyWith(pompaPowerSteeringSelectedValue: value);
+    _updateState(state.copyWith(pompaPowerSteeringSelectedValue: value));
   }
 
   void updateCoverTimingChainSelectedValue(int? value) {
-    state = state.copyWith(coverTimingChainSelectedValue: value);
+    _updateState(state.copyWith(coverTimingChainSelectedValue: value));
   }
 
   void updateOliPowerSteeringSelectedValue(int? value) {
-    state = state.copyWith(oliPowerSteeringSelectedValue: value);
+    _updateState(state.copyWith(oliPowerSteeringSelectedValue: value));
   }
 
   void updateAccuSelectedValue(int? value) {
-    state = state.copyWith(accuSelectedValue: value);
+    _updateState(state.copyWith(accuSelectedValue: value));
   }
 
   void updateKompressorAcSelectedValue(int? value) {
-    state = state.copyWith(kompressorAcSelectedValue: value);
+    _updateState(state.copyWith(kompressorAcSelectedValue: value));
   }
 
   void updateFanSelectedValue(int? value) {
-    state = state.copyWith(fanSelectedValue: value);
+    _updateState(state.copyWith(fanSelectedValue: value));
   }
 
   void updateSelangSelectedValue(int? value) {
-    state = state.copyWith(selangSelectedValue: value);
+    _updateState(state.copyWith(selangSelectedValue: value));
   }
 
   void updateKarterOliSelectedValue(int? value) {
-    state = state.copyWith(karterOliSelectedValue: value);
+    _updateState(state.copyWith(karterOliSelectedValue: value));
   }
 
   void updateOilRemSelectedValue(int? value) {
-    state = state.copyWith(oilRemSelectedValue: value);
+    _updateState(state.copyWith(oilRemSelectedValue: value));
   }
 
   void updateKabelSelectedValue(int? value) {
-    state = state.copyWith(kabelSelectedValue: value);
+    _updateState(state.copyWith(kabelSelectedValue: value));
   }
 
   void updateKondensorSelectedValue(int? value) {
-    state = state.copyWith(kondensorSelectedValue: value);
+    _updateState(state.copyWith(kondensorSelectedValue: value));
   }
 
   void updateRadiatorSelectedValue(int? value) {
-    state = state.copyWith(radiatorSelectedValue: value);
+    _updateState(state.copyWith(radiatorSelectedValue: value));
   }
 
   void updateCylinderHeadSelectedValue(int? value) {
-    state = state.copyWith(cylinderHeadSelectedValue: value);
+    _updateState(state.copyWith(cylinderHeadSelectedValue: value));
   }
 
   void updateOliMesinSelectedValue(int? value) {
-    state = state.copyWith(oliMesinSelectedValue: value);
+    _updateState(state.copyWith(oliMesinSelectedValue: value));
   }
 
   void updateAirRadiatorSelectedValue(int? value) {
-    state = state.copyWith(airRadiatorSelectedValue: value);
+    _updateState(state.copyWith(airRadiatorSelectedValue: value));
   }
 
   void updateCoverKlepSelectedValue(int? value) {
-    state = state.copyWith(coverKlepSelectedValue: value);
+    _updateState(state.copyWith(coverKlepSelectedValue: value));
   }
 
   void updateAlternatorSelectedValue(int? value) {
-    state = state.copyWith(alternatorSelectedValue: value);
+    _updateState(state.copyWith(alternatorSelectedValue: value));
   }
 
   void updateWaterPumpSelectedValue(int? value) {
-    state = state.copyWith(waterPumpSelectedValue: value);
+    _updateState(state.copyWith(waterPumpSelectedValue: value));
   }
 
   void updateBeltSelectedValue(int? value) {
-    state = state.copyWith(beltSelectedValue: value);
+    _updateState(state.copyWith(beltSelectedValue: value));
   }
 
   void updateOliTransmisiSelectedValue(int? value) {
-    state = state.copyWith(oliTransmisiSelectedValue: value);
+    _updateState(state.copyWith(oliTransmisiSelectedValue: value));
   }
 
   void updateCylinderBlockSelectedValue(int? value) {
-    state = state.copyWith(cylinderBlockSelectedValue: value);
+    _updateState(state.copyWith(cylinderBlockSelectedValue: value));
   }
 
   void updateBushingBesarSelectedValue(int? value) {
-    state = state.copyWith(bushingBesarSelectedValue: value);
+    _updateState(state.copyWith(bushingBesarSelectedValue: value));
   }
 
   void updateBushingKecilSelectedValue(int? value) {
-    state = state.copyWith(bushingKecilSelectedValue: value);
+    _updateState(state.copyWith(bushingKecilSelectedValue: value));
   }
 
   void updateTutupRadiatorSelectedValue(int? value) {
-    state = state.copyWith(tutupRadiatorSelectedValue: value);
+    _updateState(state.copyWith(tutupRadiatorSelectedValue: value));
   }
 
   void updateMesinCatatanList(List<String> lines) {
-    state = state.copyWith(mesinCatatanList: lines);
+    _updateState(state.copyWith(mesinCatatanList: lines));
   }
 
   // New update methods for Page Five Three
   void updateStirSelectedValue(int? value) {
-    state = state.copyWith(stirSelectedValue: value);
+    _updateState(state.copyWith(stirSelectedValue: value));
   }
 
 
   void updateRemTanganSelectedValue(int? value) {
-    state = state.copyWith(remTanganSelectedValue: value);
+    _updateState(state.copyWith(remTanganSelectedValue: value));
   }
 
 
   void updatePedalSelectedValue(int? value) {
-    state = state.copyWith(pedalSelectedValue: value);
+    _updateState(state.copyWith(pedalSelectedValue: value));
   }
 
 
   void updateSwitchWiperSelectedValue(int? value) {
-    state = state.copyWith(switchWiperSelectedValue: value);
+    _updateState(state.copyWith(switchWiperSelectedValue: value));
   }
 
 
   void updateLampuHazardSelectedValue(int? value) {
-    state = state.copyWith(lampuHazardSelectedValue: value);
+    _updateState(state.copyWith(lampuHazardSelectedValue: value));
   }
 
 
   void updatePanelDashboardSelectedValue(int? value) {
-    state = state.copyWith(panelDashboardSelectedValue: value);
+    _updateState(state.copyWith(panelDashboardSelectedValue: value));
   }
 
 
   void updatePembukaKapMesinSelectedValue(int? value) {
-    state = state.copyWith(pembukaKapMesinSelectedValue: value);
+    _updateState(state.copyWith(pembukaKapMesinSelectedValue: value));
   }
 
 
   void updatePembukaBagasiSelectedValue(int? value) {
-    state = state.copyWith(pembukaBagasiSelectedValue: value);
+    _updateState(state.copyWith(pembukaBagasiSelectedValue: value));
   }
 
 
   void updateJokDepanSelectedValue(int? value) {
-    state = state.copyWith(jokDepanSelectedValue: value);
+    _updateState(state.copyWith(jokDepanSelectedValue: value));
   }
 
 
   void updateAromaInteriorSelectedValue(int? value) {
-    state = state.copyWith(aromaInteriorSelectedValue: value);
+    _updateState(state.copyWith(aromaInteriorSelectedValue: value));
   }
 
 
   void updateHandlePintuSelectedValue(int? value) {
-    state = state.copyWith(handlePintuSelectedValue: value);
+    _updateState(state.copyWith(handlePintuSelectedValue: value));
   }
 
 
   void updateConsoleBoxSelectedValue(int? value) {
-    state = state.copyWith(consoleBoxSelectedValue: value);
+    _updateState(state.copyWith(consoleBoxSelectedValue: value));
   }
 
 
   void updateSpionTengahSelectedValue(int? value) {
-    state = state.copyWith(spionTengahSelectedValue: value);
+    _updateState(state.copyWith(spionTengahSelectedValue: value));
   }
 
 
   void updateTuasPersnelingSelectedValue(int? value) {
-    state = state.copyWith(tuasPersnelingSelectedValue: value);
+    _updateState(state.copyWith(tuasPersnelingSelectedValue: value));
   }
 
 
   void updateJokBelakangSelectedValue(int? value) {
-    state = state.copyWith(jokBelakangSelectedValue: value);
+    _updateState(state.copyWith(jokBelakangSelectedValue: value));
   }
 
 
   void updatePanelIndikatorSelectedValue(int? value) {
-    state = state.copyWith(panelIndikatorSelectedValue: value);
+    _updateState(state.copyWith(panelIndikatorSelectedValue: value));
   }
 
 
   void updateSwitchLampuSelectedValue(int? value) {
-    state = state.copyWith(switchLampuSelectedValue: value);
+    _updateState(state.copyWith(switchLampuSelectedValue: value));
   }
 
 
   void updateKarpetDasarSelectedValue(int? value) {
-    state = state.copyWith(karpetDasarSelectedValue: value);
+    _updateState(state.copyWith(karpetDasarSelectedValue: value));
   }
 
 
   void updateKlaksonSelectedValue(int? value) {
-    state = state.copyWith(klaksonSelectedValue: value);
+    _updateState(state.copyWith(klaksonSelectedValue: value));
   }
 
 
   void updateSunVisorSelectedValue(int? value) {
-    state = state.copyWith(sunVisorSelectedValue: value);
+    _updateState(state.copyWith(sunVisorSelectedValue: value));
   }
 
 
   void updateTuasTangkiBensinSelectedValue(int? value) {
-    state = state.copyWith(tuasTangkiBensinSelectedValue: value);
+    _updateState(state.copyWith(tuasTangkiBensinSelectedValue: value));
   }
 
 
   void updateSabukPengamanSelectedValue(int? value) {
-    state = state.copyWith(sabukPengamanSelectedValue: value);
+    _updateState(state.copyWith(sabukPengamanSelectedValue: value));
   }
 
 
   void updateTrimInteriorSelectedValue(int? value) {
-    state = state.copyWith(trimInteriorSelectedValue: value);
+    _updateState(state.copyWith(trimInteriorSelectedValue: value));
   }
 
 
   void updatePlafonSelectedValue(int? value) {
-    state = state.copyWith(plafonSelectedValue: value);
+    _updateState(state.copyWith(plafonSelectedValue: value));
   }
 
 
   void updateInteriorCatatanList(List<String> lines) {
-    state = state.copyWith(interiorCatatanList: lines);
+    _updateState(state.copyWith(interiorCatatanList: lines));
   }
 
   // New update methods for Page Five Four
   void updateBumperDepanSelectedValue(int? value) {
-    state = state.copyWith(bumperDepanSelectedValue: value);
+    _updateState(state.copyWith(bumperDepanSelectedValue: value));
   }
 
 
   void updateKapMesinSelectedValue(int? value) {
-    state = state.copyWith(kapMesinSelectedValue: value);
+    _updateState(state.copyWith(kapMesinSelectedValue: value));
   }
 
 
   void updateLampuUtamaSelectedValue(int? value) {
-    state = state.copyWith(lampuUtamaSelectedValue: value);
+    _updateState(state.copyWith(lampuUtamaSelectedValue: value));
   }
 
 
   void updatePanelAtapSelectedValue(int? value) {
-    state = state.copyWith(panelAtapSelectedValue: value);
+    _updateState(state.copyWith(panelAtapSelectedValue: value));
   }
 
 
   void updateGrillSelectedValue(int? value) {
-    state = state.copyWith(grillSelectedValue: value);
+    _updateState(state.copyWith(grillSelectedValue: value));
   }
 
 
   void updateLampuFoglampSelectedValue(int? value) {
-    state = state.copyWith(lampuFoglampSelectedValue: value);
+    _updateState(state.copyWith(lampuFoglampSelectedValue: value));
   }
 
 
   void updateKacaBeningSelectedValue(int? value) {
-    state = state.copyWith(kacaBeningSelectedValue: value);
+    _updateState(state.copyWith(kacaBeningSelectedValue: value));
   }
 
 
   void updateWiperBelakangSelectedValue(int? value) {
-    state = state.copyWith(wiperBelakangSelectedValue: value);
+    _updateState(state.copyWith(wiperBelakangSelectedValue: value));
   }
 
 
   void updateBumperBelakangSelectedValue(int? value) {
-    state = state.copyWith(bumperBelakangSelectedValue: value);
+    _updateState(state.copyWith(bumperBelakangSelectedValue: value));
   }
 
 
   void updateLampuBelakangSelectedValue(int? value) {
-    state = state.copyWith(lampuBelakangSelectedValue: value);
+    _updateState(state.copyWith(lampuBelakangSelectedValue: value));
   }
 
 
   void updateTrunklidSelectedValue(int? value) {
-    state = state.copyWith(trunklidSelectedValue: value);
+    _updateState(state.copyWith(trunklidSelectedValue: value));
   }
 
 
   void updateKacaDepanSelectedValue(int? value) {
-    state = state.copyWith(kacaDepanSelectedValue: value);
+    _updateState(state.copyWith(kacaDepanSelectedValue: value));
   }
 
 
   void updateFenderKananSelectedValue(int? value) {
-    state = state.copyWith(fenderKananSelectedValue: value);
+    _updateState(state.copyWith(fenderKananSelectedValue: value));
   }
 
 
   void updateQuarterPanelKananSelectedValue(int? value) {
-    state = state.copyWith(quarterPanelKananSelectedValue: value);
+    _updateState(state.copyWith(quarterPanelKananSelectedValue: value));
   }
 
 
   void updatePintuBelakangKananSelectedValue(int? value) {
-    state = state.copyWith(pintuBelakangKananSelectedValue: value);
+    _updateState(state.copyWith(pintuBelakangKananSelectedValue: value));
   }
 
 
   void updateSpionKananSelectedValue(int? value) {
-    state = state.copyWith(spionKananSelectedValue: value);
+    _updateState(state.copyWith(spionKananSelectedValue: value));
   }
 
 
   void updateLisplangKananSelectedValue(int? value) {
-    state = state.copyWith(lisplangKananSelectedValue: value);
+    _updateState(state.copyWith(lisplangKananSelectedValue: value));
   }
 
 
   void updateSideSkirtKananSelectedValue(int? value) {
-    state = state.copyWith(sideSkirtKananSelectedValue: value);
+    _updateState(state.copyWith(sideSkirtKananSelectedValue: value));
   }
 
 
   void updateDaunWiperSelectedValue(int? value) {
-    state = state.copyWith(daunWiperSelectedValue: value);
+    _updateState(state.copyWith(daunWiperSelectedValue: value));
   }
 
 
   void updatePintuBelakangSelectedValue(int? value) {
-    state = state.copyWith(pintuBelakangSelectedValue: value);
+    _updateState(state.copyWith(pintuBelakangSelectedValue: value));
   }
 
 
   void updateFenderKiriSelectedValue(int? value) {
-    state = state.copyWith(fenderKiriSelectedValue: value);
+    _updateState(state.copyWith(fenderKiriSelectedValue: value));
   }
 
 
   void updateQuarterPanelKiriSelectedValue(int? value) {
-    state = state.copyWith(quarterPanelKiriSelectedValue: value);
+    _updateState(state.copyWith(quarterPanelKiriSelectedValue: value));
   }
 
 
   void updatePintuDepanSelectedValue(int? value) {
-    state = state.copyWith(pintuDepanSelectedValue: value);
+    _updateState(state.copyWith(pintuDepanSelectedValue: value));
   }
 
 
   void updateKacaJendelaKananSelectedValue(int? value) {
-    state = state.copyWith(kacaJendelaKananSelectedValue: value);
+    _updateState(state.copyWith(kacaJendelaKananSelectedValue: value));
   }
 
 
   void updatePintuBelakangKiriSelectedValue(int? value) {
-    state = state.copyWith(pintuBelakangKiriSelectedValue: value);
+    _updateState(state.copyWith(pintuBelakangKiriSelectedValue: value));
   }
 
 
   void updateSpionKiriSelectedValue(int? value) {
-    state = state.copyWith(spionKiriSelectedValue: value);
+    _updateState(state.copyWith(spionKiriSelectedValue: value));
   }
 
 
   void updatePintuDepanKiriSelectedValue(int? value) {
-    state = state.copyWith(pintuDepanKiriSelectedValue: value);
+    _updateState(state.copyWith(pintuDepanKiriSelectedValue: value));
   }
 
 
   void updateKacaJendelaKiriSelectedValue(int? value) {
-    state = state.copyWith(kacaJendelaKiriSelectedValue: value);
+    _updateState(state.copyWith(kacaJendelaKiriSelectedValue: value));
   }
 
 
   void updateLisplangKiriSelectedValue(int? value) {
-    state = state.copyWith(lisplangKiriSelectedValue: value);
+    _updateState(state.copyWith(lisplangKiriSelectedValue: value));
   }
 
 
   void updateSideSkirtKiriSelectedValue(int? value) {
-    state = state.copyWith(sideSkirtKiriSelectedValue: value);
+    _updateState(state.copyWith(sideSkirtKiriSelectedValue: value));
   }
 
 
   void updateEksteriorCatatanList(List<String> lines) {
-    state = state.copyWith(eksteriorCatatanList: lines);
+    _updateState(state.copyWith(eksteriorCatatanList: lines));
   }
 
   void updateRepairEstimations(List<Map<String, String>> estimations) {
-    state = state.copyWith(repairEstimations: estimations);
+    _updateState(state.copyWith(repairEstimations: estimations));
   }
 
   // New update methods for Page Five Five
   void updateBanDepanSelectedValue(int? value) {
-    state = state.copyWith(banDepanSelectedValue: value);
+    _updateState(state.copyWith(banDepanSelectedValue: value));
   }
 
 
   void updateVelgDepanSelectedValue(int? value) {
-    state = state.copyWith(velgDepanSelectedValue: value);
+    _updateState(state.copyWith(velgDepanSelectedValue: value));
   }
 
 
   void updateDiscBrakeSelectedValue(int? value) {
-    state = state.copyWith(discBrakeSelectedValue: value);
+    _updateState(state.copyWith(discBrakeSelectedValue: value));
   }
 
 
   void updateMasterRemSelectedValue(int? value) {
-    state = state.copyWith(masterRemSelectedValue: value);
+    _updateState(state.copyWith(masterRemSelectedValue: value));
   }
 
 
   void updateTieRodSelectedValue(int? value) {
-    state = state.copyWith(tieRodSelectedValue: value);
+    _updateState(state.copyWith(tieRodSelectedValue: value));
   }
 
 
   void updateGardanSelectedValue(int? value) {
-    state = state.copyWith(gardanSelectedValue: value);
+    _updateState(state.copyWith(gardanSelectedValue: value));
   }
 
 
   void updateBanBelakangSelectedValue(int? value) {
-    state = state.copyWith(banBelakangSelectedValue: value);
+    _updateState(state.copyWith(banBelakangSelectedValue: value));
   }
 
 
   void updateVelgBelakangSelectedValue(int? value) {
-    state = state.copyWith(velgBelakangSelectedValue: value);
+    _updateState(state.copyWith(velgBelakangSelectedValue: value));
   }
 
 
   void updateBrakePadSelectedValue(int? value) {
-    state = state.copyWith(brakePadSelectedValue: value);
+    _updateState(state.copyWith(brakePadSelectedValue: value));
   }
 
 
   void updateCrossmemberSelectedValue(int? value) {
-    state = state.copyWith(crossmemberSelectedValue: value);
+    _updateState(state.copyWith(crossmemberSelectedValue: value));
   }
 
 
   void updateKnalpotSelectedValue(int? value) {
-    state = state.copyWith(knalpotSelectedValue: value);
+    _updateState(state.copyWith(knalpotSelectedValue: value));
   }
 
 
   void updateBalljointSelectedValue(int? value) {
-    state = state.copyWith(balljointSelectedValue: value);
+    _updateState(state.copyWith(balljointSelectedValue: value));
   }
 
 
   void updateRacksteerSelectedValue(int? value) {
-    state = state.copyWith(racksteerSelectedValue: value);
+    _updateState(state.copyWith(racksteerSelectedValue: value));
   }
 
 
   void updateKaretBootSelectedValue(int? value) {
-    state = state.copyWith(karetBootSelectedValue: value);
+    _updateState(state.copyWith(karetBootSelectedValue: value));
   }
 
 
   void updateUpperLowerArmSelectedValue(int? value) {
-    state = state.copyWith(upperLowerArmSelectedValue: value);
+    _updateState(state.copyWith(upperLowerArmSelectedValue: value));
   }
 
 
   void updateShockBreakerSelectedValue(int? value) {
-    state = state.copyWith(shockBreakerSelectedValue: value);
+    _updateState(state.copyWith(shockBreakerSelectedValue: value));
   }
 
 
   void updateLinkStabilizerSelectedValue(int? value) {
-    state = state.copyWith(linkStabilizerSelectedValue: value);
+    _updateState(state.copyWith(linkStabilizerSelectedValue: value));
   }
 
 
   void updateBanDanKakiKakiCatatanList(List<String> lines) {
-    state = state.copyWith(banDanKakiKakiCatatanList: lines);
+    _updateState(state.copyWith(banDanKakiKakiCatatanList: lines));
   }
 
   // New update methods for Page Five Six (Test Drive)
   void updateBunyiGetaranSelectedValue(int? value) {
-    state = state.copyWith(bunyiGetaranSelectedValue: value);
+    _updateState(state.copyWith(bunyiGetaranSelectedValue: value));
   }
 
 
   void updatePerformaStirSelectedValue(int? value) {
-    state = state.copyWith(performaStirSelectedValue: value);
+    _updateState(state.copyWith(performaStirSelectedValue: value));
   }
 
 
   void updatePerpindahanTransmisiSelectedValue(int? value) {
-    state = state.copyWith(perpindahanTransmisiSelectedValue: value);
+    _updateState(state.copyWith(perpindahanTransmisiSelectedValue: value));
   }
 
 
   void updateStirBalanceSelectedValue(int? value) {
-    state = state.copyWith(stirBalanceSelectedValue: value);
+    _updateState(state.copyWith(stirBalanceSelectedValue: value));
   }
 
 
   void updatePerformaSuspensiSelectedValue(int? value) {
-    state = state.copyWith(performaSuspensiSelectedValue: value);
+    _updateState(state.copyWith(performaSuspensiSelectedValue: value));
   }
 
 
   void updatePerformaKoplingSelectedValue(int? value) {
-    state = state.copyWith(performaKoplingSelectedValue: value);
+    _updateState(state.copyWith(performaKoplingSelectedValue: value));
   }
 
 
   void updateRpmSelectedValue(int? value) {
-    state = state.copyWith(rpmSelectedValue: value);
+    _updateState(state.copyWith(rpmSelectedValue: value));
   }
 
 
   void updateTestDriveCatatanList(List<String> lines) {
-    state = state.copyWith(testDriveCatatanList: lines);
+    _updateState(state.copyWith(testDriveCatatanList: lines));
   }
 
   // New update methods for Page Five Seven (Tools Test)
   void updateTebalCatBodyDepanSelectedValue(int? value) {
-    state = state.copyWith(tebalCatBodyDepanSelectedValue: value);
+    _updateState(state.copyWith(tebalCatBodyDepanSelectedValue: value));
   }
 
 
   void updateTebalCatBodyKiriSelectedValue(int? value) {
-    state = state.copyWith(tebalCatBodyKiriSelectedValue: value);
+    _updateState(state.copyWith(tebalCatBodyKiriSelectedValue: value));
   }
 
 
   void updateTemperatureAcMobilSelectedValue(int? value) {
-    state = state.copyWith(temperatureAcMobilSelectedValue: value);
+    _updateState(state.copyWith(temperatureAcMobilSelectedValue: value));
   }
 
 
   void updateTebalCatBodyKananSelectedValue(int? value) {
-    state = state.copyWith(tebalCatBodyKananSelectedValue: value);
+    _updateState(state.copyWith(tebalCatBodyKananSelectedValue: value));
   }
 
 
   void updateTebalCatBodyBelakangSelectedValue(int? value) {
-    state = state.copyWith(tebalCatBodyBelakangSelectedValue: value);
+    _updateState(state.copyWith(tebalCatBodyBelakangSelectedValue: value));
   }
 
 
   void updateObdScannerSelectedValue(int? value) {
-    state = state.copyWith(obdScannerSelectedValue: value);
+    _updateState(state.copyWith(obdScannerSelectedValue: value));
   }
 
 
   void updateTebalCatBodyAtapSelectedValue(int? value) {
-    state = state.copyWith(tebalCatBodyAtapSelectedValue: value);
+    _updateState(state.copyWith(tebalCatBodyAtapSelectedValue: value));
   }
 
 
   void updateTestAccuSelectedValue(int? value) {
-    state = state.copyWith(testAccuSelectedValue: value);
+    _updateState(state.copyWith(testAccuSelectedValue: value));
   }
 
 
   void updateToolsTestCatatanList(List<String> lines) {
-    state = state.copyWith(toolsTestCatatanList: lines);
+    _updateState(state.copyWith(toolsTestCatatanList: lines));
   }
 
   void updateCatDepanKap(String? value) {
-    state = state.copyWith(catDepanKap: value);
+    _updateState(state.copyWith(catDepanKap: value));
   }
 
   void updateCatBelakangBumper(String? value) {
-    state = state.copyWith(catBelakangBumper: value);
+    _updateState(state.copyWith(catBelakangBumper: value));
   }
 
   void updateCatBelakangTrunk(String? value) {
-    state = state.copyWith(catBelakangTrunk: value);
+    _updateState(state.copyWith(catBelakangTrunk: value));
   }
 
   void updateCatKananFenderDepan(String? value) {
-    state = state.copyWith(catKananFenderDepan: value);
+    _updateState(state.copyWith(catKananFenderDepan: value));
   }
 
   void updateCatKananPintuDepan(String? value) {
-    state = state.copyWith(catKananPintuDepan: value);
+    _updateState(state.copyWith(catKananPintuDepan: value));
   }
 
   void updateCatKananPintuBelakang(String? value) {
-    state = state.copyWith(catKananPintuBelakang: value);
+    _updateState(state.copyWith(catKananPintuBelakang: value));
   }
 
   void updateCatKananFenderBelakang(String? value) {
-    state = state.copyWith(catKananFenderBelakang: value);
+    _updateState(state.copyWith(catKananFenderBelakang: value));
   }
 
   void updateCatKiriFenderDepan(String? value) {
-    state = state.copyWith(catKiriFenderDepan: value);
+    _updateState(state.copyWith(catKiriFenderDepan: value));
   }
 
   void updateCatKiriPintuDepan(String? value) {
-    state = state.copyWith(catKiriPintuDepan: value);
+    _updateState(state.copyWith(catKiriPintuDepan: value));
   }
 
   void updateCatKiriPintuBelakang(String? value) {
-    state = state.copyWith(catKiriPintuBelakang: value);
+    _updateState(state.copyWith(catKiriPintuBelakang: value));
   }
 
   void updateCatKiriFenderBelakang(String? value) {
-    state = state.copyWith(catKiriFenderBelakang: value);
+    _updateState(state.copyWith(catKiriFenderBelakang: value));
   }
 
   void updateCatKiriSideSkirt(String? value) {
-    state = state.copyWith(catKiriSideSkirt: value);
+    _updateState(state.copyWith(catKiriSideSkirt: value));
   }
 
   void updateCatKananSideSkirt(String? value) {
-    state = state.copyWith(catKananSideSkirt: value);
+    _updateState(state.copyWith(catKananSideSkirt: value));
   }
 
   Future<String> _getFilePath() async {
     final directory = await getApplicationDocumentsDirectory();
     return '${directory.path}/$_fileName';
-  }
-
-  Future<void> _loadFormData() async {
-    try {
-      final filePath = await _getFilePath();
-      final file = File(filePath);
-      if (await file.exists()) {
-        final jsonString = await file.readAsString();
-        final jsonMap = json.decode(jsonString);
-        super.state = FormData.fromJson(jsonMap);
-      }
-    } catch (e, stackTrace) {
-      _crashlytics.recordError(e, stackTrace, reason: 'Error loading form data');
-      // Handle errors during file loading
-      if (kDebugMode) {
-        print('Error loading form data: $e');
-      }
-    }
   }
 
   Future<void> _saveFormData() async {
@@ -964,9 +982,8 @@ class FormNotifier extends StateNotifier<FormData> {
     }
   }
 
-  @override
-  set state(FormData value) {
-    super.state = value;
+  void _updateState(FormData newState) {
+    state = newState;
     // Debounce the save operation
     _saveTimer?.cancel();
     _saveTimer = Timer(const Duration(milliseconds: 500), () {
@@ -975,13 +992,12 @@ class FormNotifier extends StateNotifier<FormData> {
   }
 
   void resetFormData() {
-    state = FormData();
+    _updateState(FormData());
     _saveTimer?.cancel(); // Cancel any pending saves
     _saveFormData(); // Save immediately after reset
   }
 }
 
-final formProvider = StateNotifierProvider<FormNotifier, FormData>((ref) {
-  final crashlytics = ref.watch(crashlyticsUtilProvider); // Get CrashlyticsUtil instance
-  return FormNotifier(ref, crashlytics); // Pass ref and crashlytics to the constructor
+final formProvider = NotifierProvider<FormNotifier, FormData>(() {
+  return FormNotifier();
 });

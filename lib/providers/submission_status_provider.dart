@@ -24,12 +24,15 @@ class SubmissionStatus {
   }
 }
 
-final submissionStatusProvider = StateNotifierProvider<SubmissionStatusNotifier, SubmissionStatus>(
-  (ref) => SubmissionStatusNotifier(),
+final submissionStatusProvider = NotifierProvider<SubmissionStatusNotifier, SubmissionStatus>(
+  () => SubmissionStatusNotifier(),
 );
 
-class SubmissionStatusNotifier extends StateNotifier<SubmissionStatus> {
-  SubmissionStatusNotifier() : super(SubmissionStatus());
+class SubmissionStatusNotifier extends Notifier<SubmissionStatus> {
+  @override
+  SubmissionStatus build() {
+    return SubmissionStatus();
+  }
 
   void setLoading({
     required bool isLoading,

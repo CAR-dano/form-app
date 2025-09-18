@@ -25,12 +25,15 @@ class SubmissionDataCache {
   }
 }
 
-final submissionDataCacheProvider = StateNotifierProvider<SubmissionDataCacheNotifier, SubmissionDataCache>(
-  (ref) => SubmissionDataCacheNotifier(),
+final submissionDataCacheProvider = NotifierProvider<SubmissionDataCacheNotifier, SubmissionDataCache>(
+  () => SubmissionDataCacheNotifier(),
 );
 
-class SubmissionDataCacheNotifier extends StateNotifier<SubmissionDataCache> {
-  SubmissionDataCacheNotifier() : super(SubmissionDataCache());
+class SubmissionDataCacheNotifier extends Notifier<SubmissionDataCache> {
+  @override
+  SubmissionDataCache build() {
+    return SubmissionDataCache();
+  }
 
   void setCache({String? inspectionId, FormData? formData, List<String>? uploadedImagePaths}) {
     state = state.copyWith(

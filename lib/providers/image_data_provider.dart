@@ -7,18 +7,20 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
 
-final imageDataListProvider = StateNotifierProvider<ImageDataListNotifier, List<ImageData>>((ref) {
-  final crashlytics = ref.watch(crashlyticsUtilProvider); // Get CrashlyticsUtil instance
-  return ImageDataListNotifier(crashlytics);
+final imageDataListProvider = NotifierProvider<ImageDataListNotifier, List<ImageData>>(() {
+  return ImageDataListNotifier();
 });
 
-class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
-  final CrashlyticsUtil _crashlytics; // Add CrashlyticsUtil dependency
+class ImageDataListNotifier extends Notifier<List<ImageData>> {
+  late final CrashlyticsUtil _crashlytics; // Add CrashlyticsUtil dependency
   // static const _storageKey = 'image_data_list'; // Old key
   static const String _fileName = 'wajib_image_data_list.json'; // Unique filename
 
-  ImageDataListNotifier(this._crashlytics) : super([]) {
+  @override
+  List<ImageData> build() {
+    _crashlytics = ref.watch(crashlyticsUtilProvider); // Get CrashlyticsUtil instance
     _loadImageDataList();
+    return [];
   }
 
   Future<String> get _localPath async {
@@ -49,20 +51,20 @@ class ImageDataListNotifier extends StateNotifier<List<ImageData>> {
             // The old image files in cache will be cleared by the OS eventually.
             await clearImageData();
           } else {
-            super.state = loadedState;
+            state = loadedState;
           }
         } else {
-          super.state = [];
+          state = [];
         }
       } else {
-        super.state = [];
+        state = [];
       }
     } catch (e, stackTrace) {
       _crashlytics.recordError(e, stackTrace, reason: 'Error loading ImageDataList from file');
       if (kDebugMode) {
         print("Error loading ImageDataList from file: $e");
       }
-      super.state = [];
+      state = [];
     }
   }
 
