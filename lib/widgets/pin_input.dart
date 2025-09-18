@@ -66,8 +66,9 @@ class _PinInputState extends State<PinInput> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(widget.pinLength, (index) {
             bool isFilled = _pinControllers[index].text.isNotEmpty;
-            return SizedBox(
+            return Container(
               width: 48,
+              alignment: Alignment.center, // Ensure container centers its content
               child: KeyboardListener(
                 focusNode: FocusNode(), // Necessary for the listener to capture events
                 onKeyEvent: (event) {
@@ -87,17 +88,19 @@ class _PinInputState extends State<PinInput> {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Ensure only numbers can be entered
                   textAlign: TextAlign.center,
+                  textAlignVertical: TextAlignVertical.center, // Add vertical alignment
                   // maxLength: 1, // Remove maxLength to handle logic in onChanged
-                  obscureText: false,
+                  obscureText: true,
                   style: inputTextStyling.copyWith(
                     fontWeight: FontWeight.bold,
                     color: isFilled ? Colors.white : Colors.black,
+                    height: 1.0, // Set line height to prevent vertical offset
                   ),
                   decoration: InputDecoration(
                     filled: isFilled,
                     fillColor: borderColor,
                     counterText: '',
-                    contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
+                    contentPadding: const EdgeInsets.fromLTRB(2.0, 16.0, 0, 16.0), // Slight right nudge
                     isDense: true,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24),
