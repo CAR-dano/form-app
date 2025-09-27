@@ -59,8 +59,8 @@ dependencies:
   open_file: ^3.5.10
   flutter_image_compress: ^2.4.0
   flutter_secure_storage: ^9.2.4
-  firebase_core: ^4.1.0
-  firebase_crashlytics: ^5.0.1
+  firebase_core: ^4.1.1
+  firebase_crashlytics: ^5.0.2
 
 
 dev_dependencies:
