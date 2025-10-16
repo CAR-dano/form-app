@@ -25,9 +25,9 @@ class InspectionService {
   final CrashlyticsUtil _crashlytics;
 
   String get _baseApiUrl {
-    // if (kDebugMode) {
-    //   return dotenv.env['API_BASE_URL_DEBUG']!;
-    // }
+    if (kDebugMode) {
+      return dotenv.env['API_BASE_URL_DEBUG']!;
+    }
     return dotenv.env['API_BASE_URL']!;
   }
 
