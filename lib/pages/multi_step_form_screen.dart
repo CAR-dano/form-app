@@ -1,6 +1,5 @@
 import 'package:form_app/providers/user_info_provider.dart';
 import 'package:form_app/widgets/logout_button.dart';
-import 'package:form_app/utils/crashlytics_util.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -288,7 +287,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     final submissionDataCache = ref.read(submissionDataCacheProvider);
     final submissionDataCacheNotifier = ref.read(submissionDataCacheProvider.notifier);
     final customMessageOverlay = ref.read(customMessageOverlayProvider); // Get the singleton instance
-    final crashlytics = ref.read(crashlyticsUtilProvider); // Get the Crashlytics util
     final userInfo = ref.read(userInfoProvider);
 
     if (ref.read(submissionStatusProvider).isLoading) {
@@ -535,7 +533,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         CupertinoPageRoute(builder: (context) => const FinishedPage()),
         (Route<dynamic> route) => false,
       );
-    } on ApiException catch (e, stackTrace) {
+    } on ApiException catch (e) {
       if (!mounted) return;
       final lowerMessage = e.message.toLowerCase();
       final isCancelled = lowerMessage.contains('batal') || lowerMessage.contains('cancel');
@@ -551,12 +549,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         return;
       }
 
-      crashlytics.recordError(
-        e,
-        stackTrace,
-        reason: 'Error during form submission (API)',
-        fatal: false,
-      );
       customMessageOverlay.show(
         context: context,
         message: e.message,
@@ -564,8 +556,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         icon: Icons.error_outline,
         duration: const Duration(seconds: 5),
       );
-    } catch (e, stackTrace) { 
-      // Add stackTrace here
+    } catch (e) { 
       if (!mounted) return;
       // Fallback for non-Dio cancellations or other general errors
       if (e.toString().contains('cancelled')) {
@@ -578,12 +569,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           duration: const Duration(seconds: 4),
         );
       } else {
-        crashlytics.recordError(
-          e,
-          stackTrace,
-          reason: 'General error during form submission',
-          fatal: true, // This is a critical, unexpected error
-        );
         customMessageOverlay.show(
           context: context, // Pass context here
           message: '$e',
