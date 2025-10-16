@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart' as dio show Dio, FormData, MultipartFile, LogInterceptor, DioException, CancelToken, InterceptorsWrapper; // Consolidated dio imports
+import 'package:dio/dio.dart' as dio show Dio, FormData, MultipartFile, LogInterceptor, DioException, DioExceptionType, CancelToken, InterceptorsWrapper, Options; // Consolidated dio imports
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:form_app/models/api_exception.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspection_branch.dart';
 import 'package:form_app/models/inspector_data.dart';
@@ -14,12 +15,11 @@ import 'package:form_app/utils/calculation_utils.dart';
 import 'package:form_app/models/uploadable_image.dart';
 import 'package:form_app/services/auth_service.dart'; // Import AuthService
 
-
 // Typedef for the progress callback
 typedef ImageUploadProgressCallback = void Function(int currentBatch, int totalBatches);
 typedef ImageBatchUploadedCallback = void Function(List<String> uploadedPaths); // New callback
 
-class ApiService {
+class InspectionService {
   final dio.Dio _dioInst;
   final AuthService _authService; // Add AuthService instance
   final CrashlyticsUtil _crashlytics;
@@ -35,7 +35,7 @@ class ApiService {
   String get _inspectionBranchesUrl => '$_baseApiUrl/inspection-branches';
   String get _inspectorsUrl => '$_baseApiUrl/public/users/inspectors';
 
-  ApiService(this._authService, this._crashlytics)
+  InspectionService(this._authService, this._crashlytics)
       : _dioInst = dio.Dio() {
 
     _dioInst.interceptors.add(
@@ -47,7 +47,7 @@ class ApiService {
         error: true,
         logPrint: (object) {
           if (kDebugMode) {
-            print("DIO_LOG (ApiService): ${object.toString()}");
+            print("DIO_LOG (InspectionService): ${object.toString()}");
           }
         },
       ),
@@ -351,28 +351,99 @@ class ApiService {
           },
         },
         cancelToken: cancelToken,
+        options: _defaultPostOptions,
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (_isSuccessStatus(response.statusCode)) {
         if (kDebugMode) {
           print('Form data submitted successfully! Response: ${response.data}');
         }
         return response.data as Map<String, dynamic>;
       } else {
+        final errorMessage = _deriveErrorMessage(response.data, response.statusCode) ?? 'Terjadi kesalahan pada server.';
         if (kDebugMode) {
-          print('Failed to submit form data: ${response.statusCode} - ${response.data}');
+          print('Failed to submit form data: ${response.statusCode} - $errorMessage');
         }
-        final exception = Exception('Failed to submit form data: ${response.statusCode} - ${response.data}');
-        _crashlytics.recordError(exception, StackTrace.current, reason: 'Failed to submit form data');
-        throw exception;
-      }
-    } catch (e, stackTrace) {
-      if (kDebugMode) {
-        print('Error submitting form data: $e');
-      }
-      _crashlytics.recordError(e, stackTrace, reason: 'Error submitting form data');
-      throw Exception('Error submitting form data: $e');
+      final exception = ApiException(
+        errorMessage,
+        statusCode: response.statusCode,
+        responseData: response.data,
+      );
+      _crashlytics.recordError(
+        exception,
+        StackTrace.current,
+        reason: 'Failed to submit form data',
+      );
+      throw exception;
     }
+  } on dio.DioException catch (e, stackTrace) {
+    final bool isCancelled = e.type == dio.DioExceptionType.cancel;
+    final statusCode = e.response?.statusCode;
+      final errorMessage = _deriveErrorMessage(e.response?.data, statusCode) ??
+          (isCancelled ? 'Pengiriman data dibatalkan.' : (e.message ?? 'Terjadi kesalahan jaringan.'));
+      if (kDebugMode) {
+        print('DioException while submitting form data: $errorMessage');
+      }
+      final exception = ApiException(
+        errorMessage,
+      statusCode: statusCode,
+      responseData: e.response?.data,
+    );
+    if (!isCancelled) {
+      _crashlytics.recordError(
+        exception,
+        stackTrace,
+        reason: 'API submission error',
+      );
+    }
+    throw exception;
+  } catch (e, stackTrace) {
+    if (kDebugMode) {
+      print('Error submitting form data: $e');
+    }
+    final exception = ApiException(e.toString());
+    _crashlytics.recordError(
+      exception,
+      stackTrace,
+      reason: 'Error submitting form data',
+    );
+    throw exception;
+  }
+}
+
+
+  dio.Options get _defaultPostOptions => dio.Options(
+        validateStatus: (_) => true,
+      );
+
+  bool _isSuccessStatus(int? statusCode) => statusCode != null && statusCode >= 200 && statusCode < 300;
+
+  String? _deriveErrorMessage(dynamic data, int? statusCode) {
+    if (data == null) {
+      return null;
+    }
+
+    if (data is Map<String, dynamic>) {
+      final message = data['message'];
+      if (message is List) {
+        return message.map((e) => e.toString()).join('\n');
+      }
+      if (message is String) {
+        return message;
+      }
+      if (data['error'] is String) {
+        return data['error'] as String;
+      }
+    } else if (data is List) {
+      return data.map((e) => e.toString()).join('\n');
+    } else if (data is String) {
+      return data;
+    }
+
+    if (statusCode != null) {
+      return 'Permintaan gagal dengan status $statusCode.';
+    }
+    return 'Permintaan gagal.';
   }
 
 

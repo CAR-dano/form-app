@@ -1,6 +1,5 @@
 import 'package:form_app/providers/user_info_provider.dart';
 import 'package:form_app/widgets/logout_button.dart';
-import 'package:form_app/utils/crashlytics_util.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,13 +31,14 @@ import 'package:form_app/pages/ketebalan_cat_page.dart';
 import 'package:form_app/pages/finalisasi_page.dart';
 import 'package:form_app/pages/finished.dart';
 import 'package:form_app/providers/form_provider.dart';
-import 'package:form_app/providers/api_service_provider.dart';
+import 'package:form_app/providers/inspection_service_provider.dart';
 import 'package:form_app/providers/image_data_provider.dart';
 import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/page_navigation_provider.dart';
 import 'package:form_app/providers/submission_status_provider.dart';
 import 'package:form_app/providers/submission_data_cache_provider.dart';
 import 'package:form_app/providers/message_overlay_provider.dart'; // Import the new provider
+import 'package:form_app/models/api_exception.dart';
 import 'package:form_app/models/uploadable_image.dart';
 import 'package:form_app/widgets/multi_step_form_appbar.dart';
 import 'package:form_app/widgets/delete_all_tambahan_photos_button.dart';
@@ -287,7 +287,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     final submissionDataCache = ref.read(submissionDataCacheProvider);
     final submissionDataCacheNotifier = ref.read(submissionDataCacheProvider.notifier);
     final customMessageOverlay = ref.read(customMessageOverlayProvider); // Get the singleton instance
-    final crashlytics = ref.read(crashlyticsUtilProvider); // Get the Crashlytics util
     final userInfo = ref.read(userInfoProvider);
 
     if (ref.read(submissionStatusProvider).isLoading) {
@@ -371,7 +370,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     try {
       String? inspectionId;
       final formData = ref.read(formProvider);
-      final apiService = ref.read(apiServiceProvider);
+      final apiService = ref.read(inspectionServiceProvider);
 
       final inspectorId = userInfo.asData?.value?.id;
       if (inspectorId == null) {
@@ -534,35 +533,30 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         CupertinoPageRoute(builder: (context) => const FinishedPage()),
         (Route<dynamic> route) => false,
       );
-    } on dio.DioException catch (e, stackTrace) {
+    } on ApiException catch (e) {
       if (!mounted) return;
-      // This now catches cancellation from BOTH form submission and image upload
-      if (e.toString().contains('cancelled')) {
+      final lowerMessage = e.message.toLowerCase();
+      final isCancelled = lowerMessage.contains('batal') || lowerMessage.contains('cancel');
+      if (isCancelled) {
         debugPrint('Submission process cancelled by user.');
         customMessageOverlay.show(
-          context: context, // Pass context here
+          context: context,
           message: 'Pengiriman data dibatalkan.',
           color: Colors.orange,
           icon: Icons.info_outline,
           duration: const Duration(seconds: 4),
         );
-      } else {
-        crashlytics.recordError(
-          e,
-          stackTrace,
-          reason: 'Error during form submission (DioException)',
-          fatal: true, // Network errors during submission are critical
-        );
-        customMessageOverlay.show(
-          context: context, // Pass context here
-          message: '$e',
-          color: Colors.red,
-          icon: Icons.error_outline,
-          duration: const Duration(seconds: 5),
-        );
+        return;
       }
-    } catch (e, stackTrace) { 
-      // Add stackTrace here
+
+      customMessageOverlay.show(
+        context: context,
+        message: e.message,
+        color: Colors.red,
+        icon: Icons.error_outline,
+        duration: const Duration(seconds: 5),
+      );
+    } catch (e) { 
       if (!mounted) return;
       // Fallback for non-Dio cancellations or other general errors
       if (e.toString().contains('cancelled')) {
@@ -575,12 +569,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           duration: const Duration(seconds: 4),
         );
       } else {
-        crashlytics.recordError(
-          e,
-          stackTrace,
-          reason: 'General error during form submission',
-          fatal: true, // This is a critical, unexpected error
-        );
         customMessageOverlay.show(
           context: context, // Pass context here
           message: '$e',
