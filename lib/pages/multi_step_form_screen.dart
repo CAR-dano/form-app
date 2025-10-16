@@ -39,6 +39,7 @@ import 'package:form_app/providers/page_navigation_provider.dart';
 import 'package:form_app/providers/submission_status_provider.dart';
 import 'package:form_app/providers/submission_data_cache_provider.dart';
 import 'package:form_app/providers/message_overlay_provider.dart'; // Import the new provider
+import 'package:form_app/models/api_exception.dart';
 import 'package:form_app/models/uploadable_image.dart';
 import 'package:form_app/widgets/multi_step_form_appbar.dart';
 import 'package:form_app/widgets/delete_all_tambahan_photos_button.dart';
@@ -534,33 +535,35 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         CupertinoPageRoute(builder: (context) => const FinishedPage()),
         (Route<dynamic> route) => false,
       );
-    } on dio.DioException catch (e, stackTrace) {
+    } on ApiException catch (e, stackTrace) {
       if (!mounted) return;
-      // This now catches cancellation from BOTH form submission and image upload
-      if (e.toString().contains('cancelled')) {
+      final lowerMessage = e.message.toLowerCase();
+      final isCancelled = lowerMessage.contains('batal') || lowerMessage.contains('cancel');
+      if (isCancelled) {
         debugPrint('Submission process cancelled by user.');
         customMessageOverlay.show(
-          context: context, // Pass context here
+          context: context,
           message: 'Pengiriman data dibatalkan.',
           color: Colors.orange,
           icon: Icons.info_outline,
           duration: const Duration(seconds: 4),
         );
-      } else {
-        crashlytics.recordError(
-          e,
-          stackTrace,
-          reason: 'Error during form submission (DioException)',
-          fatal: true, // Network errors during submission are critical
-        );
-        customMessageOverlay.show(
-          context: context, // Pass context here
-          message: '$e',
-          color: Colors.red,
-          icon: Icons.error_outline,
-          duration: const Duration(seconds: 5),
-        );
+        return;
       }
+
+      crashlytics.recordError(
+        e,
+        stackTrace,
+        reason: 'Error during form submission (API)',
+        fatal: false,
+      );
+      customMessageOverlay.show(
+        context: context,
+        message: e.message,
+        color: Colors.red,
+        icon: Icons.error_outline,
+        duration: const Duration(seconds: 5),
+      );
     } catch (e, stackTrace) { 
       // Add stackTrace here
       if (!mounted) return;
