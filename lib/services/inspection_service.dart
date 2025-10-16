@@ -19,7 +19,7 @@ import 'package:form_app/services/auth_service.dart'; // Import AuthService
 typedef ImageUploadProgressCallback = void Function(int currentBatch, int totalBatches);
 typedef ImageBatchUploadedCallback = void Function(List<String> uploadedPaths); // New callback
 
-class ApiService {
+class InspectionService {
   final dio.Dio _dioInst;
   final AuthService _authService; // Add AuthService instance
   final CrashlyticsUtil _crashlytics;
@@ -35,7 +35,7 @@ class ApiService {
   String get _inspectionBranchesUrl => '$_baseApiUrl/inspection-branches';
   String get _inspectorsUrl => '$_baseApiUrl/public/users/inspectors';
 
-  ApiService(this._authService, this._crashlytics)
+  InspectionService(this._authService, this._crashlytics)
       : _dioInst = dio.Dio() {
 
     _dioInst.interceptors.add(
@@ -47,7 +47,7 @@ class ApiService {
         error: true,
         logPrint: (object) {
           if (kDebugMode) {
-            print("DIO_LOG (ApiService): ${object.toString()}");
+            print("DIO_LOG (InspectionService): ${object.toString()}");
           }
         },
       ),
