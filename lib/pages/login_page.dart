@@ -8,6 +8,7 @@ import 'package:form_app/widgets/labeled_text_field.dart'; // Import LabeledText
 import 'package:form_app/widgets/pin_input.dart'; // Import PinInputWidget
 import 'package:form_app/pages/multi_step_form_screen.dart'; // Import MultiStepFormScreen
 import 'package:form_app/providers/message_overlay_provider.dart'; // Import message_overlay_provider
+import 'package:form_app/services/update_service.dart';
 
 class LoginPage extends ConsumerStatefulWidget { // Change to ConsumerStatefulWidget
   const LoginPage({super.key});
@@ -22,6 +23,16 @@ class _LoginPageState extends ConsumerState<LoginPage> { // Change to ConsumerSt
   String _currentPin = ''; // To store the PIN from PinInputWidget
   final ValueNotifier<bool> _formSubmitted = ValueNotifier<bool>(false);
   bool _isLoading = false; // To manage loading state
+
+  @override
+  void initState() {
+    super.initState();
+    // Fire-and-forget update check as soon as login screen mounts.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref.read(updateServiceProvider.notifier).checkForUpdate();
+    });
+  }
 
   Future<void> _verifyPin(String pin) async {
     setState(() {
