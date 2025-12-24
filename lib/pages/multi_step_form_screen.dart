@@ -30,6 +30,7 @@ import 'package:form_app/pages/foto_dokumen_page.dart';
 import 'package:form_app/pages/ketebalan_cat_page.dart';
 import 'package:form_app/pages/finalisasi_page.dart';
 import 'package:form_app/pages/finished.dart';
+import 'package:form_app/pages/login_page.dart';
 import 'package:form_app/providers/form_provider.dart';
 import 'package:form_app/providers/inspection_service_provider.dart';
 import 'package:form_app/providers/image_data_provider.dart';
@@ -535,6 +536,21 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       );
     } on ApiException catch (e) {
       if (!mounted) return;
+      if (e.statusCode == 401) {
+        customMessageOverlay.show(
+          context: context,
+          message: 'Access token kadarluarsa, mohon login ulang',
+          color: Colors.red,
+          icon: Icons.error_outline,
+          duration: const Duration(seconds: 5),
+        );
+        Navigator.pushAndRemoveUntil(
+          context,
+          CupertinoPageRoute(builder: (context) => const LoginPage()),
+          (Route<dynamic> route) => false,
+        );
+        return;
+      }
       final lowerMessage = e.message.toLowerCase();
       final isCancelled = lowerMessage.contains('batal') || lowerMessage.contains('cancel');
       if (isCancelled) {
