@@ -397,6 +397,8 @@ class InspectionService {
       );
     }
     throw exception;
+  } on ApiException {
+    rethrow;
   } catch (e, stackTrace) {
     if (kDebugMode) {
       print('Error submitting form data: $e');
