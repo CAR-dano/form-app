@@ -539,7 +539,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       if (e.statusCode == 401) {
         customMessageOverlay.show(
           context: context,
-          message: 'Access token kadarluarsa, mohon login ulang',
+          message: 'Access token kedaluwarsa, mohon login ulang',
           color: Colors.red,
           icon: Icons.error_outline,
           duration: const Duration(seconds: 5),
