@@ -89,10 +89,20 @@ class AuthService {
       int? statusCode;
       Map<String, dynamic>? responseData;
 
-      if (e is dio.DioException && e.response != null) {
-        statusCode = e.response?.statusCode;
-        responseData = e.response?.data;
-        message = e.response?.data['message'] ?? 'Server error';
+      // Try to extract response data from the error if available
+      try {
+        final errorResponse = (e as dynamic).response;
+        if (errorResponse != null) {
+          statusCode = errorResponse.statusCode;
+          responseData = errorResponse.data;
+          if (responseData != null && responseData['message'] != null) {
+            message = responseData['message'];
+          } else {
+            message = 'Server error';
+          }
+        }
+      } catch (_) {
+        // If we can't extract response data, keep the default message
       }
 
       final apiException = ApiException(
@@ -152,8 +162,18 @@ class AuthService {
         return await _tryRefreshToken();
       }
     } catch (e, stackTrace) {
-      // Only log if not a 401 (which is expected and handled by refresh)
-      if (e is dio.DioException && e.response?.statusCode == 401) {
+      // Check if it's a 401 error (expected during token expiry)
+      bool is401 = false;
+      try {
+        final errorResponse = (e as dynamic).response;
+        if (errorResponse?.statusCode == 401) {
+          is401 = true;
+        }
+      } catch (_) {
+        // If we can't check the status code, it's not a 401
+      }
+
+      if (is401) {
         debugPrint('Token is unauthorized. Attempting to refresh token.');
         return await _tryRefreshToken();
       }

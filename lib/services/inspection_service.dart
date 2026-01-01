@@ -387,7 +387,7 @@ class InspectionService {
       }
       rethrow;
     } catch (e, stackTrace) {
-      // Generic catch for all errors including DioException
+      // Generic catch for all errors including network errors
       final errorMessage = e.toString().toLowerCase();
       final isCancelled = errorMessage.contains('cancel');
       if (kDebugMode) {
@@ -535,7 +535,7 @@ class InspectionService {
         }
         rethrow;
       } catch (e, stackTrace) {
-        // Generic catch for all errors including DioException
+        // Generic catch for all errors including network errors
         final errorMessage = e.toString().toLowerCase();
         final isCancelled = errorMessage.contains('cancel');
         if (!isCancelled) {
