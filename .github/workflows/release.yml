@@ -200,59 +200,131 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            // Your excellent release body script remains unchanged
             const {
               COMMIT_SHA, ACTOR, SEMANTIC_VERSION, RUN_NUMBER, REPO_URL, HEAD_COMMIT_MESSAGE, FULL_VERSION
             } = process.env;
 
-            let main_release_content = "";
-            let pr_details_for_footer = "";
-
-            const pr_regex_merge = /Merge pull request #(\d+)/;
-            const pr_regex_squash_title = /\(#(\d+)\)(?:$|\n)/;
-            let match = HEAD_COMMIT_MESSAGE.match(pr_regex_merge);
-            if (!match) {
-              const first_line_of_commit = HEAD_COMMIT_MESSAGE.split('\n')[0];
-              match = first_line_of_commit.match(pr_regex_squash_title);
-            }
-
-            if (match && match[1]) {
-              const pr_number = match[1];
-              core.info(`Attempting to fetch details for PR #${pr_number}`);
+            // Detect if this is a dependabot PR using multiple methods for reliability
+            // Method 1: Check if actor is dependabot (works if dependabot pushes directly)
+            // Method 2: Check commit message pattern (works if human merges dependabot PR)
+            const isDependabot = ACTOR.includes('dependabot') || 
+                                 HEAD_COMMIT_MESSAGE.startsWith('build(deps):');
+            
+            if (isDependabot) {
+              core.info('Dependabot PR detected - appending to existing release notes');
+              
               try {
-                const { data: pr } = await github.rest.pulls.get({
+                // Fetch existing release
+                const { data: existingRelease } = await github.rest.repos.getReleaseByTag({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  pull_number: pr_number,
+                  tag: `v${SEMANTIC_VERSION}`
                 });
-                main_release_content = pr.body || "No description provided for this Pull Request.";
-                pr_details_for_footer += `**Pull Request:** [#${pr_number}: ${pr.title}](${pr.html_url})\n`;
-                pr_details_for_footer += `**PR Author:** @${pr.user.login}\n`;
+                
+                let existingBody = existingRelease.body || '';
+                
+                // Extract PR number from commit message
+                const pr_regex_merge = /Merge pull request #(\d+)/;
+                const pr_regex_squash_title = /\(#(\d+)\)(?:$|\n)/;
+                let match = HEAD_COMMIT_MESSAGE.match(pr_regex_merge);
+                if (!match) {
+                  const first_line_of_commit = HEAD_COMMIT_MESSAGE.split('\n')[0];
+                  match = first_line_of_commit.match(pr_regex_squash_title);
+                }
+                const prNumber = match ? match[1] : 'unknown';
+                
+                // Extract update count from commit message (e.g., "7 updates")
+                const updatesMatch = HEAD_COMMIT_MESSAGE.match(/with (\d+) update/);
+                const updateCount = updatesMatch ? updatesMatch[1] : '?';
+                
+                // Get current date in GMT+7 (WIB)
+                const now = new Date();
+                const wibOffset = 7 * 60; // GMT+7 in minutes
+                const wibTime = new Date(now.getTime() + (wibOffset - now.getTimezoneOffset()) * 60000);
+                const dateStr = wibTime.toISOString().split('T')[0]; // YYYY-MM-DD format
+                
+                // Create new entry
+                const prLink = `[#${prNumber}](${REPO_URL}/pull/${prNumber})`;
+                const updateText = updateCount === '1' ? 'update' : 'updates';
+                const newEntry = `Build #${RUN_NUMBER} (${dateStr}) • ${prLink} • ${updateCount} ${updateText}`;
+                
+                // Find or create <details> section
+                const detailsRegex = /<details>\s*<summary>Dependency Updates<\/summary>([\s\S]*?)<\/details>/;
+                const detailsMatch = existingBody.match(detailsRegex);
+                
+                if (detailsMatch) {
+                  // Prepend to existing list (newest first)
+                  const existingList = detailsMatch[1].trim();
+                  const updatedList = existingList ? `${newEntry}\n${existingList}` : newEntry;
+                  existingBody = existingBody.replace(detailsRegex, 
+                    `<details>\n<summary>Dependency Updates</summary>\n\n${updatedList}\n\n</details>`);
+                } else {
+                  // Create new <details> section at the very end
+                  existingBody += `\n\n<details>\n<summary>Dependency Updates</summary>\n\n${newEntry}\n\n</details>`;
+                }
+                
+                core.setOutput("body", existingBody);
+                
               } catch (error) {
-                core.warning(`Could not fetch details for PR #${pr_number}: ${error.message}`);
-                main_release_content = `Could not automatically fetch Pull Request description for PR #${pr_number}. Please refer to the PR or commit message directly.\n\n`;
-                main_release_content += `Associated PR: [#${pr_number}](${REPO_URL}/pull/${pr_number})\n`;
+                // Fallback if fetching existing release fails
+                core.warning(`Could not fetch existing release: ${error.message}`);
+                const fallbackBody = `Dependency update - Build #${RUN_NUMBER}`;
+                core.setOutput("body", fallbackBody);
               }
+              
             } else {
-              core.info("Could not determine PR from commit message. Using commit message as main content.");
-              const commit_title = HEAD_COMMIT_MESSAGE.split('\n')[0];
-              let commit_body_part = HEAD_COMMIT_MESSAGE.substring(commit_title.length).trim();
-              if (commit_body_part) {
-                main_release_content = `**${commit_title}**\n\n${commit_body_part}`;
-              } else {
-                main_release_content = HEAD_COMMIT_MESSAGE;
+              // Regular PR - generate release body as usual
+              core.info('Regular PR detected - generating new release notes');
+              
+              let main_release_content = "";
+              let pr_details_for_footer = "";
+
+              const pr_regex_merge = /Merge pull request #(\d+)/;
+              const pr_regex_squash_title = /\(#(\d+)\)(?:$|\n)/;
+              let match = HEAD_COMMIT_MESSAGE.match(pr_regex_merge);
+              if (!match) {
+                const first_line_of_commit = HEAD_COMMIT_MESSAGE.split('\n')[0];
+                match = first_line_of_commit.match(pr_regex_squash_title);
               }
+
+              if (match && match[1]) {
+                const pr_number = match[1];
+                core.info(`Attempting to fetch details for PR #${pr_number}`);
+                try {
+                  const { data: pr } = await github.rest.pulls.get({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: pr_number,
+                  });
+                  main_release_content = pr.body || "No description provided for this Pull Request.";
+                  pr_details_for_footer += `**Pull Request:** [#${pr_number}: ${pr.title}](${pr.html_url})\n`;
+                  pr_details_for_footer += `**PR Author:** @${pr.user.login}\n`;
+                } catch (error) {
+                  core.warning(`Could not fetch details for PR #${pr_number}: ${error.message}`);
+                  main_release_content = `Could not automatically fetch Pull Request description for PR #${pr_number}. Please refer to the PR or commit message directly.\n\n`;
+                  main_release_content += `Associated PR: [#${pr_number}](${REPO_URL}/pull/${pr_number})\n`;
+                }
+              } else {
+                core.info("Could not determine PR from commit message. Using commit message as main content.");
+                const commit_title = HEAD_COMMIT_MESSAGE.split('\n')[0];
+                let commit_body_part = HEAD_COMMIT_MESSAGE.substring(commit_title.length).trim();
+                if (commit_body_part) {
+                  main_release_content = `**${commit_title}**\n\n${commit_body_part}`;
+                } else {
+                  main_release_content = HEAD_COMMIT_MESSAGE;
+                }
+              }
+
+              let footer_info = "\n\n---\n\n";
+              footer_info += `**Version:** v${SEMANTIC_VERSION}\n`;
+              footer_info += `**Released by:** @${ACTOR}\n`;
+              footer_info += pr_details_for_footer;
+              footer_info += `**Commit:** [${COMMIT_SHA.substring(0,7)}](${REPO_URL}/commit/${COMMIT_SHA})\n`;
+              footer_info += `\n**Full Commit Message:**\n\`\`\`\n${HEAD_COMMIT_MESSAGE}\n\`\`\`\n`;
+
+              const release_body = main_release_content + footer_info;
+              core.setOutput("body", release_body);
             }
-
-            let footer_info = "\n\n---\n\n";
-            footer_info += `**Version:** v${SEMANTIC_VERSION}\n`;
-            footer_info += `**Released by:** @${ACTOR}\n`;
-            footer_info += pr_details_for_footer;
-            footer_info += `**Commit:** [${COMMIT_SHA.substring(0,7)}](${REPO_URL}/commit/${COMMIT_SHA})\n`;
-            footer_info += `\n**Full Commit Message:**\n\`\`\`\n${HEAD_COMMIT_MESSAGE}\n\`\`\`\n`;
-
-            const release_body = main_release_content + footer_info;
-            core.setOutput("body", release_body);
         env:
           SEMANTIC_VERSION: ${{ steps.pubspec.outputs.semantic_version }}
           RUN_NUMBER: ${{ github.run_number }}
