@@ -8,3 +8,4 @@ final inspectionServiceProvider = Provider<InspectionService>((ref) {
   final crashlyticsUtil = ref.watch(crashlyticsUtilProvider);
   return InspectionService(authService, crashlyticsUtil);
 });
+

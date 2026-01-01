@@ -38,13 +38,14 @@ import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/page_navigation_provider.dart';
 import 'package:form_app/providers/submission_status_provider.dart';
 import 'package:form_app/providers/submission_data_cache_provider.dart';
-import 'package:form_app/providers/message_overlay_provider.dart'; // Import the new provider
+import 'package:form_app/providers/message_overlay_provider.dart';
 import 'package:form_app/models/api_exception.dart';
 import 'package:form_app/models/uploadable_image.dart';
 import 'package:form_app/widgets/multi_step_form_appbar.dart';
 import 'package:form_app/widgets/delete_all_tambahan_photos_button.dart';
 import 'package:form_app/services/update_service.dart';
-import 'package:form_app/widgets/app_version_display.dart'; // Import the new widget
+import 'package:form_app/widgets/app_version_display.dart';
+
 
 class MultiStepFormScreen extends ConsumerStatefulWidget {
   const MultiStepFormScreen({super.key});
@@ -536,6 +537,11 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       );
     } on ApiException catch (e) {
       if (!mounted) return;
+      
+      // Check if this is a cancellation
+      final lowerMessage = e.message.toLowerCase();
+      final isCancelled = lowerMessage.contains('batal') || lowerMessage.contains('cancel');
+      
       if (e.statusCode == 401) {
         customMessageOverlay.show(
           context: context,
@@ -551,8 +557,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         );
         return;
       }
-      final lowerMessage = e.message.toLowerCase();
-      final isCancelled = lowerMessage.contains('batal') || lowerMessage.contains('cancel');
+      
       if (isCancelled) {
         debugPrint('Submission process cancelled by user.');
         customMessageOverlay.show(
@@ -574,11 +579,12 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       );
     } catch (e) { 
       if (!mounted) return;
-      // Fallback for non-Dio cancellations or other general errors
+      
+      // Fallback for non-ApiException errors
       if (e.toString().contains('cancelled')) {
         debugPrint('Submission process cancelled by user.');
         customMessageOverlay.show(
-          context: context, // Pass context here
+          context: context,
           message: 'Pengiriman data dibatalkan.',
           color: Colors.orange,
           icon: Icons.info_outline,
@@ -586,7 +592,7 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
         );
       } else {
         customMessageOverlay.show(
-          context: context, // Pass context here
+          context: context,
           message: '$e',
           color: Colors.red,
           icon: Icons.error_outline,
