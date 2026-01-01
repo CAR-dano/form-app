@@ -207,11 +207,20 @@ jobs:
             // Detect if this is a dependabot PR using multiple methods for reliability
             // Method 1: Check if actor is dependabot (works if dependabot pushes directly)
             // Method 2: Check commit message pattern (works if human merges dependabot PR)
-            const isDependabot = ACTOR.includes('dependabot') || 
-                                 HEAD_COMMIT_MESSAGE.startsWith('build(deps):');
+            const actorIsDependabot = ACTOR.includes('dependabot');
+            const commitIsDependabot = HEAD_COMMIT_MESSAGE.startsWith('build(deps):');
+            const isDependabot = actorIsDependabot || commitIsDependabot;
             
             if (isDependabot) {
-              core.info('Dependabot PR detected - appending to existing release notes');
+              // Log which detection method caught it
+              if (actorIsDependabot && commitIsDependabot) {
+                core.info('Dependabot PR detected via both methods (actor + commit message)');
+              } else if (actorIsDependabot) {
+                core.info('Dependabot PR detected via Method 1: actor is dependabot[bot]');
+              } else {
+                core.info('Dependabot PR detected via Method 2: commit message starts with build(deps):');
+              }
+              core.info('Appending to existing release notes...');
               
               try {
                 // Fetch existing release
