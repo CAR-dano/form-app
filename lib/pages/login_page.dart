@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import flutter_riverpod
+import 'package:form_app/models/api_exception.dart';
 import 'package:form_app/providers/auth_provider.dart';
 import 'package:form_app/statics/app_styles.dart'; // Import AppStyles
 import 'package:form_app/widgets/app_version_display.dart';
@@ -49,13 +50,24 @@ class _LoginPageState extends ConsumerState<LoginPage> { // Change to ConsumerSt
           CupertinoPageRoute(builder: (context) => const MultiStepFormScreen()),
         );
       }
-    } catch (e) {
-      debugPrint('Login failed: $e');
-      // Show error message to the user
+    } on ApiException catch (e) {
+      debugPrint('Login failed: ${e.message}');
+      // Show error message to the user (service already logged to Crashlytics)
       if (mounted) {
-        ref.read(customMessageOverlayProvider).show( // Use ref.read to access the provider
+        ref.read(customMessageOverlayProvider).show(
           context: context,
-          message: e.toString().replaceFirst('Exception: ', ''),
+          message: e.message,
+          color: Colors.red,
+          icon: Icons.error,
+        );
+      }
+    } catch (e) {
+      // Catch any unexpected errors not converted to ApiException
+      debugPrint('Unexpected login error: $e');
+      if (mounted) {
+        ref.read(customMessageOverlayProvider).show(
+          context: context,
+          message: 'Terjadi kesalahan tak terduga',
           color: Colors.red,
           icon: Icons.error,
         );

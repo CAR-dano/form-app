@@ -2,15 +2,18 @@ import 'package:dio/dio.dart' as dio;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_app/models/api_exception.dart';
 import 'package:form_app/models/auth_response.dart';
 import 'package:form_app/models/user_data.dart';
 import 'package:form_app/providers/user_info_provider.dart';
 import 'package:form_app/services/token_manager_service.dart';
+import 'package:form_app/utils/crashlytics_util.dart';
 
 class AuthService {
   final dio.Dio _dioInst;
   final TokenManagerService _tokenManager;
   final Ref _ref;
+  final CrashlyticsUtil _crashlytics;
 
   String get _baseApiUrl {
     if (kDebugMode) {
@@ -23,7 +26,7 @@ class AuthService {
   String get _checkTokenUrl => '$_baseApiUrl/auth/check-token';
   String get _refreshTokenUrl => '$_baseApiUrl/auth/refresh';
 
-  AuthService(this._tokenManager, this._ref) : _dioInst = dio.Dio() {
+  AuthService(this._tokenManager, this._ref, this._crashlytics) : _dioInst = dio.Dio() {
     _dioInst.interceptors.add(
       dio.LogInterceptor(
         requestHeader: true,
@@ -68,19 +71,43 @@ class AuthService {
         return authResponse;
       } else {
         final errorMessage = response.data['message'] ?? 'Unknown error';
-        throw Exception(
-            'Failed to login: ${response.statusCode} - $errorMessage');
+        throw ApiException(
+          message: 'Failed to login: $errorMessage',
+          statusCode: response.statusCode,
+          responseData: response.data,
+        );
       }
-    } on dio.DioException catch (e) {
-      if (e.response != null) {
-        final errorMessage = e.response?.data['message'] ?? 'Server error';
-        throw Exception(
-            'Login failed: ${e.response?.statusCode} - $errorMessage');
-      } else {
-        throw Exception('Login failed: ${e.message}');
+    } on ApiException catch (e, stackTrace) {
+      _crashlytics.recordError(
+        e,
+        stackTrace,
+        reason: 'Login inspector failed',
+      );
+      rethrow;
+    } catch (e, stackTrace) {
+      String message = 'Login failed: ${e.toString()}';
+      int? statusCode;
+      Map<String, dynamic>? responseData;
+
+      if (e is dio.DioException && e.response != null) {
+        statusCode = e.response?.statusCode;
+        responseData = e.response?.data;
+        message = e.response?.data['message'] ?? 'Server error';
       }
-    } catch (e) {
-      throw Exception('An unexpected error occurred: $e');
+
+      final apiException = ApiException(
+        message: message,
+        statusCode: statusCode,
+        responseData: responseData,
+      );
+
+      _crashlytics.recordError(
+        apiException,
+        stackTrace,
+        reason: 'Login inspector failed',
+      );
+      
+      throw apiException;
     }
   }
 
@@ -124,15 +151,20 @@ class AuthService {
             'Token check failed with status: ${response.statusCode}. Attempting to refresh token.');
         return await _tryRefreshToken();
       }
-    } on dio.DioException catch (e) {
-      debugPrint('Token check failed due to DioException: ${e.message}');
-      if (e.response?.statusCode == 401) {
+    } catch (e, stackTrace) {
+      // Only log if not a 401 (which is expected and handled by refresh)
+      if (e is dio.DioException && e.response?.statusCode == 401) {
         debugPrint('Token is unauthorized. Attempting to refresh token.');
         return await _tryRefreshToken();
       }
-      return false;
-    } catch (e) {
-      debugPrint('An unexpected error occurred during token check: $e');
+      
+      // Log unexpected errors
+      _crashlytics.recordError(
+        e,
+        stackTrace,
+        reason: 'Token check failed with unexpected error',
+      );
+      debugPrint('Token check failed: $e');
       return false;
     }
   }
@@ -169,12 +201,14 @@ class AuthService {
         await logout();
         return false;
       }
-    } on dio.DioException catch (e) {
-      debugPrint('Refresh token failed due to DioException: ${e.message}');
-      await logout();
-      return false;
-    } catch (e) {
-      debugPrint('An unexpected error occurred during refresh token: $e');
+    } catch (e, stackTrace) {
+      // Log refresh failures - these are important to track
+      _crashlytics.recordError(
+        e,
+        stackTrace,
+        reason: 'Token refresh failed',
+      );
+      debugPrint('Refresh token failed: $e');
       await logout();
       return false;
     }

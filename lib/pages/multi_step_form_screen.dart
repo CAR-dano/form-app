@@ -45,7 +45,6 @@ import 'package:form_app/widgets/multi_step_form_appbar.dart';
 import 'package:form_app/widgets/delete_all_tambahan_photos_button.dart';
 import 'package:form_app/services/update_service.dart';
 import 'package:form_app/widgets/app_version_display.dart';
-import 'package:form_app/utils/crashlytics_util.dart';
 
 
 class MultiStepFormScreen extends ConsumerStatefulWidget {
@@ -539,16 +538,9 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
     } on ApiException catch (e) {
       if (!mounted) return;
       
-      // Log to crashlytics if not a cancellation
+      // Check if this is a cancellation
       final lowerMessage = e.message.toLowerCase();
       final isCancelled = lowerMessage.contains('batal') || lowerMessage.contains('cancel');
-      if (!isCancelled) {
-        ref.read(crashlyticsUtilProvider).recordError(
-          e,
-          StackTrace.current,
-          reason: 'Form submission failed',
-        );
-      }
       
       if (e.statusCode == 401) {
         customMessageOverlay.show(
@@ -587,13 +579,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       );
     } catch (e) { 
       if (!mounted) return;
-      
-      // Log unexpected errors to crashlytics
-      ref.read(crashlyticsUtilProvider).recordError(
-        e,
-        StackTrace.current,
-        reason: 'Unexpected error during form submission',
-      );
       
       // Fallback for non-ApiException errors
       if (e.toString().contains('cancelled')) {

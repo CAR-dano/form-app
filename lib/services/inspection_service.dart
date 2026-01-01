@@ -8,6 +8,7 @@ import 'package:form_app/models/api_exception.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspection_branch.dart';
 import 'package:form_app/models/inspector_data.dart';
+import 'package:form_app/utils/crashlytics_util.dart';
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:mime/mime.dart';
 import 'package:form_app/utils/calculation_utils.dart';
@@ -21,6 +22,7 @@ typedef ImageBatchUploadedCallback = void Function(List<String> uploadedPaths); 
 class InspectionService {
   final dio.Dio _dioInst;
   final AuthService _authService;
+  final CrashlyticsUtil _crashlytics;
 
   String get _baseApiUrl {
     if (kDebugMode) {
@@ -33,7 +35,7 @@ class InspectionService {
   String get _inspectionBranchesUrl => '$_baseApiUrl/inspection-branches';
   String get _inspectorsUrl => '$_baseApiUrl/public/users/inspectors';
 
-  InspectionService(this._authService)
+  InspectionService(this._authService, this._crashlytics)
       : _dioInst = dio.Dio() {
 
     _dioInst.interceptors.add(
@@ -91,15 +93,17 @@ class InspectionService {
         return data.map((json) => InspectionBranch.fromJson(json)).toList();
       } else {
         throw ApiException(
-          'Failed to load inspection branches: ${response.statusCode}',
+          message: 'Failed to load inspection branches: ${response.statusCode}',
           statusCode: response.statusCode,
           responseData: response.data,
         );
       }
-    } on ApiException {
+    } on ApiException catch (e, stackTrace) {
+      _crashlytics.recordError(e, stackTrace, reason: 'Failed to load inspection branches');
       rethrow;
-    } catch (e) {
-      throw ApiException('Error fetching inspection branches: $e');
+    } catch (e, stackTrace) {
+      _crashlytics.recordError(e, stackTrace, reason: 'Error fetching inspection branches');
+      throw ApiException(message: 'Error fetching inspection branches: $e');
     }
   }
 
@@ -111,15 +115,17 @@ class InspectionService {
         return data.map((json) => Inspector.fromJson(json)).toList();
       } else {
         throw ApiException(
-          'Failed to load inspectors: ${response.statusCode}',
+          message: 'Failed to load inspectors: ${response.statusCode}',
           statusCode: response.statusCode,
           responseData: response.data,
         );
       }
-    } on ApiException {
+    } on ApiException catch (e, stackTrace) {
+      _crashlytics.recordError(e, stackTrace, reason: 'Failed to load inspectors');
       rethrow;
-    } catch (e) {
-      throw ApiException('Error fetching inspectors: $e');
+    } catch (e, stackTrace) {
+      _crashlytics.recordError(e, stackTrace, reason: 'Error fetching inspectors');
+      throw ApiException(message: 'Error fetching inspectors: $e');
     }
   }
 
@@ -367,22 +373,31 @@ class InspectionService {
           print('Failed to submit form data: ${response.statusCode} - $errorMessage');
         }
         throw ApiException(
-          errorMessage,
+          message: errorMessage,
           statusCode: response.statusCode,
           responseData: response.data,
         );
       }
-    } on ApiException {
+    } on ApiException catch (e, stackTrace) {
+      // Don't log if it's a cancellation
+      final lowerMessage = e.message.toLowerCase();
+      final isCancelled = lowerMessage.contains('batal') || lowerMessage.contains('cancel');
+      if (!isCancelled) {
+        _crashlytics.recordError(e, stackTrace, reason: 'Failed to submit form data');
+      }
       rethrow;
-    } catch (e) {
+    } catch (e, stackTrace) {
       // Generic catch for all errors including DioException
       final errorMessage = e.toString().toLowerCase();
       final isCancelled = errorMessage.contains('cancel');
       if (kDebugMode) {
         print('Error submitting form data: $e');
       }
+      if (!isCancelled) {
+        _crashlytics.recordError(e, stackTrace, reason: 'Unexpected error submitting form data');
+      }
       throw ApiException(
-        isCancelled ? 'Pengiriman data dibatalkan.' : e.toString()
+        message: isCancelled ? 'Pengiriman data dibatalkan.' : e.toString()
       );
     }
   }
@@ -506,19 +521,28 @@ class InspectionService {
           final errorMessage = _deriveErrorMessage(response.data, response.statusCode) ?? 
               'Failed to upload photo batch $currentBatchNum/$totalBatchesCalc';
           throw ApiException(
-            errorMessage,
+            message: errorMessage,
             statusCode: response.statusCode,
             responseData: response.data,
           );
         }
-      } on ApiException {
+      } on ApiException catch (e, stackTrace) {
+        // Don't log if it's a cancellation
+        final lowerMessage = e.message.toLowerCase();
+        final isCancelled = lowerMessage.contains('batal') || lowerMessage.contains('cancel');
+        if (!isCancelled) {
+          _crashlytics.recordError(e, stackTrace, reason: 'Failed to upload photo batch');
+        }
         rethrow;
-      } catch (e) {
+      } catch (e, stackTrace) {
         // Generic catch for all errors including DioException
         final errorMessage = e.toString().toLowerCase();
         final isCancelled = errorMessage.contains('cancel');
+        if (!isCancelled) {
+          _crashlytics.recordError(e, stackTrace, reason: 'Unexpected error uploading photo batch');
+        }
         throw ApiException(
-          isCancelled 
+          message: isCancelled 
             ? 'Pengiriman data dibatalkan.' 
             : 'Error uploading photo batch $currentBatchNum/$totalBatchesCalc: $e'
         );
