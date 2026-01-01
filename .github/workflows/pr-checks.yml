@@ -56,6 +56,29 @@ jobs:
 
       - name: Ensure version bumped
         run: |
+          # Check if there are changes in code directories (lib, android, ios)
+          echo "Checking for changes in lib/, android/, or ios/ directories..."
+          
+          # Get list of changed files compared to main
+          changed_files=$(git diff --name-only origin/main...HEAD)
+          
+          echo "Changed files:"
+          echo "$changed_files"
+          
+          # Check if any changes are in lib, android, or ios directories
+          code_changes=$(echo "$changed_files" | grep -E '^(lib|android|ios)/' || true)
+          
+          if [ -z "$code_changes" ]; then
+            echo "ℹ️  No changes in lib/, android/, or ios/ directories."
+            echo "ℹ️  Skipping version bump check (only non-code files changed)."
+            exit 0
+          fi
+          
+          echo "📝 Code changes detected in:"
+          echo "$code_changes"
+          echo ""
+          echo "Checking version bump..."
+          
           # Extract current PR version
           pr_version=$(grep '^version:' pubspec.yaml | awk '{print $2}')
 
