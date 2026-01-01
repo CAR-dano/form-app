@@ -54,6 +54,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-caches-
 
+      # Cache Android NDK for faster native code compilation
+      - name: Cache Android NDK
+        uses: actions/cache@v3
+        with:
+          path: /usr/local/lib/android/sdk/ndk
+          key: ${{ runner.os }}-ndk-${{ hashFiles('**/build.gradle.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-ndk-
+
+      # Cache CMake for faster native library builds
+      - name: Cache CMake
+        uses: actions/cache@v3
+        with:
+          path: /usr/local/lib/android/sdk/cmake
+          key: ${{ runner.os }}-cmake-${{ hashFiles('**/build.gradle.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-cmake-
+
       # Installs all project dependencies listed in pubspec.yaml.
       - name: Install dependencies
         run: flutter pub get
