@@ -1,14 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart' as dio show Dio, FormData, MultipartFile, LogInterceptor, DioException, DioExceptionType, CancelToken, InterceptorsWrapper, Options; // Consolidated dio imports
+import 'package:dio/dio.dart' as dio show Dio, FormData, MultipartFile, LogInterceptor, DioException, CancelToken, InterceptorsWrapper, Options; // Consolidated dio imports
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:form_app/models/api_exception.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspection_branch.dart';
 import 'package:form_app/models/inspector_data.dart';
-import 'package:form_app/utils/crashlytics_util.dart';
 import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:mime/mime.dart';
 import 'package:form_app/utils/calculation_utils.dart';
@@ -21,8 +20,7 @@ typedef ImageBatchUploadedCallback = void Function(List<String> uploadedPaths); 
 
 class InspectionService {
   final dio.Dio _dioInst;
-  final AuthService _authService; // Add AuthService instance
-  final CrashlyticsUtil _crashlytics;
+  final AuthService _authService;
 
   String get _baseApiUrl {
     if (kDebugMode) {
@@ -35,7 +33,7 @@ class InspectionService {
   String get _inspectionBranchesUrl => '$_baseApiUrl/inspection-branches';
   String get _inspectorsUrl => '$_baseApiUrl/public/users/inspectors';
 
-  InspectionService(this._authService, this._crashlytics)
+  InspectionService(this._authService)
       : _dioInst = dio.Dio() {
 
     _dioInst.interceptors.add(
@@ -86,38 +84,42 @@ class InspectionService {
   }
 
   Future<List<InspectionBranch>> getInspectionBranches() async {
-    // ... (your existing implementation)
     try {
       final response = await _dioInst.get(_inspectionBranchesUrl);
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
         return data.map((json) => InspectionBranch.fromJson(json)).toList();
       } else {
-        final exception = Exception('Failed to load inspection branches: ${response.statusCode}');
-        _crashlytics.recordError(exception, StackTrace.current, reason: 'Failed to load inspection branches');
-        throw exception;
+        throw ApiException(
+          'Failed to load inspection branches: ${response.statusCode}',
+          statusCode: response.statusCode,
+          responseData: response.data,
+        );
       }
-    } catch (e, stackTrace) {
-      _crashlytics.recordError(e, stackTrace, reason: 'Error fetching inspection branches');
-      throw Exception('Error fetching inspection branches: $e');
+    } on ApiException {
+      rethrow;
+    } catch (e) {
+      throw ApiException('Error fetching inspection branches: $e');
     }
   }
 
   Future<List<Inspector>> getInspectors() async {
-    // ... (your existing implementation)
     try {
       final response = await _dioInst.get(_inspectorsUrl);
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
         return data.map((json) => Inspector.fromJson(json)).toList();
       } else {
-        final exception = Exception('Failed to load inspectors: ${response.statusCode}');
-        _crashlytics.recordError(exception, StackTrace.current, reason: 'Failed to load inspectors');
-        throw exception;
+        throw ApiException(
+          'Failed to load inspectors: ${response.statusCode}',
+          statusCode: response.statusCode,
+          responseData: response.data,
+        );
       }
-    } catch (e, stackTrace) {
-      _crashlytics.recordError(e, stackTrace, reason: 'Error fetching inspectors');
-      throw Exception('Error fetching inspectors: $e');
+    } on ApiException {
+      rethrow;
+    } catch (e) {
+      throw ApiException('Error fetching inspectors: $e');
     }
   }
 
@@ -364,54 +366,26 @@ class InspectionService {
         if (kDebugMode) {
           print('Failed to submit form data: ${response.statusCode} - $errorMessage');
         }
-      final exception = ApiException(
-        errorMessage,
-        statusCode: response.statusCode,
-        responseData: response.data,
-      );
-      _crashlytics.recordError(
-        exception,
-        StackTrace.current,
-        reason: 'Failed to submit form data',
-      );
-      throw exception;
-    }
-  } on dio.DioException catch (e, stackTrace) {
-    final bool isCancelled = e.type == dio.DioExceptionType.cancel;
-    final statusCode = e.response?.statusCode;
-      final errorMessage = _deriveErrorMessage(e.response?.data, statusCode) ??
-          (isCancelled ? 'Pengiriman data dibatalkan.' : (e.message ?? 'Terjadi kesalahan jaringan.'));
-      if (kDebugMode) {
-        print('DioException while submitting form data: $errorMessage');
+        throw ApiException(
+          errorMessage,
+          statusCode: response.statusCode,
+          responseData: response.data,
+        );
       }
-      final exception = ApiException(
-        errorMessage,
-      statusCode: statusCode,
-      responseData: e.response?.data,
-    );
-    if (!isCancelled) {
-      _crashlytics.recordError(
-        exception,
-        stackTrace,
-        reason: 'API submission error',
+    } on ApiException {
+      rethrow;
+    } catch (e) {
+      // Generic catch for all errors including DioException
+      final errorMessage = e.toString().toLowerCase();
+      final isCancelled = errorMessage.contains('cancel');
+      if (kDebugMode) {
+        print('Error submitting form data: $e');
+      }
+      throw ApiException(
+        isCancelled ? 'Pengiriman data dibatalkan.' : e.toString()
       );
     }
-    throw exception;
-  } on ApiException {
-    rethrow;
-  } catch (e, stackTrace) {
-    if (kDebugMode) {
-      print('Error submitting form data: $e');
-    }
-    final exception = ApiException(e.toString());
-    _crashlytics.recordError(
-      exception,
-      stackTrace,
-      reason: 'Error submitting form data',
-    );
-    throw exception;
   }
-}
 
 
   dio.Options get _defaultPostOptions => dio.Options(
@@ -524,26 +498,33 @@ class InspectionService {
         );
         if (response.statusCode == 200 || response.statusCode == 201) {
           if (kDebugMode) print('Batch $currentBatchNum/$totalBatchesCalc uploaded successfully.');
-          // Call the new callback with paths of successfully uploaded images in this batch
           if (onBatchUploaded != null) {
             final List<String> uploadedPathsInBatch = batch.map((img) => img.imagePath).toList();
             onBatchUploaded(uploadedPathsInBatch);
           }
         } else {
-          final exception = Exception('Failed to upload photo batch $currentBatchNum/$totalBatchesCalc: ${response.statusCode} - ${response.data}');
-          _crashlytics.recordError(exception, StackTrace.current, reason: 'Failed to upload photo batch');
-          throw exception;
+          final errorMessage = _deriveErrorMessage(response.data, response.statusCode) ?? 
+              'Failed to upload photo batch $currentBatchNum/$totalBatchesCalc';
+          throw ApiException(
+            errorMessage,
+            statusCode: response.statusCode,
+            responseData: response.data,
+          );
         }
-      } on dio.DioException catch (e, stackTrace) {
-        _crashlytics.recordError(e, stackTrace, reason: 'DioException during photo batch upload');
-        throw Exception('Error uploading photo batch $currentBatchNum/$totalBatchesCalc (DioException): ${e.message}');
-      } catch (e, stackTrace) {
-        _crashlytics.recordError(e, stackTrace, reason: 'General error during photo batch upload');
-        throw Exception('Error uploading photo batch $currentBatchNum/$totalBatchesCalc: $e');
+      } on ApiException {
+        rethrow;
+      } catch (e) {
+        // Generic catch for all errors including DioException
+        final errorMessage = e.toString().toLowerCase();
+        final isCancelled = errorMessage.contains('cancel');
+        throw ApiException(
+          isCancelled 
+            ? 'Pengiriman data dibatalkan.' 
+            : 'Error uploading photo batch $currentBatchNum/$totalBatchesCalc: $e'
+        );
       }
     }
     // After the loop, signal completion by calling onProgress with currentBatch = totalBatches
-    // (or totalBatchesCalc, totalBatchesCalc)
     onProgress(totalBatchesCalc, totalBatchesCalc);
   }
 }
