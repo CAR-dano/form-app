@@ -10,6 +10,7 @@ import 'package:form_app/providers/inspector_provider.dart';
 import 'package:form_app/providers/inspection_branches_provider.dart';
 import 'package:form_app/models/inspector_data.dart';
 import 'package:form_app/models/inspection_branch.dart';
+import 'package:form_app/utils/crashlytics_util.dart';
 
 // 1. Create a "fake" notifier class for the update service.
 // Updated for Riverpod 3.0 - now extends Notifier instead of StateNotifier
@@ -44,12 +45,37 @@ class FakeUpdateNotifier extends Notifier<UpdateState> implements UpdateNotifier
   }
 }
 
+// 2. Create a fake CrashlyticsUtil that doesn't require Firebase
+class FakeCrashlyticsUtil implements CrashlyticsUtil {
+  @override
+  Future<void> recordError(
+    dynamic exception,
+    StackTrace? stackTrace, {
+    String? reason,
+    Iterable<Object> information = const [],
+    bool fatal = false,
+  }) async {
+    // Does nothing - no Firebase needed
+  }
+
+  Future<void> log(String message) async {
+    // Does nothing - no Firebase needed
+  }
+
+  Future<void> setUserIdentifier(String identifier) async {
+    // Does nothing - no Firebase needed
+  }
+}
+
 void main() {
   testWidgets('App renders without crashing', (WidgetTester tester) async {
     // Use ProviderScope's `overrides` to replace real providers with fakes.
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          // Override the crashlytics provider to avoid Firebase initialization
+          crashlyticsUtilProvider.overrideWith((ref) => FakeCrashlyticsUtil()),
+          
           // 2. Override the update service provider to use our FakeUpdateNotifier.
           // Updated for Riverpod 3.0 - use overrideWith with a function that returns the notifier
           updateServiceProvider.overrideWith(() => FakeUpdateNotifier()),
