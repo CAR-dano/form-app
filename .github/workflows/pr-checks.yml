@@ -19,6 +19,18 @@ jobs:
         with:
           flutter-version: '3.38.4'
           channel: 'stable'
+          cache: true
+
+      # Cache pub dependencies for faster subsequent runs
+      - name: Cache pub dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ env.PUB_CACHE }}
+            ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
 
       # Creates a dummy .env file for CI purposes, providing a base URL for the API.
       - name: Create dummy .env file
