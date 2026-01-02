@@ -161,7 +161,9 @@ if (object == nullable) { ... }
 
 #### Service Layer (auth_service.dart, inspection_service.dart)
 - **Convert ALL errors to `ApiException`** with named parameters
-- **Log to Crashlytics** (except user cancellations)
+- **Extract server response data BEFORE logging to Crashlytics** (critical for debugging)
+- **Log ApiException to Crashlytics** (includes message, statusCode, and responseData)
+- **Log ALL errors including cancellations** (for complete error tracking)
 - **No DioException type checking** (use dynamic casting)
 - Detect cancellations: check for "cancelled" or "cancel" in error message
 
@@ -170,30 +172,65 @@ if (object == nullable) { ... }
 try {
   final response = await _dioInst.post(url, data: data);
   return SomeModel.fromJson(response.data);
-} on ApiException {
-  rethrow; // Already an ApiException, just rethrow
+} on ApiException catch (e, stackTrace) {
+  // Already an ApiException, log and rethrow
+  _crashlytics.recordError(e, stackTrace, reason: 'Failed to perform operation');
+  rethrow;
 } catch (e, stackTrace) {
+  // Extract server response for detailed logging
+  String message = 'Operation failed';
+  int? statusCode;
+  dynamic responseData;
+  
   // Check for cancellation
   final errorMessage = e.toString().toLowerCase();
-  if (errorMessage.contains('cancel')) {
-    throw ApiException(message: 'Request cancelled');
+  final isCancelled = errorMessage.contains('cancel');
+  
+  if (isCancelled) {
+    message = 'Request cancelled';
+  } else {
+    // Extract response data from DioException
+    try {
+      final errorResponse = (e as dynamic).response;
+      if (errorResponse != null) {
+        statusCode = errorResponse.statusCode;
+        responseData = errorResponse.data;
+        
+        // Extract meaningful message from server response
+        if (responseData != null && responseData['message'] != null) {
+          message = responseData['message'];
+        } else if (responseData != null) {
+          message = 'Operation failed: ${responseData.toString()}';
+        }
+      }
+    } catch (_) {
+      message = 'Operation failed: ${e.toString()}';
+    }
   }
   
-  // Log to Crashlytics
-  await _crashlytics.recordError(
-    e,
+  // Create ApiException with server data
+  final apiException = ApiException(
+    message: message,
+    statusCode: statusCode,
+    responseData: responseData,  // This is logged to Crashlytics via toString()
+  );
+  
+  // Log ApiException (contains server response)
+  _crashlytics.recordError(
+    apiException,
     stackTrace,
     reason: 'Failed to perform operation',
   );
   
-  // Convert to ApiException
-  throw ApiException(
-    message: 'Operation failed: ${e.toString()}',
-    statusCode: (e as dynamic).response?.statusCode,
-    responseData: (e as dynamic).response?.data,
-  );
+  throw apiException;
 }
 ```
+
+**Key Points:**
+1. **NEVER log raw DioException** - Always extract server response first
+2. **ApiException.toString()** includes `statusCode` and `responseData` for Crashlytics
+3. Server response data (e.g., `{"message": "Token expired", "code": "AUTH_ERROR"}`) is captured in `responseData`
+4. Log cancellations too (for complete error tracking)
 
 #### UI Layer (pages/)
 - **Catch `ApiException`** and display error messages

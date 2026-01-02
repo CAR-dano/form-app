@@ -174,17 +174,55 @@ class AuthService {
       }
 
       if (is401) {
+        // 401 is expected during token expiry, don't log
         debugPrint('Token is unauthorized. Attempting to refresh token.');
         return await _tryRefreshToken();
       }
       
-      // Log unexpected errors
+      // For non-401 errors, extract server response and log
+      String message = 'Token check failed';
+      int? statusCode;
+      dynamic responseData;
+      
+      // Check for cancellation
+      final errorMessage = e.toString().toLowerCase();
+      final isCancelled = errorMessage.contains('cancel');
+      
+      if (isCancelled) {
+        message = 'Token check cancelled';
+      } else {
+        // Extract response data from DioException
+        try {
+          final errorResponse = (e as dynamic).response;
+          if (errorResponse != null) {
+            statusCode = errorResponse.statusCode;
+            responseData = errorResponse.data;
+            
+            if (responseData != null && responseData['message'] != null) {
+              message = responseData['message'];
+            } else if (responseData != null) {
+              message = 'Token check failed: ${responseData.toString()}';
+            }
+          }
+        } catch (_) {
+          message = 'Token check failed: ${e.toString()}';
+        }
+      }
+      
+      // Create and log ApiException for unexpected errors
+      final apiException = ApiException(
+        message: message,
+        statusCode: statusCode,
+        responseData: responseData,
+      );
+      
       _crashlytics.recordError(
-        e,
+        apiException,
         stackTrace,
         reason: 'Token check failed with unexpected error',
       );
-      debugPrint('Token check failed: $e');
+      
+      debugPrint('Token check failed: $message');
       return false;
     }
   }
@@ -222,13 +260,52 @@ class AuthService {
         return false;
       }
     } catch (e, stackTrace) {
-      // Log refresh failures - these are important to track
+      // Extract server response for detailed logging
+      String message = 'Token refresh failed';
+      int? statusCode;
+      dynamic responseData;
+      
+      // Check for cancellation
+      final errorMessage = e.toString().toLowerCase();
+      final isCancelled = errorMessage.contains('cancel');
+      
+      if (isCancelled) {
+        message = 'Token refresh cancelled';
+      } else {
+        // Extract response data from DioException
+        try {
+          final errorResponse = (e as dynamic).response;
+          if (errorResponse != null) {
+            statusCode = errorResponse.statusCode;
+            responseData = errorResponse.data;
+            
+            // Extract meaningful message from server response
+            if (responseData != null && responseData['message'] != null) {
+              message = responseData['message'];
+            } else if (responseData != null) {
+              message = 'Token refresh failed: ${responseData.toString()}';
+            }
+          }
+        } catch (_) {
+          message = 'Token refresh failed: ${e.toString()}';
+        }
+      }
+      
+      // Create ApiException with server data
+      final apiException = ApiException(
+        message: message,
+        statusCode: statusCode,
+        responseData: responseData,
+      );
+      
+      // Log all errors including cancellations
       _crashlytics.recordError(
-        e,
+        apiException,
         stackTrace,
         reason: 'Token refresh failed',
       );
-      debugPrint('Refresh token failed: $e');
+      
+      debugPrint('Refresh token failed: $message');
       await logout();
       return false;
     }

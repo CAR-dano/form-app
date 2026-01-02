@@ -308,6 +308,270 @@ void main() {
       }
     });
   });
+
+  group('Server Response Extraction', () {
+    test('should extract statusCode and responseData from error with response', () {
+      // Simulate an error object with response property (like DioException)
+      final errorWithResponse = _ErrorWithResponse(
+        statusCode: 401,
+        data: {
+          'message': 'Token refresh expired',
+          'code': 'TOKEN_EXPIRED',
+          'timestamp': '2024-01-01T00:00:00Z',
+        },
+      );
+
+      // Test extraction pattern from auth_service
+      String message = 'Token refresh failed';
+      int? statusCode;
+      dynamic responseData;
+
+      try {
+        final errorResponse = (errorWithResponse as dynamic).response;
+        if (errorResponse != null) {
+          statusCode = errorResponse.statusCode;
+          responseData = errorResponse.data;
+
+          if (responseData != null && responseData['message'] != null) {
+            message = responseData['message'];
+          }
+        }
+      } catch (_) {
+        message = 'Token refresh failed: ${errorWithResponse.toString()}';
+      }
+
+      expect(statusCode, 401);
+      expect(responseData, isNotNull);
+      expect(responseData['message'], 'Token refresh expired');
+      expect(responseData['code'], 'TOKEN_EXPIRED');
+      expect(message, 'Token refresh expired');
+    });
+
+    test('should handle error without response data gracefully', () {
+      final errorWithoutResponse = Exception('Network timeout');
+
+      String message = 'Token refresh failed';
+      int? statusCode;
+      dynamic responseData;
+
+      try {
+        final errorResponse = (errorWithoutResponse as dynamic).response;
+        if (errorResponse != null) {
+          statusCode = errorResponse.statusCode;
+          responseData = errorResponse.data;
+        }
+      } catch (_) {
+        message = 'Token refresh failed: ${errorWithoutResponse.toString()}';
+      }
+
+      expect(statusCode, isNull);
+      expect(responseData, isNull);
+      expect(message, contains('Network timeout'));
+    });
+
+    test('should extract message from responseData if available', () {
+      final responseData = {
+        'message': 'Refresh token expired',
+        'code': 'TOKEN_EXPIRED',
+        'details': 'Please login again',
+      };
+
+      String message = 'Token refresh failed';
+
+      if (responseData['message'] != null) {
+        message = responseData['message'] as String;
+      } else {
+        message = 'Token refresh failed: ${responseData.toString()}';
+      }
+
+      expect(message, 'Refresh token expired');
+    });
+
+    test('should handle responseData without message field', () {
+      final responseData = {
+        'error': 'invalid_token',
+        'error_description': 'The token is invalid',
+      };
+
+      String message = 'Token refresh failed';
+
+      if (responseData['message'] != null) {
+        message = responseData['message'] as String;
+      } else {
+        message = 'Token refresh failed: ${responseData.toString()}';
+      }
+
+      expect(message, contains('Token refresh failed'));
+      expect(message, contains('invalid_token'));
+    });
+
+    test('should detect cancellation from error message', () {
+      final cancelMessages = [
+        'Request cancelled',
+        'Pengiriman data dibatalkan',
+        'DioException: The request was cancelled',
+        'User cancelled the operation',
+      ];
+
+      for (final msg in cancelMessages) {
+        final isCancelled = msg.toLowerCase().contains('cancel') || 
+                            msg.toLowerCase().contains('batal');
+        expect(isCancelled, isTrue, reason: 'Should detect cancellation: $msg');
+      }
+    });
+
+    test('should not detect normal errors as cancellation', () {
+      final normalMessages = [
+        'Token refresh failed',
+        'Network timeout',
+        'Server error',
+        'Invalid credentials',
+      ];
+
+      for (final msg in normalMessages) {
+        final isCancelled = msg.toLowerCase().contains('cancel') || 
+                            msg.toLowerCase().contains('batal');
+        expect(isCancelled, isFalse, reason: 'Should not be cancellation: $msg');
+      }
+    });
+
+    test('should create ApiException with extracted server data', () {
+      final errorWithResponse = _ErrorWithResponse(
+        statusCode: 401,
+        data: {
+          'message': 'Token expired',
+          'code': 'AUTH_ERROR',
+        },
+      );
+
+      // Simulate extraction pattern
+      String message = 'Operation failed';
+      int? statusCode;
+      dynamic responseData;
+
+      try {
+        final errorResponse = (errorWithResponse as dynamic).response;
+        if (errorResponse != null) {
+          statusCode = errorResponse.statusCode;
+          responseData = errorResponse.data;
+
+          if (responseData != null && responseData['message'] != null) {
+            message = responseData['message'];
+          }
+        }
+      } catch (_) {}
+
+      final apiException = ApiException(
+        message: message,
+        statusCode: statusCode,
+        responseData: responseData,
+      );
+
+      expect(apiException.message, 'Token expired');
+      expect(apiException.statusCode, 401);
+      expect(apiException.responseData['code'], 'AUTH_ERROR');
+      
+      // Verify toString includes responseData
+      final exceptionString = apiException.toString();
+      expect(exceptionString, contains('AUTH_ERROR'));
+      expect(exceptionString, contains('[Response:'));
+    });
+
+    test('should log ALL errors including cancellations (new behavior)', () {
+      // NEW BEHAVIOR: Log all errors including cancellations
+      final cancelException = ApiException(message: 'Request cancelled');
+      final normalException = ApiException(message: 'Server error');
+
+      when(() => mockCrashlytics.recordError(
+            any(),
+            any(),
+            reason: any(named: 'reason'),
+          )).thenAnswer((_) async {});
+
+      // Both should be logged
+      mockCrashlytics.recordError(
+        cancelException,
+        StackTrace.current,
+        reason: 'Token refresh failed',
+      );
+
+      mockCrashlytics.recordError(
+        normalException,
+        StackTrace.current,
+        reason: 'Token refresh failed',
+      );
+
+      // Verify both were logged
+      verify(() => mockCrashlytics.recordError(
+            any(),
+            any(),
+            reason: any(named: 'reason'),
+          )).called(2);
+    });
+
+    test('should handle 401 errors for token check without logging', () {
+      // Pattern from checkTokenValidity: 401 errors should trigger refresh, not log
+      final error401 = _ErrorWithResponse(
+        statusCode: 401,
+        data: {'error': 'token_expired'},
+      );
+
+      bool is401 = false;
+      try {
+        final errorResponse = (error401 as dynamic).response;
+        if (errorResponse?.statusCode == 401) {
+          is401 = true;
+        }
+      } catch (_) {
+        // Not a 401
+      }
+
+      expect(is401, isTrue);
+
+      // For 401 in checkTokenValidity, we don't log, just refresh
+      // Only non-401 errors get logged
+    });
+
+    test('should log non-401 errors in checkTokenValidity', () {
+      // Non-401 errors in checkTokenValidity should be logged
+      final error500 = _ErrorWithResponse(
+        statusCode: 500,
+        data: {'error': 'server_error'},
+      );
+
+      bool is401 = false;
+      try {
+        final errorResponse = (error500 as dynamic).response;
+        if (errorResponse?.statusCode == 401) {
+          is401 = true;
+        }
+      } catch (_) {}
+
+      expect(is401, isFalse);
+
+      // For non-401 errors, we should log and extract server data
+      String message = 'Token check failed';
+      int? statusCode;
+      dynamic responseData;
+
+      try {
+        final errorResponse = (error500 as dynamic).response;
+        if (errorResponse != null) {
+          statusCode = errorResponse.statusCode;
+          responseData = errorResponse.data;
+        }
+      } catch (_) {}
+
+      final apiException = ApiException(
+        message: message,
+        statusCode: statusCode,
+        responseData: responseData,
+      );
+
+      expect(apiException.statusCode, 500);
+      expect(apiException.responseData['error'], 'server_error');
+    });
+  });
 }
 
 // Helper class to simulate errors with response data

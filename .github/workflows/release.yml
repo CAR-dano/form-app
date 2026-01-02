@@ -54,23 +54,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-caches-
 
-      # Cache Android NDK for faster native code compilation
-      - name: Cache Android NDK
-        uses: actions/cache@v3
-        with:
-          path: /usr/local/lib/android/sdk/ndk
-          key: ${{ runner.os }}-ndk-${{ hashFiles('**/build.gradle.kts') }}
-          restore-keys: |
-            ${{ runner.os }}-ndk-
-
-      # Cache CMake for faster native library builds
-      - name: Cache CMake
-        uses: actions/cache@v3
-        with:
-          path: /usr/local/lib/android/sdk/cmake
-          key: ${{ runner.os }}-cmake-${{ hashFiles('**/build.gradle.kts') }}
-          restore-keys: |
-            ${{ runner.os }}-cmake-
+      # Note: Android NDK caching removed to prevent disk space issues (NDK is ~1-3GB)
+      # GitHub runners already have NDK pre-installed, so caching is unnecessary
+      # This saves ~7 minutes in cache post-processing time
+      
+      # Note: CMake cache removed due to permission issues with system directories
+      # CMake is auto-installed by Android SDK during build when needed
+      
+      # Build Strategy: We build only arm64-v8a (64-bit ARM) to:
+      # - Avoid CMake dependency (required by x86_64 builds)
+      # - Cover 95%+ of modern Android devices (2017+)
+      # - Reduce build time and APK size
+      # - Simplify deployment (fewer APKs to manage)
+      # Devices supported: All modern Android phones/tablets with 64-bit processors
 
       # Installs all project dependencies listed in pubspec.yaml.
       - name: Install dependencies
@@ -111,12 +107,9 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=app/key.jks" >> android/key.properties
 
-      # Accepts Android SDK licenses.
+      # Accepts Android SDK licenses using Flutter's built-in command
       - name: Accept Android SDK licenses
-
-        run: |
-          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
-          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
+        run: flutter doctor --android-licenses
 
       # Create google-services.json from secret
       - name: Create google-services.json
@@ -124,11 +117,12 @@ jobs:
         env:
           GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
 
-      # Builds ABI-Specific Release APKs
-      - name: Build ABI-Specific Release APKs
-        run: flutter build apk --split-per-abi --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ steps.pubspec.outputs.full_build_number }}
+      # Builds arm64-v8a Release APK (covers 95%+ of modern Android devices)
+      # Using --target-platform to avoid building x86_64 (which requires CMake)
+      - name: Build arm64-v8a Release APK
+        run: flutter build apk --target-platform android-arm64 --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ steps.pubspec.outputs.full_build_number }}
 
-      # Builds a universal (fat) Release APK.
+      # Builds a universal (fat) Release APK for testing purposes
       - name: Build Universal (Fat) Release APK
         run: flutter build apk --release --build-name=${{ steps.pubspec.outputs.semantic_version }} --build-number=${{ steps.pubspec.outputs.full_build_number }}
 
@@ -159,17 +153,6 @@ jobs:
         run: |
           original_path="build/app/outputs/flutter-apk/app-arm64-v8a-release.apk"
           new_name="palapa_inspeksi-v${{ steps.pubspec.outputs.semantic_version }}-arm64-v8a-release.apk"
-          new_path="build/app/outputs/flutter-apk/$new_name"
-          mv "$original_path" "$new_path"
-          echo "path=$new_path" >> $GITHUB_OUTPUT
-          echo "name=$new_name" >> $GITHUB_OUTPUT
-
-      # Renames the armeabi-v7a release APK to include version and build number.
-      - name: Rename armeabi-v7a Release APK
-        id: armeabi_v7a_release_apk_details
-        run: |
-          original_path="build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk"
-          new_name="palapa_inspeksi-v${{ steps.pubspec.outputs.semantic_version }}-armeabi-v7a-release.apk"
           new_path="build/app/outputs/flutter-apk/$new_name"
           mv "$original_path" "$new_path"
           echo "path=$new_path" >> $GITHUB_OUTPUT
@@ -357,7 +340,6 @@ jobs:
           files: |
             ${{ steps.universal_release_apk_details.outputs.path }}
             ${{ steps.arm64_v8a_release_apk_details.outputs.path }}
-            ${{ steps.armeabi_v7a_release_apk_details.outputs.path }}
             ${{ steps.debug_apk_details.outputs.path }}
 
       # Uploads all release APKs as a build artifact.
@@ -368,7 +350,6 @@ jobs:
           path: |
             ${{ steps.universal_release_apk_details.outputs.path }}
             ${{ steps.arm64_v8a_release_apk_details.outputs.path }}
-            ${{ steps.armeabi_v7a_release_apk_details.outputs.path }}
           if-no-files-found: warn
 
       # Uploads the debug build artifact.
