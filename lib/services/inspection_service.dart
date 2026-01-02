@@ -102,8 +102,49 @@ class InspectionService {
       _crashlytics.recordError(e, stackTrace, reason: 'Failed to load inspection branches');
       rethrow;
     } catch (e, stackTrace) {
-      _crashlytics.recordError(e, stackTrace, reason: 'Error fetching inspection branches');
-      throw ApiException(message: 'Error fetching inspection branches: $e');
+      // Extract server response for detailed logging
+      String message = 'Error fetching inspection branches';
+      int? statusCode;
+      dynamic responseData;
+      
+      // Check for cancellation
+      final errorMessage = e.toString().toLowerCase();
+      final isCancelled = errorMessage.contains('cancel');
+      
+      if (isCancelled) {
+        message = 'Request cancelled';
+      } else {
+        // Extract response data from DioException
+        try {
+          final errorResponse = (e as dynamic).response;
+          if (errorResponse != null) {
+            statusCode = errorResponse.statusCode;
+            responseData = errorResponse.data;
+            
+            if (responseData != null && responseData['message'] != null) {
+              message = responseData['message'];
+            } else if (responseData != null) {
+              message = 'Error: ${responseData.toString()}';
+            }
+          }
+        } catch (_) {
+          message = 'Error fetching inspection branches: ${e.toString()}';
+        }
+      }
+      
+      final apiException = ApiException(
+        message: message,
+        statusCode: statusCode,
+        responseData: responseData,
+      );
+      
+      _crashlytics.recordError(
+        apiException,
+        stackTrace,
+        reason: 'Error fetching inspection branches',
+      );
+      
+      throw apiException;
     }
   }
 
@@ -124,8 +165,49 @@ class InspectionService {
       _crashlytics.recordError(e, stackTrace, reason: 'Failed to load inspectors');
       rethrow;
     } catch (e, stackTrace) {
-      _crashlytics.recordError(e, stackTrace, reason: 'Error fetching inspectors');
-      throw ApiException(message: 'Error fetching inspectors: $e');
+      // Extract server response for detailed logging
+      String message = 'Error fetching inspectors';
+      int? statusCode;
+      dynamic responseData;
+      
+      // Check for cancellation
+      final errorMessage = e.toString().toLowerCase();
+      final isCancelled = errorMessage.contains('cancel');
+      
+      if (isCancelled) {
+        message = 'Request cancelled';
+      } else {
+        // Extract response data from DioException
+        try {
+          final errorResponse = (e as dynamic).response;
+          if (errorResponse != null) {
+            statusCode = errorResponse.statusCode;
+            responseData = errorResponse.data;
+            
+            if (responseData != null && responseData['message'] != null) {
+              message = responseData['message'];
+            } else if (responseData != null) {
+              message = 'Error: ${responseData.toString()}';
+            }
+          }
+        } catch (_) {
+          message = 'Error fetching inspectors: ${e.toString()}';
+        }
+      }
+      
+      final apiException = ApiException(
+        message: message,
+        statusCode: statusCode,
+        responseData: responseData,
+      );
+      
+      _crashlytics.recordError(
+        apiException,
+        stackTrace,
+        reason: 'Error fetching inspectors',
+      );
+      
+      throw apiException;
     }
   }
 
