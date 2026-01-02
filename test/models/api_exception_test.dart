@@ -103,6 +103,117 @@ void main() {
 
         expect(exception.toString(), 'ApiException (500): Internal server error');
       });
+
+      test('should include responseData when present', () {
+        final exception = ApiException(
+          message: 'Token expired',
+          statusCode: 401,
+          responseData: {'code': 'TOKEN_EXPIRED', 'details': 'JWT expired'},
+        );
+
+        final result = exception.toString();
+
+        expect(result, contains('ApiException (401): Token expired'));
+        expect(result, contains('[Response:'));
+        expect(result, contains('TOKEN_EXPIRED'));
+        expect(result, contains('details'));
+      });
+
+      test('should not include responseData section when null', () {
+        final exception = ApiException(
+          message: 'Network error',
+          statusCode: 500,
+        );
+
+        final result = exception.toString();
+
+        expect(result, equals('ApiException (500): Network error'));
+        expect(result, isNot(contains('[Response:')));
+      });
+
+      test('should handle complex nested responseData', () {
+        final exception = ApiException(
+          message: 'Validation failed',
+          statusCode: 422,
+          responseData: {
+            'errors': [
+              {'field': 'email', 'message': 'Required'},
+              {'field': 'pin', 'message': 'Invalid format'},
+            ],
+            'timestamp': '2024-01-01T00:00:00Z',
+          },
+        );
+
+        final result = exception.toString();
+
+        expect(result, contains('422'));
+        expect(result, contains('Validation failed'));
+        expect(result, contains('[Response:'));
+        expect(result, contains('errors'));
+        expect(result, contains('timestamp'));
+      });
+
+      test('should handle responseData with Indonesian error codes', () {
+        final exception = ApiException(
+          message: 'Token kedaluwarsa',
+          statusCode: 401,
+          responseData: {
+            'message': 'Token refresh expired',
+            'kode': 'TOKEN_KADALUARSA',
+          },
+        );
+
+        final result = exception.toString();
+
+        expect(result, contains('Token kedaluwarsa'));
+        expect(result, contains('[Response:'));
+        expect(result, contains('TOKEN_KADALUARSA'));
+        expect(result, contains('kode'));
+      });
+
+      test('should include responseData without statusCode', () {
+        final exception = ApiException(
+          message: 'Network timeout',
+          responseData: {'error': 'timeout', 'retry_after': 30},
+        );
+
+        final result = exception.toString();
+
+        expect(result, contains('ApiException: Network timeout'));
+        expect(result, contains('[Response:'));
+        expect(result, contains('timeout'));
+        expect(result, contains('retry_after'));
+      });
+
+      test('should handle empty responseData object', () {
+        final exception = ApiException(
+          message: 'Server error',
+          statusCode: 500,
+          responseData: {},
+        );
+
+        final result = exception.toString();
+
+        expect(result, contains('ApiException (500): Server error'));
+        expect(result, contains('[Response: {}]'));
+      });
+
+      test('should handle responseData with special characters', () {
+        final exception = ApiException(
+          message: 'Validation error',
+          statusCode: 400,
+          responseData: {
+            'message': 'Field "nama_lengkap" berisi karakter tidak valid: <script>',
+          },
+        );
+
+        final result = exception.toString();
+
+        expect(result, contains('Validation error'));
+        expect(result, contains('[Response:'));
+        expect(result, contains('nama_lengkap'));
+        expect(result, contains('script'));
+      });
     });
 
     group('implements Exception', () {
