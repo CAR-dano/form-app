@@ -11,9 +11,19 @@ class ApiException implements Exception {
 
   @override
   String toString() {
+    final buffer = StringBuffer();
+    
     if (statusCode != null) {
-      return 'ApiException ($statusCode): $message';
+      buffer.write('ApiException ($statusCode): $message');
+    } else {
+      buffer.write('ApiException: $message');
     }
-    return 'ApiException: $message';
+    
+    // Include response data if available
+    if (responseData != null) {
+      buffer.write(' [Response: $responseData]');
+    }
+    
+    return buffer.toString();
   }
 }
