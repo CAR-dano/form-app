@@ -12,9 +12,33 @@ jobs:
       # Checks out the repository code for the workflow to access.
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required to compare with main
+
+      # Check if code files changed (skip analysis if only non-code files changed)
+      - name: Check for code changes
+        id: code_changes
+        run: |
+          # Get list of changed files compared to main
+          changed_files=$(git diff --name-only origin/main...HEAD)
+          
+          echo "Changed files:"
+          echo "$changed_files"
+          
+          # Check if any changes are in lib, android, ios, or test directories
+          code_changes=$(echo "$changed_files" | grep -E '^(lib|android|ios|test)/' || true)
+          
+          if [ -z "$code_changes" ]; then
+            echo "ℹ️  No code changes detected. Skipping analysis."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "📝 Code changes detected. Running analysis."
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
 
       # Sets up the Flutter environment with a specific version and channel.
       - name: Set up Flutter
+        if: steps.code_changes.outputs.skip != 'true'
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.38.4'
@@ -23,6 +47,7 @@ jobs:
 
       # Cache pub dependencies for faster subsequent runs
       - name: Cache pub dependencies
+        if: steps.code_changes.outputs.skip != 'true'
         uses: actions/cache@v3
         with:
           path: |
@@ -34,14 +59,17 @@ jobs:
 
       # Creates a dummy .env file for CI purposes, providing a base URL for the API.
       - name: Create dummy .env file
+        if: steps.code_changes.outputs.skip != 'true'
         run: echo "API_BASE_URL=http://dummy.api.for.ci" > .env
 
       # Installs all project dependencies listed in pubspec.yaml.
       - name: Install dependencies
+        if: steps.code_changes.outputs.skip != 'true'
         run: flutter pub get
 
       # Analyzes the Flutter project for any issues, failing the job if infos are found.
       - name: Analyze project
+        if: steps.code_changes.outputs.skip != 'true'
         run: flutter analyze --fatal-infos # Fails the job if any issues are found
   
   version-check:
@@ -102,9 +130,33 @@ jobs:
       # Checks out the repository code for the workflow to access.
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required to compare with main
+
+      # Check if code files changed (skip tests if only non-code files changed)
+      - name: Check for code changes
+        id: code_changes
+        run: |
+          # Get list of changed files compared to main
+          changed_files=$(git diff --name-only origin/main...HEAD)
+          
+          echo "Changed files:"
+          echo "$changed_files"
+          
+          # Check if any changes are in lib, android, ios, or test directories
+          code_changes=$(echo "$changed_files" | grep -E '^(lib|android|ios|test)/' || true)
+          
+          if [ -z "$code_changes" ]; then
+            echo "ℹ️  No code changes detected. Skipping tests."
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "📝 Code changes detected. Running tests."
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
 
       # Sets up the Flutter environment with a specific version and channel.
       - name: Set up Flutter
+        if: steps.code_changes.outputs.skip != 'true'
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.38.4'
@@ -113,6 +165,7 @@ jobs:
 
       # Cache pub dependencies for faster subsequent runs
       - name: Cache pub dependencies
+        if: steps.code_changes.outputs.skip != 'true'
         uses: actions/cache@v3
         with:
           path: |
@@ -124,14 +177,17 @@ jobs:
 
       # Creates a dummy .env file for CI purposes, providing a base URL for the API.
       - name: Create dummy .env file
+        if: steps.code_changes.outputs.skip != 'true'
         run: |
           echo "API_BASE_URL=http://dummy.api.for.ci" > .env
           echo "API_BASE_URL_DEBUG=http://dummy.api.for.ci" >> .env
 
       # Installs all project dependencies listed in pubspec.yaml.
       - name: Install dependencies
+        if: steps.code_changes.outputs.skip != 'true'
         run: flutter pub get
 
       # Runs all tests defined in the Flutter project.
       - name: Run tests
+        if: steps.code_changes.outputs.skip != 'true'
         run: flutter test
