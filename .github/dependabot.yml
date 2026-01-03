@@ -9,6 +9,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    reviewers:
+      - "SjdnDzikran"  # Automatically request review from you
     groups:
       all-dependencies:
         patterns:
