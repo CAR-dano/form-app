@@ -88,6 +88,25 @@ jobs:
           echo "semantic_version=$SEMANTIC_VERSION" >> $GITHUB_OUTPUT
           echo "full_build_number=$FULL_BUILD_NUMBER" >> $GITHUB_OUTPUT
           echo "full_version=$FULL_VERSION" >> $GITHUB_OUTPUT
+      
+      # Check if version was bumped compared to main branch
+      - name: Check if version bumped
+        id: version_check
+        run: |
+          # Extract version from main branch
+          MAIN_VERSION=$(git show origin/main:pubspec.yaml | grep '^version:' | sed -E 's/version: ([0-9]+\.[0-9]+\.[0-9]+)(\+.*)?/\1/' | tr -d '[:space:]')
+          CURRENT_VERSION="${{ steps.pubspec.outputs.semantic_version }}"
+          
+          echo "Main branch version: $MAIN_VERSION"
+          echo "Current version: $CURRENT_VERSION"
+          
+          if [ "$MAIN_VERSION" = "$CURRENT_VERSION" ]; then
+            echo "version_bumped=false" >> $GITHUB_OUTPUT
+            echo "No version bump detected"
+          else
+            echo "version_bumped=true" >> $GITHUB_OUTPUT
+            echo "Version bumped from $MAIN_VERSION to $CURRENT_VERSION"
+          fi
 
       # Creates an .env file with the API base URL for the release build.
       - name: Create .env file for Release Build
@@ -184,7 +203,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const {
-              COMMIT_SHA, ACTOR, SEMANTIC_VERSION, RUN_NUMBER, REPO_URL, HEAD_COMMIT_MESSAGE, FULL_VERSION
+              COMMIT_SHA, ACTOR, SEMANTIC_VERSION, RUN_NUMBER, REPO_URL, HEAD_COMMIT_MESSAGE, FULL_VERSION, VERSION_BUMPED
             } = process.env;
 
             // Detect if this is a dependabot PR using multiple methods for reliability
@@ -193,8 +212,63 @@ jobs:
             const actorIsDependabot = ACTOR.includes('dependabot');
             const commitIsDependabot = HEAD_COMMIT_MESSAGE.startsWith('build(deps):');
             const isDependabot = actorIsDependabot || commitIsDependabot;
+            const versionBumped = VERSION_BUMPED === 'true';
             
-            if (isDependabot) {
+            // Case 1: Version bumped (code change) - Regular release with full notes
+            if (versionBumped) {
+              core.info('Version bumped detected - generating new release notes');
+              
+              let main_release_content = "";
+              let pr_details_for_footer = "";
+
+              const pr_regex_merge = /Merge pull request #(\d+)/;
+              const pr_regex_squash_title = /\(#(\d+)\)(?:$|\n)/;
+              let match = HEAD_COMMIT_MESSAGE.match(pr_regex_merge);
+              if (!match) {
+                const first_line_of_commit = HEAD_COMMIT_MESSAGE.split('\n')[0];
+                match = first_line_of_commit.match(pr_regex_squash_title);
+              }
+
+              if (match && match[1]) {
+                const pr_number = match[1];
+                core.info(`Attempting to fetch details for PR #${pr_number}`);
+                try {
+                  const { data: pr } = await github.rest.pulls.get({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: pr_number,
+                  });
+                  main_release_content = pr.body || "No description provided for this Pull Request.";
+                  pr_details_for_footer += `**Pull Request:** [#${pr_number}: ${pr.title}](${pr.html_url})\n`;
+                  pr_details_for_footer += `**PR Author:** @${pr.user.login}\n`;
+                } catch (error) {
+                  core.warning(`Could not fetch details for PR #${pr_number}: ${error.message}`);
+                  main_release_content = `Could not automatically fetch Pull Request description for PR #${pr_number}. Please refer to the PR or commit message directly.\n\n`;
+                  main_release_content += `Associated PR: [#${pr_number}](${REPO_URL}/pull/${pr_number})\n`;
+                }
+              } else {
+                core.info("Could not determine PR from commit message. Using commit message as main content.");
+                const commit_title = HEAD_COMMIT_MESSAGE.split('\n')[0];
+                let commit_body_part = HEAD_COMMIT_MESSAGE.substring(commit_title.length).trim();
+                if (commit_body_part) {
+                  main_release_content = `**${commit_title}**\n\n${commit_body_part}`;
+                } else {
+                  main_release_content = HEAD_COMMIT_MESSAGE;
+                }
+              }
+
+              let footer_info = "\n\n---\n\n";
+              footer_info += `**Version:** v${SEMANTIC_VERSION}\n`;
+              footer_info += `**Released by:** @${ACTOR}\n`;
+              footer_info += pr_details_for_footer;
+              footer_info += `**Commit:** [${COMMIT_SHA.substring(0,7)}](${REPO_URL}/commit/${COMMIT_SHA})\n`;
+              footer_info += `\n**Full Commit Message:**\n\`\`\`\n${HEAD_COMMIT_MESSAGE}\n\`\`\`\n`;
+
+              const release_body = main_release_content + footer_info;
+              core.setOutput("body", release_body);
+              
+            // Case 2: No version bump + Dependabot - Append dependency info
+            } else if (isDependabot) {
               // Log which detection method caught it
               if (actorIsDependabot && commitIsDependabot) {
                 core.info('Dependabot PR detected via both methods (actor + commit message)');
@@ -203,7 +277,7 @@ jobs:
               } else {
                 core.info('Dependabot PR detected via Method 2: commit message starts with build(deps):');
               }
-              core.info('Appending to existing release notes...');
+              core.info('No version bump - appending to existing release notes...');
               
               try {
                 // Fetch existing release
@@ -264,58 +338,30 @@ jobs:
                 core.setOutput("body", fallbackBody);
               }
               
+            // Case 3: No version bump + Human - Preserve existing release body
             } else {
-              // Regular PR - generate release body as usual
-              core.info('Regular PR detected - generating new release notes');
+              core.info('No version bump + human PR detected - preserving existing release notes');
               
-              let main_release_content = "";
-              let pr_details_for_footer = "";
-
-              const pr_regex_merge = /Merge pull request #(\d+)/;
-              const pr_regex_squash_title = /\(#(\d+)\)(?:$|\n)/;
-              let match = HEAD_COMMIT_MESSAGE.match(pr_regex_merge);
-              if (!match) {
-                const first_line_of_commit = HEAD_COMMIT_MESSAGE.split('\n')[0];
-                match = first_line_of_commit.match(pr_regex_squash_title);
+              try {
+                // Fetch existing release
+                const { data: existingRelease } = await github.rest.repos.getReleaseByTag({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  tag: `v${SEMANTIC_VERSION}`
+                });
+                
+                // Keep existing body unchanged
+                const existingBody = existingRelease.body || '';
+                core.info('Preserving existing release body (non-code change)');
+                core.setOutput("body", existingBody);
+                
+              } catch (error) {
+                // Fallback if fetching existing release fails (shouldn't happen if release exists)
+                core.warning(`Could not fetch existing release: ${error.message}`);
+                core.warning('Release may not exist yet - using minimal body');
+                const fallbackBody = `Internal update - Build #${RUN_NUMBER}\n\nNo user-facing changes.`;
+                core.setOutput("body", fallbackBody);
               }
-
-              if (match && match[1]) {
-                const pr_number = match[1];
-                core.info(`Attempting to fetch details for PR #${pr_number}`);
-                try {
-                  const { data: pr } = await github.rest.pulls.get({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    pull_number: pr_number,
-                  });
-                  main_release_content = pr.body || "No description provided for this Pull Request.";
-                  pr_details_for_footer += `**Pull Request:** [#${pr_number}: ${pr.title}](${pr.html_url})\n`;
-                  pr_details_for_footer += `**PR Author:** @${pr.user.login}\n`;
-                } catch (error) {
-                  core.warning(`Could not fetch details for PR #${pr_number}: ${error.message}`);
-                  main_release_content = `Could not automatically fetch Pull Request description for PR #${pr_number}. Please refer to the PR or commit message directly.\n\n`;
-                  main_release_content += `Associated PR: [#${pr_number}](${REPO_URL}/pull/${pr_number})\n`;
-                }
-              } else {
-                core.info("Could not determine PR from commit message. Using commit message as main content.");
-                const commit_title = HEAD_COMMIT_MESSAGE.split('\n')[0];
-                let commit_body_part = HEAD_COMMIT_MESSAGE.substring(commit_title.length).trim();
-                if (commit_body_part) {
-                  main_release_content = `**${commit_title}**\n\n${commit_body_part}`;
-                } else {
-                  main_release_content = HEAD_COMMIT_MESSAGE;
-                }
-              }
-
-              let footer_info = "\n\n---\n\n";
-              footer_info += `**Version:** v${SEMANTIC_VERSION}\n`;
-              footer_info += `**Released by:** @${ACTOR}\n`;
-              footer_info += pr_details_for_footer;
-              footer_info += `**Commit:** [${COMMIT_SHA.substring(0,7)}](${REPO_URL}/commit/${COMMIT_SHA})\n`;
-              footer_info += `\n**Full Commit Message:**\n\`\`\`\n${HEAD_COMMIT_MESSAGE}\n\`\`\`\n`;
-
-              const release_body = main_release_content + footer_info;
-              core.setOutput("body", release_body);
             }
         env:
           SEMANTIC_VERSION: ${{ steps.pubspec.outputs.semantic_version }}
@@ -325,6 +371,7 @@ jobs:
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
           HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           FULL_VERSION: ${{ steps.pubspec.outputs.full_version }}
+          VERSION_BUMPED: ${{ steps.version_check.outputs.version_bumped }}
 
       # Creates a new GitHub Release.
       - name: Create GitHub Release
