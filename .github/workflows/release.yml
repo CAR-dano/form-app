@@ -107,9 +107,9 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=app/key.jks" >> android/key.properties
 
-      # Accepts Android SDK licenses using Flutter's built-in command
+      # Accepts Android SDK licenses automatically (non-interactive)
       - name: Accept Android SDK licenses
-        run: flutter doctor --android-licenses
+        run: yes | flutter doctor --android-licenses
 
       # Create google-services.json from secret
       - name: Create google-services.json
