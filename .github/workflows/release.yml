@@ -299,29 +299,82 @@ jobs:
                 }
                 const prNumber = match ? match[1] : 'unknown';
                 
-                // Extract update count from commit message (e.g., "7 updates")
-                const updatesMatch = HEAD_COMMIT_MESSAGE.match(/with (\d+) update/);
-                const updateCount = updatesMatch ? updatesMatch[1] : '?';
-                
                 // Get current date in GMT+7 (WIB)
                 const now = new Date();
                 const wibOffset = 7 * 60; // GMT+7 in minutes
                 const wibTime = new Date(now.getTime() + (wibOffset - now.getTimezoneOffset()) * 60000);
                 const dateStr = wibTime.toISOString().split('T')[0]; // YYYY-MM-DD format
                 
-                // Create new entry
-                const prLink = `[#${prNumber}](${REPO_URL}/pull/${prNumber})`;
-                const updateText = updateCount === '1' ? 'update' : 'updates';
-                const newEntry = `Build #${RUN_NUMBER} (${dateStr}) • ${prLink} • ${updateCount} ${updateText}`;
+                // Fetch PR details to parse dependency table
+                let newEntry = '';
+                try {
+                  const { data: pr } = await github.rest.pulls.get({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: prNumber,
+                  });
+                  
+                  const prBody = pr.body || '';
+                  const prUrl = `${REPO_URL}/pull/${prNumber}`;
+                  
+                  // Parse dependency table from PR body
+                  // Table format: | [package](url) | `from` | `to` |
+                  const tableRegex = /\| Package \| From \| To \|([\s\S]*?)(?:\n\n|$)/;
+                  const tableMatch = prBody.match(tableRegex);
+                  
+                  let dependencyList = '';
+                  let packageCount = 0;
+                  
+                  if (tableMatch && tableMatch[1]) {
+                    // Parse table rows
+                    const rows = tableMatch[1].trim().split('\n');
+                    const packages = [];
+                    
+                    for (const row of rows) {
+                      // Skip separator row (| --- | --- | --- |)
+                      if (row.includes('---')) continue;
+                      
+                      // Parse: | [package_name](url) | `from` | `to` |
+                      const cellMatch = row.match(/\|\s*\[([^\]]+)\]\(([^)]+)\)\s*\|\s*`([^`]+)`\s*\|\s*`([^`]+)`\s*\|/);
+                      if (cellMatch) {
+                        const [, packageName, packageUrl, fromVersion, toVersion] = cellMatch;
+                        packages.push(`- [${packageName}](${packageUrl}): \`${fromVersion}\` -> \`${toVersion}\``);
+                        packageCount++;
+                      }
+                    }
+                    
+                    if (packages.length > 0) {
+                      dependencyList = '\n\n**' + packageCount + (packageCount === 1 ? ' package' : ' packages') + ' updated:**\n\n' + packages.join('\n');
+                    }
+                  }
+                  
+                  // Fallback to update count from commit message if table parsing fails
+                  if (packageCount === 0) {
+                    const updatesMatch = HEAD_COMMIT_MESSAGE.match(/with (\d+) update/);
+                    packageCount = updatesMatch ? parseInt(updatesMatch[1]) : 0;
+                    if (packageCount > 0) {
+                      dependencyList = '\n\n**' + packageCount + (packageCount === 1 ? ' package' : ' packages') + ' updated**';
+                    }
+                  }
+                  
+                  // Create expandable entry
+                  newEntry = `<details>\n<summary>Dependency update [#${prNumber}](${prUrl}) (${dateStr})</summary>${dependencyList}\n\n</details>`;
+                  
+                } catch (prError) {
+                  core.warning(`Could not fetch PR details: ${prError.message}`);
+                  // Fallback to simple format
+                  const prUrl = `${REPO_URL}/pull/${prNumber}`;
+                  newEntry = `<details>\n<summary>Dependency update [#${prNumber}](${prUrl}) (${dateStr})</summary>\n\nCould not load dependency details.\n\n</details>`;
+                }
                 
-                // Find or create <details> section
+                // Find or create <details> section for all dependency updates
                 const detailsRegex = /<details>\s*<summary>Dependency Updates<\/summary>([\s\S]*?)<\/details>/;
                 const detailsMatch = existingBody.match(detailsRegex);
                 
                 if (detailsMatch) {
                   // Prepend to existing list (newest first)
                   const existingList = detailsMatch[1].trim();
-                  const updatedList = existingList ? `${newEntry}\n${existingList}` : newEntry;
+                  const updatedList = existingList ? `${newEntry}\n\n${existingList}` : newEntry;
                   existingBody = existingBody.replace(detailsRegex, 
                     `<details>\n<summary>Dependency Updates</summary>\n\n${updatedList}\n\n</details>`);
                 } else {
@@ -334,7 +387,7 @@ jobs:
               } catch (error) {
                 // Fallback if fetching existing release fails
                 core.warning(`Could not fetch existing release: ${error.message}`);
-                const fallbackBody = `Dependency update - Build #${RUN_NUMBER}`;
+                const fallbackBody = `Dependency update`;
                 core.setOutput("body", fallbackBody);
               }
               
