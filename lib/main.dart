@@ -21,6 +21,12 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  
+  // Keep both status bar and navigation buttons visible
+  await SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.edgeToEdge, // Content extends behind system UI
+  );
+  
   await dotenv.load(fileName: ".env"); // Load environment variables
 
   await Firebase.initializeApp();
