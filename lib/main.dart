@@ -21,6 +21,13 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  
+  // Enable immersive mode - hides system navigation buttons but keeps status bar
+  await SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.manual,
+    overlays: [SystemUiOverlay.top], // Only show status bar, hide nav bar
+  );
+  
   await dotenv.load(fileName: ".env"); // Load environment variables
 
   await Firebase.initializeApp();
