@@ -199,25 +199,29 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           return CommonLayout(child: pageContent);
         }).toList(),
       ),
-      bottomNavigationBar: MultiStepFormNavbar(
-        currentPageIndex: currentPageIndex,
-        formPagesLength: _formPages.length,
-        onNextPressed: () {
-          if (isLastPage) {
-            _submitForm();
-          } else {
-            FocusScope.of(context).unfocus();
-            ref.read(pageNavigationProvider.notifier).goToNextPage();
-          }
-        },
-        onBackPressed: isLastPage && submissionStatus.isLoading
-            ? _cancelSubmission
-            : () {
-                FocusScope.of(context).unfocus();
-                ref.read(pageNavigationProvider.notifier).goToPreviousPage();
-              },
-        isLoading: submissionStatus.isLoading,
-        isChecked: _isChecked,
+      bottomNavigationBar: SafeArea(
+        top: false, // Don't apply SafeArea to top
+        bottom: true, // Only protect bottom from system UI
+        child: MultiStepFormNavbar(
+          currentPageIndex: currentPageIndex,
+          formPagesLength: _formPages.length,
+          onNextPressed: () {
+            if (isLastPage) {
+              _submitForm();
+            } else {
+              FocusScope.of(context).unfocus();
+              ref.read(pageNavigationProvider.notifier).goToNextPage();
+            }
+          },
+          onBackPressed: isLastPage && submissionStatus.isLoading
+              ? _cancelSubmission
+              : () {
+                  FocusScope.of(context).unfocus();
+                  ref.read(pageNavigationProvider.notifier).goToPreviousPage();
+                },
+          isLoading: submissionStatus.isLoading,
+          isChecked: _isChecked,
+        ),
       ),
     );
   }
