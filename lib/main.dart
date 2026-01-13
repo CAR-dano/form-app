@@ -22,10 +22,9 @@ Future<void> main() async {
     DeviceOrientation.portraitDown,
   ]);
   
-  // Enable immersive mode - hides system navigation buttons but keeps status bar
+  // Keep both status bar and navigation buttons visible
   await SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.manual,
-    overlays: [SystemUiOverlay.top], // Only show status bar, hide nav bar
+    SystemUiMode.edgeToEdge, // Content extends behind system UI
   );
   
   await dotenv.load(fileName: ".env"); // Load environment variables
