@@ -89,25 +89,6 @@ jobs:
           echo "full_build_number=$FULL_BUILD_NUMBER" >> $GITHUB_OUTPUT
           echo "full_version=$FULL_VERSION" >> $GITHUB_OUTPUT
       
-      # Check if version was bumped compared to main branch
-      - name: Check if version bumped
-        id: version_check
-        run: |
-          # Extract version from main branch
-          MAIN_VERSION=$(git show origin/main:pubspec.yaml | grep '^version:' | sed -E 's/version: ([0-9]+\.[0-9]+\.[0-9]+)(\+.*)?/\1/' | tr -d '[:space:]')
-          CURRENT_VERSION="${{ steps.pubspec.outputs.semantic_version }}"
-          
-          echo "Main branch version: $MAIN_VERSION"
-          echo "Current version: $CURRENT_VERSION"
-          
-          if [ "$MAIN_VERSION" = "$CURRENT_VERSION" ]; then
-            echo "version_bumped=false" >> $GITHUB_OUTPUT
-            echo "No version bump detected"
-          else
-            echo "version_bumped=true" >> $GITHUB_OUTPUT
-            echo "Version bumped from $MAIN_VERSION to $CURRENT_VERSION"
-          fi
-
       # Creates an .env file with the API base URL for the release build.
       - name: Create .env file for Release Build
         run: |
@@ -203,228 +184,237 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const {
-              COMMIT_SHA, ACTOR, SEMANTIC_VERSION, RUN_NUMBER, REPO_URL, HEAD_COMMIT_MESSAGE, FULL_VERSION, VERSION_BUMPED
+              COMMIT_SHA, ACTOR, SEMANTIC_VERSION, REPO_URL, HEAD_COMMIT_MESSAGE, FULL_VERSION
             } = process.env;
 
-            // Detect if this is a dependabot PR using multiple methods for reliability
-            // Method 1: Check if actor is dependabot (works if dependabot pushes directly)
-            // Method 2: Check commit message pattern (works if human merges dependabot PR)
-            const actorIsDependabot = ACTOR.includes('dependabot');
-            const commitIsDependabot = HEAD_COMMIT_MESSAGE.startsWith('build(deps):');
-            const isDependabot = actorIsDependabot || commitIsDependabot;
-            const versionBumped = VERSION_BUMPED === 'true';
-            
-            // Case 1: Version bumped (code change) - Regular release with full notes
-            if (versionBumped) {
-              core.info('Version bumped detected - generating new release notes');
-              
-              let main_release_content = "";
-              let pr_details_for_footer = "";
+            const isDependabot = ACTOR === 'dependabot[bot]' || HEAD_COMMIT_MESSAGE.startsWith('build(deps):');
+            const tagName = `v${SEMANTIC_VERSION}`;
 
-              const pr_regex_merge = /Merge pull request #(\d+)/;
-              const pr_regex_squash_title = /\(#(\d+)\)(?:$|\n)/;
-              let match = HEAD_COMMIT_MESSAGE.match(pr_regex_merge);
-              if (!match) {
-                const first_line_of_commit = HEAD_COMMIT_MESSAGE.split('\n')[0];
-                match = first_line_of_commit.match(pr_regex_squash_title);
-              }
+            // Helper function to get date in WIB (GMT+7)
+            const getWIBDate = () => {
+              const now = new Date();
+              const wibOffset = 7 * 60;
+              const wibTime = new Date(now.getTime() + (wibOffset - now.getTimezoneOffset()) * 60000);
+              return wibTime.toISOString().split('T')[0];
+            };
 
+            // Extract PR number from commit message
+            const pr_regex_merge = /Merge pull request #(\d+)/;
+            const pr_regex_squash_title = /\(#(\d+)\)(?:$|\n)/;
+            let match = HEAD_COMMIT_MESSAGE.match(pr_regex_merge);
+            if (!match) {
+              const first_line_of_commit = HEAD_COMMIT_MESSAGE.split('\n')[0];
+              match = first_line_of_commit.match(pr_regex_squash_title);
+            }
+
+            // Try to fetch existing release
+            let existingRelease = null;
+            try {
+              const { data } = await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag: tagName,
+              });
+              existingRelease = data;
+              core.info(`Found existing release for ${tagName}`);
+            } catch (error) {
+              core.info(`No existing release found for ${tagName} - will create new one`);
+            }
+
+            let release_body = "";
+
+            // Case 1: Release doesn't exist - create full release body with footer
+            if (!existingRelease) {
+              core.info("Creating new release with full body and footer");
+
+              let main_content = "";
+              let pr_details = "";
+
+              // Try to get PR body
               if (match && match[1]) {
                 const pr_number = match[1];
-                core.info(`Attempting to fetch details for PR #${pr_number}`);
                 try {
                   const { data: pr } = await github.rest.pulls.get({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     pull_number: pr_number,
                   });
-                  main_release_content = pr.body || "No description provided for this Pull Request.";
-                  pr_details_for_footer += `**Pull Request:** [#${pr_number}: ${pr.title}](${pr.html_url})\n`;
-                  pr_details_for_footer += `**PR Author:** @${pr.user.login}\n`;
+                  main_content = pr.body || "No description provided for this Pull Request.";
+                  pr_details += `**Pull Request:** [#${pr_number}: ${pr.title}](${pr.html_url})\n`;
+                  pr_details += `**PR Author:** @${pr.user.login}\n`;
                 } catch (error) {
-                  core.warning(`Could not fetch details for PR #${pr_number}: ${error.message}`);
-                  main_release_content = `Could not automatically fetch Pull Request description for PR #${pr_number}. Please refer to the PR or commit message directly.\n\n`;
-                  main_release_content += `Associated PR: [#${pr_number}](${REPO_URL}/pull/${pr_number})\n`;
+                  core.warning(`Could not fetch PR #${pr_number}: ${error.message}`);
+                  main_content = `Could not automatically fetch Pull Request description for PR #${pr_number}. Please refer to the PR or commit message directly.\n\n`;
+                  main_content += `**Associated PR:** [#${pr_number}](${REPO_URL}/pull/${pr_number})\n\n`;
+                  main_content += `**Commit Message:**\n${HEAD_COMMIT_MESSAGE}`;
                 }
               } else {
-                core.info("Could not determine PR from commit message. Using commit message as main content.");
-                const commit_title = HEAD_COMMIT_MESSAGE.split('\n')[0];
-                let commit_body_part = HEAD_COMMIT_MESSAGE.substring(commit_title.length).trim();
-                if (commit_body_part) {
-                  main_release_content = `**${commit_title}**\n\n${commit_body_part}`;
-                } else {
-                  main_release_content = HEAD_COMMIT_MESSAGE;
-                }
+                // No PR found, use commit message
+                main_content = HEAD_COMMIT_MESSAGE;
               }
 
-              let footer_info = "\n\n---\n\n";
-              footer_info += `**Version:** v${SEMANTIC_VERSION}\n`;
-              footer_info += `**Released by:** @${ACTOR}\n`;
-              footer_info += pr_details_for_footer;
-              footer_info += `**Commit:** [${COMMIT_SHA.substring(0,7)}](${REPO_URL}/commit/${COMMIT_SHA})\n`;
-              footer_info += `\n**Full Commit Message:**\n\`\`\`\n${HEAD_COMMIT_MESSAGE}\n\`\`\`\n`;
+              // Add footer
+              let footer = "\n\n---\n\n";
+              footer += `**Version:** v${FULL_VERSION}\n`;
+              footer += `**Released by:** @${ACTOR}\n`;
+              footer += pr_details;
+              footer += `**Commit:** [${COMMIT_SHA.substring(0,7)}](${REPO_URL}/commit/${COMMIT_SHA})\n`;
+              footer += `\n**Full Commit Message:**\n\`\`\`\n${HEAD_COMMIT_MESSAGE}\n\`\`\`\n`;
 
-              const release_body = main_release_content + footer_info;
-              core.setOutput("body", release_body);
-              
-            // Case 2: No version bump + Dependabot - Append dependency info
-            } else if (isDependabot) {
-              // Log which detection method caught it
-              if (actorIsDependabot && commitIsDependabot) {
-                core.info('Dependabot PR detected via both methods (actor + commit message)');
-              } else if (actorIsDependabot) {
-                core.info('Dependabot PR detected via Method 1: actor is dependabot[bot]');
-              } else {
-                core.info('Dependabot PR detected via Method 2: commit message starts with build(deps):');
-              }
-              core.info('No version bump - appending to existing release notes...');
-              
-              try {
-                // Fetch existing release
-                const { data: existingRelease } = await github.rest.repos.getReleaseByTag({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  tag: `v${SEMANTIC_VERSION}`
-                });
-                
-                let existingBody = existingRelease.body || '';
-                
-                // Extract PR number from commit message
-                const pr_regex_merge = /Merge pull request #(\d+)/;
-                const pr_regex_squash_title = /\(#(\d+)\)(?:$|\n)/;
-                let match = HEAD_COMMIT_MESSAGE.match(pr_regex_merge);
-                if (!match) {
-                  const first_line_of_commit = HEAD_COMMIT_MESSAGE.split('\n')[0];
-                  match = first_line_of_commit.match(pr_regex_squash_title);
-                }
-                const prNumber = match ? match[1] : 'unknown';
-                
-                // Get current date in GMT+7 (WIB)
-                const now = new Date();
-                const wibOffset = 7 * 60; // GMT+7 in minutes
-                const wibTime = new Date(now.getTime() + (wibOffset - now.getTimezoneOffset()) * 60000);
-                const dateStr = wibTime.toISOString().split('T')[0]; // YYYY-MM-DD format
-                
-                // Fetch PR details to parse dependency table
-                let newEntry = '';
+              release_body = main_content + footer;
+            }
+            // Case 2: Release exists + Dependabot - append dependency update
+            else if (isDependabot) {
+              core.info("Appending Dependabot update to existing release");
+
+              release_body = existingRelease.body || "";
+
+              // Extract PR number for the collapsible header link
+              const pr_number = match ? match[1] : null;
+              const pr_link = pr_number ? `[#${pr_number}](${REPO_URL}/pull/${pr_number})` : '';
+
+              // Get current date in WIB
+              const date = getWIBDate();
+
+              // Parse dependencies from PR body table or commit message
+              let dependencies_list = "";
+              let package_count = 0;
+              let pr_title = "Dependency update";
+
+              if (pr_number) {
                 try {
                   const { data: pr } = await github.rest.pulls.get({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
-                    pull_number: prNumber,
+                    pull_number: pr_number,
                   });
-                  
+
+                  pr_title = pr.title;
                   const prBody = pr.body || '';
-                  const prUrl = `${REPO_URL}/pull/${prNumber}`;
-                  
-                  // Parse dependency table from PR body
-                  // Table format: | [package](url) | `from` | `to` |
-                  const tableRegex = /\| Package \| From \| To \|([\s\S]*?)(?:\n\n|$)/;
+
+                  // Try to parse dependency table from PR body
+                  // Format: | Package | From | To |
+                  const tableRegex = /\|\s*Package\s*\|\s*From\s*\|\s*To\s*\|[\s\S]*?\|[-\s|]+\|([\s\S]*?)(?=\n\n|$)/i;
                   const tableMatch = prBody.match(tableRegex);
-                  
-                  let dependencyList = '';
-                  let packageCount = 0;
-                  
+
                   if (tableMatch && tableMatch[1]) {
-                    // Parse table rows
                     const rows = tableMatch[1].trim().split('\n');
-                    const packages = [];
-                    
+
                     for (const row of rows) {
-                      // Skip separator row (| --- | --- | --- |)
-                      if (row.includes('---')) continue;
-                      
-                      // Parse: | [package_name](url) | `from` | `to` |
+                      // Match format: | [package](url) | `1.0.0` | `1.1.0` |
                       const cellMatch = row.match(/\|\s*\[([^\]]+)\]\(([^)]+)\)\s*\|\s*`([^`]+)`\s*\|\s*`([^`]+)`\s*\|/);
                       if (cellMatch) {
                         const [, packageName, packageUrl, fromVersion, toVersion] = cellMatch;
-                        packages.push(`- [${packageName}](${packageUrl}): \`${fromVersion}\` -> \`${toVersion}\``);
-                        packageCount++;
+                        dependencies_list += `- [${packageName}](${packageUrl}): \`${fromVersion}\` -> \`${toVersion}\`\n`;
+                        package_count++;
                       }
                     }
-                    
-                    if (packages.length > 0) {
-                      dependencyList = '\n\n**' + packageCount + (packageCount === 1 ? ' package' : ' packages') + ' updated:**\n\n' + packages.join('\n');
-                    }
                   }
-                  
-                  // Fallback to update count from commit message if table parsing fails
-                  if (packageCount === 0) {
+
+                  // Fallback: try to extract package count from commit message
+                  if (package_count === 0) {
                     const updatesMatch = HEAD_COMMIT_MESSAGE.match(/with (\d+) update/);
-                    packageCount = updatesMatch ? parseInt(updatesMatch[1]) : 0;
-                    if (packageCount > 0) {
-                      dependencyList = '\n\n**' + packageCount + (packageCount === 1 ? ' package' : ' packages') + ' updated**';
+                    if (updatesMatch) {
+                      package_count = parseInt(updatesMatch[1]);
+                      dependencies_list = `${package_count} package${package_count === 1 ? '' : 's'} updated (see [PR #${pr_number}](${REPO_URL}/pull/${pr_number}) for details)\n`;
                     }
                   }
-                  
-                  // Create expandable entry
-                  newEntry = `<details>\n<summary>Dependency update [#${prNumber}](${prUrl}) (${dateStr})</summary>${dependencyList}\n\n</details>`;
-                  
-                } catch (prError) {
-                  core.warning(`Could not fetch PR details: ${prError.message}`);
-                  // Fallback to simple format
-                  const prUrl = `${REPO_URL}/pull/${prNumber}`;
-                  newEntry = `<details>\n<summary>Dependency update [#${prNumber}](${prUrl}) (${dateStr})</summary>\n\nCould not load dependency details.\n\n</details>`;
+                } catch (error) {
+                  core.warning(`Could not fetch PR #${pr_number}: ${error.message}`);
                 }
-                
-                // Find or create <details> section for all dependency updates
-                const detailsRegex = /<details>\s*<summary>Dependency Updates<\/summary>([\s\S]*?)<\/details>/;
-                const detailsMatch = existingBody.match(detailsRegex);
-                
-                if (detailsMatch) {
-                  // Prepend to existing list (newest first)
-                  const existingList = detailsMatch[1].trim();
-                  const updatedList = existingList ? `${newEntry}\n\n${existingList}` : newEntry;
-                  existingBody = existingBody.replace(detailsRegex, 
-                    `<details>\n<summary>Dependency Updates</summary>\n\n${updatedList}\n\n</details>`);
-                } else {
-                  // Create new <details> section at the very end
-                  existingBody += `\n\n<details>\n<summary>Dependency Updates</summary>\n\n${newEntry}\n\n</details>`;
+              }
+
+              // Final fallback: Parse from commit message format "Bumps [package](url) from X to Y"
+              if (package_count === 0) {
+                const bump_regex = /Bumps \[(.*?)\]\((.*?)\) from ([\d.]+) to ([\d.]+)/g;
+                let bump_match;
+                while ((bump_match = bump_regex.exec(HEAD_COMMIT_MESSAGE)) !== null) {
+                  const [, pkg_name, pkg_url, old_ver, new_ver] = bump_match;
+                  dependencies_list += `- [${pkg_name}](${pkg_url}): \`${old_ver}\` -> \`${new_ver}\`\n`;
+                  package_count++;
                 }
-                
-                core.setOutput("body", existingBody);
-                
-              } catch (error) {
-                // Fallback if fetching existing release fails
-                core.warning(`Could not fetch existing release: ${error.message}`);
-                const fallbackBody = `Dependency update`;
-                core.setOutput("body", fallbackBody);
               }
-              
-            // Case 3: No version bump + Human - Preserve existing release body
-            } else {
-              core.info('No version bump + human PR detected - preserving existing release notes');
-              
-              try {
-                // Fetch existing release
-                const { data: existingRelease } = await github.rest.repos.getReleaseByTag({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  tag: `v${SEMANTIC_VERSION}`
-                });
-                
-                // Keep existing body unchanged
-                const existingBody = existingRelease.body || '';
-                core.info('Preserving existing release body (non-code change)');
-                core.setOutput("body", existingBody);
-                
-              } catch (error) {
-                // Fallback if fetching existing release fails (shouldn't happen if release exists)
-                core.warning(`Could not fetch existing release: ${error.message}`);
-                core.warning('Release may not exist yet - using minimal body');
-                const fallbackBody = `Internal update - Build #${RUN_NUMBER}\n\nNo user-facing changes.`;
-                core.setOutput("body", fallbackBody);
+
+              // Ultimate fallback
+              if (!dependencies_list) {
+                const commit_title = HEAD_COMMIT_MESSAGE.split('\n')[0];
+                dependencies_list = `${commit_title}\n`;
+                package_count = 1;
               }
+
+              // Create collapsible section
+              let append_section = "\n\n";
+              append_section += `<details>\n`;
+              if (pr_number) {
+                append_section += `<summary>${pr_title} #${pr_number}</summary>\n\n`;
+              } else {
+                append_section += `<summary>${pr_title}</summary>\n\n`;
+              }
+
+              if (package_count > 0 && !dependencies_list.includes('see PR')) {
+                append_section += `**${package_count} package${package_count > 1 ? 's' : ''} updated:**\n\n`;
+              }
+
+              append_section += dependencies_list;
+              append_section += `\n</details>`;
+
+              release_body += append_section;
             }
+            // Case 3: Release exists + Human - append PR update
+            else {
+              core.info("Appending human update to existing release");
+
+              release_body = existingRelease.body || "";
+
+              // Get current date in WIB
+              const date = getWIBDate();
+
+              // Get PR details
+              let pr_title = "Update";
+              let pr_body_content = HEAD_COMMIT_MESSAGE;
+              const pr_number = match ? match[1] : null;
+              const pr_link = pr_number ? `[#${pr_number}](${REPO_URL}/pull/${pr_number})` : '';
+
+              if (pr_number) {
+                try {
+                  const { data: pr } = await github.rest.pulls.get({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: pr_number,
+                  });
+                  pr_title = pr.title;
+                  pr_body_content = pr.body || "No description provided.";
+                } catch (error) {
+                  core.warning(`Could not fetch PR #${pr_number}: ${error.message}`);
+                  // Keep using HEAD_COMMIT_MESSAGE as fallback
+                }
+              }
+
+              // Create collapsible section
+              let append_section = "\n\n";
+              append_section += `<details>\n`;
+              if (pr_number) {
+                append_section += `<summary>${pr_title} #${pr_number}</summary>\n\n`;
+              } else {
+                append_section += `<summary>${pr_title}</summary>\n\n`;
+              }
+              append_section += pr_body_content;
+              append_section += `\n\n---\n\n`;
+              append_section += `**Commit:** [${COMMIT_SHA.substring(0,7)}](${REPO_URL}/commit/${COMMIT_SHA})\n`;
+              append_section += `**Released by:** @${ACTOR}\n`;
+              append_section += `\n</details>`;
+
+              release_body += append_section;
+            }
+
+            core.setOutput("body", release_body);
         env:
           SEMANTIC_VERSION: ${{ steps.pubspec.outputs.semantic_version }}
-          RUN_NUMBER: ${{ github.run_number }}
           COMMIT_SHA: ${{ github.sha }}
           ACTOR: ${{ github.actor }}
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
           HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           FULL_VERSION: ${{ steps.pubspec.outputs.full_version }}
-          VERSION_BUMPED: ${{ steps.version_check.outputs.version_bumped }}
 
       # Creates a new GitHub Release.
       - name: Create GitHub Release
