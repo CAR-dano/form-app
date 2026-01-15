@@ -273,6 +273,15 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       debugPrint('FormState for page $pageIndex IS null.');
       return 'Form tidak siap untuk Halaman ${_pageNames[pageIndex] ?? pageIndex + 1}';
     }
+
+    // Additional validation for IdentitasPage (page 0)
+    if (pageIndex == 0) {
+      final formData = ref.read(formProvider);
+      if (formData.cabangInspeksi == null) {
+        return 'Cabang Inspeksi belum tersedia. Harap hubungi administrator.';
+      }
+    }
+
     if (_tambahanImagePageIdentifiers.containsKey(pageIndex)) {
       final identifier = _tambahanImagePageIdentifiers[pageIndex]!;
       final images = ref.read(tambahanImageDataProvider(identifier));

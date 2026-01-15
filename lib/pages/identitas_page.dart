@@ -1,14 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
-import 'package:form_app/providers/inspection_branches_provider.dart'; // Import the provider for branches
 import 'package:form_app/providers/user_info_provider.dart';
 import 'package:form_app/widgets/footer.dart';
 import 'package:form_app/widgets/labeled_text.dart';
 import 'package:form_app/widgets/page_title.dart';
-import 'package:form_app/models/inspection_branch.dart';
 import 'package:form_app/widgets/labeled_text_field.dart';
-import 'package:form_app/widgets/labeled_dropdown_field.dart'; // Use the refactored generic LabeledDropdownField
 
 class IdentitasPage extends ConsumerStatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -37,6 +35,11 @@ class _IdentitasPageState extends ConsumerState<IdentitasPage>
     final formData = ref.watch(formProvider);
     final formNotifier = ref.read(formProvider.notifier);
     final userInfo = ref.watch(userInfoProvider);
+
+    if (kDebugMode) {
+      print('[IdentitasPage] formData.cabangInspeksi: ${formData.cabangInspeksi}');
+      print('[IdentitasPage] userInfo: ${userInfo.asData?.value}');
+    }
 
     var hariIni = '${DateTime.now().day.toString().padLeft(2, '0')}/'
         '${DateTime.now().month.toString().padLeft(2, '0')}/'
@@ -92,28 +95,9 @@ class _IdentitasPageState extends ConsumerState<IdentitasPage>
               formSubmitted: widget.formSubmitted.value,
             ),
             const SizedBox(height: 16.0),
-            LabeledDropdownField<InspectionBranch>(
+            LabeledText(
               label: 'Cabang Inspeksi',
-              itemsProvider: inspectionBranchesProvider,
-              value: formData.cabangInspeksi,
-              itemText: (branch) => branch.city,
-              onChanged: (newValue) {
-                formNotifier.updateCabangInspeksi(newValue);
-                if (widget.formSubmitted.value) {
-                  widget.formKey.currentState?.validate();
-                }
-              },
-              validator: (value) {
-                if (widget.formSubmitted.value && value == null) {
-                  return 'Cabang Inspeksi belum terisi';
-                }
-                return null;
-              },
-              initialHintText: 'Pilih cabang inspeksi',
-              loadingHintText: 'Memuat cabang...',
-              emptyDataHintText: 'Tidak ada cabang tersedia',
-              errorHintText: 'Gagal memuat cabang',
-              formSubmitted: widget.formSubmitted.value, // Pass formSubmitted
+              value: formData.cabangInspeksi?.city ?? 'Memuat...',
             ),
             const SizedBox(height: 16.0),
             LabeledText(
