@@ -11,6 +11,13 @@ class InspectionBranch {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'city': city,
+    };
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
