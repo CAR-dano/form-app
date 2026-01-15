@@ -2,8 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspector_data.dart';
+import 'package:form_app/models/user_data.dart'; // Import UserData model
 import 'package:form_app/providers/inspection_branches_provider.dart';
 import 'package:form_app/providers/inspector_provider.dart'; // Import inspection branches provider
+import 'package:form_app/providers/user_info_provider.dart'; // Import user info provider
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:convert';
@@ -38,13 +40,29 @@ class FormNotifier extends Notifier<FormData> {
         final jsonString = await file.readAsString();
         final jsonMap = json.decode(jsonString);
         final loadedData = FormData.fromJson(jsonMap);
-        
+
+        if (kDebugMode) {
+          print('[FormProvider] Form data loaded successfully: namaCustomer=${loadedData.namaCustomer}');
+          print('[FormProvider] Loaded cabangInspeksi: ${loadedData.cabangInspeksi}');
+        }
+
         // Update the state with loaded data
         state = loadedData;
-        
+
+        // Reload userInfo data to ensure cabangInspeksi is populated from user info if available
+        await Future.delayed(const Duration(milliseconds: 10));
+        final userInfoAsync = ref.read(userInfoProvider);
         if (kDebugMode) {
-          print('Form data loaded successfully: namaCustomer=${loadedData.namaCustomer}');
+          print('[FormProvider] Reloading userInfo after load: $userInfoAsync');
         }
+        userInfoAsync.whenData((userData) {
+          if (userData != null && userData.inspectionBranchCity != null) {
+            if (kDebugMode) {
+              print('[FormProvider] Setting cabangInspeksi after load: ${userData.inspectionBranchCity}');
+            }
+            _updateState(state.copyWith(cabangInspeksi: userData.inspectionBranchCity));
+          }
+        });
       } else {
         if (kDebugMode) {
           print('No saved form data file found, starting with empty form');
@@ -59,13 +77,45 @@ class FormNotifier extends Notifier<FormData> {
   }
 
   void _setupProviderListeners() {
-    // Setup listeners and perform initial validation with loaded state
+    // Auto-populate cabangInspeksi from user's inspection branch
+    ref.listen<AsyncValue<UserData?>>(userInfoProvider, (previous, next) {
+      next.whenData((userData) {
+        if (kDebugMode) {
+          print('[FormProvider] UserInfo listener triggered. userData: $userData');
+          print('[FormProvider] inspectionBranchCity: ${userData?.inspectionBranchCity}');
+        }
+        if (userData != null && userData.inspectionBranchCity != null) {
+          if (kDebugMode) {
+            print('[FormProvider] Setting cabangInspeksi from listener: ${userData.inspectionBranchCity}');
+          }
+          _updateState(state.copyWith(cabangInspeksi: userData.inspectionBranchCity));
+        }
+      });
+    });
+
+    final initialUserInfoAsync = ref.read(userInfoProvider);
+    if (kDebugMode) {
+      print('[FormProvider] Initial userInfo state: $initialUserInfoAsync');
+    }
+    initialUserInfoAsync.whenData((userData) {
+      if (kDebugMode) {
+        print('[FormProvider] Initial whenData. userData: $userData');
+        print('[FormProvider] Initial inspectionBranchCity: ${userData?.inspectionBranchCity}');
+      }
+      if (userData != null && userData.inspectionBranchCity != null) {
+        if (kDebugMode) {
+          print('[FormProvider] Setting cabangInspeksi from initial: ${userData.inspectionBranchCity}');
+        }
+        _updateState(state.copyWith(cabangInspeksi: userData.inspectionBranchCity));
+      }
+    });
+
     ref.listen<AsyncValue<List<InspectionBranch>>>(inspectionBranchesProvider, (previous, next) {
       next.whenData((availableBranches) {
         _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
       });
     });
-    
+
     final initialBranchesAsync = ref.read(inspectionBranchesProvider);
     initialBranchesAsync.whenData((availableBranches) {
       _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
@@ -76,7 +126,7 @@ class FormNotifier extends Notifier<FormData> {
         _validateAndUpdateSelectedInspector(state.inspectorId, availableInspectors);
       });
     });
-    
+
     final initialInspectorsAsync = ref.read(inspectorProvider);
     initialInspectorsAsync.whenData((availableInspectors) {
       _validateAndUpdateSelectedInspector(state.inspectorId, availableInspectors);
