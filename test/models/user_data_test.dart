@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:form_app/models/user_data.dart';
+import 'package:form_app/models/inspection_branch.dart';
 
 void main() {
   group('UserData', () {
@@ -9,6 +10,10 @@ void main() {
         final json = {
           'id': 'user123',
           'name': 'Budi Santoso',
+          'inspectionBranchCity': {
+            'id': 'branch-1',
+            'city': 'Jakarta',
+          },
         };
 
         // Act
@@ -17,6 +22,8 @@ void main() {
         // Assert
         expect(user.id, equals('user123'));
         expect(user.name, equals('Budi Santoso'));
+        expect(user.inspectionBranchCity?.id, equals('branch-1'));
+        expect(user.inspectionBranchCity?.city, equals('Jakarta'));
       });
 
       test('handles Indonesian names with special characters', () {
@@ -31,6 +38,7 @@ void main() {
 
         // Assert
         expect(user.name, equals('Siti Nur\'aini'));
+        expect(user.inspectionBranchCity, isNull);
       });
 
       test('handles empty strings', () {
@@ -110,6 +118,11 @@ void main() {
           'user': {
             'id': 'inspector789',
             'name': 'Ahmad Rahman',
+            'inspectionBranchCity': {
+              'id': 'branch-1',
+              'city': 'Yogyakarta',
+              'code': 'YOG',
+            },
           },
           'accessToken': 'eyJhbGc...',
           'refreshToken': 'eyJhbGc...',
@@ -121,6 +134,8 @@ void main() {
         // Assert
         expect(user.id, equals('inspector789'));
         expect(user.name, equals('Ahmad Rahman'));
+        expect(user.inspectionBranchCity?.id, equals('branch-1'));
+        expect(user.inspectionBranchCity?.city, equals('Yogyakarta'));
       });
 
       test('handles nested user object with Indonesian names', () {
@@ -139,6 +154,7 @@ void main() {
         // Assert
         expect(user.id, equals('usr-456'));
         expect(user.name, equals('Dewi Lestari'));
+        expect(user.inspectionBranchCity, isNull);
       });
 
       test('handles empty strings in nested user object', () {
@@ -156,6 +172,7 @@ void main() {
         // Assert
         expect(user.id, equals(''));
         expect(user.name, equals(''));
+        expect(user.inspectionBranchCity, isNull);
       });
 
       test('throws when user object is missing', () {
@@ -244,6 +261,10 @@ void main() {
         final user = UserData(
           id: 'user123',
           name: 'Budi Santoso',
+          inspectionBranchCity: InspectionBranch(
+            id: 'branch-1',
+            city: 'Jakarta',
+          ),
         );
 
         // Act
@@ -252,7 +273,24 @@ void main() {
         // Assert
         expect(json['id'], equals('user123'));
         expect(json['name'], equals('Budi Santoso'));
-        expect(json.length, equals(2));
+        expect(json['inspectionBranchCity']['id'], equals('branch-1'));
+        expect(json['inspectionBranchCity']['city'], equals('Jakarta'));
+      });
+
+      test('handles null inspectionBranchCity', () {
+        // Arrange
+        final user = UserData(
+          id: 'user123',
+          name: 'Budi Santoso',
+        );
+
+        // Act
+        final json = user.toJson();
+
+        // Assert
+        expect(json['id'], equals('user123'));
+        expect(json['name'], equals('Budi Santoso'));
+        expect(json['inspectionBranchCity'], isNull);
       });
 
       test('round-trip: fromJson().toJson() equals original', () {
@@ -260,6 +298,25 @@ void main() {
         final originalJson = {
           'id': 'test-789',
           'name': 'Rina Kusuma',
+        };
+
+        // Act
+        final user = UserData.fromJson(originalJson);
+        final resultJson = user.toJson();
+
+        // Assert
+        expect(resultJson, equals(originalJson));
+      });
+
+      test('round-trip with inspection branch: fromJson().toJson() equals original', () {
+        // Arrange
+        final originalJson = {
+          'id': 'test-789',
+          'name': 'Rina Kusuma',
+          'inspectionBranchCity': {
+            'id': 'branch-2',
+            'city': 'Surabaya',
+          },
         };
 
         // Act
@@ -312,6 +369,25 @@ void main() {
         // Assert
         expect(user.id, equals('123'));
         expect(user.name, equals('Test User'));
+        expect(user.inspectionBranchCity, isNull);
+      });
+
+      test('creates instance with inspection branch', () {
+        // Act
+        final user = UserData(
+          id: '123',
+          name: 'Test User',
+          inspectionBranchCity: InspectionBranch(
+            id: 'branch-1',
+            city: 'Jakarta',
+          ),
+        );
+
+        // Assert
+        expect(user.id, equals('123'));
+        expect(user.name, equals('Test User'));
+        expect(user.inspectionBranchCity?.id, equals('branch-1'));
+        expect(user.inspectionBranchCity?.city, equals('Jakarta'));
       });
 
       test('stores values correctly', () {
@@ -350,6 +426,11 @@ void main() {
           'user': {
             'id': 'insp-12345',
             'name': 'Yanto Prasetyo',
+            'inspectionBranchCity': {
+              'id': 'branch-1',
+              'city': 'Yogyakarta',
+              'code': 'YOG',
+            },
           },
           'accessToken': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
           'refreshToken': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
@@ -361,15 +442,15 @@ void main() {
         // Assert: User data extracted correctly
         expect(user.id, equals('insp-12345'));
         expect(user.name, equals('Yanto Prasetyo'));
+        expect(user.inspectionBranchCity?.city, equals('Yogyakarta'));
 
         // Act: Serialize for storage
         final storedJson = user.toJson();
 
         // Assert: Can be stored as simpler structure
-        expect(storedJson, equals({
-          'id': 'insp-12345',
-          'name': 'Yanto Prasetyo',
-        }));
+        expect(storedJson['id'], equals('insp-12345'));
+        expect(storedJson['name'], equals('Yanto Prasetyo'));
+        expect(storedJson['inspectionBranchCity']['city'], equals('Yogyakarta'));
       });
 
       test('handles user data persistence workflow', () {
@@ -377,6 +458,10 @@ void main() {
         final storedJson = {
           'id': 'usr-789',
           'name': 'Sinta Wijaya',
+          'inspectionBranchCity': {
+            'id': 'branch-2',
+            'city': 'Bandung',
+          },
         };
 
         // Act: Restore from storage
@@ -385,6 +470,7 @@ void main() {
         // Assert: User restored correctly
         expect(user.id, equals('usr-789'));
         expect(user.name, equals('Sinta Wijaya'));
+        expect(user.inspectionBranchCity?.city, equals('Bandung'));
       });
 
       test('handles UUID-style user ids', () {
@@ -422,12 +508,20 @@ void main() {
         final directJson = {
           'id': 'test-123',
           'name': 'Test User',
+          'inspectionBranchCity': {
+            'id': 'branch-3',
+            'city': 'Jakarta',
+          },
         };
 
         final authResponseJson = {
           'user': {
             'id': 'test-123',
             'name': 'Test User',
+            'inspectionBranchCity': {
+              'id': 'branch-3',
+              'city': 'Jakarta',
+            },
           },
         };
 
@@ -438,6 +532,7 @@ void main() {
         // Assert: Both methods produce equivalent data
         expect(userFromDirect.id, equals(userFromAuth.id));
         expect(userFromDirect.name, equals(userFromAuth.name));
+        expect(userFromDirect.inspectionBranchCity?.id, equals(userFromAuth.inspectionBranchCity?.id));
         expect(userFromDirect.toJson(), equals(userFromAuth.toJson()));
       });
     });
