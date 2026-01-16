@@ -41,38 +41,20 @@ class FormNotifier extends Notifier<FormData> {
         final jsonMap = json.decode(jsonString);
         final loadedData = FormData.fromJson(jsonMap);
 
-        if (kDebugMode) {
-          print('[FormProvider] Form data loaded successfully: namaCustomer=${loadedData.namaCustomer}');
-          print('[FormProvider] Loaded cabangInspeksi: ${loadedData.cabangInspeksi}');
-        }
-
         // Update the state with loaded data
         state = loadedData;
 
         // Reload userInfo data to ensure cabangInspeksi is populated from user info if available
         await Future.delayed(const Duration(milliseconds: 10));
         final userInfoAsync = ref.read(userInfoProvider);
-        if (kDebugMode) {
-          print('[FormProvider] Reloading userInfo after load: $userInfoAsync');
-        }
         userInfoAsync.whenData((userData) {
           if (userData != null && userData.inspectionBranchCity != null) {
-            if (kDebugMode) {
-              print('[FormProvider] Setting cabangInspeksi after load: ${userData.inspectionBranchCity}');
-            }
             _updateState(state.copyWith(cabangInspeksi: userData.inspectionBranchCity));
           }
         });
-      } else {
-        if (kDebugMode) {
-          print('No saved form data file found, starting with empty form');
-        }
       }
     } catch (e, stackTrace) {
       _crashlytics.recordError(e, stackTrace, reason: 'Error loading form data');
-      if (kDebugMode) {
-        print('Error loading form data: $e');
-      }
     }
   }
 
@@ -80,32 +62,15 @@ class FormNotifier extends Notifier<FormData> {
     // Auto-populate cabangInspeksi from user's inspection branch
     ref.listen<AsyncValue<UserData?>>(userInfoProvider, (previous, next) {
       next.whenData((userData) {
-        if (kDebugMode) {
-          print('[FormProvider] UserInfo listener triggered. userData: $userData');
-          print('[FormProvider] inspectionBranchCity: ${userData?.inspectionBranchCity}');
-        }
         if (userData != null && userData.inspectionBranchCity != null) {
-          if (kDebugMode) {
-            print('[FormProvider] Setting cabangInspeksi from listener: ${userData.inspectionBranchCity}');
-          }
           _updateState(state.copyWith(cabangInspeksi: userData.inspectionBranchCity));
         }
       });
     });
 
     final initialUserInfoAsync = ref.read(userInfoProvider);
-    if (kDebugMode) {
-      print('[FormProvider] Initial userInfo state: $initialUserInfoAsync');
-    }
     initialUserInfoAsync.whenData((userData) {
-      if (kDebugMode) {
-        print('[FormProvider] Initial whenData. userData: $userData');
-        print('[FormProvider] Initial inspectionBranchCity: ${userData?.inspectionBranchCity}');
-      }
       if (userData != null && userData.inspectionBranchCity != null) {
-        if (kDebugMode) {
-          print('[FormProvider] Setting cabangInspeksi from initial: ${userData.inspectionBranchCity}');
-        }
         _updateState(state.copyWith(cabangInspeksi: userData.inspectionBranchCity));
       }
     });
