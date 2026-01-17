@@ -274,14 +274,6 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       return 'Form tidak siap untuk Halaman ${_pageNames[pageIndex] ?? pageIndex + 1}';
     }
 
-    // Additional validation for IdentitasPage (page 0)
-    if (pageIndex == 0) {
-      final formData = ref.read(formProvider);
-      if (formData.cabangInspeksi == null) {
-        return 'Cabang Inspeksi belum tersedia. Harap hubungi administrator.';
-      }
-    }
-
     if (_tambahanImagePageIdentifiers.containsKey(pageIndex)) {
       final identifier = _tambahanImagePageIdentifiers[pageIndex]!;
       final images = ref.read(tambahanImageDataProvider(identifier));
@@ -388,11 +380,15 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
       final apiService = ref.read(inspectionServiceProvider);
 
       final inspectorId = userInfo.asData?.value?.id;
+      final cabangInspeksi = userInfo.asData?.value?.inspectionBranchCity;
       if (inspectorId == null) {
         throw Exception('User ID not found. Cannot submit form.');
       }
 
-      final formDataToSubmit = formData.copyWith(inspectorId: inspectorId);
+      final formDataToSubmit = formData.copyWith(
+        inspectorId: inspectorId,
+        cabangInspeksi: cabangInspeksi,
+      );
 
       final bool isFormDataUnchanged = submissionDataCache.lastSubmittedFormData != null &&
           formDataToSubmit == submissionDataCache.lastSubmittedFormData;

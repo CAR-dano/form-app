@@ -2,16 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/models/form_data.dart';
 import 'package:form_app/models/inspector_data.dart';
-import 'package:form_app/models/user_data.dart'; // Import UserData model
-import 'package:form_app/providers/inspection_branches_provider.dart';
-import 'package:form_app/providers/inspector_provider.dart'; // Import inspection branches provider
-import 'package:form_app/providers/user_info_provider.dart'; // Import user info provider
+import 'package:form_app/providers/inspector_provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:convert';
-import 'dart:async'; // Import for Timer
-import 'package:form_app/models/inspection_branch.dart'; // Import InspectionBranch model
-import 'package:form_app/utils/crashlytics_util.dart'; // Import CrashlyticsUtil
+import 'dart:async';
+import 'package:form_app/utils/crashlytics_util.dart';
 
 class FormNotifier extends Notifier<FormData> {
   late final CrashlyticsUtil _crashlytics; // Add CrashlyticsUtil dependency
@@ -43,15 +39,6 @@ class FormNotifier extends Notifier<FormData> {
 
         // Update the state with loaded data
         state = loadedData;
-
-        // Reload userInfo data to ensure cabangInspeksi is populated from user info if available
-        await Future.delayed(const Duration(milliseconds: 10));
-        final userInfoAsync = ref.read(userInfoProvider);
-        userInfoAsync.whenData((userData) {
-          if (userData != null && userData.inspectionBranchCity != null) {
-            _updateState(state.copyWith(cabangInspeksi: userData.inspectionBranchCity));
-          }
-        });
       }
     } catch (e, stackTrace) {
       _crashlytics.recordError(e, stackTrace, reason: 'Error loading form data');
@@ -59,33 +46,6 @@ class FormNotifier extends Notifier<FormData> {
   }
 
   void _setupProviderListeners() {
-    // Auto-populate cabangInspeksi from user's inspection branch
-    ref.listen<AsyncValue<UserData?>>(userInfoProvider, (previous, next) {
-      next.whenData((userData) {
-        if (userData != null && userData.inspectionBranchCity != null) {
-          _updateState(state.copyWith(cabangInspeksi: userData.inspectionBranchCity));
-        }
-      });
-    });
-
-    final initialUserInfoAsync = ref.read(userInfoProvider);
-    initialUserInfoAsync.whenData((userData) {
-      if (userData != null && userData.inspectionBranchCity != null) {
-        _updateState(state.copyWith(cabangInspeksi: userData.inspectionBranchCity));
-      }
-    });
-
-    ref.listen<AsyncValue<List<InspectionBranch>>>(inspectionBranchesProvider, (previous, next) {
-      next.whenData((availableBranches) {
-        _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
-      });
-    });
-
-    final initialBranchesAsync = ref.read(inspectionBranchesProvider);
-    initialBranchesAsync.whenData((availableBranches) {
-      _validateAndUpdateCabangInspeksi(state.cabangInspeksi, availableBranches);
-    });
-
     ref.listen<AsyncValue<List<Inspector>>>(inspectorProvider, (previous, next) {
       next.whenData((availableInspectors) {
         _validateAndUpdateSelectedInspector(state.inspectorId, availableInspectors);
@@ -96,17 +56,6 @@ class FormNotifier extends Notifier<FormData> {
     initialInspectorsAsync.whenData((availableInspectors) {
       _validateAndUpdateSelectedInspector(state.inspectorId, availableInspectors);
     });
-  }
-
-  void _validateAndUpdateCabangInspeksi(InspectionBranch? currentCabang, List<InspectionBranch> availableBranches) {
-    if (currentCabang != null) {
-      // Check if the current branch's ID exists in the available branches
-      if (availableBranches.isNotEmpty && !availableBranches.any((branch) => branch.id == currentCabang.id)) {
-        if (state.cabangInspeksi != null) { // Check if a change is actually needed
-          _updateState(state.copyWith(cabangInspeksi: null));
-        }
-      }
-    }
   }
 
   void _validateAndUpdateSelectedInspector(String? currentInspectorId, List<Inspector> availableInspectors) {
@@ -162,14 +111,6 @@ class FormNotifier extends Notifier<FormData> {
 
   void updateNamaCustomer(String name) {
     _updateState(state.copyWith(namaCustomer: name));
-  }
-
-  void updateCabangInspeksi(InspectionBranch? cabang) {
-    _updateState(state.copyWith(cabangInspeksi: cabang));
-  }
-
-  void updateTanggalInspeksi(DateTime? date) {
-    _updateState(state.copyWith(tanggalInspeksi: date));
   }
 
   void updateMerekKendaraan(String merek) {

@@ -91,7 +91,7 @@ class _IdentitasPageState extends ConsumerState<IdentitasPage>
             const SizedBox(height: 16.0),
             LabeledText(
               label: 'Cabang Inspeksi',
-              value: formData.cabangInspeksi?.city ?? 'Memuat...',
+              value: userInfo.asData?.value?.inspectionBranchCity?.city ?? 'Memuat...',
             ),
             const SizedBox(height: 16.0),
             LabeledText(
