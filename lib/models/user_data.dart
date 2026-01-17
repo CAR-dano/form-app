@@ -34,10 +34,13 @@ class UserData {
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    final jsonMap = <String, dynamic>{
       'id': id,
       'name': name,
-      'inspectionBranchCity': inspectionBranchCity?.toJson(),
     };
+    if (inspectionBranchCity != null) {
+      jsonMap['inspectionBranchCity'] = inspectionBranchCity!.toJson();
+    }
+    return jsonMap;
   }
 }

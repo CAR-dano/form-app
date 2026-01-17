@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_app/providers/form_provider.dart'; // Import the provider
@@ -35,11 +34,6 @@ class _IdentitasPageState extends ConsumerState<IdentitasPage>
     final formData = ref.watch(formProvider);
     final formNotifier = ref.read(formProvider.notifier);
     final userInfo = ref.watch(userInfoProvider);
-
-    if (kDebugMode) {
-      print('[IdentitasPage] formData.cabangInspeksi: ${formData.cabangInspeksi}');
-      print('[IdentitasPage] userInfo: ${userInfo.asData?.value}');
-    }
 
     var hariIni = '${DateTime.now().day.toString().padLeft(2, '0')}/'
         '${DateTime.now().month.toString().padLeft(2, '0')}/'
@@ -97,7 +91,7 @@ class _IdentitasPageState extends ConsumerState<IdentitasPage>
             const SizedBox(height: 16.0),
             LabeledText(
               label: 'Cabang Inspeksi',
-              value: formData.cabangInspeksi?.city ?? 'Memuat...',
+              value: userInfo.asData?.value?.inspectionBranchCity?.city ?? 'Memuat...',
             ),
             const SizedBox(height: 16.0),
             LabeledText(
