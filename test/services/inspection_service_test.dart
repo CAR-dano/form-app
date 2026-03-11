@@ -163,6 +163,15 @@ void main() {
   });
 
   group('InspectionService - submitFormData', () {
+    test('should keep inspectionDate in local ISO8601 format', () {
+      final localTime = DateTime(2026, 3, 3, 14, 30, 45);
+
+      final result = InspectionService.formatInspectionDateForApi(localTime);
+
+      expect(result, equals(localTime.toIso8601String()));
+      expect(result, isNot(endsWith('Z')));
+    });
+
     test('should handle cancellation without logging to Crashlytics', () {
       // Document cancellation handling:
       // 1. Check if error message contains 'cancel' or 'batal'
