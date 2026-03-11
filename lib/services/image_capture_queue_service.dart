@@ -5,6 +5,7 @@ import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/providers/image_processing_provider.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
 import 'package:form_app/utils/image_capture_and_processing_util.dart';
+import 'package:form_app/utils/managed_image_storage.dart';
 import 'package:form_app/services/task_queue_service.dart';
 import 'package:form_app/utils/crashlytics_util.dart'; // Import CrashlyticsUtil
 import 'dart:math' show pi;
@@ -26,6 +27,8 @@ class ImageCaptureTask extends QueueTask<void> {
     final imageProcessingNotifier = ref.read(imageProcessingServiceProvider.notifier);
     final tambahanImageNotifier = ref.read(tambahanImageDataProvider(identifier).notifier);
     final crashlyticsUtil = ref.read(crashlyticsUtilProvider); // Get CrashlyticsUtil instance
+    XFile? rotatedFullQualityFile;
+    String? compressedPath;
 
     imageProcessingNotifier.taskStarted(identifier);
     try {
@@ -40,7 +43,7 @@ class ImageCaptureTask extends QueueTask<void> {
       }
 
       // Step 2: Perform a lossless rotation on the original image
-      final XFile? rotatedFullQualityFile = await ImageCaptureAndProcessingUtil.rotateImageOnly(
+      rotatedFullQualityFile = await ImageCaptureAndProcessingUtil.rotateImageOnly(
         capturedImageFile,
         rotationAngle: rotationInDegrees,
         crashlyticsUtil: crashlyticsUtil, // Pass crashlyticsUtil
@@ -59,7 +62,7 @@ class ImageCaptureTask extends QueueTask<void> {
       );
 
       // Step 4: Now, compress the rotated image for use in the app
-      final String? compressedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(
+      compressedPath = await ImageCaptureAndProcessingUtil.processAndSaveImage(
         rotatedFullQualityFile,
         crashlyticsUtil: crashlyticsUtil, // Pass crashlyticsUtil
         // No rotation needed here as it's already been done
@@ -89,6 +92,15 @@ class ImageCaptureTask extends QueueTask<void> {
       crashlyticsUtil.recordError(e, stackTrace, reason: 'Error processing image in ImageCaptureTask for $identifier'); // Use CrashlyticsUtil
       rethrow;
     } finally {
+      if (rotatedFullQualityFile != null &&
+          rotatedFullQualityFile.path != capturedImageFile.path &&
+          rotatedFullQualityFile.path != compressedPath) {
+        await ManagedImageStorage.deleteManagedGeneratedImageIfExists(
+          rotatedFullQualityFile.path,
+          crashlytics: crashlyticsUtil,
+          reason: 'Error deleting temporary rotated image file',
+        );
+      }
       imageProcessingNotifier.taskFinished(identifier);
     }
   }

@@ -41,6 +41,8 @@ import 'package:form_app/providers/submission_data_cache_provider.dart';
 import 'package:form_app/providers/message_overlay_provider.dart';
 import 'package:form_app/models/api_exception.dart';
 import 'package:form_app/models/uploadable_image.dart';
+import 'package:form_app/utils/crashlytics_util.dart';
+import 'package:form_app/utils/managed_image_storage.dart';
 import 'package:form_app/widgets/multi_step_form_appbar.dart';
 import 'package:form_app/widgets/delete_all_tambahan_photos_button.dart';
 import 'package:form_app/services/update_service.dart';
@@ -527,11 +529,14 @@ class _MultiStepFormScreenState extends ConsumerState<MultiStepFormScreen> {
           isLoading: true, message: 'Menyelesaikan...', progress: 1.0);
       // Clear all data only upon successful completion of ALL uploads
       ref.read(formProvider.notifier).resetFormData();
-      ref.read(imageDataListProvider.notifier).clearImageData();
+      await ref.read(imageDataListProvider.notifier).clearImageData();
       for (final identifier in _tambahanImagePageIdentifiers.values) {
-        ref.read(tambahanImageDataProvider(identifier).notifier).clearAll();
+        await ref.read(tambahanImageDataProvider(identifier).notifier).clearAll();
       }
       submissionDataCacheNotifier.clearCache(); // Clear cache on full success
+      await ManagedImageStorage.cleanupOrphanedGeneratedImages(
+        crashlytics: ref.read(crashlyticsUtilProvider),
+      );
 
       if (!mounted) return;
 

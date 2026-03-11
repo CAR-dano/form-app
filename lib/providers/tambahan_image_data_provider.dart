@@ -1,10 +1,14 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+
 import 'package:form_app/models/tambahan_image_data.dart';
 import 'package:form_app/utils/crashlytics_util.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'dart:convert';
+import 'package:form_app/utils/managed_image_storage.dart';
 
 final tambahanImageDataProvider = NotifierProvider.family<
     TambahanImageDataListNotifier, List<TambahanImageData>, String>(
@@ -84,9 +88,19 @@ class TambahanImageDataListNotifier extends Notifier<List<TambahanImageData>> {
 
   void updateImageAtIndex(int index, TambahanImageData newImage) {
     if (index >= 0 && index < state.length) {
+      final String previousPath = state[index].imagePath;
       final updatedList = List<TambahanImageData>.from(state);
       updatedList[index] = newImage;
       state = updatedList;
+
+      unawaited(
+        ManagedImageStorage.deleteSupersededManagedImage(
+          previousPath: previousPath,
+          nextPath: newImage.imagePath,
+          crashlytics: _crashlytics,
+          reason: 'Error deleting superseded tambahan image file',
+        ),
+      );
     }
   }
 
