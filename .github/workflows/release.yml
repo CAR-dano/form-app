@@ -6,7 +6,7 @@ on:
 
 jobs:
   build_and_release_on_main:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       contents: write
       pull-requests: read
