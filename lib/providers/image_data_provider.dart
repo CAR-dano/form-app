@@ -1,11 +1,14 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:form_app/models/image_data.dart';
-import 'package:form_app/utils/crashlytics_util.dart'; // Import CrashlyticsUtil
-// Import dart:io and path_provider
-import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'dart:convert';
+
+import 'package:form_app/models/image_data.dart';
+import 'package:form_app/utils/crashlytics_util.dart';
+import 'package:form_app/utils/managed_image_storage.dart';
 
 final imageDataListProvider = NotifierProvider<ImageDataListNotifier, List<ImageData>>(() {
   return ImageDataListNotifier();
@@ -94,6 +97,13 @@ class ImageDataListNotifier extends Notifier<List<ImageData>> {
   }
 
   void updateImageDataByLabel(String label, {String? imagePath, int? rotationAngle, String? originalRawPath}) {
+    final ImageData? existingImage = state.cast<ImageData?>().firstWhere(
+      (img) => img?.label == label,
+      orElse: () => null,
+    );
+    final String previousPath = existingImage?.imagePath ?? '';
+    final String nextPath = imagePath ?? previousPath;
+
     state = [
       for (final img in state)
         if (img.label == label)
@@ -105,9 +115,25 @@ class ImageDataListNotifier extends Notifier<List<ImageData>> {
         else
           img,
     ];
+
+    unawaited(
+      ManagedImageStorage.deleteSupersededManagedImage(
+        previousPath: previousPath,
+        nextPath: nextPath,
+        crashlytics: _crashlytics,
+        reason: 'Error deleting superseded wajib image file',
+      ),
+    );
   }
 
   void updateImageDataByPath(String imagePath, {String? label, bool? needAttention, String? category, bool? isMandatory, int? rotationAngle, String? originalRawPath}) {
+    final ImageData? existingImage = state.cast<ImageData?>().firstWhere(
+      (img) => img?.imagePath == imagePath,
+      orElse: () => null,
+    );
+    final String previousPath = existingImage?.imagePath ?? '';
+    final String nextPath = imagePath;
+
     state = [
       for (final img in state)
         if (img.imagePath == imagePath)
@@ -122,6 +148,15 @@ class ImageDataListNotifier extends Notifier<List<ImageData>> {
         else
           img,
     ];
+
+    unawaited(
+      ManagedImageStorage.deleteSupersededManagedImage(
+        previousPath: previousPath,
+        nextPath: nextPath,
+        crashlytics: _crashlytics,
+        reason: 'Error deleting superseded wajib image file by path',
+      ),
+    );
   }
 
   void removeImageDataByLabel(String label) {

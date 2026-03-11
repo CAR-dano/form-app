@@ -7,6 +7,7 @@ import 'package:form_app/pages/multi_step_form_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:form_app/providers/auth_provider.dart';
 import 'package:form_app/providers/tambahan_image_data_provider.dart';
+import 'package:form_app/utils/managed_image_storage.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -34,6 +35,9 @@ Future<void> main() async {
   // Create a ProviderContainer to access providers before runApp
   final container = ProviderContainer();
   final crashlyticsUtil = container.read(crashlyticsUtilProvider);
+  await ManagedImageStorage.cleanupOrphanedGeneratedImages(
+    crashlytics: crashlyticsUtil,
+  );
 
   // Set up global error handling using the single instance from the container
   FlutterError.onError = (FlutterErrorDetails details) {

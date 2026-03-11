@@ -85,6 +85,11 @@ class InspectionService {
     );
   }
 
+  @visibleForTesting
+  static String formatInspectionDateForApi(DateTime localDateTime) {
+    return localDateTime.toIso8601String();
+  }
+
   Future<List<InspectionBranch>> getInspectionBranches() async {
     try {
       final response = await _dioInst.get(_inspectionBranchesUrl);
@@ -102,48 +107,21 @@ class InspectionService {
       _crashlytics.recordError(e, stackTrace, reason: 'Failed to load inspection branches');
       rethrow;
     } catch (e, stackTrace) {
-      // Extract server response for detailed logging
-      String message = 'Error fetching inspection branches';
-      int? statusCode;
-      dynamic responseData;
-      
-      // Check for cancellation
-      final errorMessage = e.toString().toLowerCase();
-      final isCancelled = errorMessage.contains('cancel');
-      
-      if (isCancelled) {
-        message = 'Request cancelled';
-      } else {
-        // Extract response data from DioException
-        try {
-          final errorResponse = (e as dynamic).response;
-          if (errorResponse != null) {
-            statusCode = errorResponse.statusCode;
-            responseData = errorResponse.data;
-            
-            if (responseData != null && responseData['message'] != null) {
-              message = responseData['message'];
-            } else if (responseData != null) {
-              message = 'Error: ${responseData.toString()}';
-            }
-          }
-        } catch (_) {
-          message = 'Error fetching inspection branches: ${e.toString()}';
-        }
+      final isCancelled = _isCancelledError(e);
+      final apiException = _buildApiExceptionFromError(
+        error: e,
+        fallbackMessage: 'Gagal mengambil data cabang inspeksi.',
+        cancelledMessage: 'Permintaan dibatalkan.',
+      );
+
+      if (!isCancelled) {
+        _crashlytics.recordError(
+          _extractRawError(e),
+          stackTrace,
+          reason: 'Error fetching inspection branches',
+        );
       }
-      
-      final apiException = ApiException(
-        message: message,
-        statusCode: statusCode,
-        responseData: responseData,
-      );
-      
-      _crashlytics.recordError(
-        apiException,
-        stackTrace,
-        reason: 'Error fetching inspection branches',
-      );
-      
+
       throw apiException;
     }
   }
@@ -165,48 +143,21 @@ class InspectionService {
       _crashlytics.recordError(e, stackTrace, reason: 'Failed to load inspectors');
       rethrow;
     } catch (e, stackTrace) {
-      // Extract server response for detailed logging
-      String message = 'Error fetching inspectors';
-      int? statusCode;
-      dynamic responseData;
-      
-      // Check for cancellation
-      final errorMessage = e.toString().toLowerCase();
-      final isCancelled = errorMessage.contains('cancel');
-      
-      if (isCancelled) {
-        message = 'Request cancelled';
-      } else {
-        // Extract response data from DioException
-        try {
-          final errorResponse = (e as dynamic).response;
-          if (errorResponse != null) {
-            statusCode = errorResponse.statusCode;
-            responseData = errorResponse.data;
-            
-            if (responseData != null && responseData['message'] != null) {
-              message = responseData['message'];
-            } else if (responseData != null) {
-              message = 'Error: ${responseData.toString()}';
-            }
-          }
-        } catch (_) {
-          message = 'Error fetching inspectors: ${e.toString()}';
-        }
+      final isCancelled = _isCancelledError(e);
+      final apiException = _buildApiExceptionFromError(
+        error: e,
+        fallbackMessage: 'Gagal mengambil data inspector.',
+        cancelledMessage: 'Permintaan dibatalkan.',
+      );
+
+      if (!isCancelled) {
+        _crashlytics.recordError(
+          _extractRawError(e),
+          stackTrace,
+          reason: 'Error fetching inspectors',
+        );
       }
-      
-      final apiException = ApiException(
-        message: message,
-        statusCode: statusCode,
-        responseData: responseData,
-      );
-      
-      _crashlytics.recordError(
-        apiException,
-        stackTrace,
-        reason: 'Error fetching inspectors',
-      );
-      
+
       throw apiException;
     }
   }
@@ -469,18 +420,25 @@ class InspectionService {
       }
       rethrow;
     } catch (e, stackTrace) {
-      // Generic catch for all errors including network errors
-      final errorMessage = e.toString().toLowerCase();
-      final isCancelled = errorMessage.contains('cancel');
-      if (kDebugMode) {
-        print('Error submitting form data: $e');
-      }
-      if (!isCancelled) {
-        _crashlytics.recordError(e, stackTrace, reason: 'Unexpected error submitting form data');
-      }
-      throw ApiException(
-        message: isCancelled ? 'Pengiriman data dibatalkan.' : e.toString()
+      final isCancelled = _isCancelledError(e);
+      final apiException = _buildApiExceptionFromError(
+        error: e,
+        fallbackMessage: 'Gagal mengirim formulir. Periksa koneksi lalu coba lagi.',
+        cancelledMessage: 'Pengiriman data dibatalkan.',
       );
+
+      if (kDebugMode) {
+        print('Error submitting form data: ${_extractRawError(e)}');
+      }
+
+      if (!isCancelled) {
+        _crashlytics.recordError(
+          _extractRawError(e),
+          stackTrace,
+          reason: 'Unexpected error submitting form data',
+        );
+      }
+      throw apiException;
     }
   }
 
@@ -517,6 +475,62 @@ class InspectionService {
       return 'Permintaan gagal dengan status $statusCode.';
     }
     return 'Permintaan gagal.';
+  }
+
+  bool _isCancelledError(dynamic error) {
+    final errorMessage = error.toString().toLowerCase();
+    return errorMessage.contains('cancel') || errorMessage.contains('batal');
+  }
+
+  dynamic _extractRawError(dynamic error) {
+    try {
+      final originalError = (error as dynamic).error;
+      if (originalError != null) {
+        return originalError;
+      }
+    } catch (_) {}
+
+    return error;
+  }
+
+  int? _extractStatusCode(dynamic error) {
+    try {
+      return (error as dynamic).response?.statusCode as int?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  dynamic _extractResponseData(dynamic error) {
+    try {
+      return (error as dynamic).response?.data;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  ApiException _buildApiExceptionFromError({
+    required dynamic error,
+    required String fallbackMessage,
+    required String cancelledMessage,
+  }) {
+    if (_isCancelledError(error)) {
+      return ApiException(message: cancelledMessage);
+    }
+
+    final int? statusCode = _extractStatusCode(error);
+    final dynamic responseData = _extractResponseData(error);
+    final String? serverMessage = _deriveErrorMessage(responseData, statusCode);
+    final String userMessage =
+        (serverMessage != null && serverMessage.trim().isNotEmpty)
+            ? serverMessage
+            : fallbackMessage;
+
+    return ApiException(
+      message: userMessage,
+      statusCode: statusCode,
+      responseData: responseData,
+    );
   }
 
 
@@ -617,17 +631,23 @@ class InspectionService {
         }
         rethrow;
       } catch (e, stackTrace) {
-        // Generic catch for all errors including network errors
-        final errorMessage = e.toString().toLowerCase();
-        final isCancelled = errorMessage.contains('cancel');
-        if (!isCancelled) {
-          _crashlytics.recordError(e, stackTrace, reason: 'Unexpected error uploading photo batch');
-        }
-        throw ApiException(
-          message: isCancelled 
-            ? 'Pengiriman data dibatalkan.' 
-            : 'Error uploading photo batch $currentBatchNum/$totalBatchesCalc: $e'
+        final isCancelled = _isCancelledError(e);
+        final apiException = _buildApiExceptionFromError(
+          error: e,
+          fallbackMessage:
+              'Gagal mengunggah foto batch $currentBatchNum/$totalBatchesCalc. '
+              'Periksa koneksi lalu coba lagi.',
+          cancelledMessage: 'Pengiriman data dibatalkan.',
         );
+
+        if (!isCancelled) {
+          _crashlytics.recordError(
+            _extractRawError(e),
+            stackTrace,
+            reason: 'Unexpected error uploading photo batch',
+          );
+        }
+        throw apiException;
       }
     }
     // After the loop, signal completion by calling onProgress with currentBatch = totalBatches
