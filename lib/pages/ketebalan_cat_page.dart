@@ -16,6 +16,31 @@ class KetebalanCatPage extends ConsumerStatefulWidget {
 
 class _KetebalanCatPage extends ConsumerState<KetebalanCatPage>
     with AutomaticKeepAliveClientMixin {
+  late final List<FocusNode> _focusNodes;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNodes = List<FocusNode>.generate(13, (_) => FocusNode());
+  }
+
+  @override
+  void dispose() {
+    for (final FocusNode node in _focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
+  void _handleFieldSubmitted(int index) {
+    final bool isLastField = index == _focusNodes.length - 1;
+    if (isLastField) {
+      _focusNodes[index].unfocus();
+      return;
+    }
+
+    _focusNodes[index + 1].requestFocus();
+  }
 
   @override
   bool get wantKeepAlive => true;
@@ -59,6 +84,9 @@ class _KetebalanCatPage extends ConsumerState<KetebalanCatPage>
                           ),
                           PaintThicknessInputField(
                             initialValue: formData.catDepanKap,
+                            focusNode: _focusNodes[0],
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_) => _handleFieldSubmitted(0),
                             onChanged: (value) {
                               formNotifier.updateCatDepanKap(value);
                             },
@@ -76,7 +104,7 @@ class _KetebalanCatPage extends ConsumerState<KetebalanCatPage>
               ],
             ),
           ),
-    
+
           // Section 2: Belakang
           SliverToBoxAdapter(
             child: Column(
@@ -97,12 +125,8 @@ class _KetebalanCatPage extends ConsumerState<KetebalanCatPage>
                           child: Align(
                             alignment: Alignment.center,
                             child: ConstrainedBox(
-                              constraints: const BoxConstraints(
-                                maxWidth: 300,
-                              ),
-                              child: Image.asset(
-                                'assets/images/belakang.png',
-                              ),
+                              constraints: const BoxConstraints(maxWidth: 300),
+                              child: Image.asset('assets/images/belakang.png'),
                             ),
                           ),
                         ),
@@ -110,6 +134,9 @@ class _KetebalanCatPage extends ConsumerState<KetebalanCatPage>
                           left: 125.0,
                           child: PaintThicknessInputField(
                             initialValue: formData.catBelakangBumper,
+                            focusNode: _focusNodes[1],
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_) => _handleFieldSubmitted(1),
                             onChanged: (value) {
                               formNotifier.updateCatBelakangBumper(value);
                             },
@@ -120,6 +147,9 @@ class _KetebalanCatPage extends ConsumerState<KetebalanCatPage>
                           left: 226.0,
                           child: PaintThicknessInputField(
                             initialValue: formData.catBelakangTrunk,
+                            focusNode: _focusNodes[2],
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_) => _handleFieldSubmitted(2),
                             onChanged: (value) {
                               formNotifier.updateCatBelakangTrunk(value);
                             },
@@ -133,7 +163,7 @@ class _KetebalanCatPage extends ConsumerState<KetebalanCatPage>
               ],
             ),
           ),
-    
+
           // Section 3: Samping Kanan
           SliverToBoxAdapter(
             child: Column(
@@ -149,28 +179,36 @@ class _KetebalanCatPage extends ConsumerState<KetebalanCatPage>
                         children: [
                           PaintThicknessInputField(
                             initialValue: formData.catKananFenderBelakang,
+                            focusNode: _focusNodes[3],
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_) => _handleFieldSubmitted(3),
                             onChanged: (value) {
-                              formNotifier.updateCatKananFenderBelakang(
-                                value,
-                              );
+                              formNotifier.updateCatKananFenderBelakang(value);
                             },
                           ),
                           PaintThicknessInputField(
                             initialValue: formData.catKananPintuBelakang,
+                            focusNode: _focusNodes[4],
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_) => _handleFieldSubmitted(4),
                             onChanged: (value) {
-                              formNotifier.updateCatKananPintuBelakang(
-                                value,
-                              );
+                              formNotifier.updateCatKananPintuBelakang(value);
                             },
                           ),
                           PaintThicknessInputField(
                             initialValue: formData.catKananPintuDepan,
+                            focusNode: _focusNodes[5],
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_) => _handleFieldSubmitted(5),
                             onChanged: (value) {
                               formNotifier.updateCatKananPintuDepan(value);
                             },
                           ),
                           PaintThicknessInputField(
                             initialValue: formData.catKananFenderDepan,
+                            focusNode: _focusNodes[6],
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_) => _handleFieldSubmitted(6),
                             onChanged: (value) {
                               formNotifier.updateCatKananFenderDepan(value);
                             },
@@ -182,6 +220,9 @@ class _KetebalanCatPage extends ConsumerState<KetebalanCatPage>
                         padding: const EdgeInsets.only(left: 30.0),
                         child: PaintThicknessInputField(
                           initialValue: formData.catKananSideSkirt,
+                          focusNode: _focusNodes[7],
+                          textInputAction: TextInputAction.next,
+                          onFieldSubmitted: (_) => _handleFieldSubmitted(7),
                           onChanged: (value) {
                             formNotifier.updateCatKananSideSkirt(value);
                           },
@@ -194,7 +235,7 @@ class _KetebalanCatPage extends ConsumerState<KetebalanCatPage>
               ],
             ),
           ),
-    
+
           // Section 4: Samping Kiri
           SliverToBoxAdapter(
             child: Column(
@@ -210,30 +251,38 @@ class _KetebalanCatPage extends ConsumerState<KetebalanCatPage>
                         children: [
                           PaintThicknessInputField(
                             initialValue: formData.catKiriFenderDepan,
+                            focusNode: _focusNodes[8],
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_) => _handleFieldSubmitted(8),
                             onChanged: (value) {
                               formNotifier.updateCatKiriFenderDepan(value);
                             },
                           ),
                           PaintThicknessInputField(
                             initialValue: formData.catKiriPintuDepan,
+                            focusNode: _focusNodes[9],
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_) => _handleFieldSubmitted(9),
                             onChanged: (value) {
                               formNotifier.updateCatKiriPintuDepan(value);
                             },
                           ),
                           PaintThicknessInputField(
                             initialValue: formData.catKiriPintuBelakang,
+                            focusNode: _focusNodes[10],
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_) => _handleFieldSubmitted(10),
                             onChanged: (value) {
-                              formNotifier.updateCatKiriPintuBelakang(
-                                value,
-                              );
+                              formNotifier.updateCatKiriPintuBelakang(value);
                             },
                           ),
                           PaintThicknessInputField(
                             initialValue: formData.catKiriFenderBelakang,
+                            focusNode: _focusNodes[11],
+                            textInputAction: TextInputAction.next,
+                            onFieldSubmitted: (_) => _handleFieldSubmitted(11),
                             onChanged: (value) {
-                              formNotifier.updateCatKiriFenderBelakang(
-                                value,
-                              );
+                              formNotifier.updateCatKiriFenderBelakang(value);
                             },
                           ),
                         ],
@@ -243,6 +292,9 @@ class _KetebalanCatPage extends ConsumerState<KetebalanCatPage>
                         padding: const EdgeInsets.only(left: 30.0),
                         child: PaintThicknessInputField(
                           initialValue: formData.catKiriSideSkirt,
+                          focusNode: _focusNodes[12],
+                          textInputAction: TextInputAction.done,
+                          onFieldSubmitted: (_) => _handleFieldSubmitted(12),
                           onChanged: (value) {
                             formNotifier.updateCatKiriSideSkirt(value);
                           },
