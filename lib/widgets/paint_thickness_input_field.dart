@@ -6,29 +6,38 @@ class PaintThicknessInputField extends StatefulWidget {
   final double width; // Parameter for the width of the text field
   final ValueChanged<String>? onChanged; // Callback for changes
   final String? initialValue; // Add initialValue parameter
+  final FocusNode? focusNode;
+  final ValueChanged<String>? onFieldSubmitted;
+  final TextInputAction? textInputAction;
 
   const PaintThicknessInputField({
     super.key,
     this.width = 50.0, // Default width
     this.onChanged,
     this.initialValue,
+    this.focusNode,
+    this.onFieldSubmitted,
+    this.textInputAction,
   });
 
   @override
-  State<PaintThicknessInputField> createState() => _PaintThicknessInputFieldState();
+  State<PaintThicknessInputField> createState() =>
+      _PaintThicknessInputFieldState();
 }
 
 class _PaintThicknessInputFieldState extends State<PaintThicknessInputField> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
   late ScrollController _scrollController; // Add ScrollController
+  late bool _ownsFocusNode;
 
   @override
   void initState() {
     super.initState();
     // Initialize the controller with the initial value
     _controller = TextEditingController(text: widget.initialValue);
-    _focusNode = FocusNode();
+    _ownsFocusNode = widget.focusNode == null;
+    _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_handleFocusChange);
     _scrollController = ScrollController(); // Initialize ScrollController
   }
@@ -36,6 +45,16 @@ class _PaintThicknessInputFieldState extends State<PaintThicknessInputField> {
   @override
   void didUpdateWidget(covariant PaintThicknessInputField oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode != widget.focusNode) {
+      _focusNode.removeListener(_handleFocusChange);
+      if (_ownsFocusNode) {
+        _focusNode.dispose();
+      }
+      _ownsFocusNode = widget.focusNode == null;
+      _focusNode = widget.focusNode ?? FocusNode();
+      _focusNode.addListener(_handleFocusChange);
+    }
+
     if (widget.initialValue != oldWidget.initialValue) {
       if (_controller.text != widget.initialValue) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -47,7 +66,8 @@ class _PaintThicknessInputFieldState extends State<PaintThicknessInputField> {
               _controller.selection = currentSelection;
             } else {
               _controller.selection = TextSelection.fromPosition(
-                  TextPosition(offset: _controller.text.length));
+                TextPosition(offset: _controller.text.length),
+              );
             }
           }
         });
@@ -66,7 +86,9 @@ class _PaintThicknessInputFieldState extends State<PaintThicknessInputField> {
   void dispose() {
     _controller.dispose();
     _focusNode.removeListener(_handleFocusChange);
-    _focusNode.dispose();
+    if (_ownsFocusNode) {
+      _focusNode.dispose();
+    }
     _scrollController.dispose(); // Dispose ScrollController
     super.dispose();
   }
@@ -83,20 +105,36 @@ class _PaintThicknessInputFieldState extends State<PaintThicknessInputField> {
             controller: _controller,
             focusNode: _focusNode, // Assign the FocusNode
             scrollController: _scrollController, // Assign the ScrollController
-            keyboardType: const TextInputType.numberWithOptions(decimal: true), // Allow decimal input
+            keyboardType: const TextInputType.numberWithOptions(
+              decimal: true,
+            ), // Allow decimal input
+            textInputAction: widget.textInputAction,
             inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')), // Allow digits and one decimal point
+              FilteringTextInputFormatter.allow(
+                RegExp(r'^\d*\.?\d*'),
+              ), // Allow digits and one decimal point
             ],
             onChanged: widget.onChanged, // Use the provided onChanged callback
-            style: disabledToggleTextStyle.copyWith(color: labelTextColor), // Use a text style from app_styles
+            onSubmitted: widget.onFieldSubmitted,
+            style: disabledToggleTextStyle.copyWith(
+              color: labelTextColor,
+            ), // Use a text style from app_styles
             decoration: InputDecoration(
-              contentPadding: const EdgeInsets.only(top: 4.0, bottom: 4.0, left: 4.0, right: 4.0), // Adjust padding
+              contentPadding: const EdgeInsets.only(
+                top: 4.0,
+                bottom: 4.0,
+                left: 4.0,
+                right: 4.0,
+              ), // Adjust padding
               isDense: true,
               hintText: '0.00',
               hintStyle: hintTextStyling.copyWith(fontSize: 14.0),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(6.0),
-                borderSide: const BorderSide(color: borderColor, width: 2), // Use border color from app_styles
+                borderSide: const BorderSide(
+                  color: borderColor,
+                  width: 2,
+                ), // Use border color from app_styles
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(6.0),
